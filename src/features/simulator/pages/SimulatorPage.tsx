@@ -9,18 +9,29 @@ import {
     Minus,
     Receipt,
     Clock,
-    Home,
     Utensils,
     Building2,
-    AlertCircle
+    AlertCircle,
+    Trash2,
+    BedDouble,
+    ChevronDown, 
+    ChevronUp, 
+    Flame, 
+    CheckCircle2, 
+    Ticket
 } from 'lucide-react';
 import { useArrangements } from '../../arrangements/hooks/useArrangements';
 import { useAffiliates } from '../../partners/hooks/useAffiliates';
 import { useContracts, useContract } from '../../contracts/hooks/useContracts';
 import { useHotel } from '../../hotel/context/HotelContext';
 import { useCalculateSimulation } from '../hooks/useSimulator';
-import { SimulationRequest } from '../types/simulator.types';
-import { ChevronDown, ChevronUp, Flame, CheckCircle2, Ticket } from 'lucide-react';
+import { SimulationRequest, OccupantType } from '../types/simulator.types';
+
+interface RoomingState {
+    id: string;
+    roomId: string;
+    occupants: { id: string; type: OccupantType; age: number }[];
+}
 
 export default function SimulatorPage() {
     const { currentHotel } = useHotel();
@@ -35,13 +46,23 @@ export default function SimulatorPage() {
     const [checkIn, setCheckIn] = useState('');
     const [checkOut, setCheckOut] = useState('');
     const [bookingDate, setBookingDate] = useState(new Date().toISOString().split('T')[0]);
-    const [roomTypeId, setRoomTypeId] = useState<string>('');
     const [arrangementId, setArrangementId] = useState<string>('');
-    const [adults, setAdults] = useState(2);
-    const [children, setChildren] = useState(0);
-    const [childrenAges, setChildrenAges] = useState<number[]>([]);
+    
+    // Rooming List V2 State
+    const generateId = () => crypto.randomUUID();
+    
+    const [roomingList, setRoomingList] = useState<RoomingState[]>([
+        { 
+            id: generateId(), 
+            roomId: '', 
+            occupants: [
+                { id: generateId(), type: OccupantType.ADULT, age: 30 },
+                { id: generateId(), type: OccupantType.ADULT, age: 30 }
+            ] 
+        }
+    ]);
+
     const [expandedNights, setExpandedNights] = useState<Record<string, boolean>>({});
-    const [displayMode, setDisplayMode] = useState<'ROOM' | 'PERSON'>('ROOM');
 
     const { mutate: runSimulation, data: simulationResult, isPending: isSimulating } = useCalculateSimulation();
 
@@ -54,7 +75,6 @@ export default function SimulatorPage() {
         );
     }, [selectedAffiliateId, contracts]);
 
-    // Fetch full detail of the active contract (needed for rooms and base arrangement)
     const { data: activeContract, isLoading: loadingActiveContract } = useContract(activeContractSummary?.id);
 
     // ─── Derived State: Allowed Arrangements for Contract ─────────────
@@ -68,52 +88,103 @@ export default function SimulatorPage() {
         return [...filtered].sort((a, b) => (a.level ?? 0) - (b.level ?? 0));
     }, [allArrangements, activeContract]);
 
-    // ─── Derived State: Room Metadata ─────────────────────────────────
-    const selectedRoomType = useMemo(() => {
-        if (!roomTypeId || !activeContract) return null;
-        return activeContract.contractRooms.find(cr => String(cr.roomType.id) === roomTypeId)?.roomType;
-    }, [roomTypeId, activeContract]);
-
     // ─── Logic ────────────────────────────────────────────────────────
 
-    // Reset room and arrangement selection when contract changes
     useEffect(() => {
-        setRoomTypeId('');
+        // Reset rooming list when contract changes
+        setRoomingList([
+            { 
+                id: generateId(), 
+                roomId: '', 
+                occupants: [
+                    { id: generateId(), type: OccupantType.ADULT, age: 30 },
+                    { id: generateId(), type: OccupantType.ADULT, age: 30 }
+                ] 
+            }
+        ]);
         setArrangementId('');
     }, [activeContract?.id]);
 
-    const handleChildrenCountChange = (value: string) => {
-        const count = Math.max(0, parseInt(value) || 0);
-        setChildren(count);
-        setChildrenAges(prev => {
-            if (count > prev.length) {
-                return [...prev, ...Array(count - prev.length).fill(5)];
-            } else {
-                return prev.slice(0, count);
+    // Rooming List Actions
+    const addRoom = () => {
+        setRoomingList(prev => [
+            ...prev,
+            {
+                id: generateId(),
+                roomId: '',
+                occupants: [
+                    { id: generateId(), type: OccupantType.ADULT, age: 30 },
+                    { id: generateId(), type: OccupantType.ADULT, age: 30 }
+                ]
             }
-        });
+        ]);
     };
 
-    const updateChildAge = (index: number, age: number) => {
-        const newAges = [...childrenAges];
-        newAges[index] = Math.max(0, Math.min(17, age));
-        setChildrenAges(newAges);
+    const removeRoom = (index: number) => {
+        setRoomingList(prev => prev.filter((_, i) => i !== index));
     };
+
+    const updateRoomType = (roomIndex: number, roomId: string) => {
+        const newRooms = [...roomingList];
+        newRooms[roomIndex].roomId = roomId;
+        setRoomingList(newRooms);
+    };
+
+    const addOccupant = (roomIndex: number, type: OccupantType) => {
+        const newRooms = [...roomingList];
+        newRooms[roomIndex].occupants.push({
+            id: generateId(),
+            type,
+            age: type === OccupantType.ADULT ? 30 : 8 // default age based on type
+        });
+        setRoomingList(newRooms);
+    };
+
+    const removeOccupant = (roomIndex: number, occupantIndex: number) => {
+        const newRooms = [...roomingList];
+        newRooms[roomIndex].occupants = newRooms[roomIndex].occupants.filter((_, i) => i !== occupantIndex);
+        setRoomingList(newRooms);
+    };
+
+    const updateOccupantAge = (roomIndex: number, occupantIndex: number, age: number) => {
+        const newRooms = [...roomingList];
+        newRooms[roomIndex].occupants[occupantIndex].age = age;
+        setRoomingList(newRooms);
+    };
+
+    const isFormValid = useMemo(() => {
+        if (!activeContract || !arrangementId || !checkIn || !checkOut) return false;
+        if (roomingList.length === 0) return false;
+        
+        for (const room of roomingList) {
+            if (!room.roomId) return false;
+            if (room.occupants.length === 0) return false;
+            if (!room.occupants.some(o => o.type === OccupantType.ADULT)) return false; // At least one adult per room
+        }
+        return true;
+    }, [activeContract, arrangementId, checkIn, checkOut, roomingList]);
+
 
     const handleRunSimulation = () => {
-        if (!activeContract || !roomTypeId || !arrangementId || !checkIn || !checkOut) return;
+        if (!isFormValid || !activeContract) return;
 
         const request: SimulationRequest = {
             contractId: activeContract.id,
-            roomId: parseInt(roomTypeId),
             boardTypeId: parseInt(arrangementId),
             checkIn,
             checkOut,
             bookingDate,
-            occupants: {
-                adults,
-                childrenAges
-            }
+            roomingList: roomingList.map(room => {
+                let paxOrder = 1;
+                return {
+                    roomId: parseInt(room.roomId),
+                    occupants: room.occupants.map(occ => ({
+                        paxOrder: paxOrder++,
+                        type: occ.type,
+                        age: occ.age
+                    }))
+                };
+            })
         };
 
         runSimulation(request);
@@ -123,13 +194,17 @@ export default function SimulatorPage() {
         setExpandedNights(prev => ({ ...prev, [date]: !prev[date] }));
     };
 
+    // Calculate total occupants for display
+    const totalAdults = roomingList.reduce((acc, room) => acc + room.occupants.filter(o => o.type === OccupantType.ADULT).length, 0);
+    const totalChildren = roomingList.reduce((acc, room) => acc + room.occupants.filter(o => o.type !== OccupantType.ADULT).length, 0);
+
     return (
         <div className="p-8 max-w-7xl mx-auto space-y-8">
 
             {/* ─── Header ────────────────────────────────────────────────── */}
             <div>
-                <h1 className="text-2xl font-bold text-gray-900">Simulateur de Prix</h1>
-                <p className="text-gray-500 mt-1">Calculez instantanément le prix d'un séjour en fonction du contrat actif d'un partenaire.</p>
+                <h1 className="text-2xl font-bold text-gray-900">Simulateur de Prix (V2)</h1>
+                <p className="text-gray-500 mt-1">Calculez instantanément le prix d'un séjour avec Rooming List détaillée.</p>
             </div>
 
             {/* ─── Step 1: Partner Selection ────────────────────────────── */}
@@ -188,19 +263,19 @@ export default function SimulatorPage() {
 
             {/* ─── Step 2: Simulation Form (Only if active contract) ─────── */}
             {activeContract && (
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                <div className="grid grid-cols-1 xl:grid-cols-3 gap-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
 
                     {/* ─── LEFT: Form Inputs (2/3) ─── */}
-                    <div className="lg:col-span-2 space-y-6">
+                    <div className="xl:col-span-2 space-y-6">
 
-                        {/* Card A: Dates */}
+                        {/* Card A: Dates & Arrangement */}
                         <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
                             <div className="px-5 py-4 border-b border-gray-100 bg-gray-50/50 flex items-center gap-2">
                                 <Calendar size={18} className="text-indigo-600" />
-                                <h3 className="font-semibold text-gray-900">Période du Séjour</h3>
+                                <h3 className="font-semibold text-gray-900">Paramètres du Séjour</h3>
                             </div>
                             <div className="p-6">
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                                     <div className="space-y-1.5">
                                         <label className="text-sm font-medium text-gray-700">Date de Check-in</label>
                                         <input
@@ -211,9 +286,6 @@ export default function SimulatorPage() {
                                             onChange={(e) => setCheckIn(e.target.value)}
                                             className="w-full px-4 py-2.5 bg-white border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all outline-none"
                                         />
-                                        <p className="text-[10px] text-gray-400 font-medium italic">
-                                            Min: {new Date(activeContract.startDate).toLocaleDateString()}
-                                        </p>
                                     </div>
                                     <div className="space-y-1.5">
                                         <label className="text-sm font-medium text-gray-700">Date de Check-out</label>
@@ -225,9 +297,22 @@ export default function SimulatorPage() {
                                             onChange={(e) => setCheckOut(e.target.value)}
                                             className="w-full px-4 py-2.5 bg-white border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all outline-none"
                                         />
-                                        <p className="text-[10px] text-gray-400 font-medium italic">
-                                            Max: {new Date(activeContract.endDate).toLocaleDateString()}
-                                        </p>
+                                    </div>
+                                    <div className="space-y-1.5">
+                                        <label className="text-sm font-medium text-gray-700 flex items-center gap-1.5">
+                                            <Utensils size={14} />
+                                            Arrangement (Pension)
+                                        </label>
+                                        <select
+                                            value={arrangementId}
+                                            onChange={(e) => setArrangementId(e.target.value)}
+                                            className="w-full px-4 py-2.5 bg-white border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all outline-none cursor-pointer"
+                                        >
+                                            <option value="">Sélectionner...</option>
+                                            {allowedArrangements.map(a => (
+                                                <option key={a.id} value={a.id}>{a.name} ({a.code})</option>
+                                            ))}
+                                        </select>
                                     </div>
                                 </div>
 
@@ -252,158 +337,145 @@ export default function SimulatorPage() {
                             </div>
                         </div>
 
-                        {/* Card B: Accommodation */}
-                        <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-                            <div className="px-5 py-4 border-b border-gray-100 bg-gray-50/50 flex items-center gap-2">
-                                <Home size={18} className="text-indigo-600" />
-                                <h3 className="font-semibold text-gray-900">Hébergement & Arrangement</h3>
+                        {/* Card B: Rooming List (V2) */}
+                        <div className="space-y-4">
+                            <div className="flex items-center justify-between">
+                                <h3 className="font-bold text-lg text-gray-900 flex items-center gap-2">
+                                    <BedDouble size={20} className="text-indigo-600"/>
+                                    Rooming List
+                                </h3>
+                                <span className="bg-indigo-100 text-indigo-800 text-xs font-bold px-2 py-1 rounded-md">
+                                    {roomingList.length} Chambre{roomingList.length > 1 ? 's' : ''}
+                                </span>
                             </div>
-                            <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div className="space-y-1.5">
-                                    <label className="text-sm font-medium text-gray-700">Type de Chambre (Hôtel & Contrat)</label>
-                                    <select
-                                        value={roomTypeId}
-                                        onChange={(e) => setRoomTypeId(e.target.value)}
-                                        className="w-full px-4 py-2.5 bg-white border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all outline-none cursor-pointer"
-                                    >
-                                        <option value="">Sélectionner une chambre</option>
-                                        {activeContract.contractRooms?.map(cr => (
-                                            <option key={cr.id} value={cr.roomType.id}>
-                                                {cr.roomType.name} ({cr.roomType.code})
-                                            </option>
-                                        ))}
-                                    </select>
-                                </div>
-                                <div className="space-y-1.5">
-                                    <label className="text-sm font-medium text-gray-700 flex items-center gap-1.5">
-                                        <Utensils size={14} />
-                                        Arrangement (Pension)
-                                    </label>
-                                    <select
-                                        value={arrangementId}
-                                        onChange={(e) => setArrangementId(e.target.value)}
-                                        className="w-full px-4 py-2.5 bg-white border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all outline-none cursor-pointer"
-                                    >
-                                        <option value="">Sélectionner un arrangement</option>
-                                        {allowedArrangements.map(a => (
-                                            <option key={a.id} value={a.id}>
-                                                {a.name} ({a.code})
-                                            </option>
-                                        ))}
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
 
-                        {/* Card C: Occupancy */}
-                        <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-                            <div className="px-5 py-4 border-b border-gray-100 bg-gray-50/50 flex items-center gap-2">
-                                <User size={18} className="text-indigo-600" />
-                                <h3 className="font-semibold text-gray-900">Occupation</h3>
-                            </div>
-                            <div className="p-6 space-y-8">
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                                    {/* Adults */}
-                                    <div className="space-y-3">
-                                        <div className="flex items-center justify-between">
-                                            <label className="text-sm font-medium text-gray-700">Adultes</label>
-                                            <span className="text-xs font-semibold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-full">Min 1</span>
-                                        </div>
-                                        <div className="flex items-center gap-3">
-                                            <button
-                                                onClick={() => setAdults(prev => Math.max(selectedRoomType?.minAdults || 1, prev - 1))}
-                                                className="p-2 hover:bg-gray-100 rounded-lg border border-gray-200 transition-colors"
-                                            >
-                                                <Minus size={16} />
-                                            </button>
-                                            <input
-                                                type="number"
-                                                min={selectedRoomType?.minAdults || 1}
-                                                max={selectedRoomType?.maxAdults || 10}
-                                                value={adults}
-                                                onChange={(e) => setAdults(Math.max(selectedRoomType?.minAdults || 1, parseInt(e.target.value) || 1))}
-                                                className="w-16 text-center font-semibold text-lg bg-transparent border-none focus:ring-0"
-                                            />
-                                            <button
-                                                onClick={() => setAdults(prev => Math.min(selectedRoomType?.maxAdults || 10, prev + 1))}
-                                                className="p-2 hover:bg-gray-100 rounded-lg border border-gray-200 transition-colors"
-                                            >
-                                                <Plus size={16} />
-                                            </button>
-                                        </div>
-                                        {selectedRoomType && (
-                                            <p className="text-[10px] text-gray-400">
-                                                Capacité : {selectedRoomType.minAdults} - {selectedRoomType.maxAdults} adultes
-                                            </p>
-                                        )}
-                                    </div>
+                            {roomingList.map((room, roomIndex) => {
+                                const selectedRoomMeta = activeContract.contractRooms.find(cr => String(cr.roomType.id) === room.roomId)?.roomType;
 
-                                    {/* Children */}
-                                    <div className="space-y-3">
-                                        <label className="text-sm font-medium text-gray-700">Enfants</label>
-                                        <div className="flex items-center gap-3">
-                                            <button
-                                                onClick={() => handleChildrenCountChange(Math.max(selectedRoomType?.minChildren || 0, children - 1).toString())}
-                                                className="p-2 hover:bg-gray-100 rounded-lg border border-gray-200 transition-colors"
-                                            >
-                                                <Minus size={16} />
-                                            </button>
-                                            <input
-                                                type="number"
-                                                min={selectedRoomType?.minChildren || 0}
-                                                max={selectedRoomType?.maxChildren || 10}
-                                                value={children}
-                                                onChange={(e) => handleChildrenCountChange(e.target.value)}
-                                                className="w-16 text-center font-semibold text-lg bg-transparent border-none focus:ring-0"
-                                            />
-                                            <button
-                                                onClick={() => handleChildrenCountChange(Math.min(selectedRoomType?.maxChildren || 10, children + 1).toString())}
-                                                className="p-2 hover:bg-gray-100 rounded-lg border border-gray-200 transition-colors"
-                                            >
-                                                <Plus size={16} />
-                                            </button>
+                                return (
+                                    <div key={room.id} className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden transition-all hover:shadow-md">
+                                        <div className="px-5 py-3 border-b border-gray-100 bg-gray-50/80 flex items-center justify-between">
+                                            <div className="flex items-center gap-3">
+                                                <span className="flex items-center justify-center w-6 h-6 rounded-full bg-indigo-100 text-indigo-700 font-bold text-xs">
+                                                    {roomIndex + 1}
+                                                </span>
+                                                <h4 className="font-semibold text-gray-800">Chambre {roomIndex + 1}</h4>
+                                            </div>
+                                            {roomingList.length > 1 && (
+                                                <button 
+                                                    onClick={() => removeRoom(roomIndex)}
+                                                    className="text-red-500 hover:text-red-700 hover:bg-red-50 p-1.5 rounded-md transition-colors"
+                                                    title="Supprimer la chambre"
+                                                >
+                                                    <Trash2 size={16} />
+                                                </button>
+                                            )}
                                         </div>
-                                        {selectedRoomType && (
-                                            <p className="text-[10px] text-gray-400">
-                                                Max enfant : {selectedRoomType.maxChildren}
-                                            </p>
-                                        )}
-                                    </div>
-                                </div>
+                                        
+                                        <div className="p-5 space-y-6">
+                                            <div className="space-y-1.5 max-w-md">
+                                                <label className="text-sm font-medium text-gray-700">Type de Chambre</label>
+                                                <select
+                                                    value={room.roomId}
+                                                    onChange={(e) => updateRoomType(roomIndex, e.target.value)}
+                                                    className="w-full px-4 py-2.5 bg-white border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all outline-none cursor-pointer"
+                                                >
+                                                    <option value="">Sélectionner une chambre</option>
+                                                    {activeContract.contractRooms?.map(cr => (
+                                                        <option key={cr.id} value={cr.roomType.id}>
+                                                            {cr.roomType.name} ({cr.roomType.code})
+                                                        </option>
+                                                    ))}
+                                                </select>
+                                                {selectedRoomMeta && (
+                                                    <p className="text-[11px] text-gray-500 flex items-center gap-1 mt-1">
+                                                        <Info size={12} className="text-indigo-400"/>
+                                                        Capacité: {selectedRoomMeta.minAdults}-{selectedRoomMeta.maxAdults} Adulte(s), Max {selectedRoomMeta.maxChildren} Enfant(s)
+                                                    </p>
+                                                )}
+                                            </div>
 
-                                {children > 0 && (
-                                    <div className="pt-6 border-t border-gray-100 animate-in fade-in slide-in-from-top-2 duration-300">
-                                        <div className="flex items-center gap-2 mb-4">
-                                            <Baby size={16} className="text-pink-500" />
-                                            <h4 className="text-sm font-semibold text-gray-900">Âges des enfants</h4>
-                                        </div>
-                                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-                                            {childrenAges.map((age, index) => (
-                                                <div key={index} className="space-y-1.5 p-3 bg-gray-50 rounded-xl border border-gray-100">
-                                                    <label className="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Enfant {index + 1}</label>
-                                                    <div className="flex items-center gap-2">
-                                                        <input
-                                                            type="number"
-                                                            value={age}
-                                                            onChange={(e) => updateChildAge(index, parseInt(e.target.value) || 0)}
-                                                            className="w-full bg-white border border-gray-300 rounded-md px-2 py-1 text-sm font-medium focus:ring-2 focus:ring-indigo-500 outline-none"
-                                                            min="0"
-                                                            max="17"
-                                                        />
-                                                        <span className="text-xs text-gray-400">ans</span>
+                                            <div className="bg-gray-50 rounded-lg p-4 border border-gray-100">
+                                                <div className="flex items-center justify-between mb-4">
+                                                    <h5 className="text-sm font-semibold text-gray-800 flex items-center gap-2">
+                                                        <User size={16} className="text-gray-500"/>
+                                                        Occupants de la chambre
+                                                    </h5>
+                                                    <div className="flex gap-2">
+                                                        <button 
+                                                            onClick={() => addOccupant(roomIndex, OccupantType.ADULT)}
+                                                            className="text-xs font-semibold bg-white border border-gray-200 text-gray-700 px-3 py-1.5 rounded-md hover:bg-gray-100 hover:text-gray-900 transition-colors flex items-center gap-1 shadow-sm"
+                                                        >
+                                                            <Plus size={14}/> Adulte
+                                                        </button>
+                                                        <button 
+                                                            onClick={() => addOccupant(roomIndex, OccupantType.CHILD)}
+                                                            className="text-xs font-semibold bg-white border border-gray-200 text-gray-700 px-3 py-1.5 rounded-md hover:bg-gray-100 hover:text-gray-900 transition-colors flex items-center gap-1 shadow-sm"
+                                                        >
+                                                            <Plus size={14}/> Enfant
+                                                        </button>
                                                     </div>
                                                 </div>
-                                            ))}
+                                                
+                                                <div className="space-y-2">
+                                                    {room.occupants.map((occ, occIndex) => (
+                                                        <div key={occ.id} className="flex items-center gap-4 bg-white p-3 rounded-md border border-gray-200 shadow-sm animate-in fade-in zoom-in-95 duration-200">
+                                                            <div className="flex items-center gap-2 w-32 shrink-0">
+                                                                {occ.type === OccupantType.ADULT ? (
+                                                                    <User size={16} className="text-indigo-500"/>
+                                                                ) : (
+                                                                    <Baby size={16} className="text-pink-500"/>
+                                                                )}
+                                                                <span className="text-sm font-semibold text-gray-700">
+                                                                    {occ.type === OccupantType.ADULT ? 'Adulte' : 'Enfant'}
+                                                                </span>
+                                                            </div>
+
+                                                            <div className="flex-1 flex items-center gap-3">
+                                                                <label className="text-xs text-gray-500 font-medium">Âge</label>
+                                                                <input
+                                                                    type="number"
+                                                                    min="0"
+                                                                    max="99"
+                                                                    value={occ.age}
+                                                                    onChange={(e) => updateOccupantAge(roomIndex, occIndex, parseInt(e.target.value) || 0)}
+                                                                    className="w-20 px-2 py-1 bg-gray-50 border border-gray-300 rounded text-sm text-center font-semibold focus:ring-2 focus:ring-indigo-500 outline-none"
+                                                                />
+                                                                <span className="text-xs text-gray-400">ans</span>
+                                                            </div>
+
+                                                            <button 
+                                                                onClick={() => removeOccupant(roomIndex, occIndex)}
+                                                                disabled={room.occupants.length <= 1} // Prevent removing last occupant
+                                                                className="text-gray-400 hover:text-red-500 hover:bg-red-50 p-1.5 rounded transition-colors disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-gray-400"
+                                                            >
+                                                                <Minus size={16}/>
+                                                            </button>
+                                                        </div>
+                                                    ))}
+                                                    {room.occupants.length === 0 && (
+                                                        <p className="text-sm text-red-500 italic py-2">La chambre doit avoir au moins un occupant.</p>
+                                                    )}
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
-                                )}
-                            </div>
+                                );
+                            })}
+
+                            <button
+                                onClick={addRoom}
+                                className="w-full py-3 border-2 border-dashed border-gray-300 rounded-xl text-gray-600 font-semibold text-sm hover:border-indigo-400 hover:text-indigo-600 hover:bg-indigo-50/50 transition-all flex items-center justify-center gap-2"
+                            >
+                                <Plus size={18} />
+                                Ajouter une autre chambre
+                            </button>
                         </div>
 
                         <button
                             onClick={handleRunSimulation}
-                            disabled={!roomTypeId || !arrangementId || !checkIn || !checkOut || isSimulating}
-                            className="w-full group relative flex items-center justify-center gap-3 px-8 py-4 bg-gray-900 text-white rounded-xl font-bold text-lg hover:bg-indigo-600 disabled:bg-gray-300 disabled:cursor-not-allowed active:scale-[0.98] transition-all shadow-xl shadow-gray-200 overflow-hidden"
+                            disabled={!isFormValid || isSimulating}
+                            className="w-full group relative flex items-center justify-center gap-3 px-8 py-4 bg-gray-900 text-white rounded-xl font-bold text-lg hover:bg-indigo-600 disabled:bg-gray-300 disabled:cursor-not-allowed active:scale-[0.98] transition-all shadow-xl shadow-gray-200 overflow-hidden mt-8"
                         >
                             <div className="absolute inset-0 bg-linear-to-r from-indigo-500/0 via-white/10 to-indigo-500/0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
                             {isSimulating ? (
@@ -411,12 +483,12 @@ export default function SimulatorPage() {
                             ) : (
                                 <Calculator size={22} />
                             )}
-                            {isSimulating ? 'Calcul en cours...' : 'Lancer la simulation'}
+                            {isSimulating ? 'Calcul en cours...' : 'Lancer la simulation (Rooming List)'}
                         </button>
                     </div>
 
                     {/* ─── RIGHT: Results Panel (1/3) ─── */}
-                    <div className="lg:col-span-1">
+                    <div className="xl:col-span-1">
                         <div className="sticky top-6 space-y-6">
                             <div className={`bg-white rounded-2xl border ${simulationResult ? 'border-indigo-500 shadow-indigo-100' : 'border-gray-200'} shadow-xl overflow-hidden flex flex-col transition-all duration-500`}>
 
@@ -430,148 +502,134 @@ export default function SimulatorPage() {
 
                                     {simulationResult ? (
                                         <div className="animate-in fade-in zoom-in-95 duration-500">
-                                            {/* Display Mode Toggle */}
-                                            <div className="flex bg-white/10 p-1 rounded-lg mb-4 w-fit">
-                                                <button
-                                                    onClick={() => setDisplayMode('ROOM')}
-                                                    className={`px-3 py-1.5 rounded-md text-[10px] font-bold transition-all ${displayMode === 'ROOM' ? 'bg-white text-indigo-600 shadow-sm' : 'text-white/60 hover:text-white'}`}
-                                                >
-                                                    PAR CHAMBRE
-                                                </button>
-                                                <button
-                                                    onClick={() => setDisplayMode('PERSON')}
-                                                    className={`px-3 py-1.5 rounded-md text-[10px] font-bold transition-all ${displayMode === 'PERSON' ? 'bg-white text-indigo-600 shadow-sm' : 'text-white/60 hover:text-white'}`}
-                                                >
-                                                    PAR PERSONNE
-                                                </button>
-                                            </div>
+                                            {/* Display Mode Toggle removed because V2 breaks it down by room explicitly */}
 
                                             <div className="text-4xl font-black tracking-tight">
-                                                {displayMode === 'ROOM' 
-                                                    ? simulationResult.totalGross.toLocaleString('fr-FR', { minimumFractionDigits: 3, maximumFractionDigits: 3 })
-                                                    : simulationResult.perAdultRate.toLocaleString('fr-FR', { minimumFractionDigits: 3, maximumFractionDigits: 3 })
-                                                }
+                                                {new Intl.NumberFormat('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(simulationResult.totalNet)}
                                                 <span className="text-xl ml-2 font-medium text-indigo-200">{simulationResult.currency}</span>
                                             </div>
                                             <p className="text-indigo-100 text-sm mt-2 flex items-center gap-2">
                                                 <Calendar size={14} />
-                                                {simulationResult.dailyBreakdown.length} nuits • {adults} Adulte(s) {children > 0 && `• ${children} Enfant(s)`}
+                                                {simulationResult.roomsBreakdown?.[0]?.dailyRates.length || 0} {simulationResult.roomsBreakdown?.[0]?.dailyRates.length > 1 ? 'nuits' : 'nuit'} • {totalAdults} {totalAdults > 1 ? 'Adultes' : 'Adulte'} {totalChildren > 0 && `• ${totalChildren} ${totalChildren > 1 ? 'Enfants' : 'Enfant'}`}
                                             </p>
                                         </div>
                                     ) : (
                                         <>
                                             <h3 className="text-xl font-bold">Détail du Devis</h3>
-                                            <p className="text-gray-400 text-sm mt-1">Configurez les paramètres pour voir le prix final.</p>
+                                            <p className="text-gray-400 text-sm mt-1">Configurez le rooming list pour voir le prix final.</p>
                                         </>
                                     )}
                                 </div>
 
                                 <div className="p-0 flex-1 flex flex-col">
                                     {simulationResult ? (
-                                        <div className="flex-1 overflow-y-auto max-h-[600px] divide-y divide-gray-100 custom-scrollbar">
-                                            {simulationResult.dailyBreakdown.map((day, idx) => {
-                                                const displayDailyRate = displayMode === 'ROOM' ? day.finalDailyRate : day.finalDailyRate / adults;
-                                                const displayBaseRate = displayMode === 'ROOM' ? day.baseRate * (adults === 1 ? 1 : 2) : (day.baseRate * (adults === 1 ? 1 : 2)) / adults;
-
-                                                return (
-                                                    <div key={day.date} className="group">
-                                                        <button
-                                                            onClick={() => toggleNight(day.date)}
-                                                            className="w-full px-6 py-4 flex items-center justify-between hover:bg-gray-50 transition-colors"
-                                                        >
-                                                            <div className="flex items-center gap-3">
-                                                                <div className="text-left">
-                                                                    <p className="text-xs font-bold text-gray-400 uppercase tracking-tighter">Nuit {idx + 1}</p>
-                                                                    <p className="text-sm font-bold text-gray-900">{new Date(day.date).toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric', month: 'short' })}</p>
-                                                                </div>
-                                                                {!day.isAvailable && (
-                                                                    <span className="text-[10px] bg-red-50 text-red-600 px-1.5 py-0.5 rounded font-bold uppercase">N/A</span>
-                                                                )}
-                                                            </div>
-                                                            <div className="flex flex-col items-end">
-                                                                <p className="text-sm font-black text-gray-900 flex items-center gap-2">
-                                                                    {displayDailyRate.toLocaleString('fr-FR', { minimumFractionDigits: 3, maximumFractionDigits: 3 })} {day.currency}
-                                                                    {expandedNights[day.date] ? <ChevronUp size={16} className="text-gray-400" /> : <ChevronDown size={16} className="text-gray-400" />}
-                                                                </p>
-                                                                {displayMode === 'PERSON' && <span className="text-[10px] text-gray-500 font-medium">Moyenne / Adulte</span>}
-                                                            </div>
-                                                        </button>
-
-                                                        {expandedNights[day.date] && (
-                                                            <div className="px-6 pb-4 space-y-3 animate-in slide-in-from-top-2 duration-200">
-                                                                {displayMode === 'ROOM' ? (
-                                                                    <>
-                                                                        {/* Detailed Room Mode */}
-                                                                        <div className="flex justify-between text-xs text-gray-500">
-                                                                            <span>Tarif de base Chambre (Double/Single)</span>
-                                                                            <span className={day.reductionsApplied.length > 0 || day.promotionApplied ? 'line-through' : ''}>
-                                                                                {displayBaseRate.toLocaleString('fr-FR', { minimumFractionDigits: 3, maximumFractionDigits: 3 })} {day.currency}
-                                                                            </span>
-                                                                        </div>
-
-                                                                        {/* Reductions (Occupational - Extra Pax / Mono) */}
-                                                                        {day.reductionsApplied.map((red, rIdx) => (
-                                                                            <div key={rIdx} className="flex justify-between text-xs text-emerald-600 font-medium">
-                                                                                <span className="flex items-center gap-1">
-                                                                                    <CheckCircle2 size={12} />
-                                                                                    {red.name}
-                                                                                </span>
-                                                                                <span>+{red.amount.toLocaleString('fr-FR', { minimumFractionDigits: 3, maximumFractionDigits: 3 })} {day.currency}</span>
-                                                                            </div>
-                                                                        ))}
-
-                                                                        {/* Net Rate after pax additions */}
-                                                                        {(day.reductionsApplied.length > 0) && (
-                                                                            <div className="flex justify-between text-[11px] font-bold text-gray-700 py-1 border-y border-gray-50">
-                                                                                <span>Net Occupation (Total Pax)</span>
-                                                                                <span>{day.netRate.toLocaleString('fr-FR', { minimumFractionDigits: 3, maximumFractionDigits: 3 })} {day.currency}</span>
-                                                                            </div>
-                                                                        )}
-
-                                                                        {/* Promotion */}
-                                                                        {day.promotionApplied && (
-                                                                            <div className="flex justify-between text-xs text-indigo-600 font-bold bg-indigo-50 p-2 rounded-lg">
-                                                                                <span className="flex items-center gap-1">
-                                                                                    <Flame size={12} className="text-orange-500" />
-                                                                                    {day.promotionApplied.name}
-                                                                                </span>
-                                                                                <span>{day.promotionApplied.amount.toLocaleString('fr-FR', { minimumFractionDigits: 3, maximumFractionDigits: 3 })} {day.currency}</span>
-                                                                            </div>
-                                                                        )}
-
-                                                                        {/* Supplements */}
-                                                                        {day.supplementsApplied.map((sup, sIdx) => (
-                                                                            <div key={sIdx} className="flex justify-between text-xs text-amber-600 font-medium">
-                                                                                <span>{sup.name}</span>
-                                                                                <span>+{sup.amount.toLocaleString('fr-FR', { minimumFractionDigits: 3, maximumFractionDigits: 3 })} {day.currency}</span>
-                                                                            </div>
-                                                                        ))}
-                                                                    </>
-                                                                ) : (
-                                                                    <>
-                                                                        {/* Simple Person Mode */}
-                                                                        <div className="flex justify-between text-xs text-gray-600 bg-gray-50 p-2 rounded-lg border border-gray-100">
-                                                                            <span className="font-medium flex items-center gap-1.5">
-                                                                                <Info size={12} className="text-gray-400" />
-                                                                                Affichage lissé par adulte
-                                                                            </span>
-                                                                            <span className="font-bold">
-                                                                                {displayDailyRate.toLocaleString('fr-FR', { minimumFractionDigits: 3, maximumFractionDigits: 3 })} {day.currency}
-                                                                            </span>
-                                                                        </div>
-                                                                    </>
-                                                                )}
-
-                                                                {!day.isAvailable && (
-                                                                    <p className="text-[10px] text-red-500 font-medium italic">
-                                                                        Raison: {day.reason}
-                                                                    </p>
-                                                                )}
-                                                            </div>
-                                                        )}
+                                        <div className="flex-1 overflow-y-auto max-h-[600px] bg-gray-50/50 custom-scrollbar">
+                                            {simulationResult.roomsBreakdown.map((roomBreakdown, rbIdx) => (
+                                                <div key={rbIdx} className="border-b border-gray-200 last:border-0">
+                                                    {/* Room Header */}
+                                                    <div className="bg-gray-100/80 px-6 py-3 border-b border-gray-200 flex justify-between items-center">
+                                                        <div className="flex flex-col">
+                                                            <span className="text-xs font-bold text-gray-800 uppercase tracking-widest">
+                                                                Chambre {roomBreakdown.roomIndex} 
+                                                            </span>
+                                                            {activeContract.contractRooms.find(cr => cr.roomType.id === roomBreakdown.roomId) && (
+                                                                <span className="text-[10px] text-gray-500 font-medium mt-0.5">
+                                                                    {activeContract.contractRooms.find(cr => cr.roomType.id === roomBreakdown.roomId)?.roomType.name}
+                                                                </span>
+                                                            )}
+                                                        </div>
+                                                        <span className="text-sm font-black text-indigo-600">
+                                                            {new Intl.NumberFormat('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(roomBreakdown.roomTotalNet)} {simulationResult.currency}
+                                                        </span>
                                                     </div>
-                                                );
-                                            })}
+
+                                                    <div className="divide-y divide-gray-100 bg-white">
+                                                        {roomBreakdown.dailyRates.map((day, idx) => {
+                                                            const displayDailyRate = day.finalDailyRate;
+                                                            // We cannot simply divide baseRate by adults anymore because occupants are mixed. The API returns full room data.
+                                                            const isDetailed = expandedNights[`${rbIdx}-${day.date}`];
+
+                                                            return (
+                                                                <div key={day.date} className="group">
+                                                                    <button
+                                                                        onClick={() => toggleNight(`${rbIdx}-${day.date}`)}
+                                                                        className="w-full px-6 py-4 flex items-center justify-between hover:bg-gray-50 transition-colors"
+                                                                    >
+                                                                        <div className="flex items-center gap-3">
+                                                                            <div className="text-left">
+                                                                                <p className="text-xs font-bold text-gray-400 uppercase tracking-tighter">Nuit {idx + 1}</p>
+                                                                                <p className="text-sm font-bold text-gray-900">{new Date(day.date).toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric', month: 'short' })}</p>
+                                                                            </div>
+                                                                            {!day.isAvailable && (
+                                                                                <span className="text-[10px] bg-red-50 text-red-600 px-1.5 py-0.5 rounded font-bold uppercase">N/A</span>
+                                                                            )}
+                                                                        </div>
+                                                                        <div className="flex flex-col items-end">
+                                                                            <p className="text-sm font-black text-gray-900 flex items-center gap-2">
+                                                                                {new Intl.NumberFormat('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(displayDailyRate)} {day.currency}
+                                                                                {isDetailed ? <ChevronUp size={16} className="text-gray-400" /> : <ChevronDown size={16} className="text-gray-400" />}
+                                                                            </p>
+                                                                        </div>
+                                                                    </button>
+
+                                                                    {isDetailed && (
+                                                                        <div className="bg-gray-50 p-4 mx-6 mb-4 rounded-lg border border-gray-100 text-sm animate-in slide-in-from-top-2 duration-200 shadow-inner">
+                                                                            {/* Ligne 1 : La Base (occupational net before promos/supplements if possible, or just base unit rate) */}
+                                                                            <div className="flex justify-between text-gray-600 mb-1">
+                                                                                <span>Tarif de base / Occupation</span>
+                                                                                <span className={(day.promotionApplied || day.reductionsApplied.length > 0) ? 'line-through opacity-70' : ''}>
+                                                                                    {new Intl.NumberFormat('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(day.netRate)} {day.currency}
+                                                                                </span>
+                                                                            </div>
+                                                                            
+                                                                            {/* Reductions (Occupational - Extra Pax / Mono) */}
+                                                                            {day.reductionsApplied.map((red, rIdx) => (
+                                                                                <div key={rIdx} className="flex justify-between text-gray-600 mb-1">
+                                                                                    <span className="flex items-center gap-1">
+                                                                                        <Info size={12} className="text-gray-400" />
+                                                                                        {red.name}
+                                                                                    </span>
+                                                                                    <span>+{new Intl.NumberFormat('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(red.amount)} {day.currency}</span>
+                                                                                </div>
+                                                                            ))}
+
+                                                                            {/* Promotion */}
+                                                                            {day.promotionApplied && (
+                                                                                <div className="flex justify-between text-emerald-600 font-medium mb-1">
+                                                                                    <span className="flex items-center gap-1">
+                                                                                        <Flame size={12} className="text-orange-500" />
+                                                                                        {day.promotionApplied.name}
+                                                                                    </span>
+                                                                                    <span>{new Intl.NumberFormat('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(day.promotionApplied.amount)} {day.currency}</span>
+                                                                                </div>
+                                                                            )}
+
+                                                                            {/* Supplements */}
+                                                                            {day.supplementsApplied.map((sup, sIdx) => (
+                                                                                <div key={sIdx} className="flex justify-between text-gray-600 mb-1">
+                                                                                    <span>{sup.name}</span>
+                                                                                    <span>+{new Intl.NumberFormat('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(sup.amount)} {day.currency}</span>
+                                                                                </div>
+                                                                            ))}
+
+                                                                            <div className="flex justify-between font-bold text-gray-800 border-t border-gray-200 pt-2 mt-2">
+                                                                                <span>Net pour cette Nuit</span>
+                                                                                <span className="text-indigo-600">{new Intl.NumberFormat('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(day.finalDailyRate)} {day.currency}</span>
+                                                                            </div>
+
+                                                                            {!day.isAvailable && (
+                                                                                <p className="text-[10px] text-red-500 font-medium italic mt-2">
+                                                                                    Indisponible: {day.reason}
+                                                                                </p>
+                                                                            )}
+                                                                        </div>
+                                                                    )}
+                                                                </div>
+                                                            );
+                                                        })}
+                                                    </div>
+                                                </div>
+                                            ))}
                                         </div>
                                     ) : (
                                         <div className="flex-1 p-6 space-y-8 opacity-40">
@@ -592,14 +650,14 @@ export default function SimulatorPage() {
                                     <div className={`p-6 mt-auto border-t ${simulationResult ? 'bg-gray-50' : 'bg-white'}`}>
                                         {simulationResult && (
                                             <div className="mb-4 space-y-1.5 animate-in fade-in slide-in-from-bottom-1 duration-500">
-                                                <div className="flex justify-between items-center text-[11px] font-bold text-gray-400 uppercase tracking-wider">
-                                                    <span>Total Brut</span>
-                                                    <span>{simulationResult.totalBrut.toLocaleString('fr-FR', { minimumFractionDigits: 2 })} {simulationResult.currency}</span>
+                                                <div className="flex justify-between items-center text-[11px] font-bold text-slate-600 uppercase tracking-wider">
+                                                    <span>Total Brut (Global)</span>
+                                                    <span>{new Intl.NumberFormat('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(simulationResult.totalBrut)} {simulationResult.currency}</span>
                                                 </div>
                                                 {simulationResult.totalRemise > 0 && (
                                                     <div className="flex justify-between items-center text-[11px] font-bold text-indigo-500 uppercase tracking-wider">
-                                                        <span>Remises</span>
-                                                        <span>-{simulationResult.totalRemise.toLocaleString('fr-FR', { minimumFractionDigits: 2 })} {simulationResult.currency}</span>
+                                                        <span>Remises Globales</span>
+                                                        <span>-{new Intl.NumberFormat('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(simulationResult.totalRemise)} {simulationResult.currency}</span>
                                                     </div>
                                                 )}
                                             </div>
@@ -612,14 +670,25 @@ export default function SimulatorPage() {
                                                     <Calculator size={12} className="text-indigo-400" />
                                                     <span className="text-[10px] font-bold text-indigo-400 uppercase tracking-widest">Modificateurs de Séjour</span>
                                                 </div>
-                                                {simulationResult.stayModifiers.map((mod, mIdx) => (
-                                                    <div key={mIdx} className="flex justify-between items-center bg-white p-2.5 rounded-xl border border-indigo-50 shadow-sm">
-                                                        <span className="text-xs font-bold text-gray-700">{mod.name}</span>
-                                                        <span className={`text-xs font-black ${mod.amount < 0 ? 'text-emerald-600' : 'text-amber-600'}`}>
-                                                            {mod.amount > 0 ? '+' : ''}{mod.amount.toLocaleString('fr-FR', { minimumFractionDigits: 2 })} {simulationResult.currency}
-                                                        </span>
-                                                    </div>
-                                                ))}
+                                                {simulationResult.stayModifiers.map((mod, mIdx) => {
+                                                    const parts = mod.name.split(' - Formule: ');
+                                                    const title = parts[0];
+                                                    const formula = parts[1];
+
+                                                    return (
+                                                        <div key={mIdx} className="bg-white p-2.5 rounded-xl border border-indigo-50 shadow-sm flex justify-between items-start gap-4">
+                                                            <div className="flex flex-col">
+                                                                <span className="text-xs font-bold text-gray-800">{title}</span>
+                                                                {formula && (
+                                                                    <span className="text-[10px] text-gray-500 mt-0.5">{formula}</span>
+                                                                )}
+                                                            </div>
+                                                            <span className={`text-xs font-black whitespace-nowrap shrink-0 ${mod.amount < 0 ? 'text-emerald-600' : 'text-amber-600'}`}>
+                                                                {mod.amount > 0 ? '+' : ''}{new Intl.NumberFormat('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(mod.amount)} {simulationResult.currency}
+                                                            </span>
+                                                        </div>
+                                                    );
+                                                })}
                                             </div>
                                         )}
 
@@ -629,10 +698,10 @@ export default function SimulatorPage() {
                                                 <div className="text-3xl font-black text-gray-900 transition-all duration-700">
                                                     {simulationResult ? (
                                                         <>
-                                                            {simulationResult.totalGross.toLocaleString('fr-FR', { minimumFractionDigits: 2 })}
+                                                            {new Intl.NumberFormat('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(simulationResult.totalNet)}
                                                             <span className="text-sm font-bold text-gray-500 ml-1">{simulationResult.currency}</span>
                                                         </>
-                                                    ) : '0.00'}
+                                                    ) : '0,00'}
                                                 </div>
                                             </div>
                                             <Ticket className={`${simulationResult ? 'text-indigo-600' : 'text-gray-200'} transition-colors duration-500`} size={40} />

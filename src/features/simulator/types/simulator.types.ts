@@ -1,17 +1,35 @@
+export enum OccupantType {
+    ADULT = 'ADULT',
+    CHILD = 'CHILD',
+    INFANT = 'INFANT'
+}
+
+export interface OccupantDto {
+    paxOrder: number;
+    type: OccupantType;
+    age: number;
+}
+
+export interface RoomingItemDto {
+    roomId: number;
+    occupants: OccupantDto[];
+}
+
 export interface SimulationRequest {
     contractId: number;
-    roomId: number;
     boardTypeId: number;
     checkIn: string;
     checkOut: string;
     bookingDate?: string;
-    occupants: {
-        adults: number;
-        childrenAges: number[];
-    };
+    roomingList: RoomingItemDto[];
 }
 
-export interface ReductionApplied {
+export interface PromotionAppliedDto {
+    name: string;
+    amount: number;
+}
+
+export interface ModifierDto {
     name: string;
     amount: number;
 }
@@ -19,11 +37,11 @@ export interface ReductionApplied {
 export interface DailyRate {
     date: string;
     baseRate: number;
-    reductionsApplied: ReductionApplied[];
+    reductionsApplied: ModifierDto[];
     netRate: number;
-    promotionApplied: { name: string; amount: number } | null;
+    promotionApplied: PromotionAppliedDto | null;
     promoRate: number;
-    supplementsApplied: Array<{ name: string; amount: number }>;
+    supplementsApplied: ModifierDto[];
     finalDailyRate: number;
     perPersonRate: number;
     currency: string;
@@ -31,18 +49,24 @@ export interface DailyRate {
     reason?: string;
 }
 
+export interface RoomBreakdownDto {
+    roomIndex: number;
+    roomId: number;
+    roomTotalNet: number;
+    dailyRates: DailyRate[];
+}
+
 export interface SimulationResponse {
     contractId: number;
-    roomTypeId: number;
-    arrangementId: number;
     checkIn: string;
     checkOut: string;
+    currency: string;
+    
     totalBrut: number;
     totalRemise: number;
     totalGross: number;
-    perAdultRate: number;
-    perNightRate: number;
-    currency: string;
-    dailyBreakdown: DailyRate[];
-    stayModifiers: Array<{ name: string; amount: number }>;
+    totalNet: number;
+    
+    roomsBreakdown: RoomBreakdownDto[];
+    stayModifiers: ModifierDto[];
 }

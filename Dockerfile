@@ -7,7 +7,7 @@
 # STAGE 1 : builder
 # Compile l'application Vite en fichiers statiques
 # ──────────────────────────────────────────
-FROM node:20-alpine AS builder
+FROM node:24-alpine AS builder
 
 # Installer pnpm
 RUN npm install -g pnpm
