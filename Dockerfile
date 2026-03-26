@@ -1,13 +1,14 @@
 # ============================================================
 # Pricify — Frontend React/Vite
-# Multi-stage Dockerfile : Builder (Node) + Runner (Nginx Alpine)
+# Multi-stage Dockerfile : Development + Builder + Runner (Nginx)
 # ============================================================
 
 # ──────────────────────────────────────────
-# STAGE 1 : builder
-# Compile l'application Vite en fichiers statiques
+# STAGE 1 : development
+# Image complète avec toutes les dépendances
+# Utilisée par docker-compose (target: development) pour le hot-reload
 # ──────────────────────────────────────────
-FROM node:24-alpine AS builder
+FROM node:24-alpine AS development
 
 # Installer pnpm
 RUN npm install -g pnpm
@@ -23,6 +24,19 @@ RUN pnpm install --frozen-lockfile
 # Copier les sources
 COPY . .
 
+# Variable d'environnement pour l'URL de l'API (utilisée par Vite en mode dev)
+ENV VITE_API_URL=http://localhost:3000/api
+
+# --- FIN DE L'ÉTAPE DEVELOPMENT ---
+# En mode dev, docker-compose surcharge la CMD avec `pnpm run dev --host 0.0.0.0`
+# et monte le code local via un volume → hot-reload activé.
+
+# ──────────────────────────────────────────
+# STAGE 2 : builder (compilation pour la prod)
+# Hérite de development (dépendances déjà installées)
+# ──────────────────────────────────────────
+FROM development AS builder
+
 # Argument de build pour passer l'URL de l'API au moment du build Vite
 # Usage: docker build --build-arg VITE_API_URL=https://api.pricify.com/api .
 ARG VITE_API_URL=http://localhost:3000/api
@@ -32,7 +46,7 @@ ENV VITE_API_URL=$VITE_API_URL
 RUN pnpm run build
 
 # ──────────────────────────────────────────
-# STAGE 2 : runner
+# STAGE 3 : runner
 # Sert les fichiers statiques via Nginx Alpine
 # Image finale ultra-légère (~25 Mo)
 # ──────────────────────────────────────────
