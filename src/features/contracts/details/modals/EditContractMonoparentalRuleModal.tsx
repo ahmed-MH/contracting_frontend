@@ -1,6 +1,8 @@
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
-import { X, Save, User } from 'lucide-react';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { User } from 'lucide-react';
+import ModalShell from '../../../../components/ui/ModalShell';
 import { useUpdateContractMonoparentalRule } from '../../hooks/useContractMonoparentalRules';
 import type {
     ContractMonoparentalRule,
@@ -8,6 +10,12 @@ import type {
     ChildSurchargeBase,
 } from '../../../../types';
 import type { Period, ContractRoom } from '../../types/contract.types';
+import { useTranslation } from 'react-i18next';
+import {
+    createContractMonoparentalSchema,
+    type ContractMonoparentalFormInput,
+    type ContractMonoparentalFormValues,
+} from '../schemas/contract-detail.schema';
 
 const BASE_RATE_LABELS: Record<BaseRateType, string> = {
     SINGLE: 'Single',
@@ -20,18 +28,6 @@ const CHILD_SURCHARGE_BASE_LABELS: Record<ChildSurchargeBase, string> = {
     HALF_SINGLE: 'Demi-Single',
     HALF_DOUBLE: 'Demi-Double',
 };
-
-interface FormValues {
-    name: string;
-    adultCount: number;
-    childCount: number;
-    childSurchargePercentage: number;
-    minAge: number;
-    maxAge: number;
-    baseRateType: BaseRateType;
-    childSurchargeBase: ChildSurchargeBase;
-    applicableContractRoomIds: number[];
-}
 
 interface Props {
     contractId: number;
@@ -49,9 +45,12 @@ export default function EditContractMonoparentalRuleModal({
     onClose,
     contractRooms,
 }: Props) {
+    const { t } = useTranslation('common');
+    const schema = useMemo(() => createContractMonoparentalSchema(t), [t]);
     const updateMutation = useUpdateContractMonoparentalRule(contractId);
 
-    const { register, handleSubmit, watch, reset, setValue, formState: { errors, isDirty } } = useForm<FormValues>({
+    const { register, handleSubmit, watch, reset, setValue, formState: { errors, isDirty } } = useForm<ContractMonoparentalFormInput, unknown, ContractMonoparentalFormValues>({
+        resolver: zodResolver(schema),
         defaultValues: {
             name: rule.name,
             adultCount: rule.adultCount,
@@ -98,7 +97,7 @@ export default function EditContractMonoparentalRuleModal({
     const childSurchargeBase = watch('childSurchargeBase');
     const childSurchargePercentage = watch('childSurchargePercentage') ?? 0;
 
-    const onSubmit = (data: FormValues) => {
+    const onSubmit = (data: ContractMonoparentalFormValues) => {
         updateMutation.mutate(
             {
                 ruleId: rule.id,
@@ -119,19 +118,19 @@ export default function EditContractMonoparentalRuleModal({
     };
 
     const Stepper = ({ value, onChange, min, max }: { value: number; onChange: (v: number) => void; min: number; max?: number }) => (
-        <div className="flex items-center border border-gray-200 rounded-xl overflow-hidden bg-white w-full h-10">
+        <div className="flex items-center border border-brand-slate/20 rounded-xl overflow-hidden bg-white dark:bg-brand-navy/40 w-full h-10">
             <button
                 type="button"
                 onClick={() => onChange(Math.max(min, value - 1))}
-                className="shrink-0 w-10 h-full flex items-center justify-center bg-gray-50 hover:bg-gray-100 text-gray-500 border-r border-gray-200 transition-colors focus:outline-none font-bold text-lg"
+                className="shrink-0 w-10 h-full flex items-center justify-center bg-brand-light dark:bg-brand-slate/10 hover:bg-brand-slate/10 text-brand-slate border-r border-brand-slate/20 transition-colors focus:outline-none font-bold text-lg cursor-pointer"
             >
                 −
             </button>
-            <div className="flex-1 text-center text-sm font-bold text-gray-900">{value}</div>
+            <div className="flex-1 text-center text-sm font-bold text-brand-navy dark:text-brand-light">{value}</div>
             <button
                 type="button"
                 onClick={() => onChange(max !== undefined ? Math.min(max, value + 1) : value + 1)}
-                className="shrink-0 w-10 h-full flex items-center justify-center bg-gray-50 hover:bg-gray-100 text-gray-500 border-l border-gray-200 transition-colors focus:outline-none font-bold text-lg"
+                className="shrink-0 w-10 h-full flex items-center justify-center bg-brand-light dark:bg-brand-slate/10 hover:bg-brand-slate/10 text-brand-slate border-l border-brand-slate/20 transition-colors focus:outline-none font-bold text-lg cursor-pointer"
             >
                 +
             </button>
@@ -141,159 +140,124 @@ export default function EditContractMonoparentalRuleModal({
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/60 backdrop-blur-xs">
-            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[90vh]">
-                {/* ─── Header ────────────────────────────────────────── */}
-                <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between bg-white sticky top-0 z-10">
-                    <div>
-                        <h3 className="text-lg font-bold text-gray-900">Modifier la règle monoparentale</h3>
-                        <p className="text-xs text-gray-400 font-medium uppercase tracking-wider mt-1">Configuration de base · Coquille</p>
-                    </div>
-                    <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-full transition-colors cursor-pointer text-gray-400">
-                        <X size={20} />
-                    </button>
-                </div>
-
-                <form onSubmit={handleSubmit(onSubmit)} className="overflow-y-auto flex-1">
-                    <div className="p-6 space-y-6">
+        <ModalShell
+            isOpen={isOpen}
+            onClose={onClose}
+            title={t('auto.features.contracts.details.modals.editcontractmonoparentalrulemodal.title.f2b97c4f', { defaultValue: "Modifier la règle monoparentale" })}
+            subtitle={t('auto.features.contracts.details.modals.editcontractmonoparentalrulemodal.subtitle.3ac58f0e', { defaultValue: "Configuration de base · Coquille" })}
+            onSubmit={handleSubmit(onSubmit)}
+            submitLabel={t('auto.features.contracts.details.modals.editcontractmonoparentalrulemodal.submitLabel.91ed311c', { defaultValue: "Mettre à jour" })}
+            isSubmitting={updateMutation.isPending}
+            submitDisabled={!isDirty}
+            maxWidth="max-w-2xl"
+        >
+            <div className="space-y-6">
                         {/* Info Alert */}
-                        <div className="bg-indigo-50 border border-indigo-100 rounded-xl p-4 flex gap-3 text-indigo-700 shadow-sm">
+                        <div className="bg-brand-mint/5 border border-brand-mint/20 rounded-xl p-4 flex gap-3 text-brand-slate shadow-sm">
                             <p className="text-xs leading-relaxed font-medium">
-                                💡 <span className="font-bold">Architecture Matrice :</span> L'activation par période et les surcharges se gèrent directement dans la <span className="text-indigo-900 font-bold">Grille Monoparentale</span> principale.
+                                💡 <span className="font-bold text-brand-navy dark:text-brand-light">{t('auto.features.contracts.details.modals.editcontractmonoparentalrulemodal.baa44125', { defaultValue: "Architecture Matrice :" })}</span> {t('auto.features.contracts.details.modals.editcontractmonoparentalrulemodal.79df55e7', { defaultValue: "L'activation par période et les surcharges se gèrent directement dans la" })} <span className="text-brand-mint font-bold">{t('auto.features.contracts.details.modals.editcontractmonoparentalrulemodal.6b6a0302', { defaultValue: "Grille Monoparentale" })}</span> principale.
                             </p>
                         </div>
 
                         {/* Name */}
                         <div>
-                            <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Nom de la règle</label>
-                            <input
-                                {...register('name', { required: 'Le nom est requis' })}
-                                className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-all text-sm font-medium"
-                                placeholder="ex: 1 Adulte + 2 Enfants"
-                            />
-                            {errors.name && <p className="mt-1.5 text-xs font-bold text-red-500">{errors.name.message}</p>}
+                            <label className="block text-xs font-bold text-brand-navy dark:text-brand-light uppercase tracking-wider mb-2">{t('auto.features.contracts.details.modals.editcontractmonoparentalrulemodal.2933997c', { defaultValue: "Nom de la règle" })}</label>
+                            <input {...register('name')}
+                                className="w-full px-4 py-2.5 bg-brand-light dark:bg-brand-slate/10 border border-brand-slate/20 rounded-xl focus:ring-2 focus:ring-brand-mint transition-all text-sm font-medium text-brand-navy dark:text-brand-light outline-none"
+                                placeholder={t('auto.features.contracts.details.modals.editcontractmonoparentalrulemodal.placeholder.d911fc2c', { defaultValue: "ex: 1 Adulte + 2 Enfants" })} />
+                            {errors.name && <p className="mt-1.5 text-xs font-bold text-brand-slate">{errors.name.message}</p>}
                         </div>
 
                         {/* Zone A: Conditions */}
-                        <div className="p-4 bg-gray-50 rounded-xl border border-gray-100 space-y-4">
-                            <h3 className="text-xs font-bold text-indigo-600 uppercase tracking-widest">Zone A : Condition d'application</h3>
+                        <div className="p-4 bg-brand-light dark:bg-brand-slate/10 rounded-xl border border-brand-slate/20 space-y-4">
+                            <h3 className="text-xs font-bold text-brand-mint uppercase tracking-widest">{t('auto.features.contracts.details.modals.editcontractmonoparentalrulemodal.e11605d7', { defaultValue: "Zone A : Condition d'application" })}</h3>
                             <div className="grid grid-cols-4 gap-4">
                                 <div>
-                                    <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Adultes</label>
+                                    <label className="block text-xs font-bold text-brand-navy dark:text-brand-light uppercase tracking-wider mb-2">{t('auto.features.contracts.details.modals.editcontractmonoparentalrulemodal.2184809c', { defaultValue: "Adultes" })}</label>
                                     <Stepper value={adultCount} onChange={(v) => setValue('adultCount', v, { shouldDirty: true })} min={1} />
                                 </div>
                                 <div>
-                                    <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Enfants</label>
+                                    <label className="block text-xs font-bold text-brand-navy dark:text-brand-light uppercase tracking-wider mb-2">{t('auto.features.contracts.details.modals.editcontractmonoparentalrulemodal.d2306576', { defaultValue: "Enfants" })}</label>
                                     <Stepper value={childCount} onChange={(v) => setValue('childCount', v, { shouldDirty: true })} min={1} />
                                 </div>
                                 <div>
-                                    <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Âge min.</label>
+                                    <label className="block text-xs font-bold text-brand-navy dark:text-brand-light uppercase tracking-wider mb-2">{t('auto.features.contracts.details.modals.editcontractmonoparentalrulemodal.a981a557', { defaultValue: "Âge min." })}</label>
                                     <Stepper value={minAge} onChange={(v) => setValue('minAge', v, { shouldDirty: true })} min={0} />
                                 </div>
                                 <div>
-                                    <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Âge max.</label>
+                                    <label className="block text-xs font-bold text-brand-navy dark:text-brand-light uppercase tracking-wider mb-2">{t('auto.features.contracts.details.modals.editcontractmonoparentalrulemodal.6828e695', { defaultValue: "Âge max." })}</label>
                                     <Stepper value={maxAge} onChange={(v) => setValue('maxAge', v, { shouldDirty: true })} min={0} max={17} />
                                 </div>
                             </div>
                         </div>
 
                         {/* Zone B: Facturation */}
-                        <div className="p-4 bg-gray-50 rounded-xl border border-gray-100 space-y-4">
-                            <h3 className="text-xs font-bold text-indigo-600 uppercase tracking-widest">Zone B : Formule de facturation</h3>
+                        <div className="p-4 bg-brand-light dark:bg-brand-slate/10 rounded-xl border border-brand-slate/20 space-y-4">
+                            <h3 className="text-xs font-bold text-brand-mint uppercase tracking-widest">{t('auto.features.contracts.details.modals.editcontractmonoparentalrulemodal.f962b9e5', { defaultValue: "Zone B : Formule de facturation" })}</h3>
                             <div className="grid grid-cols-2 gap-6">
                                 <div>
-                                    <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Base adulte</label>
-                                    <div className="flex items-center gap-2 border border-gray-200 bg-white px-4 py-2.5 rounded-xl shadow-sm">
-                                        <User size={16} className="text-gray-400" />
-                                        <select {...register('baseRateType')} className="w-full text-sm font-bold text-gray-800 bg-transparent outline-none cursor-pointer">
-                                            <option value="SINGLE">Single</option>
-                                            <option value="DOUBLE">Double</option>
+                                    <label className="block text-xs font-bold text-brand-navy dark:text-brand-light uppercase tracking-wider mb-2">{t('auto.features.contracts.details.modals.editcontractmonoparentalrulemodal.2b9ac690', { defaultValue: "Base adulte" })}</label>
+                                    <div className="flex items-center gap-2 border border-brand-slate/20 bg-white dark:bg-brand-navy/50 px-4 py-2.5 rounded-xl shadow-sm">
+                                        <User size={16} className="text-brand-slate" />
+                                        <select {...register('baseRateType')} className="w-full text-sm font-bold text-brand-navy dark:text-brand-light bg-transparent outline-none cursor-pointer">
+                                            <option value="SINGLE">{t('auto.features.contracts.details.modals.editcontractmonoparentalrulemodal.d9b9596d', { defaultValue: "Single" })}</option>
+                                            <option value="DOUBLE">{t('auto.features.contracts.details.modals.editcontractmonoparentalrulemodal.1ee5cabd', { defaultValue: "Double" })}</option>
                                         </select>
                                     </div>
                                 </div>
                                 <div>
-                                    <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Majoration enfant (%)</label>
+                                    <label className="block text-xs font-bold text-brand-navy dark:text-brand-light uppercase tracking-wider mb-2">{t('auto.features.contracts.details.modals.editcontractmonoparentalrulemodal.67a34da0', { defaultValue: "Majoration enfant (%)" })}</label>
                                     <div className="relative">
-                                        <input
-                                            type="number"
-                                            {...register('childSurchargePercentage', { valueAsNumber: true, min: 0 })}
-                                            className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-all text-sm font-bold"
-                                            placeholder="50"
-                                        />
-                                        <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[10px] font-bold text-gray-400 uppercase">%</span>
+                                        <input type="number" {...register('childSurchargePercentage', { valueAsNumber: true, min: 0 })}
+                                        className="w-full px-4 py-2.5 bg-white dark:bg-brand-navy/50 border border-brand-slate/20 rounded-xl focus:ring-2 focus:ring-brand-mint transition-all text-sm font-bold text-brand-navy dark:text-brand-light outline-none"
+                                        placeholder="50" />
+                                        <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[10px] font-bold text-brand-slate/50 uppercase">%</span>
                                     </div>
                                 </div>
                             </div>
                             <div>
-                                <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Base de calcul enfant</label>
-                                <select
-                                    {...register('childSurchargeBase')}
-                                    className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 transition-all text-sm font-bold outline-none cursor-pointer"
-                                >
-                                    <option value="SINGLE">Chambre Single</option>
-                                    <option value="DOUBLE">Chambre Double</option>
-                                    <option value="HALF_SINGLE">Demi-Single</option>
-                                    <option value="HALF_DOUBLE">Demi-Double</option>
+                                <label className="block text-xs font-bold text-brand-navy dark:text-brand-light uppercase tracking-wider mb-2">{t('auto.features.contracts.details.modals.editcontractmonoparentalrulemodal.dd872604', { defaultValue: "Base de calcul enfant" })}</label>
+                                <select {...register('childSurchargeBase')}
+                                    className="w-full px-4 py-2.5 bg-white dark:bg-brand-navy/50 border border-brand-slate/20 rounded-xl focus:ring-2 focus:ring-brand-mint transition-all text-sm font-bold outline-none cursor-pointer text-brand-navy dark:text-brand-light">
+                                    <option value="SINGLE">{t('auto.features.contracts.details.modals.editcontractmonoparentalrulemodal.34dabcf5', { defaultValue: "Chambre Single" })}</option>
+                                    <option value="DOUBLE">{t('auto.features.contracts.details.modals.editcontractmonoparentalrulemodal.e1b0ffcd', { defaultValue: "Chambre Double" })}</option>
+                                    <option value="HALF_SINGLE">{t('auto.features.contracts.details.modals.editcontractmonoparentalrulemodal.665f705d', { defaultValue: "Demi-Single" })}</option>
+                                    <option value="HALF_DOUBLE">{t('auto.features.contracts.details.modals.editcontractmonoparentalrulemodal.36a7de31', { defaultValue: "Demi-Double" })}</option>
                                 </select>
                             </div>
                         </div>
 
                         {/* Magic Summary */}
-                        <div className="bg-amber-50 rounded-xl p-4 border border-amber-100 text-sm text-gray-700 leading-relaxed">
+                        <div className="bg-brand-slate/10 dark:bg-brand-navy/80 rounded-xl p-4 border border-brand-slate/30 dark:border-brand-slate/30 text-sm text-brand-navy dark:text-brand-light/80 leading-relaxed">
                             💡 Si la chambre contient <span className="font-bold">{adultCount} Adulte{adultCount > 1 ? 's' : ''}</span> et{' '}
                             <span className="font-bold">{childCount} Enfant{childCount > 1 ? 's' : ''}</span> (de {minAge} à {maxAge} ans), le prix sera la base{' '}
                             <span className="font-bold">{BASE_RATE_LABELS[baseRateType]}</span>
                             {childSurchargePercentage > 0 ? (
-                                <> + <span className="font-bold">{childSurchargePercentage}%</span> de la <span className="font-bold">{CHILD_SURCHARGE_BASE_LABELS[childSurchargeBase]}</span>.</>
+                                <> + <span className="font-bold">{childSurchargePercentage}%</span> {t('auto.features.contracts.details.modals.editcontractmonoparentalrulemodal.380bcff1', { defaultValue: "de la" })} <span className="font-bold">{CHILD_SURCHARGE_BASE_LABELS[childSurchargeBase]}</span>.</>
                             ) : (
-                                <> (Enfant gratuit).</>
+                                <> {t('auto.features.contracts.details.modals.editcontractmonoparentalrulemodal.930ec509', { defaultValue: "(Enfant gratuit)." })}</>
                             )}
                         </div>
 
                         {/* Room Targeting */}
                         {contractRooms.length > 0 && (
-                            <div className="pt-4 border-t border-gray-100">
-                                <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-4 text-center">Chambres concernées</label>
+                            <div className="pt-4 border-t border-brand-slate/15 dark:border-brand-slate/20">
+                                <label className="block text-xs font-bold text-brand-navy dark:text-brand-light uppercase tracking-wider mb-4 text-center">{t('auto.features.contracts.details.modals.editcontractmonoparentalrulemodal.5bda79ae', { defaultValue: "Chambres concernées" })}</label>
                                 <div className="grid grid-cols-2 gap-3">
                                     {contractRooms.map((room) => (
-                                        <label key={room.id} className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl border border-gray-200 hover:border-indigo-300 transition-all cursor-pointer group has-checked:bg-indigo-50/50 has-checked:border-indigo-200">
-                                            <input
-                                                type="checkbox"
-                                                checked={selectedRoomIds?.includes(room.id) ?? false}
-                                                onChange={() => toggleRoom(room.id)}
-                                                className="w-4 h-4 text-indigo-600 border-gray-300 rounded-sm focus:ring-indigo-500 cursor-pointer"
-                                            />
+                                        <label key={room.id} className="flex items-center gap-3 p-3 bg-brand-light dark:bg-brand-slate/10 rounded-xl border border-brand-slate/20 hover:border-brand-mint transition-all cursor-pointer group has-checked:bg-brand-mint/5 has-checked:border-brand-mint/40">
+                                            <input type="checkbox" checked={selectedRoomIds?.includes(room.id) ?? false} onChange={() => toggleRoom(room.id)}
+                                                className="w-4 h-4 text-brand-mint border-brand-slate/30 rounded-xl focus:ring-brand-mint cursor-pointer" />
                                             <div className="flex flex-col">
-                                                <span className="text-xs font-bold text-gray-900 group-hover:text-indigo-600 transition-colors uppercase tracking-tight">
-                                                    {room.roomType?.code}
-                                                </span>
-                                                <span className="text-[10px] text-gray-400 font-medium truncate max-w-[180px]">
-                                                    {room.roomType?.name}
-                                                </span>
+                                                <span className="text-xs font-bold text-brand-navy dark:text-brand-light group-hover:text-brand-mint transition-colors uppercase tracking-tight">{room.roomType?.code}</span>
+                                                <span className="text-[10px] text-brand-slate font-medium truncate max-w-[180px]">{room.roomType?.name}</span>
                                             </div>
                                         </label>
                                     ))}
                                 </div>
                             </div>
                         )}
-                    </div>
-
-                    {/* ─── Footer ────────────────────────────────────────── */}
-                    <div className="p-6 bg-gray-50 border-t border-gray-100 sticky bottom-0 z-10 flex items-center justify-end gap-3 rounded-b-2xl">
-                        <button type="button" onClick={onClose} className="px-6 py-2.5 text-sm font-bold text-gray-500 hover:text-gray-700 transition-colors cursor-pointer">
-                            Annuler
-                        </button>
-                        <button
-                            type="submit"
-                            disabled={updateMutation.isPending || !isDirty}
-                            className="inline-flex items-center gap-2 px-8 py-2.5 bg-indigo-600 text-white text-sm font-bold rounded-xl hover:bg-indigo-700 transition-all shadow-md active:scale-95 disabled:opacity-50 disabled:grayscale cursor-pointer"
-                        >
-                            {updateMutation.isPending ? <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" /> : <Save size={18} />}
-                            Mettre à jour
-                        </button>
-                    </div>
-                </form>
             </div>
-        </div>
+        </ModalShell>
     );
 }

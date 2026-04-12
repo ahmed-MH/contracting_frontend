@@ -1,16 +1,19 @@
 import { useState } from 'react';
 import { Plus, Pencil, Trash2, Calendar, Coins, TrendingUp } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../auth/context/AuthContext';
 import { useConfirm } from '../../../context/ConfirmContext';
 import { useHotel } from '../context/HotelContext';
 import { useExchangeRates, useCreateExchangeRate, useUpdateExchangeRate, useDeleteExchangeRate } from '../hooks/useExchangeRates';
 import type { ExchangeRate, CreateExchangeRatePayload, UpdateExchangeRatePayload } from '../types/exchange-rate.types';
-import ExchangeRateModal from './ExchangeRateModal';
+import EditExchangeRateModal from './EditExchangeRateModal';
 
 export default function ExchangeRatesSection() {
     const { currentHotel } = useHotel();
     const { user } = useAuth();
     const { confirm } = useConfirm();
+    const { t, i18n } = useTranslation('common');
+    const locale = i18n.language.startsWith('fr') ? 'fr-FR' : 'en-US';
     const isAdminOrCommercial = user?.role === 'ADMIN' || user?.role === 'COMMERCIAL';
 
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -40,9 +43,14 @@ export default function ExchangeRatesSection() {
     const handleDelete = async (rate: ExchangeRate) => {
         if (
             await confirm({
-                title: 'Supprimer ce taux de change ?',
-                description: `Êtes-vous sûr de vouloir supprimer le taux 1 ${rate.currency} = ${rate.rate} ${currentHotel?.defaultCurrency} ?`,
-                confirmLabel: 'Supprimer',
+                title: t('pages.hotel.exchangeRates.deleteTitle', { defaultValue: 'Delete this exchange rate?' }),
+                description: t('pages.hotel.exchangeRates.deleteDescription', {
+                    defaultValue: 'Are you sure you want to delete the rate 1 {{currency}} = {{rate}} {{baseCurrency}}?',
+                    currency: rate.currency,
+                    rate: rate.rate,
+                    baseCurrency: currentHotel?.defaultCurrency,
+                }),
+                confirmLabel: t('pages.hotel.exchangeRates.deleteConfirm', { defaultValue: 'Delete' }),
                 variant: 'danger',
             })
         ) {
@@ -51,151 +59,187 @@ export default function ExchangeRatesSection() {
     };
 
     const formatDate = (dateString: string | null) => {
-        if (!dateString) return '—';
-        return new Date(dateString).toLocaleDateString('fr-FR', {
+        if (!dateString) {
+            return t('common.notAvailable', { defaultValue: 'N/A' });
+        }
+
+        return new Date(dateString).toLocaleDateString(locale, {
             day: '2-digit',
             month: 'short',
-            year: 'numeric'
+            year: 'numeric',
         });
     };
 
-    if (!currentHotel) return null;
+    if (!currentHotel) {
+        return null;
+    }
 
     return (
-        <div className="mt-8 bg-white border border-gray-200 rounded-2xl shadow-sm overflow-hidden animate-in fade-in duration-500">
-            {/* Header section */}
-            <div className="px-6 py-5 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
-                <div className="flex items-center gap-3">
-                    <div className="p-2 bg-indigo-100 text-indigo-600 rounded-lg">
-                        <TrendingUp size={20} />
+        <section className="premium-surface overflow-hidden p-6">
+            <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+                <div className="flex items-start gap-3">
+                    <div className="rounded-2xl bg-brand-mint/12 p-3 text-brand-mint">
+                        <TrendingUp size={18} />
                     </div>
                     <div>
-                        <h2 className="text-lg font-bold text-gray-900 leading-tight">Taux de Change</h2>
-                        <p className="text-xs text-gray-500 mt-0.5">Configurations des taux pour la devise de base ({currentHotel.defaultCurrency})</p>
+                        <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-brand-slate">
+                            {t('pages.hotel.exchangeRates.eyebrow', { defaultValue: 'Currency Control' })}
+                        </p>
+                        <h2 className="mt-2 text-xl font-semibold tracking-tight text-brand-navy dark:text-white">
+                            {t('pages.hotel.exchangeRates.title', { defaultValue: 'Exchange rates' })}
+                        </h2>
+                        <p className="mt-2 max-w-3xl text-sm leading-6 text-brand-slate dark:text-brand-light/75">
+                            {t('pages.hotel.exchangeRates.subtitle', {
+                                defaultValue: 'Rate configuration for the base currency ({{currency}}).',
+                                currency: currentHotel.defaultCurrency,
+                            })}
+                        </p>
                     </div>
                 </div>
+
                 {isAdminOrCommercial && (
                     <button
+                        type="button"
                         onClick={() => {
                             setEditingRate(null);
                             setIsModalOpen(true);
                         }}
-                        className="inline-flex items-center gap-1.5 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg text-sm transition-colors border-none outline-none shadow-sm cursor-pointer"
+                        className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl bg-brand-mint px-4 text-sm font-semibold text-white shadow-md transition hover:-translate-y-0.5 hover:bg-brand-mint"
                     >
-                        <Plus size={16} /> Ajouter un taux
+                        <Plus size={16} />
+                        {t('pages.hotel.exchangeRates.addRate', { defaultValue: 'Add rate' })}
                     </button>
                 )}
             </div>
 
-            {/* Content section */}
-            <div className="p-0">
+            <div className="mt-6">
                 {isLoading ? (
-                    <div className="p-8 flex justify-center">
-                        <div className="animate-spin rounded-full h-8 w-8 border-2 border-indigo-600 border-t-transparent" />
+                    <div className="flex h-36 items-center justify-center rounded-2xl border border-white/70 bg-white/55 dark:border-white/10 dark:bg-white/5">
+                        <div className="h-9 w-9 animate-spin rounded-full border-2 border-brand-mint border-t-transparent" />
                     </div>
                 ) : !rates || rates.length === 0 ? (
-                    <div className="p-12 text-center">
-                        <div className="inline-flex items-center justify-center p-4 bg-gray-50 rounded-full mb-4">
-                            <Coins size={32} className="text-gray-400" />
+                    <div className="rounded-2xl border border-dashed border-white/70 bg-white/40 px-6 py-12 text-center dark:border-white/10 dark:bg-white/5">
+                        <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-3xl bg-brand-mint/10 text-brand-mint">
+                            <Coins size={26} />
                         </div>
-                        <p className="text-gray-500 font-medium text-sm mb-1">Aucun taux de change configuré.</p>
-                        <p className="text-gray-400 text-xs">Veuillez ajouter les taux applicables pour cet hôtel.</p>
+                        <p className="mt-4 text-sm font-semibold text-brand-navy dark:text-white">
+                            {t('pages.hotel.exchangeRates.emptyTitle', { defaultValue: 'No exchange rate configured.' })}
+                        </p>
+                        <p className="mt-1 text-xs text-brand-slate dark:text-brand-light/75">
+                            {t('pages.hotel.exchangeRates.emptySubtitle', { defaultValue: 'Add the rates applicable for this hotel.' })}
+                        </p>
                     </div>
                 ) : (
-                    <div className="overflow-x-auto">
-                        <table className="w-full text-sm text-left">
-                            <thead className="text-xs text-gray-400 font-black uppercase tracking-wider bg-gray-50/50 border-b border-gray-100">
-                                <tr>
-                                    <th className="px-6 py-3 font-medium">Devise</th>
-                                    <th className="px-6 py-3 font-medium">Taux (= 1 Devise)</th>
-                                    <th className="px-6 py-3 font-medium">Validité</th>
-                                    <th className="px-6 py-3 font-medium">Statut</th>
-                                    {isAdminOrCommercial && <th className="px-6 py-3 text-right font-medium">Actions</th>}
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y divide-gray-100">
-                                {rates.map((rate) => {
-                                    const now = new Date();
-                                    const vFrom = new Date(rate.validFrom);
-                                    const vUntil = rate.validUntil ? new Date(rate.validUntil) : null;
-                                    
-                                    let status = "EN COURS";
-                                    let statusClass = "bg-emerald-50 text-emerald-700 border border-emerald-100";
-                                    
-                                    if (vUntil && vUntil < now) {
-                                        status = "EXPIRÉ";
-                                        statusClass = "bg-gray-100 text-gray-500 border border-gray-200";
-                                    } else if (vFrom > now) {
-                                        status = "PLANIFIÉ";
-                                        statusClass = "bg-amber-50 text-amber-700 border border-amber-100";
-                                    }
+                    <div className="overflow-hidden rounded-2xl border border-white/70 bg-white/55 shadow-sm dark:border-white/10 dark:bg-white/5">
+                        <div className="overflow-x-auto">
+                            <table className="min-w-full text-left text-sm">
+                                <thead className="bg-white/70 text-brand-slate dark:bg-white/5">
+                                    <tr>
+                                        <th className="px-5 py-4 font-semibold uppercase tracking-[0.18em]">
+                                            {t('pages.hotel.exchangeRates.table.currency', { defaultValue: 'Currency' })}
+                                        </th>
+                                        <th className="px-5 py-4 font-semibold uppercase tracking-[0.18em]">
+                                            {t('pages.hotel.exchangeRates.table.rate', { defaultValue: 'Rate' })}
+                                        </th>
+                                        <th className="px-5 py-4 font-semibold uppercase tracking-[0.18em]">
+                                            {t('pages.hotel.exchangeRates.table.validity', { defaultValue: 'Validity' })}
+                                        </th>
+                                        <th className="px-5 py-4 font-semibold uppercase tracking-[0.18em]">
+                                            {t('pages.hotel.exchangeRates.table.status', { defaultValue: 'Status' })}
+                                        </th>
+                                        {isAdminOrCommercial && (
+                                            <th className="px-5 py-4 text-right font-semibold uppercase tracking-[0.18em]">
+                                                {t('pages.hotel.exchangeRates.table.actions', { defaultValue: 'Actions' })}
+                                            </th>
+                                        )}
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-white/60 dark:divide-white/10">
+                                    {rates.map((rate) => {
+                                        const now = new Date();
+                                        const validFrom = new Date(rate.validFrom);
+                                        const validUntil = rate.validUntil ? new Date(rate.validUntil) : null;
 
-                                    return (
-                                        <tr key={rate.id} className="hover:bg-gray-50/50 transition-colors group">
-                                            <td className="px-6 py-3.5">
-                                                <div className="flex items-center gap-2">
-                                                    <div className="w-8 h-8 rounded bg-gray-100 border border-gray-200 flex items-center justify-center text-xs font-black text-gray-700">
+                                        let status = t('pages.hotel.exchangeRates.status.current', { defaultValue: 'Current' });
+                                        let statusClass = 'border-brand-mint/20 bg-brand-mint/8 text-brand-mint';
+
+                                        if (validUntil && validUntil < now) {
+                                            status = t('pages.hotel.exchangeRates.status.expired', { defaultValue: 'Expired' });
+                                            statusClass = 'border-brand-slate/20 bg-brand-light text-brand-slate dark:border-white/10 dark:bg-white/5 dark:text-brand-light/75';
+                                        } else if (validFrom > now) {
+                                            status = t('pages.hotel.exchangeRates.status.scheduled', { defaultValue: 'Scheduled' });
+                                            statusClass = 'border-brand-slate/30 bg-brand-slate/10 text-brand-slate dark:border-brand-slate/30 dark:bg-brand-navy/80 dark:text-brand-light/75';
+                                        }
+
+                                        return (
+                                            <tr key={rate.id} className="bg-white/35 transition hover:bg-white/60 dark:bg-transparent dark:hover:bg-white/5">
+                                                <td className="px-5 py-4 align-top">
+                                                    <span className="inline-flex h-10 min-w-14 items-center justify-center rounded-2xl bg-brand-navy px-3 text-xs font-bold text-white">
                                                         {rate.currency}
-                                                    </div>
-                                                </div>
-                                            </td>
-                                            <td className="px-6 py-3.5">
-                                                <div className="flex items-center gap-2 font-mono text-gray-900">
-                                                    <span className="text-gray-400 text-xs">1 {rate.currency} =</span>
-                                                    <span className="font-bold">{rate.rate.toFixed(4)}</span>
-                                                    <span className="text-gray-400 text-xs">{currentHotel.defaultCurrency}</span>
-                                                </div>
-                                            </td>
-                                            <td className="px-6 py-3.5 text-gray-500 font-mono text-xs">
-                                                <div className="flex items-center gap-1.5">
-                                                    <Calendar size={12} className="text-gray-400" />
-                                                    {formatDate(rate.validFrom)}
-                                                    <span className="text-gray-300 mx-1">→</span>
-                                                    {formatDate(rate.validUntil)}
-                                                </div>
-                                            </td>
-                                            <td className="px-6 py-3.5">
-                                                <span className={`inline-flex px-2 py-0.5 rounded text-[10px] font-bold tracking-wider ${statusClass}`}>
-                                                    {status}
-                                                </span>
-                                            </td>
-                                            {isAdminOrCommercial && (
-                                                <td className="px-6 py-3.5 text-right">
-                                                    <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                                        <button
-                                                            onClick={() => {
-                                                                setEditingRate(rate);
-                                                                setIsModalOpen(true);
-                                                            }}
-                                                            className="p-1.5 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded"
-                                                        >
-                                                            <Pencil size={15} />
-                                                        </button>
-                                                        <button
-                                                            onClick={() => handleDelete(rate)}
-                                                            className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded"
-                                                        >
-                                                            <Trash2 size={15} />
-                                                        </button>
+                                                    </span>
+                                                </td>
+                                                <td className="px-5 py-4 align-top">
+                                                    <div className="font-mono text-sm text-brand-navy dark:text-white">
+                                                        <span className="text-brand-slate">1 {rate.currency} = </span>
+                                                        <span className="font-bold">{rate.rate.toFixed(4)}</span>
+                                                        <span className="text-brand-slate"> {currentHotel.defaultCurrency}</span>
                                                     </div>
                                                 </td>
-                                            )}
-                                        </tr>
-                                    );
-                                })}
-                            </tbody>
-                        </table>
+                                                <td className="px-5 py-4 align-top text-xs text-brand-slate dark:text-brand-light/75">
+                                                    <div className="flex flex-wrap items-center gap-2">
+                                                        <Calendar size={13} className="text-brand-mint" />
+                                                        <span>{formatDate(rate.validFrom)}</span>
+                                                        <span>{t('auto.features.hotel.components.exchangeratessection.a7e8a083', { defaultValue: "to" })}</span>
+                                                        <span>{formatDate(rate.validUntil)}</span>
+                                                    </div>
+                                                </td>
+                                                <td className="px-5 py-4 align-top">
+                                                    <span className={`premium-pill ${statusClass}`}>
+                                                        {status}
+                                                    </span>
+                                                </td>
+                                                {isAdminOrCommercial && (
+                                                    <td className="px-5 py-4 align-top text-right">
+                                                        <div className="flex items-center justify-end gap-2">
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => {
+                                                                    setEditingRate(rate);
+                                                                    setIsModalOpen(true);
+                                                                }}
+                                                                className="inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-white/70 bg-white/70 text-brand-slate transition hover:text-brand-navy dark:border-white/10 dark:bg-white/5 dark:text-brand-light/75 dark:hover:text-white"
+                                                                aria-label={t('actions.edit', { defaultValue: 'Edit' })}
+                                                            >
+                                                                <Pencil size={15} />
+                                                            </button>
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => handleDelete(rate)}
+                                                                className="inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-brand-slate/30 bg-brand-slate/10 text-brand-slate transition hover:bg-brand-slate/10 dark:border-brand-slate/30 dark:bg-brand-navy/80 dark:text-brand-light/75"
+                                                                aria-label={t('actions.delete', { defaultValue: 'Delete' })}
+                                                            >
+                                                                <Trash2 size={15} />
+                                                            </button>
+                                                        </div>
+                                                    </td>
+                                                )}
+                                            </tr>
+                                        );
+                                    })}
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 )}
             </div>
 
-            <ExchangeRateModal
+            <EditExchangeRateModal
                 isOpen={isModalOpen}
                 onClose={closeModal}
                 editing={editingRate}
                 onSubmit={editingRate ? handleUpdate : handleCreate}
                 isPending={createMutation.isPending || updateMutation.isPending}
             />
-        </div>
+        </section>
     );
 }

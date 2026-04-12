@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { 
     useSpoTemplates, 
     useDeleteSpoTemplate, 
@@ -12,9 +13,10 @@ import {
     Gift, Plus, Pencil, Trash2, GitMerge, Search, 
     ChevronLeft, ChevronRight, Archive, RotateCcw, ChevronDown
 } from 'lucide-react';
-import TemplateSpoModal from '../components/TemplateSpoModal';
+import EditSpoTemplateModal from '../components/EditSpoTemplateModal';
 
 export default function SpoTemplatesPage() {
+    const { t } = useTranslation('common');
     const [page, setPage] = useState(1);
     const [search, setSearch] = useState('');
     const [debouncedSearch, setDebouncedSearch] = useState('');
@@ -91,15 +93,15 @@ export default function SpoTemplatesPage() {
         <div className="p-8">
             <div className="flex items-center justify-between mb-8">
                 <div>
-                    <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-3">
-                        <Gift className="text-indigo-600" size={28} />
-                        Catalogue SPO
+                    <h1 className="text-2xl font-bold text-brand-navy flex items-center gap-3">
+                        <Gift className="text-brand-mint" size={28} />
+                        {t('pages.catalog.spo.header.title', { defaultValue: 'Catalogue SPO' })}
                     </h1>
-                    <p className="text-sm text-gray-500 mt-1">Gérez vos modèles d'offres spéciales (templates)</p>
+                    <p className="text-sm text-brand-slate mt-1">{t('auto.features.catalog.spos.pages.spotemplatespage.2b1c2c3d', { defaultValue: "Gérez vos modèles d'offres spéciales (templates)" })}</p>
                 </div>
                 <button
                     onClick={() => { setEditingSpo(null); setIsModalOpen(true); }}
-                    className="inline-flex items-center gap-2 px-4 py-2.5 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition-colors shadow-sm cursor-pointer border-none outline-none"
+                    className="inline-flex items-center gap-2 px-4 py-2.5 bg-brand-mint text-white text-sm font-medium rounded-xl hover:bg-brand-mint transition-colors shadow-sm cursor-pointer border-none outline-none"
                 >
                     <Plus size={16} /> Nouveau Modèle
                 </button>
@@ -107,80 +109,80 @@ export default function SpoTemplatesPage() {
 
             <div className="mb-6">
                 <div className="relative max-w-sm">
-                    <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                    <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-brand-slate" />
                     <input
                         type="text"
-                        placeholder="Rechercher une SPO..."
+                        placeholder={t('pages.catalog.spo.header.searchPlaceholder', { defaultValue: 'Rechercher une SPO...' })}
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
-                        className="w-full pl-9 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none"
+                        className="w-full pl-9 pr-4 py-2 border border-brand-slate/20 rounded-xl text-sm focus:ring-2 focus:ring-brand-mint outline-none"
                     />
                 </div>
             </div>
 
             {isLoading && (
                 <div className="flex items-center justify-center h-48">
-                    <div className="animate-spin rounded-full h-8 w-8 border-2 border-indigo-600 border-t-transparent" />
+                    <div className="animate-spin rounded-full h-8 w-8 border-2 border-brand-mint/30 border-t-transparent" />
                 </div>
             )}
 
             {isError && (
-                <div className="rounded-xl bg-red-50 border border-red-200 p-6 text-red-700 text-sm font-bold">
-                    Impossible de charger le catalogue SPO.
+                <div className="rounded-xl bg-brand-slate/10 border border-brand-slate/30 p-6 text-brand-slate text-sm font-bold">
+                    {t('pages.catalog.spo.states.loadError', { defaultValue: 'Impossible de charger le catalogue SPO.' })}
                 </div>
             )}
 
             {!isLoading && !isError && pageData?.data.length === 0 && (
-                <div className="rounded-xl bg-gray-50 border border-dashed border-gray-300 p-12 text-center">
-                    <Gift size={40} className="mx-auto text-gray-300 mb-3" />
-                    <p className="text-gray-500 text-sm">Aucune offre spéciale trouvée</p>
+                <div className="rounded-xl bg-brand-light border border-dashed border-brand-slate/20 p-12 text-center">
+                    <Gift size={40} className="mx-auto text-brand-slate mb-3" />
+                    <p className="text-brand-slate text-sm">{t('auto.features.catalog.spos.pages.spotemplatespage.01f592bf', { defaultValue: "Aucune offre spéciale trouvée" })}</p>
                 </div>
             )}
 
             {pageData && pageData.data.length > 0 && (
-                <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+                <div className="bg-white rounded-xl border border-brand-slate/20 shadow-sm overflow-hidden">
                     <table className="w-full text-sm text-left">
                         <thead>
-                            <tr className="bg-gray-50 border-b border-gray-200">
-                                <th className="px-5 py-3 font-semibold text-gray-500 text-xs uppercase tracking-wide">Modèle</th>
-                                <th className="px-6 py-3 font-semibold text-gray-500 text-xs uppercase tracking-wide">SI / Condition</th>
-                                <th className="px-4 py-3 font-semibold text-gray-400 text-center"><GitMerge size={14} className="mx-auto rotate-90" /></th>
-                                <th className="px-6 py-3 font-semibold text-gray-500 text-xs uppercase tracking-wide">ALORS / Avantage</th>
-                                <th className="px-5 py-3 font-semibold text-gray-500 text-xs uppercase tracking-wide text-right">Actions</th>
+                            <tr className="bg-brand-light border-b border-brand-slate/20">
+                                <th className="px-5 py-3 font-semibold text-brand-slate text-xs uppercase tracking-wide">{t('auto.features.catalog.spos.pages.spotemplatespage.994aa2d8', { defaultValue: "Modèle" })}</th>
+                                <th className="px-6 py-3 font-semibold text-brand-slate text-xs uppercase tracking-wide">{t('auto.features.catalog.spos.pages.spotemplatespage.3bbd1cbc', { defaultValue: "SI / Condition" })}</th>
+                                <th className="px-4 py-3 font-semibold text-brand-slate text-center"><GitMerge size={14} className="mx-auto rotate-90" /></th>
+                                <th className="px-6 py-3 font-semibold text-brand-slate text-xs uppercase tracking-wide">{t('auto.features.catalog.spos.pages.spotemplatespage.4420b633', { defaultValue: "ALORS / Avantage" })}</th>
+                                <th className="px-5 py-3 font-semibold text-brand-slate text-xs uppercase tracking-wide text-right">{t('auto.features.catalog.spos.pages.spotemplatespage.a6e99000', { defaultValue: "Actions" })}</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-gray-100">
+                        <tbody className="divide-y divide-brand-slate/10">
                             {pageData.data.map((spo: TemplateSpo) => (
-                                <tr key={spo.id} className="hover:bg-gray-50 transition-colors group">
+                                <tr key={spo.id} className="hover:bg-brand-light transition-colors group">
                                     <td className="px-5 py-4 whitespace-nowrap">
                                         <div className="flex flex-col">
-                                            <span className="font-medium text-gray-900 leading-tight">{spo.name}</span>
-                                            <span className="text-sm text-gray-500 font-mono">{spo.reference || 'SPO-PENDING'}</span>
+                                            <span className="font-medium text-brand-navy leading-tight">{spo.name}</span>
+                                            <span className="text-sm text-brand-slate font-mono">{spo.reference || 'SPO-PENDING'}</span>
                                         </div>
                                     </td>
                                     <td className="px-6 py-4">
                                         <div className="flex items-center gap-2">
-                                            <div className="w-1.5 h-1.5 rounded-full bg-amber-400" />
-                                            <span className="text-gray-700 font-bold whitespace-nowrap">{formatCondition(spo)}</span>
+                                            <div className="w-1.5 h-1.5 rounded-full bg-brand-slate/20" />
+                                            <span className="text-brand-navy font-bold whitespace-nowrap">{formatCondition(spo)}</span>
                                         </div>
                                     </td>
-                                    <td className="px-4 py-4 text-gray-300">
+                                    <td className="px-4 py-4 text-brand-slate">
                                         <ChevronRight size={18} className="mx-auto" />
                                     </td>
                                     <td className="px-6 py-4">
                                         <div className="flex items-center gap-2">
-                                            <div className="w-1.5 h-1.5 rounded-full bg-indigo-500" />
-                                            <span className="text-indigo-900 font-black whitespace-nowrap">{formatBenefit(spo)}</span>
+                                            <div className="w-1.5 h-1.5 rounded-full bg-brand-mint" />
+                                            <span className="text-brand-mint font-black whitespace-nowrap">{formatBenefit(spo)}</span>
                                         </div>
                                     </td>
                                     <td className="px-5 py-4 text-right">
                                         <div className="flex items-center justify-end gap-1">
                                             <button onClick={() => { setEditingSpo(spo); setIsModalOpen(true); }}
-                                                className="p-1.5 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-all border-none outline-none cursor-pointer">
+                                                className="p-1.5 text-brand-slate hover:text-brand-mint hover:bg-brand-mint/10 rounded-xl transition-all border-none outline-none cursor-pointer">
                                                 <Pencil size={15} />
                                             </button>
                                             <button onClick={() => handleDelete(spo)}
-                                                className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all border-none outline-none cursor-pointer">
+                                                className="p-1.5 text-brand-slate hover:text-brand-slate hover:bg-brand-slate/10 rounded-xl transition-all border-none outline-none cursor-pointer">
                                                 <Trash2 size={15} />
                                             </button>
                                         </div>
@@ -192,25 +194,25 @@ export default function SpoTemplatesPage() {
 
                     {/* ─── Pagination Standard ────────────────────────────────── */}
                     {pageData?.meta && pageData.meta.lastPage > 0 && (
-                        <div className="px-5 py-3 bg-gray-50 border-t border-gray-100 flex items-center justify-between">
-                            <p className="text-xs text-gray-400 font-medium tracking-tight">
-                                Affichage de <span className="font-bold text-gray-700">{(page - 1) * limit + 1}</span> à <span className="font-bold text-gray-700">{Math.min(page * limit, pageData.meta.total)}</span> sur <span className="font-bold text-gray-700">{pageData.meta.total}</span>
+                        <div className="px-5 py-3 bg-brand-light border-t border-brand-slate/20 flex items-center justify-between">
+                            <p className="text-xs text-brand-slate font-medium tracking-tight">
+                                {t('auto.pagination.summary', { defaultValue: 'Affichage de {{from}} ? {{to}} sur {{total}}', from: (page - 1) * limit + 1, to: Math.min(page * limit, pageData.meta.total), total: pageData.meta.total })}
                             </p>
                             <div className="flex items-center gap-1.5">
                                 <button
                                     onClick={() => setPage((p) => Math.max(1, p - 1))}
                                     disabled={page <= 1}
-                                    className="p-1.5 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-all disabled:opacity-30 disabled:pointer-events-none cursor-pointer border border-transparent hover:border-indigo-100"
+                                    className="p-1.5 text-brand-slate hover:text-brand-mint hover:bg-brand-mint/10 rounded-xl transition-all disabled:opacity-30 disabled:pointer-events-none cursor-pointer border border-transparent hover:border-brand-mint/30"
                                 >
                                     <ChevronLeft size={18} />
                                 </button>
-                                <div className="flex items-center px-2.5 text-xs font-bold text-gray-500 bg-white border border-gray-200 rounded-lg h-9 min-w-[36px] justify-center shadow-xs">
+                                <div className="flex items-center px-2.5 text-xs font-bold text-brand-slate bg-white border border-brand-slate/20 rounded-xl h-9 min-w-[36px] justify-center shadow-xs">
                                     {page} / {pageData.meta.lastPage}
                                 </div>
                                 <button
                                     onClick={() => setPage((p) => Math.min(pageData.meta.lastPage, p + 1))}
                                     disabled={page >= pageData.meta.lastPage}
-                                    className="p-1.5 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-all disabled:opacity-30 disabled:pointer-events-none cursor-pointer border border-transparent hover:border-indigo-100"
+                                    className="p-1.5 text-brand-slate hover:text-brand-mint hover:bg-brand-mint/10 rounded-xl transition-all disabled:opacity-30 disabled:pointer-events-none cursor-pointer border border-transparent hover:border-brand-mint/30"
                                 >
                                     <ChevronRight size={18} />
                                 </button>
@@ -223,22 +225,22 @@ export default function SpoTemplatesPage() {
             {isAdmin && (
                 <div className="mt-10">
                     <button onClick={() => setShowArchived(!showArchived)}
-                        className="inline-flex items-center gap-2 text-sm font-bold text-gray-500 hover:text-gray-700 transition-colors cursor-pointer border-none bg-transparent outline-none">
+                        className="inline-flex items-center gap-2 text-sm font-bold text-brand-slate hover:text-brand-navy transition-colors cursor-pointer border-none bg-transparent outline-none">
                         {showArchived ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
                         <Archive size={16} />
                         Offres archivées {archivedSpos ? `(${archivedSpos.length})` : ''}
                     </button>
 
                     {showArchived && archivedSpos && archivedSpos.length > 0 && (
-                        <div className="mt-4 bg-gray-50 rounded-xl border border-gray-200 overflow-hidden opacity-80 shadow-xs">
+                        <div className="mt-4 bg-brand-light rounded-xl border border-brand-slate/20 overflow-hidden opacity-80 shadow-xs">
                             <table className="w-full text-sm text-left">
-                                <tbody className="divide-y divide-gray-100">
+                                <tbody className="divide-y divide-brand-slate/10">
                                     {archivedSpos.map((spo: TemplateSpo) => (
-                                        <tr key={spo.id} className="hover:bg-gray-100 transition-colors">
-                                            <td className="px-5 py-3 text-gray-500 font-bold">{spo.name}</td>
+                                        <tr key={spo.id} className="hover:bg-brand-light transition-colors">
+                                            <td className="px-5 py-3 text-brand-slate font-bold">{spo.name}</td>
                                             <td className="px-5 py-3 text-right">
                                                 <button onClick={() => handleRestore(spo)}
-                                                    className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-indigo-50 text-indigo-600 text-xs font-bold rounded-lg hover:bg-indigo-100 transition-colors cursor-pointer border-none shadow-xs">
+                                                    className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-brand-mint/10 text-brand-mint text-xs font-bold rounded-xl hover:bg-brand-mint/10 transition-colors cursor-pointer border-none shadow-xs">
                                                     <RotateCcw size={14} /> Restaurer
                                                 </button>
                                             </td>
@@ -251,7 +253,7 @@ export default function SpoTemplatesPage() {
                 </div>
             )}
 
-            <TemplateSpoModal
+            <EditSpoTemplateModal
                 isOpen={isModalOpen}
                 onClose={() => { setIsModalOpen(false); setEditingSpo(null); }}
                 editItem={editingSpo}

@@ -1,11 +1,13 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useArrangements, useArchivedArrangements, useCreateArrangement, useUpdateArrangement, useDeleteArrangement, useRestoreArrangement, type Arrangement, type CreateArrangementPayload } from '../hooks/useArrangements';
 import { useAuth } from '../../auth/context/AuthContext';
 import { useConfirm } from '../../../context/ConfirmContext';
 import { UtensilsCrossed, Plus, Pencil, Trash2, RotateCcw, Archive, ChevronDown, ChevronRight, Search } from 'lucide-react';
-import ArrangementModal from '../components/ArrangementModal';
+import EditArrangementModal from '../components/EditArrangementModal';
 
 export default function ArrangementsPage() {
+    const { t } = useTranslation('common');
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editing, setEditing] = useState<Arrangement | null>(null);
     const [showArchived, setShowArchived] = useState(false);
@@ -70,16 +72,16 @@ export default function ArrangementsPage() {
 
     if (isLoading) {
         return (
-            <div className="p-8 flex items-center justify-center h-48">
-                <div className="animate-spin rounded-full h-8 w-8 border-2 border-indigo-600 border-t-transparent" />
+            <div className="p-4 md:p-8 flex items-center justify-center h-48">
+                <div className="animate-spin rounded-full h-8 w-8 border-2 border-brand-mint/30 border-t-transparent" />
             </div>
         );
     }
 
     if (isError) {
         return (
-            <div className="p-8">
-                <div className="rounded-xl bg-red-50 border border-red-200 p-6 text-red-700 text-sm">
+            <div className="p-4 md:p-8">
+                <div className="rounded-xl bg-brand-slate/10 border border-brand-slate/20 p-6 text-brand-navy text-sm">
                     Impossible de charger les arrangements.
                 </div>
             </div>
@@ -87,17 +89,17 @@ export default function ArrangementsPage() {
     }
 
     return (
-        <div className="p-8 animate-in fade-in duration-500">
+        <div className="p-4 md:p-8 animate-in fade-in duration-500">
             <div className="flex items-center justify-between mb-8">
                 <div>
-                    <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-3">
-                        <UtensilsCrossed className="text-indigo-600" size={28} />
-                        Arrangements
+                    <h1 className="text-2xl font-bold text-brand-navy flex items-center gap-3">
+                        <UtensilsCrossed className="text-brand-mint" size={28} />
+                        {t('pages.arrangements.header.title', { defaultValue: 'Arrangements' })}
                     </h1>
-                    <p className="text-sm text-gray-500 mt-1">Plans repas proposés par l'hôtel</p>
+                    <p className="text-sm text-brand-slate mt-1">{t('auto.features.arrangements.pages.arrangementspage.5abc4ade', { defaultValue: "Plans repas proposés par l'hôtel" })}</p>
                 </div>
                 <button onClick={openCreate}
-                    className="inline-flex items-center gap-2 px-4 py-2.5 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition-colors shadow-sm cursor-pointer border-none outline-none">
+                    className="inline-flex items-center gap-2 px-4 py-2.5 bg-brand-mint text-white text-sm font-medium rounded-xl hover:bg-brand-mint/90 transition-colors shadow-sm cursor-pointer border-none outline-none">
                     <Plus size={16} /> Nouvel Arrangement
                 </button>
             </div>
@@ -105,72 +107,72 @@ export default function ArrangementsPage() {
             {/* ─── Search Bar ──────────────────────────────────────────── */}
             <div className="mb-6">
                 <div className="relative max-w-sm">
-                    <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                    <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-brand-slate/70" />
                     <input
                         type="text"
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
-                        placeholder="Rechercher un arrangement..."
-                        className="w-full pl-9 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none"
+                        placeholder={t('auto.features.arrangements.pages.arrangementspage.placeholder.995686e5', { defaultValue: "Rechercher un arrangement..." })}
+                        className="w-full pl-9 pr-4 py-2 border border-brand-slate/25 rounded-xl text-sm focus:ring-2 focus:ring-brand-mint focus:border-brand-mint outline-none"
                     />
                 </div>
             </div>
 
             {(!isLoading && !isError && arrangements?.length === 0) ? (
-                <div className="rounded-xl bg-gray-100 border border-dashed border-gray-300 p-12 text-center">
-                    <UtensilsCrossed size={40} className="mx-auto text-gray-300 mb-3" />
-                    <p className="text-gray-500 text-sm">Aucun arrangement défini</p>
-                    <p className="text-gray-400 text-xs mt-1">Cliquez sur « Nouvel Arrangement » pour commencer</p>
+                <div className="rounded-xl bg-brand-slate/10 border border-dashed border-brand-slate/25 p-12 text-center">
+                    <UtensilsCrossed size={40} className="mx-auto text-brand-slate/45 mb-3" />
+                    <p className="text-brand-slate text-sm">{t('auto.features.arrangements.pages.arrangementspage.c87031c2', { defaultValue: "Aucun arrangement défini" })}</p>
+                    <p className="text-brand-slate/70 text-xs mt-1">{t('auto.features.arrangements.pages.arrangementspage.5dcf7e80', { defaultValue: "Cliquez sur « Nouvel Arrangement » pour commencer" })}</p>
                 </div>
             ) : arrangements && arrangements.length > 0 && displayedArrangements?.length === 0 ? (
-                <div className="rounded-xl bg-gray-100 border border-dashed border-gray-300 p-12 text-center">
-                    <UtensilsCrossed size={40} className="mx-auto text-gray-300 mb-3" />
-                    <p className="text-gray-500 text-sm">Aucun arrangement trouvé pour "{search}"</p>
+                <div className="rounded-xl bg-brand-slate/10 border border-dashed border-brand-slate/25 p-12 text-center">
+                    <UtensilsCrossed size={40} className="mx-auto text-brand-slate/45 mb-3" />
+                    <p className="text-brand-slate text-sm">Aucun arrangement trouvé pour "{search}"</p>
                 </div>
             ) : displayedArrangements && displayedArrangements.length > 0 && (
-                <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden animate-in slide-in-from-bottom-2 duration-300">
+                <div className="bg-white dark:bg-brand-navy rounded-xl border border-brand-slate/15 shadow-sm overflow-hidden animate-in slide-in-from-bottom-2 duration-300">
                     <table className="w-full text-sm text-left">
                         <thead>
-                            <tr className="bg-gray-50 border-b border-gray-200">
-                                <th className="px-5 py-3 font-semibold text-gray-500 text-xs uppercase tracking-wide">Code</th>
-                                <th className="px-5 py-3 font-semibold text-gray-500 text-xs uppercase tracking-wide">Libellé</th>
-                                <th className="px-5 py-3 font-semibold text-gray-500 text-xs uppercase tracking-wide text-center">Niveau</th>
-                                <th className="px-5 py-3 font-semibold text-gray-500 text-xs uppercase tracking-wide">Description</th>
-                                <th className="px-5 py-3 font-semibold text-gray-500 text-xs uppercase tracking-wide text-right">Actions</th>
+                            <tr className="bg-brand-light/80 border-b border-brand-slate/15">
+                                <th className="px-5 py-3 font-semibold text-brand-slate text-xs uppercase tracking-wide">{t('auto.features.arrangements.pages.arrangementspage.b33b394f', { defaultValue: "Code" })}</th>
+                                <th className="px-5 py-3 font-semibold text-brand-slate text-xs uppercase tracking-wide">{t('auto.features.arrangements.pages.arrangementspage.96ce3732', { defaultValue: "Libellé" })}</th>
+                                <th className="px-5 py-3 font-semibold text-brand-slate text-xs uppercase tracking-wide text-center">{t('auto.features.arrangements.pages.arrangementspage.60d9e35d', { defaultValue: "Niveau" })}</th>
+                                <th className="px-5 py-3 font-semibold text-brand-slate text-xs uppercase tracking-wide">{t('auto.features.arrangements.pages.arrangementspage.b6c233f6', { defaultValue: "Description" })}</th>
+                                <th className="px-5 py-3 font-semibold text-brand-slate text-xs uppercase tracking-wide text-right">{t('auto.features.arrangements.pages.arrangementspage.3463121d', { defaultValue: "Actions" })}</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-gray-100">
+                        <tbody className="divide-y divide-brand-slate/10">
                             {displayedArrangements.map((arr) => (
-                                <tr key={arr.id} className="hover:bg-gray-50 transition-colors group">
+                                <tr key={arr.id} className="hover:bg-brand-light/80 transition-colors group">
                                     <td className="px-5 py-3">
-                                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-md bg-emerald-50 text-emerald-700 text-xs font-bold font-mono tracking-wider border border-emerald-100 uppercase">
+                                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-xl bg-brand-mint/10 text-brand-mint text-xs font-bold font-mono tracking-wider border border-brand-mint/20 uppercase">
                                             {arr.code}
                                         </span>
                                     </td>
                                     <td className="px-5 py-4 whitespace-nowrap">
                                         <div className="flex flex-col">
-                                            <span className="text-sm font-medium text-gray-900 group-hover:text-indigo-600 transition-colors leading-tight">{arr.name}</span>
-                                            <span className="text-xs text-gray-400 mt-0.5 font-mono uppercase">{arr.reference || 'REF-PENDING'}</span>
+                                            <span className="text-sm font-medium text-brand-navy group-hover:text-brand-mint transition-colors leading-tight">{arr.name}</span>
+                                            <span className="text-xs text-brand-slate/70 mt-0.5 font-mono uppercase">{arr.reference || 'REF-PENDING'}</span>
                                         </div>
                                     </td>
                                     <td className="px-5 py-3 text-center">
-                                        <span className={`inline-flex items-center px-3 py-0.5 rounded-full text-[11px] font-bold uppercase tracking-tight border ${arr.level === 0 ? 'bg-gray-50 text-gray-400 border-gray-100' : 'bg-indigo-50 text-indigo-700 border-indigo-100'}`}>
+                                        <span className={`inline-flex items-center px-3 py-0.5 rounded-full text-[11px] font-bold uppercase tracking-tight border ${arr.level === 0 ? 'bg-brand-light/80 text-brand-slate/70 border-brand-slate/10' : 'bg-brand-mint/10 text-brand-mint border-brand-mint/20'}`}>
                                             Niveau {arr.level}
                                         </span>
                                     </td>
                                     <td className="px-5 py-3">
-                                        <span className="text-xs text-gray-500 italic max-w-[280px] truncate block" title={arr.description || ''}>
-                                            {arr.description || <span className="text-gray-300">Aucune description</span>}
+                                        <span className="text-xs text-brand-slate italic max-w-[280px] truncate block" title={arr.description || ''}>
+                                            {arr.description || <span className="text-brand-slate/45">{t('auto.features.arrangements.pages.arrangementspage.b64ea579', { defaultValue: "Aucune description" })}</span>}
                                         </span>
                                     </td>
                                     <td className="px-5 py-3 text-right">
                                         <div className="inline-flex items-center gap-1">
                                             <button onClick={() => openEdit(arr)}
-                                                className="p-1.5 rounded-lg text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 transition-colors cursor-pointer border-none outline-none bg-transparent" title="Modifier">
+                                                className="p-1.5 rounded-xl text-brand-slate/70 hover:text-brand-mint hover:bg-brand-mint/10 transition-colors cursor-pointer border-none outline-none bg-transparent" title={t('auto.features.arrangements.pages.arrangementspage.title.a2e2e4e7', { defaultValue: "Modifier" })}>
                                                 <Pencil size={15} />
                                             </button>
                                             <button onClick={() => handleDelete(arr)} disabled={deleteMutation.isPending}
-                                                className="p-1.5 rounded-lg text-gray-400 hover:text-red-600 hover:bg-red-50 transition-colors cursor-pointer disabled:opacity-50 border-none outline-none bg-transparent" title="Supprimer">
+                                                className="p-1.5 rounded-xl text-brand-slate/70 hover:text-brand-navy hover:bg-brand-slate/10 transition-colors cursor-pointer disabled:opacity-50 border-none outline-none bg-transparent" title={t('auto.features.arrangements.pages.arrangementspage.title.ede43660', { defaultValue: "Supprimer" })}>
                                                 <Trash2 size={15} />
                                             </button>
                                         </div>
@@ -179,7 +181,7 @@ export default function ArrangementsPage() {
                             ))}
                         </tbody>
                     </table>
-                    <div className="px-5 py-3 bg-gray-50 border-t border-gray-100 text-[10px] font-bold text-gray-400 uppercase tracking-widest text-center">
+                    <div className="px-5 py-3 bg-brand-light/80 border-t border-brand-slate/10 text-[10px] font-bold text-brand-slate/70 uppercase tracking-widest text-center">
                         {displayedArrangements.length} arrangement{displayedArrangements.length > 1 ? 's' : ''} {arrangements && arrangements.length > displayedArrangements.length && `(sur ${arrangements.length})`}
                     </div>
                 </div>
@@ -189,34 +191,34 @@ export default function ArrangementsPage() {
             {isAdmin && (
                 <div className="mt-10">
                     <button onClick={() => setShowArchived(!showArchived)}
-                        className="inline-flex items-center gap-2 text-sm font-medium text-gray-500 hover:text-gray-700 transition-colors cursor-pointer border-none outline-none bg-transparent">
+                        className="inline-flex items-center gap-2 text-sm font-medium text-brand-slate hover:text-brand-navy transition-colors cursor-pointer border-none outline-none bg-transparent">
                         {showArchived ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
                         <Archive size={16} />
                         Arrangements archivés {archivedArrangements ? `(${archivedArrangements.length})` : ''}
                     </button>
 
                     {showArchived && displayedArchivedArrangements && displayedArchivedArrangements.length > 0 && (
-                        <div className="mt-4 bg-gray-50 rounded-xl border border-gray-200 overflow-hidden opacity-80">
+                        <div className="mt-4 bg-brand-light/80 rounded-xl border border-brand-slate/15 overflow-hidden opacity-80">
                             <table className="w-full text-sm text-left">
                                 <thead>
-                                    <tr className="bg-gray-100 border-b border-gray-200">
-                                        <th className="px-5 py-3 font-semibold text-gray-500 text-xs uppercase tracking-wide">Code</th>
-                                        <th className="px-5 py-3 font-semibold text-gray-500 text-xs uppercase tracking-wide">Nom</th>
-                                        <th className="px-5 py-3 font-semibold text-gray-500 text-xs uppercase tracking-wide text-right">Action</th>
+                                    <tr className="bg-brand-slate/10 border-b border-brand-slate/15">
+                                        <th className="px-5 py-3 font-semibold text-brand-slate text-xs uppercase tracking-wide">{t('auto.features.arrangements.pages.arrangementspage.b33b394f', { defaultValue: "Code" })}</th>
+                                        <th className="px-5 py-3 font-semibold text-brand-slate text-xs uppercase tracking-wide">{t('auto.features.arrangements.pages.arrangementspage.cbf4e9cf', { defaultValue: "Nom" })}</th>
+                                        <th className="px-5 py-3 font-semibold text-brand-slate text-xs uppercase tracking-wide text-right">{t('auto.features.arrangements.pages.arrangementspage.7d74144c', { defaultValue: "Action" })}</th>
                                     </tr>
                                 </thead>
-                                <tbody className="divide-y divide-gray-100">
+                                <tbody className="divide-y divide-brand-slate/10">
                                     {displayedArchivedArrangements.map((arr) => (
-                                        <tr key={arr.id} className="hover:bg-gray-100 transition-colors">
+                                        <tr key={arr.id} className="hover:bg-brand-slate/10 transition-colors">
                                             <td className="px-5 py-3">
-                                                <span className="inline-flex items-center px-2.5 py-0.5 rounded-md bg-gray-200 text-gray-600 text-xs font-bold font-mono tracking-wider">
+                                                <span className="inline-flex items-center px-2.5 py-0.5 rounded-xl bg-brand-slate/15 text-brand-slate text-xs font-bold font-mono tracking-wider">
                                                     {arr.code}
                                                 </span>
                                             </td>
-                                            <td className="px-5 py-3 text-gray-500 italic">{arr.name}</td>
+                                            <td className="px-5 py-3 text-brand-slate italic">{arr.name}</td>
                                             <td className="px-5 py-3 text-right">
                                                 <button onClick={() => handleRestore(arr)} disabled={restoreMutation.isPending}
-                                                    className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-indigo-50 text-indigo-600 text-xs font-medium rounded-lg hover:bg-indigo-100 transition-colors cursor-pointer border-none outline-none">
+                                                    className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-brand-mint/10 text-brand-mint text-xs font-medium rounded-xl hover:bg-brand-mint/15 transition-colors cursor-pointer border-none outline-none">
                                                     <RotateCcw size={14} /> Restaurer
                                                 </button>
                                             </td>
@@ -228,12 +230,12 @@ export default function ArrangementsPage() {
                     )}
 
                     {showArchived && archivedArrangements && archivedArrangements.length === 0 && (
-                        <p className="mt-3 text-sm text-gray-400 italic">Aucun arrangement archivé</p>
+                        <p className="mt-3 text-sm text-brand-slate/70 italic">{t('auto.features.arrangements.pages.arrangementspage.34b0529a', { defaultValue: "Aucun arrangement archivé" })}</p>
                     )}
                 </div>
             )}
 
-            <ArrangementModal 
+            <EditArrangementModal 
                 isOpen={isModalOpen} 
                 onClose={closeModal} 
                 editing={editing} 

@@ -9,6 +9,7 @@ import {
 } from '../services/contract.service';
 import { toast } from 'sonner';
 import { useHotel } from '../../hotel/context/HotelContext';
+import i18next from '../../../lib/i18n';
 
 function getErrorMessage(error: any, defaultMessage: string): string {
     if (error?.response?.data?.message) {
@@ -50,7 +51,7 @@ export function useCreateContract() {
         mutationFn: (payload: CreateContractPayload) => contractService.createContract(payload),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: contractKeys.all(currentHotel?.id) });
-            toast.success('Contrat créé avec succès');
+            toast.success(i18next.t('auto.features.contracts.hooks.usecontracts.toast.success.b9325d34', { defaultValue: "Contrat créé avec succès" }));
         },
         onError: (error: any) => {
             toast.error(getErrorMessage(error, 'Erreur lors de la création du contrat'));
@@ -68,7 +69,7 @@ export function useUpdateContract(contractId: number, onSuccess?: () => void) {
         onSuccess: () => {
             qc.invalidateQueries({ queryKey: contractKeys.detail(contractId) });
             qc.invalidateQueries({ queryKey: contractKeys.all(currentHotel?.id) });
-            toast.success('Contrat mis à jour');
+            toast.success(i18next.t('auto.features.contracts.hooks.usecontracts.toast.success.5bfb7f2b', { defaultValue: "Contrat mis à jour" }));
             onSuccess?.();
         },
         onError: (error: any) => toast.error(getErrorMessage(error, 'Erreur lors de la mise à jour du contrat')),
@@ -83,7 +84,7 @@ export function useAddPeriod(contractId: number, onSuccess?: () => void) {
         mutationFn: (data: CreatePeriodPayload) => contractService.addPeriod(contractId, data),
         onSuccess: () => {
             qc.invalidateQueries({ queryKey: contractKeys.detail(contractId) });
-            toast.success('Période ajoutée');
+            toast.success(i18next.t('auto.features.contracts.hooks.usecontracts.toast.success.2cc43dfd', { defaultValue: "Période ajoutée" }));
             onSuccess?.();
         },
         onError: (error: any) => toast.error(getErrorMessage(error, "Erreur lors de l'ajout de la période")),
@@ -96,7 +97,7 @@ export function useDeletePeriod(contractId: number) {
         mutationFn: (periodId: number) => contractService.deletePeriod(contractId, periodId),
         onSuccess: () => {
             qc.invalidateQueries({ queryKey: contractKeys.detail(contractId) });
-            toast.success('Période supprimée');
+            toast.success(i18next.t('auto.features.contracts.hooks.usecontracts.toast.success.0d13dae8', { defaultValue: "Période supprimée" }));
         },
         onError: (error: any) => toast.error(getErrorMessage(error, 'Impossible de supprimer cette période. Elle est probablement ciblée par un supplément, réduction ou autre règle active.')),
     });
@@ -110,7 +111,7 @@ export function useAddContractRoom(contractId: number, onSuccess?: () => void) {
         mutationFn: (data: CreateContractRoomPayload) => contractService.addContractRoom(contractId, data),
         onSuccess: () => {
             qc.invalidateQueries({ queryKey: contractKeys.detail(contractId) });
-            toast.success('Chambre ajoutée au contrat');
+            toast.success(i18next.t('auto.features.contracts.hooks.usecontracts.toast.success.7ddb5960', { defaultValue: "Chambre ajoutée au contrat" }));
             onSuccess?.();
         },
         onError: (error: any) => toast.error(getErrorMessage(error, "Erreur lors de l'ajout de la chambre")),
@@ -123,7 +124,7 @@ export function useDeleteContractRoom(contractId: number) {
         mutationFn: (roomId: number) => contractService.deleteContractRoom(contractId, roomId),
         onSuccess: () => {
             qc.invalidateQueries({ queryKey: contractKeys.detail(contractId) });
-            toast.success('Chambre retirée du contrat');
+            toast.success(i18next.t('auto.features.contracts.hooks.usecontracts.toast.success.ea857a1e', { defaultValue: "Chambre retirée du contrat" }));
         },
         onError: (error: any) => toast.error(getErrorMessage(error, 'Impossible de supprimer cette chambre. Elle est probablement attachée à des règles.')),
     });

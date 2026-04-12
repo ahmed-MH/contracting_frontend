@@ -2,6 +2,7 @@ import { createContext, useContext, useState, useEffect, useCallback, useRef, ty
 import { useQuery } from '@tanstack/react-query';
 import { hotelService, type Hotel } from '../services/hotel.service';
 import { useAuth } from '../../auth/context/AuthContext';
+import { useTranslation } from 'react-i18next';
 
 const HOTEL_ID_KEY = 'currentHotelId';
 
@@ -20,8 +21,11 @@ const HotelContext = createContext<HotelContextValue>({
 });
 
 export function HotelProvider({ children }: { children: ReactNode }) {
+    const { t } = useTranslation('common');
+    void t;
     const { isAuthenticated, user } = useAuth();
     const isAdmin = user?.role === 'ADMIN';
+    const shouldFetchHotels = isAuthenticated && user?.role !== 'SUPERVISOR';
 
     const [selectedId, setSelectedId] = useState<number | null>(() => {
         const stored = localStorage.getItem(HOTEL_ID_KEY);
@@ -62,21 +66,23 @@ export function HotelProvider({ children }: { children: ReactNode }) {
     const { data: hotels = [], isLoading } = useQuery({
         queryKey: ['hotels', isAdmin ? 'all' : 'mine', user?.id],
         queryFn: isAdmin ? hotelService.getHotels : hotelService.getMyHotels,
-        enabled: isAuthenticated,
+        enabled: shouldFetchHotels,
     });
+
+    const isHotelsLoading = shouldFetchHotels ? isLoading : false;
 
     // Auto-select first hotel when list arrives and nothing is persisted
     useEffect(() => {
-        if (!isLoading && hotels.length > 0 && selectedId === null) {
+        if (!isHotelsLoading && hotels.length > 0 && selectedId === null) {
             const firstId = hotels[0].id;
             setSelectedId(firstId);
             localStorage.setItem(HOTEL_ID_KEY, String(firstId));
         }
-    }, [isLoading, hotels, selectedId]);
+    }, [isHotelsLoading, hotels, selectedId]);
 
     // Clear selected hotel if the user no longer has access to it
     useEffect(() => {
-        if (!isLoading && hotels.length > 0 && selectedId !== null) {
+        if (!isHotelsLoading && hotels.length > 0 && selectedId !== null) {
             const stillValid = hotels.some((h) => h.id === selectedId);
             if (!stillValid) {
                 const firstId = hotels[0].id;
@@ -84,7 +90,7 @@ export function HotelProvider({ children }: { children: ReactNode }) {
                 localStorage.setItem(HOTEL_ID_KEY, String(firstId));
             }
         }
-    }, [isLoading, hotels, selectedId]);
+    }, [isHotelsLoading, hotels, selectedId]);
 
     const switchHotel = useCallback((hotelId: number) => {
         setSelectedId(hotelId);
@@ -94,7 +100,7 @@ export function HotelProvider({ children }: { children: ReactNode }) {
     const currentHotel = hotels.find((h) => h.id === selectedId) ?? null;
 
     return (
-        <HotelContext.Provider value={{ currentHotel, availableHotels: hotels, isLoading, switchHotel }}>
+        <HotelContext.Provider value={{ currentHotel, availableHotels: hotels, isLoading: isHotelsLoading, switchHotel }}>
             {children}
         </HotelContext.Provider>
     );

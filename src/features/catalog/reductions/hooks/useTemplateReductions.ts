@@ -7,6 +7,7 @@ import {
     type UpdateTemplateReductionPayload,
 } from '../services/reductionTemplate.service';
 import { useHotel } from '../../../hotel/context/HotelContext';
+import i18next from '../../../../lib/i18n';
 
 export type { TemplateReduction, CreateTemplateReductionPayload, UpdateTemplateReductionPayload };
 
@@ -47,7 +48,7 @@ export function useCreateTemplateReduction() {
             templateReductionService.create(data),
         onSuccess: () => {
             qc.invalidateQueries({ queryKey: templateReductionKeys.all(currentHotel?.id) });
-            toast.success('Réduction créée');
+            toast.success(i18next.t('auto.features.catalog.reductions.hooks.usetemplatereductions.toast.success.fa960d88', { defaultValue: "Réduction créée" }));
         },
     });
 }
@@ -60,7 +61,7 @@ export function useUpdateTemplateReduction() {
             templateReductionService.update(id, data),
         onSuccess: () => {
             qc.invalidateQueries({ queryKey: templateReductionKeys.all(currentHotel?.id) });
-            toast.success('Réduction mise à jour');
+            toast.success(i18next.t('auto.features.catalog.reductions.hooks.usetemplatereductions.toast.success.4f58f383', { defaultValue: "Réduction mise à jour" }));
         },
     });
 }
@@ -72,7 +73,7 @@ export function useDeleteTemplateReduction() {
         mutationFn: (id: number) => templateReductionService.delete(id),
         onSuccess: () => {
             qc.invalidateQueries({ queryKey: templateReductionKeys.all(currentHotel?.id) });
-            toast.success('Réduction archivée');
+            toast.success(i18next.t('auto.features.catalog.reductions.hooks.usetemplatereductions.toast.success.7d95cd08', { defaultValue: "Réduction archivée" }));
         },
     });
 }
@@ -84,7 +85,7 @@ export function useRestoreTemplateReduction() {
         mutationFn: (id: number) => templateReductionService.restore(id),
         onSuccess: () => {
             qc.invalidateQueries({ queryKey: templateReductionKeys.all(currentHotel?.id) });
-            toast.success('Réduction restaurée');
+            toast.success(i18next.t('auto.features.catalog.reductions.hooks.usetemplatereductions.toast.success.de980ddb', { defaultValue: "Réduction restaurée" }));
         },
     });
 }

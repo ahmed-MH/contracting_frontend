@@ -1,24 +1,18 @@
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useOutletContext } from 'react-router-dom';
-import type { ContractOutletContext } from '../components/ContractDetailsLayout';
+import { useTranslation } from 'react-i18next';
 import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useUpdateContract } from '../../hooks/useContracts';
 import { useAffiliates } from '../../../partners/hooks/useAffiliates';
 import { useArrangements } from '../../../arrangements/hooks/useArrangements';
 import { Save } from 'lucide-react';
-
-interface FormValues {
-    name: string;
-    startDate: string;
-    endDate: string;
-    currency: string;
-    affiliateIds: number[];
-    baseArrangementId: number | string | null;
-    paymentCondition: string;
-    depositAmount: number;
-    creditDays: number;
-    paymentMethods: string[];
-}
+import type { ContractOutletContext } from '../components/ContractDetailsLayout';
+import {
+    createContractGeneralSchema,
+    type ContractGeneralFormInput,
+    type ContractGeneralFormValues,
+} from '../schemas/contract-detail.schema';
 
 function toInputDate(iso: string): string {
     return iso ? iso.substring(0, 10) : '';
@@ -29,8 +23,11 @@ export default function GeneralTab() {
     const { data: affiliates } = useAffiliates();
     const { data: arrangements } = useArrangements();
     const updateMutation = useUpdateContract(contract.id);
+    const { t } = useTranslation('common');
+    const schema = useMemo(() => createContractGeneralSchema(t), [t]);
 
-    const { register, handleSubmit, watch, setValue, reset, formState: { isDirty } } = useForm<FormValues>({
+    const { register, handleSubmit, watch, setValue, reset, formState: { isDirty } } = useForm<ContractGeneralFormInput, unknown, ContractGeneralFormValues>({
+        resolver: zodResolver(schema),
         defaultValues: {
             name: contract.name,
             startDate: toInputDate(contract.startDate),
@@ -45,7 +42,6 @@ export default function GeneralTab() {
         },
     });
 
-    // Handle external reloads properly
     useEffect(() => {
         reset({
             name: contract.name,
@@ -69,93 +65,110 @@ export default function GeneralTab() {
         setValue('affiliateIds', selectedIds.includes(id) ? selectedIds.filter((x) => x !== id) : [...selectedIds, id], { shouldDirty: true });
     };
 
-    const togglePaymentMethod = (method: string) => {
+    const togglePaymentMethod = (method: 'BANK_TRANSFER' | 'BANK_CHECK') => {
         setValue('paymentMethods', paymentMethods.includes(method) ? paymentMethods.filter((x) => x !== method) : [...paymentMethods, method], { shouldDirty: true });
     };
 
-    const onSubmit = (data: FormValues) => {
+    const onSubmit = (data: ContractGeneralFormValues) => {
         updateMutation.mutate({
             name: data.name,
             startDate: data.startDate,
             endDate: data.endDate,
             currency: data.currency,
             affiliateIds: data.affiliateIds,
-            baseArrangementId: data.baseArrangementId ? Number(data.baseArrangementId) : null,
+            baseArrangementId: data.baseArrangementId,
             paymentCondition: data.paymentCondition,
-            depositAmount: Number(data.depositAmount),
-            creditDays: Number(data.creditDays),
+            depositAmount: data.depositAmount,
+            creditDays: data.creditDays,
             paymentMethods: data.paymentMethods,
         });
     };
 
     return (
         <form onSubmit={handleSubmit(onSubmit)} className="w-full pb-16">
-            
-            {/* ─── Header ────────────────────────────────────────────────────── */}
-            <div className="flex items-center justify-between pb-6 border-b border-gray-200 mb-10">
+            <div className="flex items-center justify-between pb-6 border-b border-brand-slate/20 mb-10">
                 <div>
-                    <h2 className="text-xl font-semibold text-gray-900">Paramètres du Contrat</h2>
-                    <p className="text-sm text-gray-500 mt-1">Configurez l'identité, les dates, les partenaires et les règles de paiement.</p>
+                    <h2 className="text-xl font-semibold text-brand-navy">
+                        {t('pages.contractDetails.general.header.title', { defaultValue: 'Contract Settings' })}
+                    </h2>
+                    <p className="text-sm text-brand-slate mt-1">
+                        {t('pages.contractDetails.general.header.subtitle', {
+                            defaultValue: 'Configure contract identity, dates, partners, and payment rules.',
+                        })}
+                    </p>
                 </div>
                 <button
                     type="submit"
                     disabled={!isDirty || updateMutation.isPending}
-                    className="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-medium text-white bg-gray-900 rounded-lg hover:bg-indigo-600 transition-all shadow-sm active:scale-95 disabled:opacity-50 disabled:pointer-events-none cursor-pointer space-x-1"
+                    className="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-medium text-white bg-brand-navy rounded-xl hover:bg-brand-mint transition-all shadow-sm active:scale-95 disabled:opacity-50 disabled:pointer-events-none cursor-pointer space-x-1"
                 >
                     {updateMutation.isPending ? (
                         <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
                     ) : (
                         <Save size={16} />
                     )}
-                    <span>Enregistrer</span>
-                    {isDirty && <span className="text-indigo-300 font-bold ml-1">*</span>}
+                    <span>{t('actions.save', { defaultValue: 'Save' })}</span>
+                    {isDirty && <span className="text-brand-mint font-bold ml-1">*</span>}
                 </button>
             </div>
 
             <div className="space-y-12">
-                
-                {/* ─── Section 1: Identité ───────────────────────────────────── */}
                 <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 xl:gap-12">
                     <div className="lg:col-span-1">
-                        <h3 className="text-sm font-semibold text-gray-900">Identité & Partenaires</h3>
-                        <p className="mt-1 text-sm text-gray-500 leading-relaxed">
-                            Le libellé interne du contrat et les Tour Opérateurs qui y seront rattachés.
+                        <h3 className="text-sm font-semibold text-brand-navy">
+                            {t('pages.contractDetails.general.identity.title', { defaultValue: 'Identity & Partners' })}
+                        </h3>
+                        <p className="mt-1 text-sm text-brand-slate leading-relaxed">
+                            {t('pages.contractDetails.general.identity.subtitle', {
+                                defaultValue: 'Internal contract label and linked tour operators.',
+                            })}
                         </p>
                     </div>
-                    
+
                     <div className="lg:col-span-3 space-y-6">
                         <div className="max-w-xl">
-                            <label className="block text-sm font-medium text-gray-900 mb-1.5">Nom / Libellé du contrat</label>
+                            <label className="block text-sm font-medium text-brand-navy mb-1.5">
+                                {t('pages.contractDetails.general.identity.contractName', { defaultValue: 'Contract name / label' })}
+                            </label>
                             <input
                                 type="text"
-                                {...register('name', { required: true })}
-                                className="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm text-gray-900 focus:ring-2 focus:ring-indigo-600 focus:border-indigo-600 outline-none transition-shadow shadow-sm"
+                                {...register('name')}
+                                className="w-full px-4 py-2 bg-white border border-brand-slate/20 rounded-xl text-sm text-brand-navy focus:ring-2 focus:ring-brand-mint focus:border-brand-mint/30 outline-none transition-shadow shadow-sm"
                             />
                         </div>
 
                         <div>
-                            <div className="flex items-center justify-between mb-1.5 border-b border-gray-100 pb-2">
-                                <label className="block text-sm font-medium text-gray-900">Tour Opérateurs (Affiliés)</label>
-                                <span className="text-xs font-medium text-gray-500">{selectedIds.length} sélectionné(s)</span>
+                            <div className="flex items-center justify-between mb-1.5 border-b border-brand-slate/20 pb-2">
+                                <label className="block text-sm font-medium text-brand-navy">
+                                    {t('pages.contractDetails.general.identity.affiliates', { defaultValue: 'Tour Operators (Affiliates)' })}
+                                </label>
+                                <span className="text-xs font-medium text-brand-slate">
+                                    {t('pages.contractDetails.general.identity.selectedCount', {
+                                        defaultValue: '{{count}} selected',
+                                        count: selectedIds.length,
+                                    })}
+                                </span>
                             </div>
                             <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3">
                                 {affiliates?.length === 0 && (
-                                    <div className="col-span-full py-4 text-sm text-gray-500">Aucun partenaire disponible</div>
+                                    <div className="col-span-full py-4 text-sm text-brand-slate">
+                                        {t('pages.contractDetails.general.identity.noPartners', { defaultValue: 'No partner available' })}
+                                    </div>
                                 )}
                                 {affiliates?.map((a) => (
-                                    <label 
-                                        key={a.id} 
-                                        className={`flex items-start gap-3 p-3 border rounded-xl cursor-pointer transition-all ${selectedIds.includes(a.id) ? 'bg-indigo-50/20 border-indigo-300 shadow-sm ring-1 ring-indigo-50' : 'bg-white border-gray-200 hover:border-gray-300 shadow-sm'}`}
+                                    <label
+                                        key={a.id}
+                                        className={`flex items-start gap-3 p-3 border rounded-xl cursor-pointer transition-all ${selectedIds.includes(a.id) ? 'bg-brand-mint/10 border-brand-mint/30 shadow-sm ring-1 ring-brand-mint' : 'bg-white border-brand-slate/20 hover:border-brand-slate/20 shadow-sm'}`}
                                     >
                                         <input
                                             type="checkbox"
-                                            checked={selectedIds?.includes(a.id) ?? false}
+                                            checked={selectedIds.includes(a.id)}
                                             onChange={() => toggleAffiliate(a.id)}
-                                            className="mt-0.5 w-4 h-4 text-indigo-600 bg-white border-gray-300 rounded focus:ring-indigo-600 cursor-pointer transition-colors"
+                                            className="mt-0.5 w-4 h-4 text-brand-mint bg-white border-brand-slate/20 rounded focus:ring-brand-mint cursor-pointer transition-colors"
                                         />
                                         <div className="flex flex-col flex-1 min-w-0">
-                                            <span className={`text-sm font-medium truncate ${selectedIds.includes(a.id) ? 'text-indigo-900' : 'text-gray-900'}`}>{a.companyName}</span>
-                                            {a.reference && <span className="text-xs text-gray-400 font-mono mt-0.5">{a.reference}</span>}
+                                            <span className={`text-sm font-medium truncate ${selectedIds.includes(a.id) ? 'text-brand-mint' : 'text-brand-navy'}`}>{a.companyName}</span>
+                                            {a.reference && <span className="text-xs text-brand-slate font-mono mt-0.5">{a.reference}</span>}
                                         </div>
                                     </label>
                                 ))}
@@ -164,151 +177,184 @@ export default function GeneralTab() {
                     </div>
                 </div>
 
-                <hr className="border-gray-200" />
+                <hr className="border-brand-slate/20" />
 
-                {/* ─── Section 2: Validité ───────────────────────────────────── */}
                 <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 xl:gap-12">
                     <div className="lg:col-span-1">
-                        <h3 className="text-sm font-semibold text-gray-900">Période & Devise</h3>
-                        <p className="mt-1 text-sm text-gray-500 leading-relaxed">
-                            Délimitation des dates d'application et la devise de référence pour tous les tarifs associés.
+                        <h3 className="text-sm font-semibold text-brand-navy">
+                            {t('pages.contractDetails.general.period.title', { defaultValue: 'Period & Currency' })}
+                        </h3>
+                        <p className="mt-1 text-sm text-brand-slate leading-relaxed">
+                            {t('pages.contractDetails.general.period.subtitle', {
+                                defaultValue: 'Application dates and reference currency for all related rates.',
+                            })}
                         </p>
                     </div>
-                    
+
                     <div className="lg:col-span-3">
                         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-4xl">
                             <div>
-                                <label className="block text-sm font-medium text-gray-900 mb-1.5">Date de début</label>
+                                <label className="block text-sm font-medium text-brand-navy mb-1.5">
+                                    {t('pages.contractDetails.general.period.startDate', { defaultValue: 'Start date' })}
+                                </label>
                                 <input
                                     type="date"
-                                    {...register('startDate', { required: true })}
-                                    className="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm text-gray-900 focus:ring-2 focus:ring-indigo-600 focus:border-indigo-600 outline-none transition-shadow shadow-sm"
+                                    {...register('startDate')}
+                                    className="w-full px-4 py-2 bg-white border border-brand-slate/20 rounded-xl text-sm text-brand-navy focus:ring-2 focus:ring-brand-mint focus:border-brand-mint/30 outline-none transition-shadow shadow-sm"
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-900 mb-1.5">Date de fin</label>
+                                <label className="block text-sm font-medium text-brand-navy mb-1.5">
+                                    {t('pages.contractDetails.general.period.endDate', { defaultValue: 'End date' })}
+                                </label>
                                 <input
                                     type="date"
-                                    {...register('endDate', { required: true })}
-                                    className="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm text-gray-900 focus:ring-2 focus:ring-indigo-600 focus:border-indigo-600 outline-none transition-shadow shadow-sm"
+                                    {...register('endDate')}
+                                    className="w-full px-4 py-2 bg-white border border-brand-slate/20 rounded-xl text-sm text-brand-navy focus:ring-2 focus:ring-brand-mint focus:border-brand-mint/30 outline-none transition-shadow shadow-sm"
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-900 mb-1.5">Devise d'application</label>
+                                <label className="block text-sm font-medium text-brand-navy mb-1.5">
+                                    {t('pages.contractDetails.general.period.currency', { defaultValue: 'Applied currency' })}
+                                </label>
                                 <select
-                                    {...register('currency', { required: true })}
-                                    className="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm text-gray-900 focus:ring-2 focus:ring-indigo-600 focus:border-indigo-600 outline-none transition-shadow shadow-sm cursor-pointer"
+                                    {...register('currency')}
+                                    className="w-full px-4 py-2 bg-white border border-brand-slate/20 rounded-xl text-sm text-brand-navy focus:ring-2 focus:ring-brand-mint focus:border-brand-mint/30 outline-none transition-shadow shadow-sm cursor-pointer"
                                 >
-                                    <option value="EUR">EUR — Euro (€)</option>
-                                    <option value="USD">USD — Dollar US ($)</option>
-                                    <option value="GBP">GBP — Livre Sterling (£)</option>
-                                    <option value="TND">TND — Dinar Tunisien (د.ت)</option>
+                                    <option value="EUR">{t('pages.contractDetails.general.currencies.eur', { defaultValue: 'EUR - Euro (€)' })}</option>
+                                    <option value="USD">{t('pages.contractDetails.general.currencies.usd', { defaultValue: 'USD - US Dollar ($)' })}</option>
+                                    <option value="GBP">{t('pages.contractDetails.general.currencies.gbp', { defaultValue: 'GBP - Pound Sterling (£)' })}</option>
+                                    <option value="TND">{t('pages.contractDetails.general.currencies.tnd', { defaultValue: 'TND - Tunisian Dinar (د.ت)' })}</option>
                                 </select>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <hr className="border-gray-200" />
+                <hr className="border-brand-slate/20" />
 
-                {/* ─── Section 3: Règles ─────────────────────────────────────── */}
                 <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 xl:gap-12">
                     <div className="lg:col-span-1">
-                        <h3 className="text-sm font-semibold text-gray-900">Spécifications</h3>
-                        <p className="mt-1 text-sm text-gray-500 leading-relaxed">
-                            Contrainte sur l'arrangement de base.
+                        <h3 className="text-sm font-semibold text-brand-navy">
+                            {t('pages.contractDetails.general.specifications.title', { defaultValue: 'Specifications' })}
+                        </h3>
+                        <p className="mt-1 text-sm text-brand-slate leading-relaxed">
+                            {t('pages.contractDetails.general.specifications.subtitle', { defaultValue: 'Constraint on the base arrangement.' })}
                         </p>
                     </div>
-                    
+
                     <div className="lg:col-span-3">
                         <div className="max-w-xl">
-                            <label className="block text-sm font-medium text-gray-900 mb-1.5">Arrangement strict (Optionnel)</label>
+                            <label className="block text-sm font-medium text-brand-navy mb-1.5">
+                                {t('pages.contractDetails.general.specifications.strictArrangement', { defaultValue: 'Strict arrangement (optional)' })}
+                            </label>
                             <select
                                 {...register('baseArrangementId')}
-                                className="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm text-gray-900 focus:ring-2 focus:ring-indigo-600 focus:border-indigo-600 outline-none transition-shadow shadow-sm cursor-pointer"
+                                className="w-full px-4 py-2 bg-white border border-brand-slate/20 rounded-xl text-sm text-brand-navy focus:ring-2 focus:ring-brand-mint focus:border-brand-mint/30 outline-none transition-shadow shadow-sm cursor-pointer"
                             >
-                                <option value="">Aucun (Multi-pension autorisée dans les tarifs)</option>
-                                {arrangements?.map(a => (
-                                    <option key={a.id} value={a.id}>{a.code} — {a.name}</option>
+                                <option value="">
+                                    {t('pages.contractDetails.general.specifications.noArrangement', { defaultValue: 'None (multi-board allowed in rates)' })}
+                                </option>
+                                {arrangements?.map((a) => (
+                                    <option key={a.id} value={a.id}>
+                                        {a.code} - {a.name}
+                                    </option>
                                 ))}
                             </select>
                         </div>
                     </div>
                 </div>
 
-                <hr className="border-gray-200" />
+                <hr className="border-brand-slate/20" />
 
-                {/* ─── Section 4: Paiement ───────────────────────────────────── */}
                 <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 xl:gap-12">
                     <div className="lg:col-span-1">
-                        <h3 className="text-sm font-semibold text-gray-900">Facturation & Paiement</h3>
-                        <p className="mt-1 text-sm text-gray-500 leading-relaxed">
-                            Les conditions de libération et méthodes de règlement.
+                        <h3 className="text-sm font-semibold text-brand-navy">
+                            {t('pages.contractDetails.general.payment.title', { defaultValue: 'Billing & Payment' })}
+                        </h3>
+                        <p className="mt-1 text-sm text-brand-slate leading-relaxed">
+                            {t('pages.contractDetails.general.payment.subtitle', { defaultValue: 'Release conditions and payment methods.' })}
                         </p>
                     </div>
-                    
+
                     <div className="lg:col-span-3 max-w-4xl space-y-8">
                         <div>
-                            <label className="block text-sm font-medium text-gray-900 mb-1.5">Moyens de paiement autorisés</label>
+                            <label className="block text-sm font-medium text-brand-navy mb-1.5">
+                                {t('pages.contractDetails.general.payment.methods', { defaultValue: 'Allowed payment methods' })}
+                            </label>
                             <div className="flex gap-4">
-                                <label className={`flex items-center gap-2.5 px-4 py-2.5 border rounded-lg cursor-pointer transition-all ${paymentMethods.includes('BANK_TRANSFER') ? 'bg-indigo-50 border-indigo-300 shadow-sm' : 'bg-white border-gray-200 shadow-sm hover:border-gray-300'}`}>
-                                    <input 
-                                        type="checkbox" 
-                                        checked={paymentMethods.includes('BANK_TRANSFER')} 
-                                        onChange={() => togglePaymentMethod('BANK_TRANSFER')} 
-                                        className="w-4 h-4 text-indigo-600 border-gray-300 focus:ring-indigo-500 rounded cursor-pointer" 
+                                <label className={`flex items-center gap-2.5 px-4 py-2.5 border rounded-xl cursor-pointer transition-all ${paymentMethods.includes('BANK_TRANSFER') ? 'bg-brand-mint/10 border-brand-mint/30 shadow-sm' : 'bg-white border-brand-slate/20 shadow-sm hover:border-brand-slate/20'}`}>
+                                    <input
+                                        type="checkbox"
+                                        checked={paymentMethods.includes('BANK_TRANSFER')}
+                                        onChange={() => togglePaymentMethod('BANK_TRANSFER')}
+                                        className="w-4 h-4 text-brand-mint border-brand-slate/20 focus:ring-brand-mint rounded cursor-pointer"
                                     />
-                                    <span className={`text-sm font-medium ${paymentMethods.includes('BANK_TRANSFER') ? 'text-indigo-900' : 'text-gray-900'}`}>Virement Bancaire</span>
+                                    <span className={`text-sm font-medium ${paymentMethods.includes('BANK_TRANSFER') ? 'text-brand-mint' : 'text-brand-navy'}`}>
+                                        {t('pages.contractDetails.general.payment.bankTransfer', { defaultValue: 'Bank Transfer' })}
+                                    </span>
                                 </label>
-                                <label className={`flex items-center gap-2.5 px-4 py-2.5 border rounded-lg cursor-pointer transition-all ${paymentMethods.includes('BANK_CHECK') ? 'bg-indigo-50 border-indigo-300 shadow-sm' : 'bg-white border-gray-200 shadow-sm hover:border-gray-300'}`}>
-                                    <input 
-                                        type="checkbox" 
-                                        checked={paymentMethods.includes('BANK_CHECK')} 
-                                        onChange={() => togglePaymentMethod('BANK_CHECK')} 
-                                        className="w-4 h-4 text-indigo-600 border-gray-300 focus:ring-indigo-500 rounded cursor-pointer" 
+                                <label className={`flex items-center gap-2.5 px-4 py-2.5 border rounded-xl cursor-pointer transition-all ${paymentMethods.includes('BANK_CHECK') ? 'bg-brand-mint/10 border-brand-mint/30 shadow-sm' : 'bg-white border-brand-slate/20 shadow-sm hover:border-brand-slate/20'}`}>
+                                    <input
+                                        type="checkbox"
+                                        checked={paymentMethods.includes('BANK_CHECK')}
+                                        onChange={() => togglePaymentMethod('BANK_CHECK')}
+                                        className="w-4 h-4 text-brand-mint border-brand-slate/20 focus:ring-brand-mint rounded cursor-pointer"
                                     />
-                                    <span className={`text-sm font-medium ${paymentMethods.includes('BANK_CHECK') ? 'text-indigo-900' : 'text-gray-900'}`}>Chèque Bancaire</span>
+                                    <span className={`text-sm font-medium ${paymentMethods.includes('BANK_CHECK') ? 'text-brand-mint' : 'text-brand-navy'}`}>
+                                        {t('pages.contractDetails.general.payment.bankCheck', { defaultValue: 'Bank Check' })}
+                                    </span>
                                 </label>
                             </div>
                         </div>
 
                         <div className="max-w-xl">
-                            <label className="block text-sm font-medium text-gray-900 mb-1.5">Condition de libération</label>
+                            <label className="block text-sm font-medium text-brand-navy mb-1.5">
+                                {t('pages.contractDetails.general.payment.releaseCondition', { defaultValue: 'Release condition' })}
+                            </label>
                             <select
                                 {...register('paymentCondition')}
-                                className="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm text-gray-900 focus:ring-2 focus:ring-indigo-600 focus:border-indigo-600 outline-none transition-shadow shadow-sm cursor-pointer"
+                                className="w-full px-4 py-2 bg-white border border-brand-slate/20 rounded-xl text-sm text-brand-navy focus:ring-2 focus:ring-brand-mint focus:border-brand-mint/30 outline-none transition-shadow shadow-sm cursor-pointer"
                             >
-                                <option value="PREPAYMENT_100">100% Pré-Paiement</option>
-                                <option value="DEPOSIT">Contrat à Dépôt (Crédit)</option>
+                                <option value="PREPAYMENT_100">
+                                    {t('pages.contractDetails.general.payment.conditions.prepayment', { defaultValue: '100% Prepayment' })}
+                                </option>
+                                <option value="DEPOSIT">
+                                    {t('pages.contractDetails.general.payment.conditions.deposit', { defaultValue: 'Deposit Contract (Credit)' })}
+                                </option>
                             </select>
                         </div>
 
                         {paymentCondition === 'DEPOSIT' && (
-                            <div className="bg-gray-50/80 p-5 rounded-xl border border-gray-200 grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-2xl">
+                            <div className="bg-brand-light p-5 rounded-xl border border-brand-slate/20 grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-2xl">
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-900 mb-1.5">Montant du Dépôt</label>
+                                    <label className="block text-sm font-medium text-brand-navy mb-1.5">
+                                        {t('pages.contractDetails.general.payment.depositAmount', { defaultValue: 'Deposit Amount' })}
+                                    </label>
                                     <div className="relative">
                                         <input
                                             type="number"
                                             step="0.01"
-                                            {...register('depositAmount')}
-                                            className="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm text-gray-900 focus:ring-2 focus:ring-indigo-600 focus:border-indigo-600 outline-none transition-shadow shadow-sm pr-12"
+                                            {...register('depositAmount', { valueAsNumber: true })}
+                                            className="w-full px-4 py-2 bg-white border border-brand-slate/20 rounded-xl text-sm text-brand-navy focus:ring-2 focus:ring-brand-mint focus:border-brand-mint/30 outline-none transition-shadow shadow-sm pr-12"
                                         />
-                                        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-gray-400 font-medium z-10 select-none">
+                                        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-brand-slate font-medium z-10 select-none">
                                             {watch('currency')}
                                         </span>
                                     </div>
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-900 mb-1.5">Délai de Crédit</label>
+                                    <label className="block text-sm font-medium text-brand-navy mb-1.5">
+                                        {t('pages.contractDetails.general.payment.creditDelay', { defaultValue: 'Credit Delay' })}
+                                    </label>
                                     <div className="relative">
                                         <input
                                             type="number"
-                                            {...register('creditDays')}
-                                            className="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm text-gray-900 focus:ring-2 focus:ring-indigo-600 focus:border-indigo-600 outline-none transition-shadow shadow-sm pr-16"
+                                            {...register('creditDays', { valueAsNumber: true })}
+                                            className="w-full px-4 py-2 bg-white border border-brand-slate/20 rounded-xl text-sm text-brand-navy focus:ring-2 focus:ring-brand-mint focus:border-brand-mint/30 outline-none transition-shadow shadow-sm pr-16"
                                         />
-                                        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-gray-400 font-medium z-10 select-none">
-                                            Jours
+                                        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-brand-slate font-medium z-10 select-none">
+                                            {t('pages.contractDetails.general.payment.days', { defaultValue: 'Days' })}
                                         </span>
                                     </div>
                                 </div>
@@ -316,7 +362,6 @@ export default function GeneralTab() {
                         )}
                     </div>
                 </div>
-
             </div>
         </form>
     );

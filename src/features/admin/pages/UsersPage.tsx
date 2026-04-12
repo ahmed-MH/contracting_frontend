@@ -1,210 +1,325 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { clsx } from 'clsx';
+import {
+    Briefcase,
+    Building2,
+    Mail,
+    Pencil,
+    Plus,
+    ShieldCheck,
+    Trash2,
+    UserCog,
+    Users,
+} from 'lucide-react';
+import AdminPageHeader from '../components/AdminPageHeader';
+import AdminSectionCard from '../components/AdminSectionCard';
+import InviteUserModal from '../components/InviteUserModal';
+import EditUserModal from '../components/EditUserModal';
 import { useUsers, useDeleteUser, type UserListItem } from '../hooks/useUsers';
 import { useHotels } from '../../hotel/hooks/useHotels';
 import { useConfirm } from '../../../context/ConfirmContext';
-import { Users, ShieldCheck, Briefcase, Mail, Plus, Pencil, Trash2 } from 'lucide-react';
-import InviteUserModal from '../components/InviteUserModal';
-import EditUserModal from '../components/EditUserModal';
+
+function StatusBadge({ isActive }: { isActive: boolean }) {
+    const { t } = useTranslation('common');
+
+    return isActive ? (
+        <span className="premium-pill border-brand-mint/20 bg-brand-mint/8 text-brand-mint">{t('auto.features.admin.pages.userspage.111a62e5', { defaultValue: "Active" })}</span>
+    ) : (
+        <span className="premium-pill border-brand-slate/30 bg-brand-slate/10 text-brand-slate dark:border-brand-slate/30 dark:bg-brand-navy/80 dark:text-brand-light/75">{t('auto.features.admin.pages.userspage.ed1a9226', { defaultValue: "Pending invite" })}</span>
+    );
+}
+
+function RoleBadge({ role }: { role: UserListItem['role'] }) {
+    const isAdmin = role === 'ADMIN';
+    return (
+        <span
+            className={clsx(
+                'premium-pill',
+                isAdmin
+                    ? 'border-brand-navy/10 bg-brand-navy text-white dark:border-white/10 dark:bg-white/8 dark:text-white'
+                    : 'border-brand-mint/30 bg-brand-mint/10 text-brand-mint dark:border-brand-mint/30 dark:bg-brand-mint/20 dark:text-brand-light/75',
+            )}
+        >
+            {isAdmin ? 'Admin' : 'Commercial'}
+        </span>
+    );
+}
+
+function UserAvatar({ user }: { user: UserListItem }) {
+    const initials = user.firstName
+        ? `${user.firstName[0] ?? ''}${user.lastName?.[0] ?? ''}`.trim()
+        : user.email.slice(0, 2).toUpperCase();
+
+    return (
+        <div className="flex items-center gap-3">
+            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-brand-mint/10 text-sm font-semibold text-white shadow-md">
+                {initials}
+            </div>
+            <div className="min-w-0">
+                <p className="truncate font-semibold text-brand-navy dark:text-white">
+                    {user.firstName ? `${user.firstName} ${user.lastName ?? ''}`.trim() : 'Profile pending'}
+                </p>
+                <p className="mt-1 flex items-center gap-1.5 truncate text-xs text-brand-slate dark:text-brand-light/75">
+                    <Mail size={12} />
+                    <span className="truncate">{user.email}</span>
+                </p>
+            </div>
+        </div>
+    );
+}
+
+function ActionButtons({
+    user,
+    onEdit,
+    onDelete,
+}: {
+    user: UserListItem;
+    onEdit: (user: UserListItem) => void;
+    onDelete: (user: UserListItem) => void;
+}) {
+    const { t } = useTranslation('common');
+
+    return (
+        <div className="flex items-center justify-end gap-2">
+            <button
+                type="button"
+                onClick={() => onEdit(user)}
+                className="inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-white/70 bg-white/70 text-brand-slate transition hover:text-brand-navy dark:border-white/10 dark:bg-white/5 dark:text-brand-light/75 dark:hover:text-white"
+                title={t('auto.features.admin.pages.userspage.title.8c6523e0', { defaultValue: "Edit user" })}
+            >
+                <Pencil size={16} />
+            </button>
+            <button
+                type="button"
+                onClick={() => onDelete(user)}
+                className="inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-brand-slate/30 bg-brand-slate/10 text-brand-slate transition hover:bg-brand-slate/10 dark:border-brand-slate/30 dark:bg-brand-navy/80 dark:text-brand-light/75"
+                title={t('auto.features.admin.pages.userspage.title.6d534da0', { defaultValue: "Suspend user" })}
+            >
+                <Trash2 size={16} />
+            </button>
+        </div>
+    );
+}
+
+function UserTable({
+    users,
+    emptyLabel,
+    showHotels,
+    onEdit,
+    onDelete,
+}: {
+    users: UserListItem[];
+    emptyLabel: string;
+    showHotels: boolean;
+    onEdit: (user: UserListItem) => void;
+    onDelete: (user: UserListItem) => void;
+}) {
+    const { t } = useTranslation('common');
+
+    if (users.length === 0) {
+        return (
+            <div className="rounded-2xl border border-dashed border-white/70 bg-white/40 px-6 py-10 text-center text-sm text-brand-slate dark:border-white/10 dark:bg-white/5 dark:text-brand-light/75">
+                {emptyLabel}
+            </div>
+        );
+    }
+
+    return (
+        <div className="overflow-hidden rounded-2xl border border-white/70 bg-white/55 shadow-sm dark:border-white/10 dark:bg-white/5">
+            <div className="overflow-x-auto">
+                <table className="min-w-full text-left text-sm">
+                    <thead className="bg-white/70 text-brand-slate dark:bg-white/5">
+                        <tr>
+                            <th className="px-5 py-4 font-semibold uppercase tracking-[0.18em]">{t('auto.features.admin.pages.userspage.a9bbbbe0', { defaultValue: "User" })}</th>
+                            <th className="px-5 py-4 font-semibold uppercase tracking-[0.18em]">{t('auto.features.admin.pages.userspage.0d3e32fc', { defaultValue: "Role" })}</th>
+                            {showHotels && <th className="px-5 py-4 font-semibold uppercase tracking-[0.18em]">{t('auto.features.admin.pages.userspage.7b43cd72', { defaultValue: "Assigned hotels" })}</th>}
+                            <th className="px-5 py-4 font-semibold uppercase tracking-[0.18em]">{t('auto.features.admin.pages.userspage.e63e6e31', { defaultValue: "Status" })}</th>
+                            <th className="px-5 py-4 text-right font-semibold uppercase tracking-[0.18em]">{t('auto.features.admin.pages.userspage.77eb292a', { defaultValue: "Actions" })}</th>
+                        </tr>
+                    </thead>
+                    <tbody className="divide-y divide-white/60 dark:divide-white/10">
+                        {users.map((user) => (
+                            <tr key={user.id} className="bg-white/35 dark:bg-transparent">
+                                <td className="px-5 py-4 align-top"><UserAvatar user={user} /></td>
+                                <td className="px-5 py-4 align-top"><RoleBadge role={user.role} /></td>
+                                {showHotels && (
+                                    <td className="px-5 py-4 align-top">
+                                        {user.hotels && user.hotels.length > 0 ? (
+                                            <div className="flex max-w-sm flex-wrap gap-2">
+                                                {user.hotels.map((hotel) => (
+                                                    <span key={hotel.id} className="inline-flex items-center rounded-full border border-brand-mint/15 bg-brand-mint/8 px-3 py-1 text-xs font-medium text-brand-navy dark:text-white">
+                                                        {hotel.name}
+                                                    </span>
+                                                ))}
+                                            </div>
+                                        ) : (
+                                            <span className="text-sm text-brand-slate dark:text-brand-light/75">{t('auto.features.admin.pages.userspage.28e3c5ef', { defaultValue: "No hotel assigned" })}</span>
+                                        )}
+                                    </td>
+                                )}
+                                <td className="px-5 py-4 align-top"><StatusBadge isActive={user.isActive} /></td>
+                                <td className="px-5 py-4 align-top text-right"><ActionButtons user={user} onEdit={onEdit} onDelete={onDelete} /></td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    );
+}
 
 export default function UsersPage() {
+    const { t } = useTranslation('common');
     const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
     const [editingUser, setEditingUser] = useState<UserListItem | null>(null);
     const { confirm } = useConfirm();
-
     const { data: users, isLoading, isError } = useUsers();
     const { data: allHotels = [] } = useHotels();
-
     const deleteMutation = useDeleteUser();
 
-    const admins = users?.filter(u => u.role === 'ADMIN') ?? [];
-    const commercials = users?.filter(u => u.role === 'COMMERCIAL') ?? [];
+    const admins = users?.filter((user) => user.role === 'ADMIN') ?? [];
+    const commercials = users?.filter((user) => user.role === 'COMMERCIAL') ?? [];
+    const activeUsers = users?.filter((user) => user.isActive).length ?? 0;
+    const pendingUsers = (users?.length ?? 0) - activeUsers;
+    const assignedHotels = useMemo(() => {
+        const hotelIds = commercials.flatMap((user) => user.hotels?.map((hotel) => hotel.id) ?? []);
+        return new Set(hotelIds).size;
+    }, [commercials]);
 
     const handleDelete = async (user: UserListItem) => {
         if (await confirm({
-            title: `Suspendre l'utilisateur ${user.firstName || user.email} ?`,
-            description: "L'utilisateur ne pourra plus accéder à la plateforme via ce compte.",
-            confirmLabel: "Suspendre",
-            variant: "danger"
+            title: t('pages.users.confirmSuspend.title', { defaultValue: 'Suspend {{name}}?', name: user.firstName || user.email }),
+            description: t('pages.users.confirmSuspend.description', { defaultValue: 'This account will lose access to the workspace until it is re-enabled.' }),
+            confirmLabel: t('pages.users.confirmSuspend.confirmLabel', { defaultValue: 'Suspend user' }),
+            variant: 'danger',
         })) {
             deleteMutation.mutate(user.id);
         }
     };
 
-    const StatusBadge = ({ isActive }: { isActive: boolean }) =>
-        !isActive ? (
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-amber-50 text-amber-700 border border-amber-100">
-                <div className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
-                En attente
-            </span>
-        ) : (
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-100">
-                <div className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                Actif
-            </span>
-        );
-
-    const UserAvatar = ({ user }: { user: UserListItem }) => (
-        <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-linear-to-br from-indigo-100 to-violet-100 text-indigo-700 flex items-center justify-center font-bold text-sm">
-                {user.firstName ? user.firstName[0] : user.email[0].toUpperCase()}
-            </div>
-            <div>
-                <div className="font-medium text-gray-900">
-                    {user.firstName ? `${user.firstName} ${user.lastName}` : '—'}
-                </div>
-                <div className="text-gray-500 text-xs flex items-center gap-1">
-                    <Mail size={12} /> {user.email}
-                </div>
-            </div>
-        </div>
-    );
-
-    const ActionButtons = ({ user }: { user: UserListItem }) => (
-        <div className="flex items-center justify-end gap-2">
-            <button onClick={() => setEditingUser(user)}
-                className="p-1.5 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
-                title="Modifier">
-                <Pencil size={16} />
-            </button>
-            <button onClick={() => handleDelete(user)}
-                className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                title="Suspendre">
-                <Trash2 size={16} />
-            </button>
-        </div>
-    );
-
     return (
-        <div className="p-8">
-            <div className="flex items-center justify-between mb-8">
-                <div>
-                    <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-3">
-                        <Users className="text-indigo-600" size={28} />
-                        Gestion des Utilisateurs
-                    </h1>
-                    <p className="text-sm text-gray-500 mt-1">Invitez et gérez les comptes utilisateurs</p>
+        <div className="space-y-6 p-4 md:p-6">
+            <AdminPageHeader
+                eyebrow={t('pages.users.header.eyebrow', { defaultValue: 'Team Access' })}
+                title={t('pages.users.header.title', { defaultValue: 'Shape who can operate the organization.' })}
+                description={t('pages.users.header.subtitle', { defaultValue: 'Invite admins, assign commercial teammates to the right hotels, and keep access hygiene aligned with the portfolio.' })}
+                badge={t('pages.users.header.badge', { defaultValue: '{{count}} seats in workspace', count: users?.length ?? 0 })}
+                actions={(
+                    <button
+                        type="button"
+                        onClick={() => { setIsInviteModalOpen(true); }}
+                        className="inline-flex h-11 items-center gap-2 rounded-2xl bg-brand-mint px-4 text-sm font-semibold text-white shadow-md transition hover:-translate-y-0.5 hover:bg-brand-mint"
+                    >
+                        <Plus size={16} />
+                        {t('pages.users.header.inviteUser', { defaultValue: 'Invite user' })}
+                    </button>
+                )}
+            >
+                <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+                    {[
+                        { label: t('pages.users.metrics.totalSeats', { defaultValue: 'Total seats' }), value: users?.length ?? 0, icon: Users },
+                        { label: t('pages.users.metrics.activeUsers', { defaultValue: 'Active users' }), value: activeUsers, icon: ShieldCheck },
+                        { label: t('pages.users.metrics.pendingInvites', { defaultValue: 'Pending invites' }), value: pendingUsers, icon: UserCog },
+                        { label: t('pages.users.metrics.hotelsCovered', { defaultValue: 'Hotels covered' }), value: assignedHotels, icon: Building2 },
+                    ].map((metric) => {
+                        const Icon = metric.icon;
+                        return (
+                            <div key={metric.label} className="rounded-2xl border border-white/70 bg-white/72 p-5 shadow-sm dark:border-white/10 dark:bg-white/5">
+                                <div className="flex items-center justify-between gap-4">
+                                    <p className="text-sm font-medium text-brand-slate">{metric.label}</p>
+                                    <div className="rounded-2xl bg-brand-mint/10 p-3 text-brand-mint"><Icon size={18} /></div>
+                                </div>
+                                <p className="mt-6 text-3xl font-semibold tracking-tight text-brand-navy dark:text-white">{metric.value}</p>
+                            </div>
+                        );
+                    })}
                 </div>
-                <button
-                    onClick={() => { setIsInviteModalOpen(true); }}
-                    className="inline-flex items-center gap-2 px-4 py-2.5 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition-colors shadow-sm cursor-pointer"
-                >
-                    <Plus size={16} /> Inviter un utilisateur
-                </button>
-            </div>
+            </AdminPageHeader>
 
             {isLoading && (
-                <div className="flex items-center justify-center h-48">
-                    <div className="animate-spin rounded-full h-8 w-8 border-2 border-indigo-600 border-t-transparent" />
+                <div className="premium-surface flex h-48 items-center justify-center">
+                    <div className="h-9 w-9 animate-spin rounded-full border-2 border-brand-mint border-t-transparent" />
                 </div>
             )}
 
             {isError && (
-                <div className="rounded-xl bg-red-50 border border-red-200 p-6 text-red-700 text-sm">
-                    Impossible de charger les utilisateurs.
+                <div className="premium-surface border-brand-slate/30 bg-brand-slate/10 p-6 text-sm text-brand-slate dark:border-brand-slate/30 dark:bg-brand-navy/80 dark:text-brand-light/75">
+                    {t('pages.users.errors.loadFailed', { defaultValue: 'Unable to load users right now.' })}
                 </div>
             )}
 
             {users && (
-                <div className="space-y-8">
-                    {/* ─── Administrateurs Système ──────────────────────────── */}
-                    <div>
-                        <div className="flex items-center gap-2 mb-3">
-                            <div className="p-1.5 bg-violet-100 rounded-lg">
-                                <ShieldCheck size={18} className="text-violet-600" />
-                            </div>
-                            <h2 className="text-lg font-semibold text-gray-800">Administrateurs Système</h2>
-                            <span className="text-xs text-gray-400 ml-1">({admins.length})</span>
-                        </div>
-
-                        {admins.length === 0 ? (
-                            <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-8 text-center text-gray-400 text-sm">
-                                Aucun administrateur
-                            </div>
-                        ) : (
-                            <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-                                <table className="w-full text-sm text-left">
-                                    <thead>
-                                        <tr className="bg-violet-50/50 border-b border-gray-200">
-                                            <th className="px-6 py-3.5 font-semibold text-gray-500 uppercase tracking-wider text-xs">Utilisateur</th>
-                                            <th className="px-6 py-3.5 font-semibold text-gray-500 uppercase tracking-wider text-xs">Statut</th>
-                                            <th className="px-6 py-3.5 font-semibold text-gray-500 uppercase tracking-wider text-xs text-right">Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody className="divide-y divide-gray-100">
-                                        {admins.map((user) => (
-                                            <tr key={user.id} className="hover:bg-gray-50 transition-colors">
-                                                <td className="px-6 py-4"><UserAvatar user={user} /></td>
-                                                <td className="px-6 py-4"><StatusBadge isActive={user.isActive} /></td>
-                                                <td className="px-6 py-4 text-right"><ActionButtons user={user} /></td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
+                <div className="space-y-6">
+                    <AdminSectionCard
+                        eyebrow={t('pages.users.admins.eyebrow', { defaultValue: 'Governance Layer' })}
+                        title={t('pages.users.admins.title', { defaultValue: 'Organization admins' })}
+                        description={t('pages.users.admins.description', { defaultValue: 'Admins manage billing posture, access rules, and overall workspace governance.' })}
+                        actions={(
+                            <div className="inline-flex items-center gap-2 rounded-full border border-brand-navy/10 bg-brand-navy px-4 py-2 text-sm font-medium text-white dark:border-white/10 dark:bg-white/8">
+                                <Briefcase size={16} />
+                                {t('pages.users.admins.count', { defaultValue: '{{count}} admin seats', count: admins.length })}
                             </div>
                         )}
-                    </div>
+                    >
+                        <UserTable users={admins} emptyLabel={t('pages.users.admins.empty', { defaultValue: 'No admin seats are active yet.' })} showHotels={false} onEdit={setEditingUser} onDelete={handleDelete} />
+                    </AdminSectionCard>
 
-                    {/* ─── Équipe de l'Hôtel (Commerciaux) ─────────────────── */}
-                    <div>
-                        <div className="flex items-center gap-2 mb-3">
-                            <div className="p-1.5 bg-blue-100 rounded-lg">
-                                <Briefcase size={18} className="text-blue-600" />
-                            </div>
-                            <h2 className="text-lg font-semibold text-gray-800">Équipe de l'Hôtel</h2>
-                            <span className="text-xs text-gray-400 ml-1">({commercials.length})</span>
-                        </div>
-
-                        {commercials.length === 0 ? (
-                            <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-8 text-center text-gray-400 text-sm">
-                                Aucun commercial
-                            </div>
-                        ) : (
-                            <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-                                <table className="w-full text-sm text-left">
-                                    <thead>
-                                        <tr className="bg-blue-50/50 border-b border-gray-200">
-                                            <th className="px-6 py-3.5 font-semibold text-gray-500 uppercase tracking-wider text-xs w-1/3">Utilisateur</th>
-                                            <th className="px-6 py-3.5 font-semibold text-gray-500 uppercase tracking-wider text-xs">Hôtels Assignés</th>
-                                            <th className="px-6 py-3.5 font-semibold text-gray-500 uppercase tracking-wider text-xs">Statut</th>
-                                            <th className="px-6 py-3.5 font-semibold text-gray-500 uppercase tracking-wider text-xs text-right">Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody className="divide-y divide-gray-100">
-                                        {commercials.map((user) => (
-                                            <tr key={user.id} className="hover:bg-gray-50 transition-colors">
-                                                <td className="px-6 py-4"><UserAvatar user={user} /></td>
-                                                <td className="px-6 py-4 max-w-xs">
-                                                    {user.hotels && user.hotels.length > 0 ? (
-                                                        <div className="flex flex-wrap gap-1">
-                                                            {user.hotels.map(h => (
-                                                                <span key={h.id} className="inline-block px-2 py-0.5 bg-blue-50 text-blue-700 rounded text-[10px] border border-blue-100 truncate max-w-[150px]">
-                                                                    {h.name}
-                                                                </span>
-                                                            ))}
-                                                        </div>
-                                                    ) : (
-                                                        <span className="text-gray-400 text-xs italic">Aucun hôtel</span>
-                                                    )}
-                                                </td>
-                                                <td className="px-6 py-4"><StatusBadge isActive={user.isActive} /></td>
-                                                <td className="px-6 py-4 text-right"><ActionButtons user={user} /></td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
+                    <AdminSectionCard
+                        eyebrow={t('pages.users.commercials.eyebrow', { defaultValue: 'Portfolio Coverage' })}
+                        title={t('pages.users.commercials.title', { defaultValue: 'Commercial team' })}
+                        description={t('pages.users.commercials.description', { defaultValue: 'Commercial users work inside the hotel portfolio, so assignments should stay tightly scoped and current.' })}
+                        actions={(
+                            <div className="inline-flex items-center gap-2 rounded-full border border-brand-mint/20 bg-brand-mint/8 px-4 py-2 text-sm font-medium text-brand-mint">
+                                <Building2 size={16} />
+                                {t('pages.users.commercials.count', { defaultValue: '{{count}} commercial seats across {{hotels}} hotels', count: commercials.length, hotels: allHotels.length })}
                             </div>
                         )}
-                    </div>
+                    >
+                        <UserTable users={commercials} emptyLabel={t('pages.users.commercials.empty', { defaultValue: 'No commercial users have been assigned yet.' })} showHotels onEdit={setEditingUser} onDelete={handleDelete} />
+                    </AdminSectionCard>
+
+                    <section className="grid gap-4 lg:grid-cols-[1.2fr,0.8fr]">
+                        <div className="rounded-2xl border border-brand-mint/20 bg-brand-mint/10 p-6 shadow-md dark:border-brand-mint/20 dark:bg-brand-navy/80">
+                            <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-brand-slate dark:text-brand-light/75">{t('pages.users.guidance.eyebrow', { defaultValue: 'Access Hygiene' })}</p>
+                            <h3 className="mt-2 text-xl font-semibold tracking-tight text-brand-navy dark:text-white">{t('pages.users.guidance.title', { defaultValue: 'Keep assignments clean as the portfolio grows.' })}</h3>
+                            <div className="mt-5 grid gap-3 md:grid-cols-3">
+                                {[
+                                    t('pages.users.guidance.items.reviewPending', { defaultValue: 'Review pending invites before opening a new onboarding batch.' }),
+                                    t('pages.users.guidance.items.auditAdmins', { defaultValue: 'Limit admin seats to users handling billing and governance decisions.' }),
+                                    t('pages.users.guidance.items.alignHotels', { defaultValue: "Match hotel assignments to each commercial user's current operating scope." }),
+                                ].map((item) => (
+                                    <div key={item} className="rounded-2xl border border-white/60 bg-white/72 px-4 py-3 text-sm text-brand-navy dark:border-white/10 dark:bg-white/5 dark:text-white">
+                                        {item}
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+
+                        <div className="premium-surface p-6">
+                            <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-brand-slate">{t('pages.users.summary.eyebrow', { defaultValue: 'Coverage Snapshot' })}</p>
+                            <h3 className="mt-2 text-xl font-semibold tracking-tight text-brand-navy dark:text-white">{t('pages.users.summary.title', { defaultValue: 'Seat distribution' })}</h3>
+                            <div className="mt-5 space-y-4">
+                                {[
+                                    { label: t('pages.users.summary.adminCoverage', { defaultValue: 'Admin governance' }), value: `${admins.length}/${Math.max(users.length, 1)}` },
+                                    { label: t('pages.users.summary.commercialCoverage', { defaultValue: 'Commercial execution' }), value: `${commercials.length}/${Math.max(users.length, 1)}` },
+                                    { label: t('pages.users.summary.hotelAssignments', { defaultValue: 'Hotel assignments' }), value: `${assignedHotels}/${Math.max(allHotels.length, 1)}` },
+                                ].map((item) => (
+                                    <div key={item.label} className="rounded-2xl border border-white/70 bg-white/72 px-4 py-4 dark:border-white/10 dark:bg-white/5">
+                                        <div className="flex items-center justify-between gap-3">
+                                            <p className="text-sm text-brand-slate dark:text-brand-light/75">{item.label}</p>
+                                            <p className="text-lg font-semibold text-brand-navy dark:text-white">{item.value}</p>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </section>
                 </div>
             )}
 
             <InviteUserModal isOpen={isInviteModalOpen} onClose={() => setIsInviteModalOpen(false)} />
-            <EditUserModal
-                isOpen={!!editingUser}
-                onClose={() => setEditingUser(null)}
-                user={editingUser}
-                allHotels={allHotels}
-            />
+            <EditUserModal isOpen={!!editingUser} onClose={() => setEditingUser(null)} user={editingUser} allHotels={allHotels} />
         </div>
     );
 }

@@ -6,6 +6,7 @@ import type {
     CreateContractCancellationRulePayload, 
     UpdateContractCancellationRulePayload 
 } from '../../catalog/cancellation/types/cancellation.types';
+import i18next from '../../../lib/i18n';
 
 export function useContractCancellation(contractId: number) {
     return useQuery<ContractCancellationRule[]>({
@@ -26,7 +27,7 @@ export function useCreateContractCancellation(contractId: number) {
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['contract-cancellation', contractId] });
-            toast.success('Règle d\'annulation créée');
+            toast.success(i18next.t('auto.features.contracts.hooks.usecontractcancellation.toast.success.07f51d02', { defaultValue: "Règle d'annulation créée" }));
         },
     });
 }
@@ -53,7 +54,7 @@ export function useDeleteContractCancellation(contractId: number) {
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['contract-cancellation', contractId] });
-            toast.success('Règle d\'annulation supprimée');
+            toast.success(i18next.t('auto.features.contracts.hooks.usecontractcancellation.toast.success.bef7b852', { defaultValue: "Règle d'annulation supprimée" }));
         },
     });
 }
@@ -67,7 +68,7 @@ export function useImportCancellation(contractId: number) {
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['contract-cancellation', contractId] });
-            toast.success('Règle importée depuis le catalogue');
+            toast.success(i18next.t('auto.features.contracts.hooks.usecontractcancellation.toast.success.26634425', { defaultValue: "Règle importée depuis le catalogue" }));
         },
     });
 }

@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { hotelService, type Hotel, type CreateHotelPayload, type UpdateHotelPayload } from '../services/hotel.service';
+import i18next from '../../../lib/i18n';
 
 export type { Hotel, CreateHotelPayload, UpdateHotelPayload };
 
@@ -31,7 +32,7 @@ export function useCreateHotel(onSuccess?: () => void) {
         mutationFn: hotelService.createHotel,
         onSuccess: () => {
             qc.invalidateQueries({ queryKey: [...HOTELS_QUERY_KEY] });
-            toast.success('Hôtel créé avec succès');
+            toast.success(i18next.t('auto.features.hotel.hooks.usehotels.toast.success.cba2c083', { defaultValue: "Hôtel créé avec succès" }));
             onSuccess?.();
         },
     });
@@ -45,7 +46,7 @@ export function useUpdateHotel(onSuccess?: () => void) {
             hotelService.updateHotel(id, data),
         onSuccess: () => {
             qc.invalidateQueries({ queryKey: [...HOTELS_QUERY_KEY] });
-            toast.success('Hôtel mis à jour');
+            toast.success(i18next.t('auto.features.hotel.hooks.usehotels.toast.success.dd70415d', { defaultValue: "Hôtel mis à jour" }));
             onSuccess?.();
         },
     });
@@ -59,7 +60,7 @@ export function useDeleteHotel() {
         onSuccess: () => {
             qc.invalidateQueries({ queryKey: [...HOTELS_QUERY_KEY] });
             qc.invalidateQueries({ queryKey: [...ARCHIVED_KEY] });
-            toast.success('Hôtel archivé avec succès');
+            toast.success(i18next.t('auto.features.hotel.hooks.usehotels.toast.success.a982fcc1', { defaultValue: "Hôtel archivé avec succès" }));
         },
     });
 }
@@ -72,7 +73,7 @@ export function useRestoreHotel() {
         onSuccess: () => {
             qc.invalidateQueries({ queryKey: [...HOTELS_QUERY_KEY] });
             qc.invalidateQueries({ queryKey: [...ARCHIVED_KEY] });
-            toast.success('Hôtel restauré avec succès');
+            toast.success(i18next.t('auto.features.hotel.hooks.usehotels.toast.success.df605eb4', { defaultValue: "Hôtel restauré avec succès" }));
         },
     });
 }

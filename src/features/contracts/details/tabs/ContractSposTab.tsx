@@ -1,14 +1,15 @@
 import { useState } from 'react';
 import { useOutletContext } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import { useQuery } from '@tanstack/react-query';
 import type { ContractOutletContext } from '../components/ContractDetailsLayout';
 import { useContractSpos, useDeleteContractSpo } from '../../hooks/useContractSpos';
 import { useConfirm } from '../../../../context/ConfirmContext';
 import { Plus, Gift } from 'lucide-react';
 import type { ContractSpo } from '../../../catalog/spos/types/spos.types';
-import ContractSpoModal from '../modals/ContractSpoModal';
+import EditContractSpoModal from '../modals/EditContractSpoModal';
 import ImportContractSpoModal from '../modals/ImportContractSpoModal';
 import SpoGrid from '../components/SpoGrid';
-import { useQuery } from '@tanstack/react-query';
 import { contractService } from '../../services/contract.service';
 
 export default function ContractSposTab() {
@@ -16,8 +17,8 @@ export default function ContractSposTab() {
     const { data: spos, isLoading: isLoadingSpos, isError, refetch } = useContractSpos(contract.id);
     const deleteMutation = useDeleteContractSpo(contract.id);
     const { confirm } = useConfirm();
+    const { t } = useTranslation('common');
 
-    // Fetch contract lines to know which rooms are contracted per period
     const { data: contractLines, isLoading: isLoadingLines } = useQuery({
         queryKey: ['contract-lines', contract.id],
         queryFn: () => contractService.getContractPrices(contract.id),
@@ -29,10 +30,13 @@ export default function ContractSposTab() {
 
     const handleDelete = async (spo: ContractSpo) => {
         if (await confirm({
-            title: 'Supprimer l\'offre spéciale ?',
-            description: `L'offre spéciale "${spo.name}" sera définitivement supprimée de ce contrat.`,
-            confirmLabel: 'Supprimer',
-            variant: 'danger'
+            title: t('pages.contractDetails.spos.deleteTitle', { defaultValue: 'Delete special offer?' }),
+            description: t('pages.contractDetails.spos.deleteDescription', {
+                defaultValue: 'The special offer "{{name}}" will be permanently removed from this contract.',
+                name: spo.name,
+            }),
+            confirmLabel: t('pages.contractDetails.spos.deleteConfirm', { defaultValue: 'Delete' }),
+            variant: 'danger',
         })) {
             deleteMutation.mutate(spo.id);
         }
@@ -43,15 +47,15 @@ export default function ContractSposTab() {
     if (isLoading) {
         return (
             <div className="flex items-center justify-center py-12">
-                <div className="animate-spin rounded-full h-8 w-8 border-2 border-indigo-600 border-t-transparent" />
+                <div className="animate-spin rounded-full h-8 w-8 border-2 border-brand-mint/30 border-t-transparent" />
             </div>
         );
     }
 
     if (isError) {
         return (
-            <div className="rounded-xl bg-red-50 border border-red-200 p-6 text-red-700 text-sm">
-                Impossible de charger les offres spéciales.
+            <div className="rounded-xl bg-brand-slate/10 border border-brand-slate/30 p-6 text-brand-slate text-sm">
+                {t('pages.contractDetails.spos.loadError', { defaultValue: 'Unable to load special offers.' })}
             </div>
         );
     }
@@ -62,25 +66,32 @@ export default function ContractSposTab() {
         <div className="space-y-6">
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                    <Gift size={20} className="text-indigo-600" />
-                    <h2 className="text-base font-semibold text-gray-900">Offres Spéciales (SPO)</h2>
-                    <span className="text-xs text-gray-400">({items.length})</span>
+                    <Gift size={20} className="text-brand-mint" />
+                    <h2 className="text-base font-semibold text-brand-navy">
+                        {t('pages.contractDetails.spos.title', { defaultValue: 'Special Offers (SPO)' })}
+                    </h2>
+                    <span className="text-xs text-brand-slate">({items.length})</span>
                 </div>
                 <div className="flex items-center gap-3">
                     <button
                         onClick={() => setIsImportModalOpen(true)}
-                        className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 transition-colors cursor-pointer"
+                        className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-brand-mint rounded-xl hover:bg-brand-mint transition-colors cursor-pointer"
                     >
-                        <Plus size={16} /> Importer depuis le Catalogue
+                        <Plus size={16} />
+                        {t('pages.contractDetails.spos.importFromCatalog', { defaultValue: 'Import from Catalog' })}
                     </button>
                 </div>
             </div>
 
             {items.length === 0 ? (
-                <div className="rounded-xl bg-gray-100 border border-dashed border-gray-300 p-12 text-center">
-                    <Gift size={40} className="mx-auto text-gray-300 mb-3" />
-                    <p className="text-gray-500 text-sm">Aucune offre spéciale dans ce contrat</p>
-                    <p className="text-gray-400 text-xs mt-1">Importez depuis le catalogue pour commencer</p>
+                <div className="rounded-xl bg-brand-light border border-dashed border-brand-slate/20 p-12 text-center">
+                    <Gift size={40} className="mx-auto text-brand-slate mb-3" />
+                    <p className="text-brand-slate text-sm">
+                        {t('pages.contractDetails.spos.emptyTitle', { defaultValue: 'No special offers in this contract' })}
+                    </p>
+                    <p className="text-brand-slate text-xs mt-1">
+                        {t('pages.contractDetails.spos.emptySubtitle', { defaultValue: 'Import from the catalog to get started' })}
+                    </p>
                 </div>
             ) : (
                 <SpoGrid
@@ -95,7 +106,7 @@ export default function ContractSposTab() {
                 />
             )}
 
-            <ContractSpoModal
+            <EditContractSpoModal
                 isOpen={isEditModalOpen}
                 onClose={() => { setIsEditModalOpen(false); setEditingSpo(null); }}
                 contract={contract}

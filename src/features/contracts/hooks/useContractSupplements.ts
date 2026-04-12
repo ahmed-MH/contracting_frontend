@@ -7,6 +7,7 @@ import type {
     ContractSupplement,
     UpdateContractSupplementPayload
 } from '../../catalog/supplements/types/supplements.types';
+import i18next from '../../../lib/i18n';
 
 export type { ContractSupplement, UpdateContractSupplementPayload };
 
@@ -32,7 +33,7 @@ export function useImportSupplement(contractId: number) {
             qc.invalidateQueries({
                 queryKey: CONTRACT_SUPPLEMENT_KEYS.byContract(contractId),
             });
-            toast.success('Supplément importé');
+            toast.success(i18next.t('auto.features.contracts.hooks.usecontractsupplements.toast.success.e9bd8145', { defaultValue: "Supplément importé" }));
         },
     });
 }
@@ -65,7 +66,7 @@ export function useDeleteContractSupplement(contractId: number) {
             qc.invalidateQueries({
                 queryKey: CONTRACT_SUPPLEMENT_KEYS.byContract(contractId),
             });
-            toast.success('Supplément supprimé');
+            toast.success(i18next.t('auto.features.contracts.hooks.usecontractsupplements.toast.success.a0cb2f2b', { defaultValue: "Supplément supprimé" }));
         },
     });
 }

@@ -1,41 +1,42 @@
+import { useMemo } from 'react';
 import { useForm } from 'react-hook-form';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { authService } from '../../auth/services/auth.service';
 import { hotelService } from '../../hotel/services/hotel.service';
-import { useQuery } from '@tanstack/react-query';
 import Modal from '../../../components/ui/Modal';
+import { createInviteUserSchema, type InviteUserFormInput, type InviteUserFormValues } from '../schemas/user.schema';
 
 interface InviteUserModalProps {
     isOpen: boolean;
     onClose: () => void;
 }
 
-interface InviteForm {
-    email: string;
-    role: 'ADMIN' | 'COMMERCIAL';
-    hotelIds: number[];
-}
-
 export default function InviteUserModal({ isOpen, onClose }: InviteUserModalProps) {
     const queryClient = useQueryClient();
+    const { t } = useTranslation('common');
+    const schema = useMemo(() => createInviteUserSchema(t), [t]);
+    const inputClassName = 'w-full rounded-2xl border border-white/70 bg-white/80 px-4 py-3 text-sm text-brand-navy shadow-sm outline-none transition focus:border-brand-mint focus:ring-2 focus:ring-brand-mint/20 dark:border-white/10 dark:bg-white/5 dark:text-brand-light';
+    const helperTextClassName = 'mt-2 text-xs leading-5 text-brand-slate dark:text-brand-light/75';
 
     const { data: hotels = [] } = useQuery({
         queryKey: ['hotels'],
         queryFn: hotelService.getHotels,
     });
 
-    const { register, handleSubmit, reset, watch, formState: { errors } } = useForm<InviteForm>({
+    const { register, handleSubmit, reset, watch, formState: { errors } } = useForm<InviteUserFormInput, unknown, InviteUserFormValues>({
+        resolver: zodResolver(schema),
         defaultValues: { email: '', role: 'COMMERCIAL', hotelIds: [] },
     });
 
     const selectedRole = watch('role');
 
     const inviteMutation = useMutation({
-        mutationFn: (data: InviteForm) => authService.invite({
+        mutationFn: (data: InviteUserFormValues) => authService.invite({
             email: data.email,
             role: data.role,
-            // Only send hotelIds for COMMERCIAL
             hotelIds: data.role === 'COMMERCIAL' ? data.hotelIds.map(Number) : [],
         }),
         onSuccess: (result) => {
@@ -44,74 +45,87 @@ export default function InviteUserModal({ isOpen, onClose }: InviteUserModalProp
             onClose();
             reset();
         },
-        onError: () => { }
+        onError: () => {},
     });
 
-    const onSubmit = (data: InviteForm) => {
+    const onSubmit = (data: InviteUserFormValues) => {
         inviteMutation.mutate(data);
     };
 
     return (
-        <Modal isOpen={isOpen} onClose={onClose} title="Inviter un utilisateur">
+        <Modal
+            isOpen={isOpen}
+            onClose={onClose}
+            title={t('pages.users.modals.invite.title', { defaultValue: 'Invite a user' })}
+            maxWidth="max-w-2xl"
+        >
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Email *</label>
+                    <label className="mb-1 block text-sm font-medium text-brand-navy dark:text-brand-light">
+                        {t('pages.users.modals.invite.email', { defaultValue: 'Email' })} *
+                    </label>
                     <input
                         type="email"
-                        {...register('email', { required: 'Email requis' })}
-                        placeholder="nouveau@exemple.com"
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none"
+                        {...register('email')}
+                        placeholder={t('pages.users.modals.invite.emailPlaceholder', { defaultValue: 'new.user@example.com' })}
+                        className={inputClassName}
                     />
-                    {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>}
+                    {errors.email && <p className="mt-1 text-xs text-brand-slate">{errors.email.message}</p>}
                 </div>
 
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Rôle *</label>
-                    <select
-                        {...register('role')}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none bg-white"
-                    >
-                        <option value="ADMIN">Administrateur</option>
-                        <option value="COMMERCIAL">Commercial</option>
+                    <label className="mb-1 block text-sm font-medium text-brand-navy dark:text-brand-light">
+                        {t('pages.users.modals.invite.role', { defaultValue: 'Role' })} *
+                    </label>
+                    <select {...register('role')} className={inputClassName}>
+                        <option value="ADMIN">{t('pages.users.roles.admin', { defaultValue: 'Administrator' })}</option>
+                        <option value="COMMERCIAL">{t('pages.users.roles.commercial', { defaultValue: 'Commercial' })}</option>
                     </select>
-                    <p className="text-xs text-gray-400 mt-1">
+                    <p className={helperTextClassName}>
                         {selectedRole === 'ADMIN'
-                            ? 'Accès global à la plateforme (pas d\'hôtel requis)'
-                            : 'Employé local — doit être affecté à un hôtel'}
+                            ? t('pages.users.modals.roleHints.admin', { defaultValue: 'Global platform access (no hotel assignment required)' })
+                            : t('pages.users.modals.roleHints.commercial', { defaultValue: 'Local employee, must be assigned to at least one hotel' })}
                     </p>
                 </div>
 
-                {/* Hôtels — visible only for COMMERCIAL */}
-                {selectedRole === 'COMMERCIAL' && hotels && hotels.length > 0 && (
+                {selectedRole === 'COMMERCIAL' && hotels.length > 0 && (
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Hôtels assignés *</label>
-                        <div className="border border-gray-200 rounded-lg p-3 max-h-40 overflow-y-auto space-y-2">
+                        <label className="mb-1 block text-sm font-medium text-brand-navy dark:text-brand-light">
+                            {t('pages.users.modals.invite.assignedHotels', { defaultValue: 'Assigned Hotels' })} *
+                        </label>
+                        <div className="max-h-52 space-y-2 overflow-y-auto rounded-2xl border border-white/70 bg-white/70 p-3 dark:border-white/10 dark:bg-white/5">
                             {hotels.map((hotel) => (
-                                <label key={hotel.id} className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
+                                <label key={hotel.id} className="flex cursor-pointer items-center gap-3 rounded-2xl border border-transparent px-3 py-2 text-sm text-brand-navy transition hover:border-brand-mint/15 hover:bg-brand-mint/8 dark:text-brand-light dark:hover:bg-brand-mint/10">
                                     <input
                                         type="checkbox"
                                         value={hotel.id}
-                                        {...register('hotelIds', {
-                                            validate: (v) => selectedRole !== 'COMMERCIAL' || v.length > 0 || 'Au moins un hôtel requis'
-                                        })}
-                                        className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                                        {...register('hotelIds')}
+                                        className="rounded border-brand-slate/30 text-brand-mint focus:ring-brand-mint"
                                     />
-                                    {hotel.name}
+                                    <span>{hotel.name}</span>
                                 </label>
                             ))}
                         </div>
-                        {errors.hotelIds && <p className="text-red-500 text-xs mt-1">{errors.hotelIds.message}</p>}
+                        {errors.hotelIds && <p className="mt-1 text-xs text-brand-slate">{errors.hotelIds.message}</p>}
                     </div>
                 )}
 
-                <div className="flex justify-end gap-3 pt-2 border-t border-gray-100">
-                    <button type="button" onClick={onClose}
-                        className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors cursor-pointer">
-                        Annuler
+                <div className="flex justify-end gap-3 border-t border-brand-slate/15 pt-3 dark:border-brand-slate/20">
+                    <button
+                        type="button"
+                        onClick={onClose}
+                        className="rounded-2xl border border-white/70 bg-white/70 px-4 py-2.5 text-sm font-medium text-brand-slate transition hover:text-brand-navy dark:border-white/10 dark:bg-white/5 dark:text-brand-light/75 dark:hover:text-white"
+                    >
+                        {t('actions.cancel', { defaultValue: 'Cancel' })}
                     </button>
-                    <button type="submit" disabled={inviteMutation.isPending}
-                        className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 transition-colors disabled:opacity-50 cursor-pointer">
-                        {inviteMutation.isPending ? 'Envoi...' : 'Envoyer l\'invitation'}
+                    <button
+                        type="submit"
+                        disabled={inviteMutation.isPending}
+                        className="rounded-2xl bg-brand-mint px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-mint disabled:opacity-50"
+                    >
+                        {inviteMutation.isPending
+                            ? t('pages.users.modals.invite.sending', { defaultValue: 'Sending...' })
+                            : t('pages.users.modals.invite.submit', { defaultValue: 'Send invitation' })}
                     </button>
                 </div>
             </form>

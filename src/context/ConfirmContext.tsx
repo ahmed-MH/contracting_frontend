@@ -1,5 +1,6 @@
 import { createContext, useContext, useCallback, useRef, useState, type ReactNode } from 'react';
 import ConfirmDialog from '../components/ui/ConfirmDialog';
+import { useTranslation } from 'react-i18next';
 
 interface ConfirmOptions {
     title: string;
@@ -20,6 +21,8 @@ const ConfirmContext = createContext<ConfirmContextValue | null>(null);
  * Renders a single global ConfirmDialog driven by the `confirm()` function.
  */
 export function ConfirmProvider({ children }: { children: ReactNode }) {
+    const { t } = useTranslation('common');
+    void t;
     const [state, setState] = useState<(ConfirmOptions & { isOpen: boolean }) | null>(null);
     const resolveRef = useRef<((value: boolean) => void) | null>(null);
 

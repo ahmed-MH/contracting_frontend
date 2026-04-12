@@ -3,6 +3,7 @@ import { toast } from 'sonner';
 import { affiliateService } from '../services/affiliate.service';
 import type { Affiliate, CreateAffiliatePayload, UpdateAffiliatePayload } from '../types/affiliate.types';
 import { useHotel } from '../../hotel/context/HotelContext';
+import i18next from '../../../lib/i18n';
 
 // Re-export types so consumers only need this hook file
 export type { Affiliate, CreateAffiliatePayload, UpdateAffiliatePayload };
@@ -43,7 +44,7 @@ export function useCreateAffiliate(onSuccess?: () => void) {
         mutationFn: affiliateService.create,
         onSuccess: () => {
             qc.invalidateQueries({ queryKey: affiliateKeys.all(currentHotel?.id) });
-            toast.success('Partenaire créé avec succès');
+            toast.success(i18next.t('auto.features.partners.hooks.useaffiliates.toast.success.5495dd3f', { defaultValue: "Partenaire créé avec succès" }));
             onSuccess?.();
         },
     });
@@ -58,7 +59,7 @@ export function useUpdateAffiliate(onSuccess?: () => void) {
             affiliateService.update(id, data),
         onSuccess: () => {
             qc.invalidateQueries({ queryKey: affiliateKeys.all(currentHotel?.id) });
-            toast.success('Partenaire mis à jour');
+            toast.success(i18next.t('auto.features.partners.hooks.useaffiliates.toast.success.1990512e', { defaultValue: "Partenaire mis à jour" }));
             onSuccess?.();
         },
     });
@@ -74,7 +75,7 @@ export function useDeleteAffiliate() {
             const hid = currentHotel?.id;
             qc.invalidateQueries({ queryKey: affiliateKeys.all(hid) });
             qc.invalidateQueries({ queryKey: affiliateKeys.archived(hid) });
-            toast.success('Partenaire archivé avec succès');
+            toast.success(i18next.t('auto.features.partners.hooks.useaffiliates.toast.success.74711f73', { defaultValue: "Partenaire archivé avec succès" }));
         },
     });
 }
@@ -89,7 +90,7 @@ export function useRestoreAffiliate() {
             const hid = currentHotel?.id;
             qc.invalidateQueries({ queryKey: affiliateKeys.all(hid) });
             qc.invalidateQueries({ queryKey: affiliateKeys.archived(hid) });
-            toast.success('Partenaire restauré avec succès');
+            toast.success(i18next.t('auto.features.partners.hooks.useaffiliates.toast.success.f2827e43', { defaultValue: "Partenaire restauré avec succès" }));
         },
     });
 }

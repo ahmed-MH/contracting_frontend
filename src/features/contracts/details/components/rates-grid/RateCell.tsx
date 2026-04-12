@@ -1,5 +1,6 @@
 import { memo, useCallback, useRef, useState, useEffect } from 'react';
 import { Settings2 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 export interface CellState {
     isContracted: boolean;
@@ -23,6 +24,8 @@ const RateCell = memo(function RateCell({
     roomId, periodId, arrangementId, currency,
     cell, periodDefaultMinStay, periodDefaultRelease, onCellUpdate
 }: Props) {
+    const { t } = useTranslation('common');
+    void t;
     const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const pendingPatchRef = useRef<Partial<CellState> & { prices: any }>({ prices: {} });
     const [showOverride, setShowOverride] = useState(false);
@@ -82,14 +85,14 @@ const RateCell = memo(function RateCell({
 
     if (!cell.isContracted) {
         return (
-            <div className="flex items-center justify-between px-4 min-w-[220px] h-[80px] bg-gray-50 opacity-70 transition-opacity hover:opacity-100 group">
-                <span className="inline-flex items-center rounded-md bg-white px-2.5 py-1 text-xs font-medium text-gray-500 border border-gray-200 shadow-sm">
+            <div className="flex items-center justify-between px-4 min-w-[220px] h-[80px] bg-brand-light opacity-70 transition-opacity hover:opacity-100 group">
+                <span className="inline-flex items-center rounded-xl bg-white px-2.5 py-1 text-xs font-medium text-brand-slate border border-brand-slate/20 shadow-sm">
                     Non contracté
                 </span>
                 <button
                     onClick={toggleContracted}
-                    className="w-8 h-4 rounded-full bg-gray-300 relative transition-colors hover:bg-gray-400 cursor-pointer opacity-0 group-hover:opacity-100"
-                    title="Activer cette cellule"
+                    className="w-8 h-4 rounded-full bg-brand-slate/10 relative transition-colors hover:bg-brand-slate/10 cursor-pointer opacity-0 group-hover:opacity-100"
+                    title={t('auto.features.contracts.details.components.rates.grid.ratecell.title.e6a64ab5', { defaultValue: "Activer cette cellule" })}
                 >
                     <span className="block w-3 h-3 rounded-full bg-white absolute top-0.5 left-0.5 shadow-sm" />
                 </button>
@@ -98,7 +101,7 @@ const RateCell = memo(function RateCell({
     }
 
     return (
-        <div className="relative flex flex-col justify-center px-4 min-w-[220px] h-[80px] group hover:bg-indigo-50/10 transition-colors">
+        <div className="relative flex flex-col justify-center px-4 min-w-[220px] h-[80px] group hover:bg-brand-mint/10 transition-colors">
 
             {/* ── Top-right controls (hover) ──────────────────────── */}
             <div className="absolute top-2 right-2 flex items-center gap-1.5 opacity-0 group-hover:opacity-100 z-10 transition-opacity">
@@ -107,8 +110,8 @@ const RateCell = memo(function RateCell({
                     onClick={() => setShowOverride(v => !v)}
                     title={showOverride ? 'Masquer les surcharges' : 'Surcharger Min Stay / Release'}
                     className={`p-1 rounded transition-colors cursor-pointer ${hasOverride || showOverride
-                        ? 'text-indigo-600 bg-indigo-100 hover:bg-indigo-200'
-                        : 'text-gray-400 hover:text-indigo-600 hover:bg-indigo-50'
+                        ? 'text-brand-mint bg-brand-mint/10 hover:bg-brand-mint/10'
+                        : 'text-brand-slate hover:text-brand-mint hover:bg-brand-mint/10'
                         }`}
                 >
                     <Settings2 size={13} />
@@ -116,8 +119,8 @@ const RateCell = memo(function RateCell({
                 {/* De-contract toggle */}
                 <button
                     onClick={toggleContracted}
-                    title="Désactiver cette cellule"
-                    className="w-8 h-4 rounded-full bg-indigo-500 relative transition-colors hover:bg-indigo-600 cursor-pointer"
+                    title={t('auto.features.contracts.details.components.rates.grid.ratecell.title.9467c3e9', { defaultValue: "Désactiver cette cellule" })}
+                    className="w-8 h-4 rounded-full bg-brand-mint relative transition-colors hover:bg-brand-mint cursor-pointer"
                 >
                     <span className="block w-3 h-3 rounded-full bg-white absolute top-0.5 right-0.5 shadow-sm" />
                 </button>
@@ -127,16 +130,16 @@ const RateCell = memo(function RateCell({
             <div className="flex items-center gap-2 w-full mt-2">
                 <div className="relative flex-1">
                     <div className="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none">
-                        <span className="text-gray-400 text-xs font-medium">{currency}</span>
+                        <span className="text-brand-slate text-xs font-medium">{currency}</span>
                     </div>
                     <input
                         type="number"
                         min="0"
                         value={localState.amount}
                         onChange={(e) => handleAmountChange(e.target.value)}
-                        className="block w-full pl-9 pr-2 py-1.5 text-sm font-semibold text-gray-900 border border-gray-300 rounded-md focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 shadow-sm placeholder:text-gray-300 transition-colors"
+                        className="block w-full pl-9 pr-2 py-1.5 text-sm font-semibold text-brand-navy border border-brand-slate/20 rounded-xl focus:ring-1 focus:ring-brand-mint focus:border-brand-mint/30 shadow-sm placeholder:text-brand-slate transition-colors"
                         placeholder="0"
-                        title="Prix / Nuit"
+                        title={t('auto.features.contracts.details.components.rates.grid.ratecell.title.5e3ea50e', { defaultValue: "Prix / Nuit" })}
                     />
                 </div>
                 <div className="relative w-20 shrink-0">
@@ -145,12 +148,12 @@ const RateCell = memo(function RateCell({
                         min="0"
                         value={localState.allotment}
                         onChange={(e) => handleAllotmentChange(e.target.value)}
-                        className="block w-full pl-2 pr-7 py-1.5 text-sm font-medium text-indigo-700 bg-indigo-50/50 border border-gray-300 rounded-md focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 focus:bg-white shadow-sm placeholder:text-gray-300 transition-colors text-right"
+                        className="block w-full pl-2 pr-7 py-1.5 text-sm font-medium text-brand-mint bg-brand-mint/10 border border-brand-slate/20 rounded-xl focus:ring-1 focus:ring-brand-mint focus:border-brand-mint/30 focus:bg-white shadow-sm placeholder:text-brand-slate transition-colors text-right"
                         placeholder="0"
-                        title="Allotement"
+                        title={t('auto.features.contracts.details.components.rates.grid.ratecell.title.267b30e9', { defaultValue: "Allotement" })}
                     />
                     <div className="absolute inset-y-0 right-0 pr-2 flex items-center pointer-events-none">
-                        <span className="text-indigo-400/70 text-[10px] font-semibold">Ch.</span>
+                        <span className="text-brand-mint text-[10px] font-semibold">{t('auto.features.contracts.details.components.rates.grid.ratecell.34f9fd4a', { defaultValue: "Ch." })}</span>
                     </div>
                 </div>
             </div>
@@ -160,30 +163,30 @@ const RateCell = memo(function RateCell({
                 <div className="flex items-center gap-2 w-full mt-1.5">
                     <div className="relative flex-1">
                         <div className="absolute inset-y-0 left-0 pl-2 flex items-center pointer-events-none">
-                            <span className="text-blue-400/80 text-[10px] font-medium" title="Minimum Stay">🌙 Min</span>
+                            <span className="text-brand-mint text-[10px] font-medium" title={t('auto.features.contracts.details.components.rates.grid.ratecell.title.964f35b8', { defaultValue: "Minimum Stay" })}>{t('auto.features.contracts.details.components.rates.grid.ratecell.d82876f6', { defaultValue: "🌙 Min" })}</span>
                         </div>
                         <input
                             type="number"
                             min="0"
                             value={localState.minStay}
                             onChange={(e) => handleMinStayChange(e.target.value)}
-                            className="block w-full pl-11 pr-2 py-1 text-xs font-medium text-gray-600 bg-white border border-dashed border-indigo-300 rounded focus:ring-1 focus:ring-indigo-500 focus:border-solid focus:border-indigo-500 placeholder:text-gray-300 transition-all text-right"
+                            className="block w-full pl-11 pr-2 py-1 text-xs font-medium text-brand-slate bg-white border border-dashed border-brand-mint/30 rounded focus:ring-1 focus:ring-brand-mint focus:border-solid focus:border-brand-mint/30 placeholder:text-brand-slate transition-all text-right"
                             placeholder={periodDefaultMinStay ? `Hérité : ${periodDefaultMinStay}` : '-'}
-                            title="Surcharge Min Stay (laissez vide pour hériter de la période)"
+                            title={t('auto.features.contracts.details.components.rates.grid.ratecell.title.dfcf1f0e', { defaultValue: "Surcharge Min Stay (laissez vide pour hériter de la période)" })}
                         />
                     </div>
                     <div className="relative flex-1">
                         <div className="absolute inset-y-0 left-0 pl-2 flex items-center pointer-events-none">
-                            <span className="text-blue-400/80 text-[10px] font-medium" title="Release Days">⏳ Rel</span>
+                            <span className="text-brand-mint text-[10px] font-medium" title={t('auto.features.contracts.details.components.rates.grid.ratecell.title.4731f333', { defaultValue: "Release Days" })}>{t('auto.features.contracts.details.components.rates.grid.ratecell.d2396715', { defaultValue: "⏳ Rel" })}</span>
                         </div>
                         <input
                             type="number"
                             min="0"
                             value={localState.releaseDays}
                             onChange={(e) => handleReleaseChange(e.target.value)}
-                            className="block w-full pl-10 pr-2 py-1 text-xs font-medium text-gray-600 bg-white border border-dashed border-indigo-300 rounded focus:ring-1 focus:ring-indigo-500 focus:border-solid focus:border-indigo-500 placeholder:text-gray-300 transition-all text-right"
+                            className="block w-full pl-10 pr-2 py-1 text-xs font-medium text-brand-slate bg-white border border-dashed border-brand-mint/30 rounded focus:ring-1 focus:ring-brand-mint focus:border-solid focus:border-brand-mint/30 placeholder:text-brand-slate transition-all text-right"
                             placeholder={periodDefaultRelease ? `Hérité : ${periodDefaultRelease}` : '-'}
-                            title="Surcharge Release Days (laissez vide pour hériter de la période)"
+                            title={t('auto.features.contracts.details.components.rates.grid.ratecell.title.2483b63e', { defaultValue: "Surcharge Release Days (laissez vide pour hériter de la période)" })}
                         />
                     </div>
                 </div>

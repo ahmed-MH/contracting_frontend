@@ -1,9 +1,12 @@
-import { useState, useCallback, useRef, memo, useEffect } from 'react';
-import { Save, CheckCircle2, Pencil, Trash2 } from 'lucide-react';
+import { useState, useCallback, useRef, memo, useEffect, useMemo } from 'react';
+import { Save, Pencil, Trash2, Tag, Info } from 'lucide-react';
 import { toast } from 'sonner';
 import type { ContractReduction } from '../../../catalog/reductions/types/reductions.types';
 import type { Period } from '../../../contracts/types/contract.types';
 import { contractReductionService } from '../../services/contractReduction.service';
+import { isEqual } from 'lodash-es';
+import { useTranslation } from 'react-i18next';
+import i18next from '../../../../lib/i18n';
 
 interface Props {
     contractId: number;
@@ -64,12 +67,17 @@ interface CellProps {
 const ReductionCell = memo(function ReductionCell({
     reductionId, periodId, cell, baseValue, baseType, onChange,
 }: CellProps) {
+    const { t } = useTranslation('common');
     const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const [localValue, setLocalValue] = useState(cell.overrideValue);
 
+    useEffect(() => {
+        setLocalValue(cell.overrideValue);
+    }, [cell.overrideValue]);
+
     const emitChange = useCallback((patch: Partial<CellData>) => {
         if (debounceRef.current) clearTimeout(debounceRef.current);
-        debounceRef.current = setTimeout(() => onChange(reductionId, periodId, patch), 400);
+        debounceRef.current = setTimeout(() => onChange(reductionId, periodId, patch), 300);
     }, [onChange, reductionId, periodId]);
 
     const handleToggle = () => onChange(reductionId, periodId, { active: !cell.active });
@@ -81,12 +89,12 @@ const ReductionCell = memo(function ReductionCell({
 
     if (!cell.active) {
         return (
-            <div className={`flex items-center justify-between px-3 h-[68px] group/cell transition-colors hover:bg-gray-100/60 bg-gray-50/80`}>
-                <span className="text-[11px] text-gray-400 italic select-none">Non appliqué</span>
+            <div className={`flex items-center justify-between px-3 h-[68px] group/cell transition-colors hover:bg-brand-light bg-brand-light`}>
+                <span className="text-[11px] text-brand-slate italic select-none">{t('auto.features.contracts.details.components.reductionsgrid.ba91f984', { defaultValue: "Non appliqué" })}</span>
                 <button
                     onClick={handleToggle}
-                    title="Activer pour cette période"
-                    className="relative w-8 h-4 rounded-full bg-gray-300 hover:bg-indigo-400 transition-colors cursor-pointer opacity-0 group-hover/cell:opacity-100 shrink-0"
+                    title={t('auto.features.contracts.details.components.reductionsgrid.title.a6f5ed53', { defaultValue: "Activer pour cette période" })}
+                    className="relative w-8 h-4 rounded-full bg-brand-slate/10 hover:bg-brand-mint/10 transition-colors cursor-pointer opacity-0 group-hover/cell:opacity-100 shrink-0"
                 >
                     <span className="block w-3 h-3 rounded-full bg-white absolute top-0.5 left-0.5 shadow-sm transition-all" />
                 </button>
@@ -100,13 +108,13 @@ const ReductionCell = memo(function ReductionCell({
             : `Base: ${baseValue ?? 0}`;
 
     return (
-        <div className={`flex flex-col justify-center gap-1.5 px-3 h-[68px] group/cell transition-colors hover:bg-indigo-50/30`}>
+        <div className={`flex flex-col justify-center gap-1.5 px-3 h-[68px] group/cell transition-colors hover:bg-brand-mint/10`}>
             <div className="flex items-center justify-between">
-                <span className="text-[10px] font-bold text-indigo-500 uppercase tracking-wider select-none">Actif</span>
+                <span className="text-[10px] font-bold text-brand-mint uppercase tracking-wider select-none">{t('auto.features.contracts.details.components.reductionsgrid.02f320aa', { defaultValue: "Actif" })}</span>
                 <button
                     onClick={handleToggle}
-                    title="Désactiver pour cette période"
-                    className="relative w-8 h-4 rounded-full bg-indigo-500 hover:bg-red-400 transition-colors cursor-pointer opacity-0 group-hover/cell:opacity-100 shrink-0"
+                    title={t('auto.features.contracts.details.components.reductionsgrid.title.9b669364', { defaultValue: "Désactiver pour cette période" })}
+                    className="relative w-8 h-4 rounded-full bg-brand-mint hover:bg-brand-slate/20 transition-colors cursor-pointer opacity-0 group-hover/cell:opacity-100 shrink-0"
                 >
                     <span className="block w-3 h-3 rounded-full bg-white absolute top-0.5 right-0.5 shadow-sm" />
                 </button>
@@ -119,11 +127,11 @@ const ReductionCell = memo(function ReductionCell({
                     onChange={(e) => handleValueChange(e.target.value)}
                     placeholder={placeholderText}
                     disabled={!canEdit}
-                    title="Laisser vide pour hériter de la valeur de base"
-                    className={`block w-full px-2 py-1 text-xs rounded-md border text-right transition-all focus:outline-none focus:ring-1 focus:ring-indigo-400 focus:border-indigo-400 disabled:bg-transparent disabled:border-transparent disabled:text-gray-400 disabled:cursor-default ${localValue !== '' ? 'border-indigo-300 text-indigo-700 bg-indigo-50/70 font-semibold' : 'border-gray-200 text-gray-400 bg-white'}`}
+                    title={t('auto.features.contracts.details.components.reductionsgrid.title.e2fda476', { defaultValue: "Laisser vide pour hériter de la valeur de base" })}
+                    className={`block w-full px-2 py-1 text-xs rounded-xl border text-right transition-all focus:outline-none focus:ring-1 focus:ring-brand-mint focus:border-brand-mint/30 disabled:bg-transparent disabled:border-transparent disabled:text-brand-slate disabled:cursor-default ${localValue !== '' ? 'border-brand-mint/30 text-brand-mint bg-brand-mint/10 font-semibold' : 'border-brand-slate/20 text-brand-slate bg-white'}`}
                 />
                 {localValue !== '' && (
-                    <div className="absolute top-0.5 right-0.5 w-1.5 h-1.5 rounded-full bg-indigo-500 pointer-events-none" />
+                    <div className="absolute top-0.5 right-0.5 w-1.5 h-1.5 rounded-full bg-brand-mint pointer-events-none" />
                 )}
             </div>
         </div>
@@ -134,124 +142,139 @@ const ReductionCell = memo(function ReductionCell({
 export default function ReductionsGrid({
     contractId, reductions, periods, onSaved, onEdit, onDelete, isDeleting,
 }: Props) {
+    const { t } = useTranslation('common');
+    void t;
     const sortedPeriods = [...periods].sort(
         (a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime(),
     );
 
-    const [matrix, setMatrix] = useState<Matrix>(() => buildInitialMatrix(reductions));
+    const [initialMatrix, setInitialMatrix] = useState<Matrix>(() => buildInitialMatrix(reductions));
+    const [editedMatrix, setEditedMatrix] = useState<Matrix>(initialMatrix);
 
     useEffect(() => {
-        setMatrix(buildInitialMatrix(reductions));
+        const newMatrix = buildInitialMatrix(reductions);
+        setInitialMatrix(newMatrix);
+        setEditedMatrix(newMatrix);
     }, [reductions]);
-    const [savingId, setSavingId] = useState<number | null>(null);
-    const [savedIds, setSavedIds] = useState<Set<number>>(new Set());
 
-    const handleCellChange = useCallback(
-        (suppId: number, periodId: number, patch: Partial<CellData>) => {
-            setMatrix((prev) => ({
-                ...prev,
-                [suppId]: {
-                    ...prev[suppId],
-                    [periodId]: { ...(prev[suppId]?.[periodId] ?? { active: false, overrideValue: '' }), ...patch },
-                },
-            }));
-            setSavedIds((prev) => { const n = new Set(prev); n.delete(suppId); return n; });
-        },
-        [],
-    );
+    const [isSaving, setIsSaving] = useState(false);
 
-    const handleTogglePeriod = useCallback(
-        (suppId: number, periodId: number) => {
-            setMatrix((prev) => {
-                const existing = prev[suppId]?.[periodId];
-                return {
-                    ...prev,
-                    [suppId]: {
-                        ...prev[suppId],
-                        [periodId]: { active: !(existing?.active ?? false), overrideValue: existing?.overrideValue ?? '' },
-                    },
-                };
-            });
-            setSavedIds((prev) => { const n = new Set(prev); n.delete(suppId); return n; });
-        },
-        [],
-    );
+    const isDirty = useMemo(() => !isEqual(initialMatrix, editedMatrix), [initialMatrix, editedMatrix]);
 
-    const handleSaveRow = async (reduction: ContractReduction) => {
-        setSavingId(reduction.id);
+    const handleCellChange = useCallback((redId: number, periodId: number, patch: Partial<CellData>) => {
+        setEditedMatrix((prev) => {
+            const currentCell = prev[redId]?.[periodId] ?? { active: false, overrideValue: '' };
+            const newMatrix = { ...prev };
+            newMatrix[redId] = { ...prev[redId], [periodId]: { ...currentCell, ...patch } };
+            return newMatrix;
+        });
+    }, []);
+
+    const handleSaveAll = async () => {
+        setIsSaving(true);
         try {
-            // Fix race condition: wait for debounce to flush
-            await new Promise(resolve => setTimeout(resolve, 500));
+            const modifiedRedIds = Object.keys(editedMatrix)
+                .map(Number)
+                .filter(redId => !isEqual(initialMatrix[redId], editedMatrix[redId]));
 
-            const cellMap = matrix[reduction.id] ?? {};
-            const payloadPeriods = Object.entries(cellMap)
-                .filter(([, c]) => c.active)
-                .map(([pidStr, c]) => ({
-                    periodId: Number(pidStr),
-                    overrideValue: c.overrideValue !== '' && !isNaN(Number(c.overrideValue))
-                        ? Number(c.overrideValue)
-                        : null,
-                }));
+            if (modifiedRedIds.length === 0) {
+                toast.info(i18next.t('auto.features.contracts.details.components.reductionsgrid.toast.info.f9e1e563', { defaultValue: "Aucune modification à enregistrer." }));
+                return;
+            }
 
-            await contractReductionService.update(contractId, reduction.id, {
-                applicablePeriods: payloadPeriods,
+            const savePromises = modifiedRedIds.map(redId => {
+                const cellMap = editedMatrix[redId] ?? {};
+                const payloadPeriods = Object.entries(cellMap)
+                    .filter(([, c]) => c.active)
+                    .map(([pidStr, c]) => ({
+                        periodId: Number(pidStr),
+                        overrideValue: c.overrideValue !== '' && !isNaN(Number(c.overrideValue))
+                            ? Number(c.overrideValue)
+                            : null,
+                    }));
+
+                return contractReductionService.update(contractId, redId, {
+                    applicablePeriods: payloadPeriods,
+                });
             });
-            setSavedIds((prev) => new Set(prev).add(reduction.id));
+
+            await Promise.all(savePromises);
+
+            setInitialMatrix(editedMatrix);
             onSaved();
-            toast.success(`Réduction "${reduction.name}" sauvegardée`);
+            toast.success(`${modifiedRedIds.length} réduction(s) sauvegardée(s)`);
         } catch (err: any) {
             const msg = err?.response?.data?.message;
             toast.error(Array.isArray(msg) ? msg.join(', ') : (msg ?? 'Erreur lors de la sauvegarde'));
         } finally {
-            setSavingId(null);
+            setIsSaving(false);
         }
     };
 
     if (reductions.length === 0) return null;
 
     return (
-        <div className="bg-white shadow-sm ring-1 ring-gray-900/5 rounded-xl overflow-hidden">
-            <div className="px-5 py-3 border-b border-indigo-100 flex items-center gap-3 bg-linear-to-r from-indigo-50/80 to-purple-50/60">
-                <span className="text-xs font-bold text-indigo-600 uppercase tracking-widest">
-                    Matrice Saisonnière
-                </span>
-                <span className="text-xs text-gray-400">
-                    — Activez / désactivez une réduction par période · Surchargez la valeur de base si besoin
-                </span>
+        <div className="bg-white shadow-sm ring-1 ring-brand-mint rounded-xl overflow-hidden">
+            {/* ── Header ──────────────────────────────────────────────── */}
+            <div className="px-5 py-3 border-b border-brand-mint/30 flex items-center justify-between bg-linear-to-r from-brand-mint to-brand-mint">
+                <div className="flex items-center gap-3">
+                    <span className="bg-brand-mint p-1 rounded-xl text-white">
+                        <Tag size={14} />
+                    </span>
+                    <span className="text-xs font-bold text-brand-mint uppercase tracking-widest">
+                        Matrice de Réductions
+                    </span>
+                </div>
+                <div className='flex items-center gap-4'>
+                    <div className="flex items-center gap-2 group cursor-help">
+                        <Info size={14} className="text-brand-mint group-hover:text-brand-mint transition-colors" />
+                        <span className="text-[10px] text-brand-slate font-medium">
+                            Activez par période & surchargez la valeur si nécessaire
+                        </span>
+                    </div>
+
+                    <button
+                        onClick={handleSaveAll}
+                        disabled={!isDirty || isSaving}
+                        className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-bold rounded-xl bg-brand-mint text-white hover:bg-brand-mint shadow-md shadow-brand-mint/20 disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none transition-all"
+                    >
+                        <Save size={13} />
+                        {isSaving ? 'Enregistrement...' : 'Enregistrer les modifications'}
+                    </button>
+                </div>
             </div>
 
             <div className="overflow-x-auto">
                 <table className="w-full text-sm text-left border-collapse">
                     <thead>
-                        <tr className="bg-gray-50 border-b-2 border-gray-200">
-                            <th className="px-4 py-3 text-xs font-semibold text-gray-600 sticky left-0 bg-gray-50 z-10 shadow-[1px_0_0_0_#e5e7eb] min-w-[220px]">
+                        <tr className="bg-brand-light border-b-2 border-brand-slate/20">
+                            <th className="px-4 py-3 text-xs font-bold text-brand-slate uppercase sticky left-0 bg-brand-light z-10 shadow-md min-w-[220px]">
                                 Réduction
                             </th>
-                            <th className="px-4 py-3 text-xs font-semibold text-gray-600 min-w-[130px]">
-                                Base
+                            <th className="px-4 py-3 text-xs font-bold text-brand-slate uppercase min-w-[130px]">
+                                Base Globale
                             </th>
                             {sortedPeriods.map((period) => (
                                 <th
                                     key={period.id}
-                                    className="px-4 py-3 text-xs font-semibold text-gray-600 min-w-[130px] text-center border-l border-gray-200"
+                                    className="px-4 py-3 text-xs font-semibold text-brand-slate min-w-[140px] text-center border-l border-brand-slate/20"
                                 >
-                                    <div className="font-bold text-gray-700">{period.name}</div>
-                                    <div className="text-[10px] text-gray-400 font-normal mt-0.5">
+                                    <div className="font-bold text-brand-navy">{period.name}</div>
+                                    <div className="text-[10px] text-brand-slate font-normal mt-0.5">
                                         {new Date(period.startDate).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short' })}
                                         {' – '}
                                         {new Date(period.endDate).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short' })}
                                     </div>
                                 </th>
                             ))}
-                            <th className="px-4 py-3 text-xs font-semibold text-gray-600 min-w-[110px] text-center border-l border-gray-200">
+                            <th className="px-4 py-3 text-xs font-bold text-brand-slate uppercase min-w-[110px] text-center border-l border-brand-slate/20 sticky right-0 bg-brand-light shadow-md">
                                 Actions
                             </th>
                         </tr>
                     </thead>
-                    <tbody className="divide-y divide-gray-100">
+                    <tbody className="divide-y divide-brand-slate/10">
                         {reductions.map((reduction) => {
-                            const isSaving = savingId === reduction.id;
-                            const isSaved = savedIds.has(reduction.id);
+                            const isRowDirty = !isEqual(initialMatrix[reduction.id], editedMatrix[reduction.id]);
 
                             const roomCodes = (reduction.applicableContractRooms ?? [])
                                 .map((r) => r.contractRoom?.roomType?.code ?? r.contractRoom?.roomType?.name)
@@ -262,13 +285,14 @@ export default function ReductionsGrid({
                                     : `${reduction.value ?? 0}`;
 
                             return (
-                                <tr key={reduction.id} className="hover:bg-slate-50/40 transition-colors">
-                                    <td className="px-4 py-3 align-middle sticky left-0 bg-white z-10 shadow-[1px_0_0_0_#e5e7eb]">
+                                <tr key={reduction.id} className="group hover:bg-brand-light transition-colors">
+                                    <td className="px-4 py-4 align-middle sticky left-0 bg-white z-10 shadow-md group-hover:bg-brand-light transition-colors">
                                         <div className="flex items-start gap-2">
                                             <div className="flex-1 min-w-0">
                                                 <div className="flex items-center gap-1.5 flex-wrap">
-                                                    <span className="font-semibold text-gray-900 text-sm leading-tight">{reduction.name}</span>
-                                                    <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold bg-violet-50 text-violet-700 leading-none shrink-0">
+                                                    <span className="font-bold text-brand-navy text-sm leading-tight">{reduction.name}</span>
+                                                    {isRowDirty && <span className='w-2 h-2 rounded-full bg-brand-slate/20' title='Modifications non enregistrées'></span>}
+                                                    <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold bg-brand-mint/10 text-brand-mint leading-none shrink-0 border border-brand-mint/30">
                                                         {reduction.systemCode === 'EXTRA_ADULT' 
                                                             ? `Adulte ${reduction.paxOrder} Suppl.` 
                                                             : reduction.systemCode === 'CHILD' 
@@ -277,88 +301,59 @@ export default function ReductionsGrid({
                                                     </span>
                                                 </div>
                                                 {roomCodes.length > 0 ? (
-                                                    <p className="text-[11px] text-gray-400 mt-0.5 font-mono truncate max-w-[180px]" title={roomCodes.join(', ')}>
+                                                    <p className="text-[10px] text-brand-slate mt-0.5 font-mono truncate max-w-[180px]" title={roomCodes.join(', ')}>
                                                         🏨 {roomCodes.join(' · ')}
                                                     </p>
                                                 ) : (
-                                                    <p className="text-[11px] text-gray-400 mt-0.5 italic">Toutes chambres</p>
+                                                    <p className="text-[10px] text-brand-slate mt-0.5 italic">{t('auto.features.contracts.details.components.reductionsgrid.bf937af5', { defaultValue: "Toutes chambres" })}</p>
                                                 )}
                                             </div>
                                         </div>
                                     </td>
 
-                                    <td className="px-4 py-3 align-middle">
-                                        <span className="block font-mono font-semibold text-gray-800 text-sm">
+                                    <td className="px-4 py-4 align-middle">
+                                        <span className="block font-mono font-bold text-brand-navy text-sm">
                                             {baseDisplay}
                                         </span>
-                                        <span className="block text-[11px] text-gray-400 mt-0.5">
+                                        <span className="block text-[10px] text-brand-slate font-medium">
                                             {TYPE_LABELS[reduction.calculationType] ?? reduction.calculationType}
                                             {reduction.calculationType === 'FIXED' && ` · ${APP_LABELS[reduction.applicationType] ?? reduction.applicationType}`}
                                         </span>
                                     </td>
 
-                                    {sortedPeriods.map((period) => {
-                                        const cellData = matrix[reduction.id]?.[period.id] ?? { active: false, overrideValue: '' };
-                                        const cellBgClass = !cellData.active ? 'bg-gray-50/60' : '';
+                                    {sortedPeriods.map((period) => (
+                                        <td
+                                            key={period.id}
+                                            className={`p-0 border-l border-brand-slate/20 align-top`}
+                                        >
+                                            <ReductionCell
+                                                reductionId={reduction.id}
+                                                periodId={period.id}
+                                                cell={editedMatrix[reduction.id]?.[period.id] ?? { active: false, overrideValue: '' }}
+                                                baseValue={reduction.value}
+                                                baseType={reduction.calculationType}
+                                                onChange={handleCellChange}
+                                            />
+                                        </td>
+                                    ))}
 
-                                        return (
-                                            <td
-                                                key={period.id}
-                                                className={`p-0 border-l border-gray-100 align-top ${cellBgClass}`}
+                                    <td className="px-3 py-4 border-l border-brand-slate/20 text-center align-middle sticky right-0 bg-white group-hover:bg-brand-light transition-colors shadow-md">
+                                        <div className="flex items-center justify-center gap-1 opacity-60 group-hover:opacity-100 transition-opacity">
+                                            <button
+                                                onClick={() => onEdit(reduction)}
+                                                className="p-1 px-1.5 rounded-xl text-brand-slate hover:text-brand-mint hover:bg-brand-mint/10 transition-colors cursor-pointer"
+                                                title={t('auto.features.contracts.details.components.reductionsgrid.title.0904100a', { defaultValue: "Modifier la coquille" })}
                                             >
-                                                <ReductionCell
-                                                    key={`${reduction.id}-${period.id}`}
-                                                    reductionId={reduction.id}
-                                                    periodId={period.id}
-                                                    cell={cellData}
-                                                    baseValue={reduction.value}
-                                                    baseType={reduction.calculationType}
-                                                    onChange={(sId, pId, patch) => {
-                                                        if ('active' in patch) {
-                                                            handleTogglePeriod(sId, pId);
-                                                        } else {
-                                                            handleCellChange(sId, pId, patch);
-                                                        }
-                                                    }}
-                                                />
-                                            </td>
-                                        );
-                                    })}
-
-                                    <td className="px-3 py-3 border-l border-gray-100 text-center align-middle">
-                                        <div className="flex flex-col items-center gap-2">
-                                            {isSaved ? (
-                                                <span className="inline-flex items-center gap-1 text-emerald-600 text-xs font-medium">
-                                                    <CheckCircle2 size={13} /> Sauvé
-                                                </span>
-                                            ) : (
-                                                <button
-                                                    onClick={() => handleSaveRow(reduction)}
-                                                    disabled={isSaving}
-                                                    className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-semibold rounded-md bg-indigo-600 text-white hover:bg-indigo-700 disabled:opacity-60 transition-colors cursor-pointer w-full justify-center"
-                                                >
-                                                    <Save size={11} />
-                                                    {isSaving ? '...' : 'Sauver'}
-                                                </button>
-                                            )}
-
-                                            <div className="flex items-center gap-1">
-                                                <button
-                                                    onClick={() => onEdit(reduction)}
-                                                    className="p-1.5 rounded-lg text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 transition-colors cursor-pointer"
-                                                    title="Modifier la coquille"
-                                                >
-                                                    <Pencil size={13} />
-                                                </button>
-                                                <button
-                                                    onClick={() => onDelete(reduction)}
-                                                    disabled={isDeleting}
-                                                    className="p-1.5 rounded-lg text-gray-400 hover:text-red-600 hover:bg-red-50 transition-colors cursor-pointer disabled:opacity-50"
-                                                    title="Supprimer"
-                                                >
-                                                    <Trash2 size={13} />
-                                                </button>
-                                            </div>
+                                                <Pencil size={12} />
+                                            </button>
+                                            <button
+                                                onClick={() => onDelete(reduction)}
+                                                disabled={isDeleting}
+                                                className="p-1 px-1.5 rounded-xl text-brand-slate hover:text-brand-slate hover:bg-brand-slate/10 transition-colors cursor-pointer disabled:opacity-50"
+                                                title={t('auto.features.contracts.details.components.reductionsgrid.title.6b4ee57b', { defaultValue: "Supprimer du contrat" })}
+                                            >
+                                                <Trash2 size={12} />
+                                            </button>
                                         </div>
                                     </td>
                                 </tr>
@@ -368,20 +363,26 @@ export default function ReductionsGrid({
                 </table>
             </div>
 
-            <div className="px-5 py-2.5 bg-gray-50 border-t border-gray-100 flex items-center gap-5 text-[11px] text-gray-500">
-                <span className="flex items-center gap-1.5">
-                    <span className="w-2 h-2 rounded-full bg-gray-300 shrink-0" />
+            {/* ── Legend ──────────────────────────────────────────────── */}
+            <div className="px-5 py-3 bg-brand-light border-t border-brand-slate/20 flex items-center gap-6 text-[10px] text-brand-slate font-medium">
+                <span className="flex items-center gap-2">
+                    <span className="w-2.5 h-2.5 rounded-full bg-brand-slate/10" />
                     Non appliqué
                 </span>
-                <span className="flex items-center gap-1.5">
-                    <span className="w-2 h-2 rounded-full bg-indigo-500 shrink-0" />
-                    Actif · base héritée
+                <span className="flex items-center gap-2">
+                    <span className="w-2.5 h-2.5 rounded-full bg-brand-mint" />
+                    Valeur par défaut héritée
                 </span>
-                <span className="flex items-center gap-1.5">
-                    <span className="w-2 h-2 rounded-full bg-indigo-500 ring-2 ring-indigo-200 shrink-0" />
-                    Actif · base surchargée
+                <span className="flex items-center gap-2">
+                    <span className="w-2.5 h-2.5 rounded-full bg-brand-mint ring-4 ring-brand-mint" />
+                    Valeur surchargée
+                </span>
+                 <span className="flex items-center gap-2 font-bold">
+                    <span className="w-2.5 h-2.5 rounded-full bg-brand-slate/20" />
+                    Modification non enregistrée
                 </span>
             </div>
         </div>
     );
 }
+

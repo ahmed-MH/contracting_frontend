@@ -1,12 +1,13 @@
 import { useState } from 'react';
 import { useOutletContext } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import type { ContractOutletContext } from '../components/ContractDetailsLayout';
 import { useContractCancellation, useDeleteContractCancellation } from '../../hooks/useContractCancellation';
 import { useConfirm } from '../../../../context/ConfirmContext';
 import { Plus, ShieldAlert } from 'lucide-react';
 import type { ContractCancellationRule } from '../../../catalog/cancellation/types/cancellation.types';
-import ContractCancellationModal from '../modals/ContractCancellationModal';
-import ImportCancellationModal from '../modals/ImportCancellationModal';
+import EditContractCancellationModal from '../modals/EditContractCancellationModal';
+import ImportContractCancellationModal from '../modals/ImportContractCancellationModal';
 import CancellationGrid from '../components/CancellationGrid';
 
 export default function CancellationTab() {
@@ -14,6 +15,7 @@ export default function CancellationTab() {
     const { data: rules, isLoading, isError, refetch } = useContractCancellation(contract.id);
     const deleteMutation = useDeleteContractCancellation(contract.id);
     const { confirm } = useConfirm();
+    const { t } = useTranslation('common');
 
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [isImportModalOpen, setIsImportModalOpen] = useState(false);
@@ -21,10 +23,13 @@ export default function CancellationTab() {
 
     const handleDelete = async (rule: ContractCancellationRule) => {
         if (await confirm({
-            title: 'Supprimer la règle d\'annulation ?',
-            description: `La règle "${rule.name}" sera définitivement supprimée de ce contrat.`,
-            confirmLabel: 'Supprimer',
-            variant: 'danger'
+            title: t('pages.contractDetails.cancellation.deleteTitle', { defaultValue: 'Delete cancellation rule?' }),
+            description: t('pages.contractDetails.cancellation.deleteDescription', {
+                defaultValue: 'The rule "{{name}}" will be permanently removed from this contract.',
+                name: rule.name,
+            }),
+            confirmLabel: t('pages.contractDetails.cancellation.deleteConfirm', { defaultValue: 'Delete' }),
+            variant: 'danger',
         })) {
             deleteMutation.mutate(rule.id);
         }
@@ -33,15 +38,15 @@ export default function CancellationTab() {
     if (isLoading) {
         return (
             <div className="flex items-center justify-center py-12">
-                <div className="animate-spin rounded-full h-8 w-8 border-2 border-indigo-600 border-t-transparent" />
+                <div className="animate-spin rounded-full h-8 w-8 border-2 border-brand-mint/30 border-t-transparent" />
             </div>
         );
     }
 
     if (isError) {
         return (
-            <div className="rounded-xl bg-red-50 border border-red-200 p-6 text-red-700 text-sm">
-                Impossible de charger les règles d'annulation.
+            <div className="rounded-xl bg-brand-slate/10 border border-brand-slate/30 p-6 text-brand-slate text-sm">
+                {t('pages.contractDetails.cancellation.loadError', { defaultValue: 'Unable to load cancellation rules.' })}
             </div>
         );
     }
@@ -50,28 +55,32 @@ export default function CancellationTab() {
 
     return (
         <>
-            {/* ─── Header ─────────────────────────────────────────────── */}
             <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-3">
-                    <ShieldAlert size={20} className="text-indigo-600" />
-                    <h2 className="text-base font-semibold text-gray-900">Règles d'Annulation</h2>
-                    <span className="text-xs text-gray-400">({items.length})</span>
+                    <ShieldAlert size={20} className="text-brand-mint" />
+                    <h2 className="text-base font-semibold text-brand-navy">
+                        {t('pages.contractDetails.cancellation.title', { defaultValue: 'Cancellation Rules' })}
+                    </h2>
+                    <span className="text-xs text-brand-slate">({items.length})</span>
                 </div>
                 <button
                     onClick={() => setIsImportModalOpen(true)}
-                    className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 transition-colors cursor-pointer"
+                    className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-brand-mint rounded-xl hover:bg-brand-mint transition-colors cursor-pointer"
                 >
-                    <Plus size={16} /> Importer depuis le Catalogue
+                    <Plus size={16} />
+                    {t('pages.contractDetails.cancellation.importFromCatalog', { defaultValue: 'Import from Catalog' })}
                 </button>
             </div>
 
-            {/* ─── Empty State ────────────────────────────────────────── */}
-
             {items.length === 0 ? (
-                <div className="rounded-xl bg-gray-100 border border-dashed border-gray-300 p-12 text-center">
-                    <ShieldAlert size={40} className="mx-auto text-gray-300 mb-3" />
-                    <p className="text-gray-500 text-sm">Aucune règle d'annulation dans ce contrat</p>
-                    <p className="text-gray-400 text-xs mt-1">Importez depuis le catalogue pour commencer</p>
+                <div className="rounded-xl bg-brand-light border border-dashed border-brand-slate/20 p-12 text-center">
+                    <ShieldAlert size={40} className="mx-auto text-brand-slate mb-3" />
+                    <p className="text-brand-slate text-sm">
+                        {t('pages.contractDetails.cancellation.emptyTitle', { defaultValue: 'No cancellation rules in this contract' })}
+                    </p>
+                    <p className="text-brand-slate text-xs mt-1">
+                        {t('pages.contractDetails.cancellation.emptySubtitle', { defaultValue: 'Import from the catalog to get started' })}
+                    </p>
                 </div>
             ) : (
                 <CancellationGrid
@@ -85,14 +94,14 @@ export default function CancellationTab() {
                 />
             )}
 
-            <ContractCancellationModal
+            <EditContractCancellationModal
                 isOpen={isEditModalOpen}
                 onClose={() => { setIsEditModalOpen(false); setEditingRule(null); }}
                 contract={contract}
                 editItem={editingRule}
             />
 
-            <ImportCancellationModal
+            <ImportContractCancellationModal
                 isOpen={isImportModalOpen}
                 onClose={() => setIsImportModalOpen(false)}
                 contractId={contract.id}

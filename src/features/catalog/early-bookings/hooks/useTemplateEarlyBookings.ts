@@ -6,6 +6,7 @@ import type {
     CreateTemplateEarlyBookingPayload,
     UpdateTemplateEarlyBookingPayload,
 } from '../../../../types';
+import i18next from '../../../../lib/i18n';
 
 export const templateEarlyBookingKeys = {
     all: (hotelId: number | undefined) => ['template-early-booking', hotelId] as const,
@@ -42,7 +43,7 @@ export function useCreateTemplateEarlyBooking() {
         mutationFn: (data: CreateTemplateEarlyBookingPayload) => templateEarlyBookingService.createTemplate(data),
         onSuccess: () => {
             qc.invalidateQueries({ queryKey: templateEarlyBookingKeys.all(currentHotel?.id) });
-            toast.success('Early Booking créé');
+            toast.success(i18next.t('auto.features.catalog.early.bookings.hooks.usetemplateearlybookings.toast.success.63c479cb', { defaultValue: "Early Booking créé" }));
         },
     });
 }
@@ -55,7 +56,7 @@ export function useUpdateTemplateEarlyBooking() {
             templateEarlyBookingService.updateTemplate(id, data),
         onSuccess: () => {
             qc.invalidateQueries({ queryKey: templateEarlyBookingKeys.all(currentHotel?.id) });
-            toast.success('Early Booking mis à jour');
+            toast.success(i18next.t('auto.features.catalog.early.bookings.hooks.usetemplateearlybookings.toast.success.ce0c229f', { defaultValue: "Early Booking mis à jour" }));
         },
     });
 }
@@ -67,7 +68,7 @@ export function useDeleteTemplateEarlyBooking() {
         mutationFn: (id: number) => templateEarlyBookingService.deleteTemplate(id),
         onSuccess: () => {
             qc.invalidateQueries({ queryKey: templateEarlyBookingKeys.all(currentHotel?.id) });
-            toast.success('Early Booking archivé');
+            toast.success(i18next.t('auto.features.catalog.early.bookings.hooks.usetemplateearlybookings.toast.success.195e1e7a', { defaultValue: "Early Booking archivé" }));
         },
     });
 }
@@ -79,7 +80,7 @@ export function useRestoreTemplateEarlyBooking() {
         mutationFn: (id: number) => templateEarlyBookingService.restoreTemplate(id),
         onSuccess: () => {
             qc.invalidateQueries({ queryKey: templateEarlyBookingKeys.all(currentHotel?.id) });
-            toast.success('Early Booking restauré');
+            toast.success(i18next.t('auto.features.catalog.early.bookings.hooks.usetemplateearlybookings.toast.success.7bc587f7', { defaultValue: "Early Booking restauré" }));
         },
     });
 }

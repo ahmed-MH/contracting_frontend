@@ -1,8 +1,14 @@
 import axios from 'axios';
 import { toast } from 'sonner';
+import i18n from '../lib/i18n';
 
 const HOTEL_ID_KEY = 'currentHotelId';
 const TOKEN_KEY = 'authToken';
+
+const getApiLanguage = (): 'fr' | 'en' => {
+    const currentLanguage = i18n.resolvedLanguage ?? i18n.language;
+    return currentLanguage?.toLowerCase().startsWith('en') ? 'en' : 'fr';
+};
 
 const apiClient = axios.create({
     baseURL: import.meta.env.VITE_API_URL || 'http://localhost:3000/api',
@@ -23,6 +29,8 @@ apiClient.interceptors.request.use((config) => {
     if (hotelId) {
         config.headers['x-hotel-id'] = hotelId;
     }
+
+    config.headers['Accept-Language'] = getApiLanguage();
 
     return config;
 });

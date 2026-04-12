@@ -1,0 +1,2266 @@
+{
+  "welcome": "Bienvenue sur Pricify",
+  "save": "Enregistrer",
+  "actions": {
+    "newContract": "Nouveau contrat",
+    "manageTeam": "Gerer l'equipe",
+    "toggleTheme": "Basculer le theme",
+    "logOut": "Se deconnecter",
+    "confirm": "Confirmer",
+    "cancel": "Annuler",
+    "save": "Enregistrer"
+  },
+  "entities": {
+    "hotel": "Hotel"
+  },
+  "layouts": {
+    "commercial": {
+      "activeWorkspace": "Espace actif",
+      "productionFlow": "Flux de production"
+    },
+    "admin": {
+      "organizationFocus": {
+        "eyebrow": "Focus organisation",
+        "title": "Pilotez la couche business.",
+        "subtitle": "La facturation, les acces et la readiness des hotels restent visibles pendant les operations."
+      },
+      "billingGuardrails": {
+        "title": "Garde-fous facturation",
+        "renewals": "3 renouvellements demandent une attention avant la prochaine cloture.",
+        "subtitle": "Gardez les attributions de sieges, les invitations et la propriete des hotels synchronisees."
+      }
+    },
+    "agent": {
+      "runPricing": "Lancer la tarification"
+    },
+    "supervisor": {
+      "workspace": "Espace superviseur",
+      "platformOverview": "Vue plateforme",
+      "managePlans": "Gerer les plans",
+      "logs": {
+        "0": "Reconciliation des abonnements terminee sur 48 tenants actifs.",
+        "1": "Workflow de suspension execute pour deux comptes en retard.",
+        "2": "Ingestion d'audit recuperee apres une nouvelle tentative stockage."
+      },
+      "sidebar": {
+        "supervisor": "Superviseur",
+        "platformControlsOnly": "Controles plateforme uniquement",
+        "systemHealth": "Sante systeme",
+        "liveLogs": "Logs en direct",
+        "expandSidebar": "Etendre la barre laterale",
+        "collapseSidebar": "Reduire la barre laterale"
+      }
+    }
+  },
+  "pages": {
+    "hotel": {
+      "header": {
+        "title": "Configuration hotel",
+        "subtitle": "Gerez vos etablissements et parametres financiers",
+        "newHotel": "Nouvel hotel",
+        "emptyTitle": "Aucun hotel selectionne",
+        "emptySubtitle": "Veuillez choisir un etablissement pour continuer."
+      },
+      "exchangeRates": {
+        "deleteTitle": "Supprimer ce taux de change ?",
+        "deleteDescription": "Voulez-vous vraiment supprimer le taux 1 {{currency}} = {{rate}} {{baseCurrency}} ?",
+        "deleteConfirm": "Supprimer",
+        "title": "Taux de change",
+        "subtitle": "Configuration des taux pour la devise de base ({{currency}})",
+        "addRate": "Ajouter un taux",
+        "emptyTitle": "Aucun taux de change configure.",
+        "emptySubtitle": "Veuillez ajouter les taux applicables pour cet hotel.",
+        "table": {
+          "currency": "Devise",
+          "rate": "Taux (= 1 devise)",
+          "validity": "Validite",
+          "status": "Statut",
+          "actions": "Actions"
+        },
+        "status": {
+          "current": "En cours",
+          "expired": "Expire",
+          "scheduled": "Planifie"
+        }
+      }
+    },
+    "contracts": {
+      "header": {
+        "title": "Gestion des contrats",
+        "subtitle": "Creez et gerez vos contrats partenaires",
+        "newContract": "Nouveau contrat"
+      }
+    },
+    "users": {
+      "header": {
+        "title": "Gestion des utilisateurs",
+        "subtitle": "Invitez et gerez les comptes utilisateurs",
+        "inviteUser": "Inviter un utilisateur"
+      },
+      "roles": {
+        "admin": "Administrateur",
+        "commercial": "Commercial"
+      },
+      "modals": {
+        "roleHints": {
+          "admin": "Acces global a la plateforme (pas d'hotel requis)",
+          "commercial": "Employe local, doit etre affecte a au moins un hotel"
+        },
+        "edit": {
+          "title": "Modifier {{email}}",
+          "pendingActivationHint": "Cet utilisateur n'a pas encore active son compte. Le prenom et le nom seront renseignes lors de l'acceptation de l'invitation.",
+          "firstName": "Prenom",
+          "lastName": "Nom",
+          "role": "Role",
+          "assignedHotels": "Hotels assignes",
+          "saving": "Enregistrement..."
+        },
+        "invite": {
+          "title": "Inviter un utilisateur",
+          "email": "Email",
+          "emailPlaceholder": "nouveau@exemple.com",
+          "role": "Role",
+          "assignedHotels": "Hotels assignes",
+          "sending": "Envoi...",
+          "submit": "Envoyer l'invitation",
+          "validation": {
+            "emailRequired": "Email requis",
+            "hotelRequired": "Au moins un hotel est requis"
+          }
+        }
+      }
+    },
+    "arrangements": {
+      "header": {
+        "title": "Arrangements"
+      }
+    },
+    "affiliates": {
+      "table": {
+        "actions": "Actions"
+      },
+      "contractsModal": {
+        "title": "Contrats de {{name}}",
+        "empty": "Aucun contrat associe a ce partenaire pour le moment.",
+        "table": {
+          "name": "Nom",
+          "dates": "Dates",
+          "status": "Statut"
+        },
+        "status": {
+          "terminated": "Resilie",
+          "draft": "Brouillon",
+          "expired": "Expire",
+          "active": "Actif",
+          "upcoming": "A venir"
+        }
+      }
+    },
+    "roomTypes": {
+      "table": {
+        "actions": "Actions"
+      }
+    },
+    "simulator": {
+      "roomingList": {
+        "title": "Rooming List"
+      }
+    },
+    "catalog": {
+      "cancellation": {
+        "header": {
+          "title": "Catalogue annulations",
+          "subtitle": "Gerez les politiques d'annulation (templates)",
+          "searchPlaceholder": "Rechercher une politique..."
+        },
+        "states": {
+          "loadError": "Impossible de charger le catalogue d'annulations."
+        }
+      },
+      "earlyBookings": {
+        "header": {
+          "title": "Catalogue Early Booking",
+          "searchPlaceholder": "Rechercher un template..."
+        },
+        "states": {
+          "loadError": "Impossible de charger le catalogue Early Booking."
+        }
+      },
+      "monoparental": {
+        "header": {
+          "title": "Catalogue monoparental"
+        }
+      },
+      "reductions": {
+        "table": {
+          "actions": "Actions"
+        }
+      },
+      "spo": {
+        "header": {
+          "title": "Catalogue SPO",
+          "searchPlaceholder": "Rechercher une SPO..."
+        },
+        "states": {
+          "loadError": "Impossible de charger le catalogue SPO."
+        }
+      },
+      "supplements": {
+        "table": {
+          "actions": "Actions"
+        }
+      }
+    },
+    "adminOverview": {
+      "header": {
+        "eyebrow": "Apercu organisation",
+        "title": "Gardez la couche business stable et prete.",
+        "subtitle": "Ce cockpit est concu pour piloter les sieges, la facturation, les permissions et la sante du portefeuille hotelier."
+      },
+      "metrics": {
+        "activeUsers": "Utilisateurs actifs",
+        "pendingInvites": "Invitations en attente",
+        "liveHotels": "Hotels actifs",
+        "adminSeats": "Sieges admin"
+      },
+      "billing": {
+        "eyebrow": "Controle facturation",
+        "title": "Posture renouvellement",
+        "nextInvoice": "Prochaine fenetre de facturation",
+        "invoiceHint": "Toutes les licences actuelles respectent les limites du plan.",
+        "highlights": {
+          "seatAllocation": "La repartition des sieges correspond a l'equipe actuelle.",
+          "hotelLaunches": "Deux nouveaux hotels sont prets pour l'onboarding.",
+          "noDisputes": "Aucun litige de facturation en cours sur ce cycle."
+        }
+      },
+      "team": {
+        "eyebrow": "Repartition equipe",
+        "title": "Modele operationnel actuel",
+        "totalUsers": "{{count}} utilisateurs au total",
+        "admins": {
+          "title": "Admins",
+          "subtitle": "Gouvernance, facturation et operations plateforme."
+        },
+        "commercials": {
+          "title": "Commerciaux",
+          "subtitle": "Utilisateurs production gerant produit, partenaires et contrats."
+        }
+      },
+      "priorities": {
+        "title": "Priorites immediates",
+        "items": {
+          "validateInvites": "Valider les invitations en attente avant le prochain batch d'onboarding.",
+          "reviewOwnership": "Revoir la propriete des hotels avant le prochain cycle contrat.",
+          "confirmContacts": "Confirmer les contacts facturation pour finance et operations."
+        }
+      }
+    },
+    "supervisor": {
+      "overview": {
+        "header": {
+          "eyebrow": "Vue d'ensemble / MRR",
+          "title": "Centre de commande plateforme pour revenu et sante tenants.",
+          "description": "Ce tableau reste au niveau plateforme: performance abonnement, statut organisation et signaux superviseur.",
+          "badge": "Surface superviseur zero-trust"
+        },
+        "metrics": {
+          "0": {
+            "label": "MRR plateforme",
+            "delta": "+8.1% mois sur mois",
+            "description": "Revenu recurrent sur tous les paliers d'abonnement actifs."
+          },
+          "1": {
+            "label": "Organisations actives",
+            "delta": "+3 ce trimestre",
+            "description": "Portefeuilles tenants actuellement factures sur la plateforme."
+          },
+          "2": {
+            "label": "File de suspension",
+            "delta": "Requiert revue",
+            "description": "Organisations signalees pour impaye ou intervention manuelle."
+          },
+          "3": {
+            "label": "Debit audit",
+            "delta": "Evenements sur 24h",
+            "description": "Evenements plateforme et facturation visibles superviseur captures aujourd'hui."
+          }
+        },
+        "cards": {
+          "mrrComposition": {
+            "eyebrow": "Composition MRR",
+            "title": "Repartition du revenu par plan",
+            "description": "Lecture macro de la concentration du revenu recurrent sur la plateforme.",
+            "ofMrr": "{{share}} du MRR plateforme",
+            "segments": {
+              "0": {
+                "name": "Enterprise",
+                "detail": "Portefeuilles multi-entites avec API et support premium."
+              },
+              "1": {
+                "name": "Pro",
+                "detail": "Tenants en croissance gerant plusieurs hotels sous une organisation."
+              },
+              "2": {
+                "name": "Free",
+                "detail": "Pool de conversion alimente par onboarding et campagnes d'usage."
+              }
+            }
+          },
+          "executivePulse": {
+            "eyebrow": "Pulse executif",
+            "title": "Flux de statut securise gouvernance",
+            "description": "Signaux utiles au superviseur sans exposition des contrats, chambres, catalogues ou simulateurs.",
+            "readinessLabel": "Preparation plateforme",
+            "readinessDescription": "Score composite sur facturation, retention audit, onboarding tenant et reprise incident.",
+            "items": {
+              "0": "Aucun superviseur n'a acces aux enregistrements contrats, simulateur, chambres, catalogue ou affilies.",
+              "1": "Les retries facturation se sont stabilises apres la derniere fenetre de replay webhook.",
+              "2": "La vitesse d'activation tenant reste au-dessus du plan trimestriel."
+            }
+          },
+          "subscriptionWatch": {
+            "eyebrow": "Surveillance abonnements",
+            "title": "Comptes a suivre par le superviseur",
+            "description": "File de suivi orientee facturation pour les organisations proches d'un risque suspension ou renouvellement."
+          }
+        }
+      },
+      "plans": {
+        "header": {
+          "eyebrow": "Plans SaaS et pricing",
+          "title": "Parametres plateforme superviseur pour plans, privileges et abonnements.",
+          "description": "Surface dediee a la gestion plateforme pour packager l'offre SaaS.",
+          "badge": "Parametres plateforme",
+          "publish": "Publier les changements de plan"
+        },
+        "metrics": {
+          "activePlans": {
+            "label": "Plans actifs",
+            "delta": "Free, Pro, Enterprise",
+            "description": "Packaging commercial actuellement propose sur la plateforme."
+          },
+          "planAttachRate": {
+            "label": "Taux d'adoption plan",
+            "delta": "Paliers payants",
+            "description": "Part des organisations actives sur des plans payants."
+          },
+          "privilegesUpdated": {
+            "label": "Privileges mis a jour",
+            "delta": "Ce trimestre",
+            "description": "Modifications de limites et droits publiees par les ops plateforme."
+          },
+          "expansionUpsell": {
+            "label": "Upsell expansion",
+            "delta": "MRR pipeline",
+            "description": "Revenu attendu des upgrades de plans deja en cours."
+          }
+        },
+        "cards": {
+          "planCatalog": {
+            "eyebrow": "Catalogue des plans",
+            "title": "Gamme des plans SaaS",
+            "description": "Les cartes resument le packaging client tandis que le formulaire pilote les privileges reels.",
+            "plans": {
+              "0": {
+                "name": "Free",
+                "summary": "Plan d'entree pour les nouvelles organisations validant l'adoption.",
+                "limits": {
+                  "0": "1 hotel",
+                  "1": "5 utilisateurs",
+                  "2": "Pas d'acces API",
+                  "3": "Support communautaire"
+                }
+              },
+              "1": {
+                "name": "Pro",
+                "summary": "Palier croissance avec gestion multi-etablissements et automatisation.",
+                "limits": {
+                  "0": "10 hotels",
+                  "1": "50 utilisateurs",
+                  "2": "Acces API",
+                  "3": "Support prioritaire"
+                }
+              },
+              "2": {
+                "name": "Enterprise",
+                "summary": "Scale illimite, controles gouvernance et onboarding premium.",
+                "limits": {
+                  "0": "Hotels illimites",
+                  "1": "Utilisateurs illimites",
+                  "2": "Debit API dedie",
+                  "3": "Success manager"
+                }
+              }
+            }
+          },
+          "privilegeMatrix": {
+            "eyebrow": "Matrice des privileges",
+            "title": "Limites et privileges par plan",
+            "description": "Ces lignes definissent ce que chaque palier d'abonnement peut debloquer sur la plateforme SaaS."
+          },
+          "settingsForm": {
+            "eyebrow": "Formulaire parametres plateforme",
+            "title": "Editeur de politique de plan",
+            "description": "Structure UI du workflow superviseur couvrant pricing, limites et privileges restreints."
+          },
+          "subscriptions": {
+            "eyebrow": "Abonnements",
+            "title": "Watchlist des abonnements superviseur",
+            "description": "Renouvellements a venir et risque facturation, conserves au niveau abonnement."
+          }
+        }
+      },
+      "logs": {
+        "header": {
+          "eyebrow": "Logs systeme",
+          "title": "Flux audit et fiabilite plateforme pour superviseurs.",
+          "description": "Le superviseur peut inspecter les evenements plateforme, la facturation et la retention audit sans entrer dans un espace operationnel tenant.",
+          "badge": "Visibilite audit securisee"
+        },
+        "metrics": {
+          "criticalAlerts": {
+            "label": "Alertes critiques",
+            "delta": "Sur les 24 dernieres heures",
+            "description": "Evenements de type incident ouverts necessitant une attention plateforme."
+          },
+          "auditRetention": {
+            "label": "Retention audit",
+            "delta": "Couverture politique",
+            "description": "Part des evenements visibles superviseur conserves selon les objectifs de politique."
+          },
+          "replayJobs": {
+            "label": "Jobs replay",
+            "delta": "En file",
+            "description": "Taches de replay webhook et evenements en attente dans la file de reprise."
+          },
+          "storageHeadroom": {
+            "label": "Marge stockage",
+            "delta": "Disponible",
+            "description": "Capacite restante pour les logs centralises et sinks d'audit."
+          }
+        },
+        "cards": {
+          "liveEventStream": {
+            "eyebrow": "Flux d'evenements en direct",
+            "title": "Evenements plateforme recents",
+            "description": "Activite systeme visible superviseur organisee par severite et surface de controle.",
+            "events": {
+              "0": {
+                "scope": "Facturation",
+                "severity": "Avertissement",
+                "title": "Retry webhook facturation en file",
+                "detail": "Livraison Stripe invoice.updated retardee pour 2 organisations; replay planifie."
+              },
+              "1": {
+                "scope": "Tenants",
+                "severity": "Info",
+                "title": "Execution suspension tenant terminee",
+                "detail": "Deux organisations en retard passees en posture facturation restreinte sans exposition de donnees operationnelles."
+              },
+              "2": {
+                "scope": "Observabilite",
+                "severity": "Critique",
+                "title": "Seuil stockage sink audit atteint",
+                "detail": "La retention a purge des evenements debug basse priorite pour conserver les logs de conformite ecrits."
+              }
+            }
+          },
+          "auditTrail": {
+            "eyebrow": "Piste d'audit",
+            "title": "Historique configuration et enforcement",
+            "description": "Chronologie compacte des actions administratives superviseur.",
+            "columns": {
+              "actor": "Acteur",
+              "action": "Action",
+              "target": "Cible",
+              "timestamp": "Horodatage"
+            },
+            "rows": {
+              "0": {
+                "actor": "Console superviseur",
+                "severity": "Configuration",
+                "action": "Limites du plan Pro mises a jour",
+                "target": "Configuration du plan"
+              },
+              "1": {
+                "actor": "Daemon de facturation",
+                "severity": "Application",
+                "action": "Organisation en retard suspendue",
+                "target": "Blue Dune Collection"
+              },
+              "2": {
+                "actor": "Pipeline audit",
+                "severity": "Fiabilite",
+                "action": "Pression stockage recuperee",
+                "target": "Logs centralises"
+              }
+            }
+          }
+        }
+      },
+      "tenants": {
+        "header": {
+          "eyebrow": "Tenants / Organisations",
+          "title": "Vue portefeuille orientee facturation pour chaque organisation.",
+          "description": "Les superviseurs suivent le cycle de vie tenant et le risque de suspension sans ouvrir les espaces operationnels.",
+          "badge": "48 organisations"
+        },
+        "metrics": {
+          "activeOrganizations": {
+            "label": "Organisations actives",
+            "delta": "A l'echelle flotte",
+            "description": "Organisations actuellement actives sur la plateforme."
+          },
+          "regionsCovered": {
+            "label": "Regions couvertes",
+            "delta": "Empreinte globale",
+            "description": "Portee commerciale representee sur le portefeuille actuel."
+          },
+          "platformUsers": {
+            "label": "Utilisateurs plateforme",
+            "delta": "Sieges provisionnes",
+            "description": "Total des utilisateurs licences sur tous les abonnements tenants."
+          },
+          "watchlist": {
+            "label": "Watchlist",
+            "delta": "Revue facturation requise",
+            "description": "Organisations approchant une suspension ou action de downgrade."
+          }
+        },
+        "cards": {
+          "organizationRoster": {
+            "eyebrow": "Roster organisations",
+            "title": "Table de gestion tenant",
+            "description": "Utilisez cette table superviseur pour revoir allocation des plans, posture facturation et taille globale flotte."
+          }
+        }
+      }
+    },
+    "contractDetails": {
+      "header": {
+        "backToContracts": "Retour aux contrats"
+      },
+      "tabs": {
+        "general": "General",
+        "ratesGrid": "Grille tarifaire",
+        "supplements": "Supplements",
+        "reductions": "Reductions",
+        "monoparental": "Monoparental",
+        "earlyBookings": "Early Booking",
+        "spos": "Offres speciales",
+        "cancellation": "Annulations"
+      },
+      "cancellation": {
+        "deleteTitle": "Supprimer la regle d'annulation ?",
+        "deleteDescription": "La regle \"{{name}}\" sera supprimee definitivement de ce contrat.",
+        "deleteConfirm": "Supprimer",
+        "loadError": "Impossible de charger les regles d'annulation.",
+        "title": "Regles d'annulation",
+        "importFromCatalog": "Importer depuis le catalogue",
+        "emptyTitle": "Aucune regle d'annulation dans ce contrat",
+        "emptySubtitle": "Importez depuis le catalogue pour commencer"
+      },
+      "spos": {
+        "deleteTitle": "Supprimer l'offre speciale ?",
+        "deleteDescription": "L'offre speciale \"{{name}}\" sera supprimee definitivement de ce contrat.",
+        "deleteConfirm": "Supprimer",
+        "loadError": "Impossible de charger les offres speciales.",
+        "title": "Offres speciales (SPO)",
+        "importFromCatalog": "Importer depuis le catalogue",
+        "emptyTitle": "Aucune offre speciale dans ce contrat",
+        "emptySubtitle": "Importez depuis le catalogue pour commencer"
+      },
+      "loadError": "Impossible de charger le contrat.",
+      "earlyBookings": {
+        "deleteTitle": "Supprimer l'Early Booking \"{{name}}\" ?",
+        "deleteDescription": "Cet Early Booking sera supprime definitivement de ce contrat.",
+        "deleteConfirm": "Supprimer",
+        "title": "Early Bookings",
+        "importFromCatalog": "Importer depuis le catalogue",
+        "emptyTitle": "Aucun Early Booking configure",
+        "emptySubtitle": "Importez des offres depuis le catalogue hotelier pour les appliquer sur ce contrat."
+      },
+      "monoparental": {
+        "deleteTitle": "Supprimer la regle \"{{name}}\" ?",
+        "deleteDescription": "La regle sera supprimee definitivement de ce contrat.",
+        "deleteConfirm": "Supprimer",
+        "title": "Regles monoparentales",
+        "importFromCatalog": "Importer depuis le catalogue",
+        "emptyTitle": "Aucune regle monoparentale",
+        "emptySubtitle": "Importez depuis le catalogue pour commencer"
+      },
+      "reductions": {
+        "deleteTitle": "Supprimer la reduction \"{{name}}\" ?",
+        "deleteDescription": "La reduction sera supprimee definitivement de ce contrat.",
+        "deleteConfirm": "Supprimer",
+        "title": "Reductions",
+        "importFromCatalog": "Importer depuis le catalogue",
+        "emptyTitle": "Aucune reduction dans ce contrat",
+        "emptySubtitle": "Importez depuis le catalogue pour commencer"
+      },
+      "supplements": {
+        "deleteTitle": "Supprimer le supplement \"{{name}}\" ?",
+        "deleteDescription": "Le supplement sera supprime definitivement de ce contrat.",
+        "deleteConfirm": "Supprimer",
+        "title": "Supplements",
+        "importFromCatalog": "Importer depuis le catalogue",
+        "emptyTitle": "Aucun supplement dans ce contrat",
+        "emptySubtitle": "Importez depuis le catalogue pour commencer"
+      },
+      "general": {
+        "header": {
+          "title": "Parametres du contrat",
+          "subtitle": "Configurez l'identite, les dates, les partenaires et les regles de paiement."
+        },
+        "identity": {
+          "title": "Identite & Partenaires",
+          "subtitle": "Libelle interne du contrat et tour-operateurs rattaches.",
+          "contractName": "Nom / Libelle du contrat",
+          "affiliates": "Tour Operateurs (Affilies)",
+          "selectedCount": "{{count}} selectionne(s)",
+          "noPartners": "Aucun partenaire disponible"
+        },
+        "period": {
+          "title": "Periode & Devise",
+          "subtitle": "Dates d'application et devise de reference pour tous les tarifs associes.",
+          "startDate": "Date de debut",
+          "endDate": "Date de fin",
+          "currency": "Devise d'application"
+        },
+        "currencies": {
+          "eur": "EUR - Euro (?)",
+          "usd": "USD - Dollar US ($)",
+          "gbp": "GBP - Livre sterling (?)",
+          "tnd": "TND - Dinar tunisien (?.?)"
+        },
+        "specifications": {
+          "title": "Specifications",
+          "subtitle": "Contrainte sur l'arrangement de base.",
+          "strictArrangement": "Arrangement strict (optionnel)",
+          "noArrangement": "Aucun (multi-pension autorisee dans les tarifs)"
+        },
+        "payment": {
+          "title": "Facturation & Paiement",
+          "subtitle": "Conditions de liberation et methodes de reglement.",
+          "methods": "Moyens de paiement autorises",
+          "bankTransfer": "Virement bancaire",
+          "bankCheck": "Cheque bancaire",
+          "releaseCondition": "Condition de liberation",
+          "conditions": {
+            "prepayment": "100% Pre-paiement",
+            "deposit": "Contrat a depot (credit)"
+          },
+          "depositAmount": "Montant du depot",
+          "creditDelay": "Delai de credit",
+          "days": "Jours"
+        }
+      },
+      "status": {
+        "draft": "Brouillon",
+        "active": "Actif",
+        "expired": "Expire",
+        "terminated": "Resilie",
+        "terminalHint": "Etat terminal, aucune transition disponible",
+        "changeHint": "Cliquer pour changer le statut",
+        "changeTo": "Changer le statut vers",
+        "apply": "Appliquer"
+      }
+    }
+  },
+  "navigation": {
+    "supervisor": {
+      "sectionTitle": "Centre de commande",
+      "overview": {
+        "label": "Vue d'ensemble / MRR",
+        "description": "MRR, croissance, churn et preparation plateforme."
+      },
+      "tenants": {
+        "label": "Tenants / Organisations",
+        "description": "Portefeuille clients, statut de facturation et controles compte."
+      },
+      "plans": {
+        "label": "Plans SaaS et pricing",
+        "description": "Plans, limites, privileges et packaging abonnement."
+      },
+      "logs": {
+        "label": "Logs systeme",
+        "description": "Flux d'audit, alertes et evenements infrastructure."
+      },
+      "signals": {
+        "apiLatency": "Latence API",
+        "billingWebhooks": "Webhooks de facturation",
+        "platformAlerts": "Alertes plateforme"
+      }
+    },
+    "admin": {
+      "overview": {
+        "title": "Vue d'ensemble",
+        "organization": {
+          "label": "Organisation",
+          "description": "Posture de facturation, dynamique equipe et hotels."
+        },
+        "team": {
+          "label": "Equipe",
+          "description": "Invitations, roles et hygiene des acces."
+        },
+        "portfolio": {
+          "label": "Parc hotelier",
+          "description": "Parametres etablissements et taux de change."
+        }
+      },
+      "commercialOps": {
+        "title": "Ops commerciales",
+        "contracts": {
+          "label": "Contrats",
+          "description": "Conditions commerciales et cycle de vie."
+        },
+        "simulator": {
+          "label": "Simulateur",
+          "description": "Controle rapide des prix de vente contractes."
+        }
+      },
+      "users": "Utilisateurs"
+    },
+    "commercial": {
+      "primary": {
+        "hotels": {
+          "label": "Hotels",
+          "description": "Configuration etablissements et parametres operationnels."
+        },
+        "catalog": {
+          "label": "Catalogue",
+          "description": "Chambres, arrangements, extras et regles tarifaires."
+        },
+        "partners": {
+          "label": "Partenaires",
+          "description": "Partenaires de distribution et tour-operateurs."
+        },
+        "contracts": {
+          "label": "Contrats",
+          "description": "Brouillon, negociation et publication des accords."
+        },
+        "simulator": {
+          "label": "Simulateur",
+          "description": "Calculez instantanement les prix clients."
+        }
+      },
+      "product": {
+        "hotel": "Hotel",
+        "rooms": "Chambres",
+        "arrangements": "Arrangements",
+        "supplements": "Supplements",
+        "spos": "SPOs",
+        "reductions": "Reductions",
+        "monoparental": "Monoparental",
+        "earlyBooking": "Early Booking",
+        "cancellations": "Annulations"
+      },
+      "sections": {
+        "product": "Mon produit",
+        "partners": "Mes partenaires",
+        "contracts": "Gestion contrats",
+        "administration": "Administration"
+      }
+    },
+    "agent": {
+      "simulator": {
+        "label": "Simulateur",
+        "description": "Validation tarifaire orientee outil."
+      },
+      "contracts": {
+        "label": "Contrats",
+        "description": "Reference des accords sous-jacents si necessaire."
+      }
+    },
+    "roles": {
+      "supervisor": {
+        "label": "Superviseur",
+        "eyebrow": "Moteur plateforme",
+        "title": "Plateforme Pricify",
+        "subtitle": "Pilotez abonnements, sante tenants et fiabilite plateforme sans toucher aux donnees operationnelles.",
+        "sectionTitle": "Centre de commande"
+      },
+      "admin": {
+        "label": "Admin",
+        "eyebrow": "Pilotage organisation",
+        "title": "Cockpit organisation",
+        "subtitle": "Gardez facturation, acces equipe et portefeuille hotelier alignes."
+      },
+      "commercial": {
+        "label": "Commercial",
+        "eyebrow": "Espace production",
+        "title": "Bureau commercial",
+        "subtitle": "Restez fluide en editant inventaire, partenaires et donnees contrat.",
+        "sectionTitle": "Espace"
+      },
+      "agent": {
+        "label": "Agent",
+        "eyebrow": "Outil de calcul",
+        "title": "Simulateur pricing",
+        "subtitle": "Un environnement de calcul focalise avec retour prix instantane.",
+        "sectionTitle": "Outils"
+      }
+    }
+  },
+  "auth": {
+    "loginHint": "Connectez-vous a votre espace de contracting."
+  },
+  "authLayout": {
+    "badge": "Pricify Contracting",
+    "hero": {
+      "titleLine1": "Le Contracting",
+      "titleLine2Prefix": "Hotelier",
+      "titleAccent": "Reinvente.",
+      "subtitle": "Centralisez vos contrats TO, gerez vos grilles tarifaires et pilotez vos arrangements depuis une interface unique."
+    },
+    "cards": {
+      "contracts": {
+        "title": "Gestion des contrats",
+        "copy": "Periodes, saisons et conditions centralisees."
+      },
+      "rates": {
+        "title": "Grilles tarifaires",
+        "copy": "Par chambre, arrangement et saison."
+      },
+      "simulator": {
+        "title": "Simulateur de prix",
+        "copy": "Prix de vente calcules en temps reel."
+      },
+      "multiHotel": {
+        "title": "Multi-hotels",
+        "copy": "Chambres, supplements et reductions."
+      }
+    },
+    "brandline": "Pricify - Plateforme de contracting hotelier",
+    "footer": {
+      "copyright": "© {{year}} Pricify B2B - Tous droits reserves."
+    }
+  },
+  "landing": {
+    "nav": {
+      "overview": "Apercu",
+      "features": "Fonctionnalites",
+      "roles": "Roles",
+      "control": "Controle"
+    },
+    "actions": {
+      "login": "Connexion",
+      "getStarted": "Commencer",
+      "signIn": "Se connecter"
+    },
+    "hero": {
+      "badge": "Concu pour les operations commerciales hotellerie",
+      "title": "Le contracting hotelier, enfin sous controle.",
+      "subtitle": "Offrez aux directeurs, equipes contracting et agents front-desk un espace unique pour gerer contrats, regles tarifaires, partenaires et devis.",
+      "explore": "Explorer la plateforme",
+      "validatedQuote": "Chaque devis est valide avant envoi",
+      "pills": {
+        "multiProperty": "Pilotage multi-etablissements",
+        "quote": "Precision instantanee des devis"
+      },
+      "highlights": {
+        "multiHotel": "Controle multi-hotel",
+        "contract": "Logique contractuelle avancee",
+        "quote": "Precision immediate des devis"
+      }
+    },
+    "trust": {
+      "badge": "Concu pour les operations hotellerie modernes",
+      "groups": "Groupes hoteliers multi-etablissements",
+      "contracting": "Equipes contracting commerciales",
+      "tour": "Equipes tour-operateurs",
+      "pricing": "Agents tarification",
+      "ops": "Operations plateforme"
+    },
+    "platform": {
+      "eyebrow": "Proposition de valeur",
+      "title": "Pricify aide les hotels a centraliser contracting, pricing et devis.",
+      "subtitle": "Le message produit est simple: gerer chaque hotel, chaque regle contractuelle, chaque partenaire B2B et chaque devis depuis un seul espace commercial connecte.",
+      "cards": {
+        "0": {
+          "title": "Pilotage multi-etablissements",
+          "copy": "Les directeurs peuvent superviser hotels, equipes et structure commerciale depuis un espace operationnel unique."
+        },
+        "1": {
+          "title": "Moteur contractuel avance",
+          "copy": "Les equipes contracting pilotent un moteur tarifaire B2B complet avec grilles, SPO, supplements, reductions, early booking et annulations."
+        },
+        "2": {
+          "title": "Precision instantanee des devis",
+          "copy": "Les agents front-desk simulent des totaux conformes au contrat avant emission, avec moins de risques et de reprises."
+        }
+      }
+    },
+    "features": {
+      "eyebrow": "Bento fonctionnalites",
+      "title": "Tout ce que fait la plateforme est visible dans la premiere histoire racontee a vos clients.",
+      "subtitle": "De la configuration hoteliere aux contrats partenaires et a la simulation instantanee, chaque section traduit le produit en valeur operationnelle."
+    },
+    "bento": {
+      "badge": "Valeur hoteliere",
+      "cards": {
+        "0": {
+          "title": "Controle multi-etablissements",
+          "description": "Gerez plusieurs hotels depuis un espace centralise, avec une visibilite portefeuille claire et un meilleur controle des operations contracting.",
+          "bullets": {
+            "0": "Supervision multi-hotel centralisee",
+            "1": "Un espace operationnel pour chaque hotel",
+            "2": "Meilleur controle de l'organisation commerciale"
+          }
+        },
+        "1": {
+          "title": "Moteur Contrats et SpO",
+          "description": "Creez, activez et maintenez les accords partenaires avec periodes, grilles tarifaires, supplements, reductions, early booking, offres speciales et annulations.",
+          "bullets": {
+            "0": "Contrats lies aux partenaires",
+            "1": "Conditions tarifaires granulaires",
+            "2": "Pilotage du cycle de vie du brouillon a l'actif"
+          }
+        },
+        "2": {
+          "title": "Simulateur tarifaire sans risque",
+          "description": "Permettez aux agents de valider les prix finaux selon contrat actif, date de reservation, arrangement, rooming list, promotions et modificateurs de sejour.",
+          "bullets": {
+            "0": "Calculs alignes au contrat",
+            "1": "Validation rooming list",
+            "2": "Detail clair des montants nuit et total"
+          }
+        },
+        "3": {
+          "title": "Gestion partenaires et affilies",
+          "description": "Gardez tour-operateurs, agences et partenaires B2B relies aux bonnes conditions commerciales, contrats et historiques d'echange.",
+          "bullets": {
+            "0": "Contrats relies aux affilies",
+            "1": "Base partenaires B2B centralisee",
+            "2": "Collaboration plus rapide avec la distribution"
+          }
+        },
+        "4": {
+          "title": "Supervision direction et acces",
+          "description": "Offrez aux directeurs une vision globale des hotels, equipes et permissions tout en gardant chaque utilisateur focalise sur son role.",
+          "bullets": {
+            "0": "Controle des acces et des roles",
+            "1": "Visibilite portefeuille complete",
+            "2": "Coordination simplifiee entre directions et operations"
+          }
+        },
+        "5": {
+          "title": "Fondation hotel et catalogues",
+          "description": "Modelez hotels, chambres, arrangements, affilies et catalogues tarifaires dans un flux connecte qui alimente contrats et simulations.",
+          "bullets": {
+            "0": "Portefeuille hotelier et changes",
+            "1": "Catalogues chambres et arrangements",
+            "2": "Supplements, SPO, reductions et plus"
+          }
+        }
+      }
+    },
+    "roles": {
+      "eyebrow": "Valeur par role",
+      "title": "Chaque equipe hoteliere obtient exactement l'espace dont elle a besoin.",
+      "subtitle": "Directeurs, equipes contracting et front-desk travaillent differemment. Pricify garde chaque role rapide, clair et aligne.",
+      "cards": {
+        "0": {
+          "title": "Directeurs",
+          "subtitle": "Gardez une vision globale sur tous les hotels geres.",
+          "points": {
+            "0": "Obtenez une vue unifiee du portefeuille hotelier, de la structure operationnelle et des equipes.",
+            "1": "Controlez utilisateurs, permissions et acces hotel sans ralentir l'activite commerciale.",
+            "2": "Alignez performance multi-hotel et collaboration a mesure que votre perimetre grandit."
+          }
+        },
+        "1": {
+          "title": "Equipes Contracting",
+          "subtitle": "Configurez une tarification B2B complexe sans friction.",
+          "points": {
+            "0": "Gerez hotels, chambres, arrangements, affilies et conditions contractuelles dans un flux unique.",
+            "1": "Parametrez grilles, SPO, supplements, reductions, early booking et annulations en toute confiance.",
+            "2": "Passez de la configuration partenaire a la publication contrat sans dependre des fichiers disperses."
+          }
+        },
+        "2": {
+          "title": "Front-Desk",
+          "subtitle": "Generez des devis fiables en quelques secondes.",
+          "points": {
+            "0": "Utilisez le simulateur comme poste de pricing dedie respectant contrats actifs, dates et rooming.",
+            "1": "Generez des devis instantanes avec totaux valides avant partage client ou partenaire.",
+            "2": "Travaillez plus vite avec une interface claire orientee precision des prix."
+          }
+        }
+      }
+    },
+    "security": {
+      "eyebrow": "Controle operationnel",
+      "title": "Le controle evolue avec votre groupe hotelier, pas contre lui.",
+      "subtitle": "Quand vos equipes, votre portefeuille et vos partenaires grandissent, Pricify maintient l'acces, la visibilite et la logique tarifaire organises.",
+      "cards": {
+        "0": {
+          "title": "Controle des acces",
+          "copy": "Donnez a chaque collaborateur le bon espace pour garder directeurs, contracting et front-desk concentres."
+        },
+        "1": {
+          "title": "Visibilite multi-etablissements",
+          "copy": "Gerez plusieurs hotels avec une structure plus claire et une vue centralisee de l'environnement commercial."
+        },
+        "2": {
+          "title": "Execution tarifaire fiable",
+          "copy": "Gardez contrats, conditions partenaires et simulations alignes pour que chaque devis reflète les regles negociees."
+        }
+      }
+    },
+    "cta": {
+      "eyebrow": "CTA final",
+      "title": "Pret a moderniser votre contracting hotelier ?",
+      "subtitle": "Remplacez les feuilles de calcul, les erreurs de pricing et la coordination fragmentee par un espace commercial unique.",
+      "reviewWorkflow": "Voir le workflow hotelier"
+    },
+    "footer": {
+      "subtitle": "Pricify connecte pilotage multi-etablissements, contracting hotelier, gestion partenaires et validation tarifaire dans un espace moderne.",
+      "copyright": "© {{year}} Pricify. Contracting hotelier, pricing partenaires et controle instantane des devis."
+    }
+  },
+  "common": {
+    "notAvailable": "N/D"
+  },
+  "components": {
+    "navbar": {
+      "switchToLightMode": "Passer en mode clair",
+      "switchToDarkMode": "Passer en mode sombre"
+    },
+    "sidebar": {
+      "expandMenu": "Ouvrir le menu",
+      "collapseMenu": "Reduire le menu"
+    }
+  },
+  "auto": {
+    "features": {
+      "admin": {
+        "hooks": {
+          "useusers": {
+            "toast": {
+              "success": {
+                "8691680c": "User updated successfully",
+                "ea6f670a": "User suspended successfully"
+              },
+              "error": {
+                "4c3aa2d2": "Unable to suspend the user"
+              }
+            }
+          }
+        },
+        "pages": {
+          "adminoverviewpage": {
+            "fb3c2467": "14 Apr"
+          },
+          "userspage": {
+            "111a62e5": "Active",
+            "ed1a9226": "Pending invite",
+            "title": {
+              "8c6523e0": "Edit user",
+              "6d534da0": "Suspend user"
+            },
+            "a9bbbbe0": "User",
+            "0d3e32fc": "Role",
+            "7b43cd72": "Assigned hotels",
+            "e63e6e31": "Status",
+            "77eb292a": "Actions",
+            "28e3c5ef": "No hotel assigned"
+          }
+        }
+      },
+      "arrangements": {
+        "components": {
+          "editarrangementmodal": {
+            "placeholder": {
+              "b837c01f": "LPD"
+            }
+          }
+        },
+        "hooks": {
+          "usearrangements": {
+            "toast": {
+              "success": {
+                "7dd447e1": "Arrangement créé avec succès",
+                "059e6397": "Arrangement mis à jour",
+                "2875ad97": "Arrangement archivé avec succès",
+                "efd61953": "Arrangement restauré avec succès"
+              }
+            }
+          }
+        },
+        "pages": {
+          "arrangementspage": {
+            "5abc4ade": "Plans repas proposés par l'hôtel",
+            "placeholder": {
+              "995686e5": "Rechercher un arrangement..."
+            },
+            "c87031c2": "Aucun arrangement défini",
+            "5dcf7e80": "Cliquez sur « Nouvel Arrangement » pour commencer",
+            "b33b394f": "Code",
+            "96ce3732": "Libellé",
+            "60d9e35d": "Niveau",
+            "b6c233f6": "Description",
+            "3463121d": "Actions",
+            "b64ea579": "Aucune description",
+            "title": {
+              "a2e2e4e7": "Modifier",
+              "ede43660": "Supprimer"
+            },
+            "cbf4e9cf": "Nom",
+            "7d74144c": "Action",
+            "34b0529a": "Aucun arrangement archivé"
+          }
+        }
+      },
+      "catalog": {
+        "cancellation": {
+          "components": {
+            "editcancellationtemplatemodal": {
+              "subtitle": {
+                "5b9996bf": "Politique de désengagement Catalogue"
+              },
+              "b1af04bb": "1. Identification & Nom",
+              "502c4e93": "Libellé de la politique",
+              "placeholder": {
+                "4957255b": "Ex: Late Cancel TGV - 48h",
+                "88a03b34": "Libre"
+              },
+              "544d3b13": "Jours avant Arrivée",
+              "4d36db1d": "Jours",
+              "f777c4f2": "Condition Séjour Min",
+              "2932ddb1": "Nuits",
+              "245632d2": "3. Calcul de la Pénalité",
+              "55ed00c5": "Unité de mesure",
+              "02792fd9": "Nuits de séjour",
+              "8f8841c4": "Pourcentage (%)",
+              "4eecf6d0": "Montant fixe (€)",
+              "c1e57ec0": "Valeur pénalité"
+            }
+          },
+          "hooks": {
+            "usetemplatecancellations": {
+              "toast": {
+                "success": {
+                  "5a5e0e13": "Règle d'annulation créée",
+                  "3796d5ab": "Règle d'annulation mise à jour",
+                  "1ba0a2b4": "Règle d'annulation supprimée",
+                  "6a8f511d": "Règle d'annulation restaurée"
+                }
+              }
+            }
+          },
+          "pages": {
+            "cancellationcatalogpage": {
+              "8a1e12fb": "Gérez les politiques d'annulation (templates)",
+              "eb83598e": "Aucune règle d'annulation trouvée",
+              "d61ff2cd": "Nom de la politique",
+              "96ca3444": "Fenêtre",
+              "90bdcac8": "Min Stay",
+              "01a8f56e": "Pénalité",
+              "8eec3a11": "Actions",
+              "a9f39803": "No-Show",
+              "443b4f96": "Sans condition"
+            }
+          }
+        },
+        "early": {
+          "bookings": {
+            "components": {
+              "createearlybookingmodal": {
+                "deec6f64": "Nom de l'offre",
+                "placeholder": {
+                  "f673dc04": "Ex: Early Booking Hiver -15%"
+                },
+                "a5f22595": "Type de Calcul",
+                "f7dde2c8": "Pourcentage (%)",
+                "40c2c3a5": "Montant Fixe (TND)",
+                "6acfe11c": "Release (Jours avant arrivée)",
+                "5065fc57": "Réservation Au",
+                "183ab80f": "Séjour Du (Stay)",
+                "bbbfa452": "Séjour Au",
+                "cd68cad4": "DL Prépaiement",
+                "902543af": "DL Rooming List"
+              },
+              "earlybookingstable": {
+                "43465562": "Prépayé",
+                "09eb62dd": "Nom",
+                "772de13a": "Réservation",
+                "61e1442d": "Action",
+                "4fbd11a1": "Offre & Release",
+                "d04ebc7e": "Séjour",
+                "311a698c": "Valeur",
+                "9af038e3": "Actions",
+                "1e0e5058": "du",
+                "6bce5812": "au",
+                "24b40c97": "Oui",
+                "74474d60": "Non",
+                "title": {
+                  "f3f3d1eb": "Modifier",
+                  "ffe3b18a": "Archiver"
+                }
+              },
+              "editearlybookingtemplatemodal": {
+                "subtitle": {
+                  "8bffd413": "Définition Catalogue"
+                },
+                "7cd965e8": "1. Informations de base",
+                "37f6f144": "Nom de l'offre",
+                "placeholder": {
+                  "59aff53a": "Ex: EB Hiver -15% (Template)"
+                },
+                "8fc14613": "Type de Calcul",
+                "6bca1a6f": "Pourcentage (%)",
+                "b9afde85": "Fixe (€)",
+                "593c91e6": "Mode",
+                "005af6b3": "Par Nuit / Pers.",
+                "84aa8373": "Par Chambre / Nuit",
+                "21fb0166": "Forfait Séjour",
+                "17abcc92": "Valeur",
+                "fef7500e": "Release",
+                "f9dc7029": "jours",
+                "c23f8650": "2. Périodes de validité",
+                "4c8f9b5b": "Fenêtre de Réservation",
+                "6b67ef39": "Du",
+                "e21bd01e": "Au",
+                "f19b247c": "Période de Séjour",
+                "1a08f8fa": "3. Prépaiement & Garanties",
+                "b6f2e9d7": "Activer l'exigence",
+                "0ecb9ba0": "% Prépaiement",
+                "bcbe5929": "Date Limite (Pay)",
+                "7d300fa2": "Rooming List",
+                "4c0e6cc8": "Aucun prépaiement exigé pour ce template"
+              },
+              "importearlybookingmodal": {
+                "4d87ef3f": "Catalogue des Early Bookings",
+                "d9cd1251": "Sélectionnez les offres à importer dans le contrat",
+                "placeholder": {
+                  "f107089c": "Rechercher un early booking par nom..."
+                },
+                "ddab681f": "Chargement du catalogue..."
+              }
+            },
+            "hooks": {
+              "usetemplateearlybookings": {
+                "toast": {
+                  "success": {
+                    "63c479cb": "Early Booking créé",
+                    "ce0c229f": "Early Booking mis à jour",
+                    "195e1e7a": "Early Booking archivé",
+                    "7bc587f7": "Early Booking restauré"
+                  }
+                }
+              }
+            },
+            "pages": {
+              "earlybookingscatalogpage": {
+                "6c3403db": "Définitions des offres de réservations anticipées (templates)",
+                "d0a626c9": "Aucun template trouvé"
+              }
+            }
+          }
+        },
+        "monoparental": {
+          "components": {
+            "editmonoparentaltemplatemodal": {
+              "73325097": "de la",
+              "subtitle": {
+                "f2e2ab54": "Définition Catalogue"
+              },
+              "c777c589": "Résumé de la règle :",
+              "f2393017": "et",
+              "8754f5fe": "(Enfant gratuit).",
+              "e2352df7": "1. Condition d'application",
+              "83818f25": "Adultes",
+              "3c6ee437": "Enfants",
+              "19ec857f": "Âge min",
+              "445d75ea": "Âge max",
+              "b812e113": "2. Formule de tarification",
+              "b581fc35": "Base tarifaire adulte",
+              "58b0a79b": "Chambre Single",
+              "f7b3d936": "Chambre Double",
+              "f8c668e9": "Majoration enfant (%)",
+              "a53562c2": "Base de calcul majoration",
+              "fbbbc351": "Chambre Double (Entière)",
+              "96a80d6c": "Demi-Single (50%)",
+              "6b208c3f": "Demi-Double (50%)"
+            },
+            "importmonoparentalrulemodal": {
+              "f4178827": "Catalogue des Règles Monoparentales",
+              "ac39e54a": "Sélectionnez les règles à importer dans le contrat",
+              "placeholder": {
+                "f2b809e1": "Rechercher une règle par nom..."
+              },
+              "cda9e642": "Chargement du catalogue..."
+            }
+          },
+          "hooks": {
+            "usetemplatemonoparentalrules": {
+              "toast": {
+                "success": {
+                  "490398e8": "Règle monoparentale créée",
+                  "bebed912": "Règle monoparentale mise à jour",
+                  "064f6be3": "Règle monoparentale archivée",
+                  "296acd9c": "Règle monoparentale restaurée"
+                }
+              }
+            }
+          },
+          "pages": {
+            "monoparentalcatalogpage": {
+              "0df487fc": "Gérez les exceptions de tarification monoparentale (templates)",
+              "placeholder": {
+                "9a24f186": "Rechercher une règle..."
+              },
+              "a64abcb0": "Aucune règle monoparentale trouvée",
+              "f130a297": "Configuration",
+              "f23226d9": "Déclencheur (Pax)",
+              "f4984b1a": "Formule Tarifaire",
+              "0bba5166": "Actions",
+              "390f7019": "de",
+              "e6da54bc": "Aucune règle archivée"
+            }
+          }
+        },
+        "reductions": {
+          "components": {
+            "editreductiontemplatemodal": {
+              "subtitle": {
+                "676757db": "Définition Catalogue"
+              },
+              "7a4305e8": "Comportement Métier",
+              "dca3d8ad": "Enfant",
+              "8eb79c1b": "Adulte Supplémentaire",
+              "bec768b5": "Réduction Standard / Autre",
+              "b8d32f1e": "Nom de la réduction",
+              "placeholder": {
+                "965f0c8b": "ex: Enfant 0-5 ans gratuit..."
+              },
+              "f16cf0d8": "Âge Minimum",
+              "8b613ce1": "ans",
+              "8911a3eb": "Âge Maximum",
+              "ef3683b5": "Type de calcul",
+              "28238d11": "Pourcentage (%)",
+              "f1c7d9aa": "Fixe (€)",
+              "da6463ce": "Gratuit",
+              "aa76f86d": "Mode d'Application",
+              "d01d1192": "Par Nuit et Par Personne",
+              "de46e26e": "Par Chambre et Par Nuit",
+              "8dd41322": "Forfait Unique par Séjour"
+            },
+            "importreductionmodal": {
+              "1fc34e68": "Catalogue des Réductions",
+              "53eada2f": "Sélectionnez les réductions à importer dans le contrat",
+              "placeholder": {
+                "68b4da31": "Rechercher une réduction par nom..."
+              },
+              "c13e5798": "Chargement du catalogue..."
+            }
+          },
+          "hooks": {
+            "usetemplatereductions": {
+              "toast": {
+                "success": {
+                  "fa960d88": "Réduction créée",
+                  "4f58f383": "Réduction mise à jour",
+                  "7d95cd08": "Réduction archivée",
+                  "de980ddb": "Réduction restaurée"
+                }
+              }
+            }
+          },
+          "pages": {
+            "reductionscatalogpage": {
+              "b89de9fd": "Définitions des réductions réutilisables (templates)",
+              "placeholder": {
+                "927e81bd": "Rechercher une réduction..."
+              },
+              "16a64df5": "Aucune réduction trouvée",
+              "5a5ca319": "Nom",
+              "cdd158c5": "Cible",
+              "fca2f684": "Âges",
+              "11ea1d0e": "Valeur",
+              "08602ad6": "Aucune réduction archivée"
+            }
+          }
+        },
+        "spos": {
+          "components": {
+            "createspotemplatemodal": {
+              "31741767": "Réservation anticipée (Early Bird)",
+              "39242059": "Surclassement de chambre gratuit",
+              "57987910": "Type de condition",
+              "placeholder": {
+                "c88bcead": "Ex: Spring Promo -10%",
+                "abd39585": "Ex: 3"
+              },
+              "3d0814d8": "SI",
+              "3045788f": "Condition",
+              "2c845701": "Aucune (Toujours applicable)",
+              "514d470e": "Nuits minimales (Min. Nights)",
+              "eca20be2": "Long séjour (Long Stay)",
+              "06ada156": "Voyage de noces (Honeymooner)",
+              "f1bbe63b": "ALORS",
+              "b518f0e7": "Avantage",
+              "148706f5": "Type d'avantage",
+              "7ef6e281": "Réduction en pourcentage (%)",
+              "989f7991": "Réduction fixe",
+              "c48d0872": "Nuits gratuites",
+              "8ee99ea8": "Surclassement de pension gratuit",
+              "9762d88b": "Enfants gratuits (Kids go free)"
+            },
+            "editspotemplatemodal": {
+              "subtitle": {
+                "1fab0c9a": "Règle Promotionnelle Catalogue"
+              },
+              "1cd0e2c0": "Nom de l'offre (Public interne)",
+              "placeholder": {
+                "008d3df6": "Ex: Spring Promo -10% (Catalogue)",
+                "99b01594": "Val."
+              },
+              "4a2293e3": "SI (CONDITION)",
+              "5683cbd2": "Déclencheur",
+              "3aa41669": "Aucune (Automatique)",
+              "8560aa42": "Nuits minimales",
+              "9424a69a": "Réservation anticipée",
+              "626606f9": "Long séjour",
+              "3cfeeb72": "Voyage de noces",
+              "49be0fdb": "ALORS (AVANTAGE)",
+              "57a5b7ff": "Récompense / Mode",
+              "cbe4d27f": "Réduction %",
+              "6f6d348c": "Réduction Fixe",
+              "4e2a5c5f": "Nuits offertes",
+              "f2fb2ce3": "Upgrade Chambre",
+              "b4daaf80": "Upgrade Pension",
+              "1b9311c5": "Enfants Gratuits",
+              "58bbb40f": "Par Nuit et Personne",
+              "f63ed76b": "Par Chambre et Nuit",
+              "33e21f25": "Forfait / Séjour",
+              "78a59193": "Valeur"
+            }
+          },
+          "hooks": {
+            "usespotemplates": {
+              "toast": {
+                "success": {
+                  "18470030": "Offre Spéciale restaurée",
+                  "67d6fe47": "Offre Spéciale créée avec succès",
+                  "1db14906": "Offre Spéciale mise à jour avec succès",
+                  "0804141c": "Offre Spéciale archivée"
+                },
+                "error": {
+                  "8d7bacaf": "Erreur lors de la création de l'offre spéciale",
+                  "84be05af": "Erreur lors de la mise à jour",
+                  "6ffff313": "Erreur lors de l'archivage",
+                  "ce13c431": "Erreur lors de la restauration"
+                }
+              }
+            }
+          },
+          "pages": {
+            "spotemplatespage": {
+              "2b1c2c3d": "Gérez vos modèles d'offres spéciales (templates)",
+              "01f592bf": "Aucune offre spéciale trouvée",
+              "994aa2d8": "Modèle",
+              "3bbd1cbc": "SI / Condition",
+              "4420b633": "ALORS / Avantage",
+              "a6e99000": "Actions"
+            }
+          }
+        },
+        "supplements": {
+          "components": {
+            "editsupplementtemplatemodal": {
+              "49428240": "Mode d'Application",
+              "subtitle": {
+                "d65841ee": "Définition Catalogue"
+              },
+              "tip": "Astuce : Les suppl?ments du catalogue servent de mod?les. Lors de l'import dans un contrat, vous pourrez ajuster leurs prix par p?riode.",
+              "07f39843": "Comportement Métier",
+              "80da13d2": "Autre / Standard",
+              "d8ffefd8": "Supplément Single",
+              "28f784dc": "Dîner de Gala",
+              "3d69fa74": "Supplément de Pension (Repas)",
+              "a40efce2": "Nom du supplément",
+              "placeholder": {
+                "16f08e5e": "ex: Dîner de Gala, Lit Bébé...",
+                "0e40180d": "ex: SGL = DBL"
+              },
+              "72f7cd38": "Âge Minimum",
+              "70839f7e": "ans",
+              "8c96febd": "Âge Maximum",
+              "e69e5a54": "Type de calcul",
+              "2b31abd3": "Fixe (montant)",
+              "bf7fee32": "Pourcentage",
+              "35b58b48": "Formule",
+              "d7a72b15": "Gratuit",
+              "2969c12e": "Par Nuit et Par Personne",
+              "6ac86809": "Par Chambre et Par Nuit",
+              "ff68de8a": "Forfait Unique par Séjour",
+              "20da80f2": "Formule de calcul",
+              "formulaHint": "Ex: SGL = DBL (le prix single s'aligne sur le double)",
+              "cc4ffce3": "(optionnel)"
+            },
+            "importsupplementmodal": {
+              "ae5d6e61": "Catalogue des Suppléments",
+              "646ab347": "Sélectionnez les suppléments à importer dans le contrat",
+              "placeholder": {
+                "c353cc07": "Rechercher un supplément par nom..."
+              },
+              "bce140aa": "Chargement du catalogue...",
+              "18e9554a": "Obligatoire"
+            }
+          },
+          "hooks": {
+            "usetemplatesupplements": {
+              "toast": {
+                "success": {
+                  "cae80751": "Supplément créé",
+                  "dfd6e11b": "Supplément mis à jour",
+                  "df1b8517": "Supplément archivé",
+                  "54d6cf37": "Supplément restauré"
+                }
+              }
+            }
+          },
+          "pages": {
+            "supplementscatalogpage": {
+              "ce69312f": "Définitions des suppléments réutilisables (templates)",
+              "placeholder": {
+                "f8a6ec00": "Rechercher un supplément..."
+              },
+              "d8e159e3": "Cliquez sur « Nouveau Supplément » pour commencer",
+              "51293b71": "Nom",
+              "7663304e": "Type",
+              "6c0c1e73": "Valeur",
+              "048aa5d3": "Application",
+              "e79fe39b": "Obligatoire",
+              "05fe84b1": "Non",
+              "title": {
+                "5b7708a7": "Modifier",
+                "2dd01bc7": "Archiver"
+              },
+              "9cdaf222": "Action",
+              "7333e56a": "Aucun supplément archivé"
+            }
+          }
+        }
+      },
+      "contracts": {
+        "details": {
+          "components": {
+            "cancellationgrid": {
+              "toast": {
+                "info": {
+                  "fa0f93e0": "Aucune modification à enregistrer."
+                }
+              },
+              "6b5c373b": "Toutes chambres",
+              "title": {
+                "73066190": "Supprimer du contrat",
+                "5837a382": "Modifier la règle"
+              }
+            },
+            "earlybookinggrid": {
+              "ae2c4a84": "Non appliqué",
+              "title": {
+                "85db8588": "Activer pour cette période",
+                "982754ad": "Désactiver pour cette période",
+                "55dc683a": "Laisser vide pour hériter de la réduction de base",
+                "1b407077": "Modifier la coquille",
+                "03f923a9": "Supprimer du contrat"
+              },
+              "40a9f1dd": "Actif",
+              "toast": {
+                "info": {
+                  "465088e0": "Aucune modification à enregistrer."
+                }
+              },
+              "0ee9f45d": "Toutes chambres"
+            },
+            "monoparentalgrid": {
+              "a659d759": "Non appliqué",
+              "title": {
+                "e6413a78": "Activer pour cette période",
+                "8dc05cef": "Désactiver pour cette période",
+                "1c2903ed": "Modifier la coquille",
+                "a3a309c2": "Supprimer du contrat"
+              },
+              "cdcf47d0": "Actif",
+              "e4b574d1": "Single",
+              "7b0ef8d8": "Double",
+              "e196bf28": "Chambre Single",
+              "599523ea": "Chambre Double",
+              "8a40ccb4": "Demi-Single",
+              "7828cd9d": "Demi-Double",
+              "toast": {
+                "info": {
+                  "0700a39f": "Aucune modification à enregistrer."
+                }
+              },
+              "3af84798": "Toutes chambres",
+              "c8ee5f3e": "Formule de base",
+              "435d1958": "de"
+            },
+            "rates": {
+              "grid": {
+                "ratecell": {
+                  "title": {
+                    "e6a64ab5": "Activer cette cellule",
+                    "9467c3e9": "Désactiver cette cellule",
+                    "5e3ea50e": "Prix / Nuit",
+                    "267b30e9": "Allotement",
+                    "964f35b8": "Minimum Stay",
+                    "dfcf1f0e": "Surcharge Min Stay (laissez vide pour hériter de la période)",
+                    "4731f333": "Release Days",
+                    "2483b63e": "Surcharge Release Days (laissez vide pour hériter de la période)"
+                  },
+                  "34f9fd4a": "Ch.",
+                  "d82876f6": "🌙 Min",
+                  "d2396715": "⏳ Rel"
+                },
+                "smartratesgrid": {
+                  "toast": {
+                    "success": {
+                      "0e9fc8fc": "Grille tarifaire sauvegardée avec succès !"
+                    }
+                  },
+                  "title": {
+                    "4b61b345": "Recharger",
+                    "c0957662": "Supprimer la période",
+                    "a45947a0": "Retirer la chambre",
+                    "85c0082d": "Min Stay par défaut pour toute la période",
+                    "f302b4c5": "Release Days par défaut pour toute la période"
+                  },
+                  "8711b328": "Défauts Période",
+                  "f9b3c277": "Min Stay / Release (nuits / jours)",
+                  "placeholder": {
+                    "8ab5b0bc": "Min Stay",
+                    "1025cc59": "Release"
+                  }
+                }
+              }
+            },
+            "reductionsgrid": {
+              "ba91f984": "Non appliqué",
+              "title": {
+                "a6f5ed53": "Activer pour cette période",
+                "9b669364": "Désactiver pour cette période",
+                "e2fda476": "Laisser vide pour hériter de la valeur de base",
+                "0904100a": "Modifier la coquille",
+                "6b4ee57b": "Supprimer du contrat"
+              },
+              "02f320aa": "Actif",
+              "toast": {
+                "info": {
+                  "f9e1e563": "Aucune modification à enregistrer."
+                }
+              },
+              "bf937af5": "Toutes chambres"
+            },
+            "spocell": {
+              "title": {
+                "9b640f42": "Chambres cible non actives"
+              },
+              "1ca2c9a7": "Inactif",
+              "edb8534c": "Non appliqué",
+              "808b2a32": "Actif"
+            },
+            "spogrid": {
+              "toast": {
+                "info": {
+                  "148acb8b": "Aucune modification à enregistrer."
+                }
+              },
+              "3f2fb0bf": "Toutes chambres",
+              "title": {
+                "be88e85a": "Modifier la coquille",
+                "32f0bf50": "Supprimer l'offre"
+              }
+            },
+            "supplementsgrid": {
+              "title": {
+                "77926823": "Chambres cible non contractées sur cette période",
+                "998125aa": "Réservé à la période de l'évènement",
+                "f680af63": "Activer pour cette période",
+                "a6e5ebae": "Désactiver pour cette période",
+                "3542ed29": "Laisser vide pour hériter du prix de base",
+                "c3f4499f": "Modifier la coquille",
+                "68c1669f": "Supprimer du contrat"
+              },
+              "09578b41": "Non appliqué",
+              "d7c2f25b": "Actif",
+              "toast": {
+                "info": {
+                  "cd236ebf": "Aucune modification à enregistrer."
+                }
+              },
+              "15c47541": "Toutes chambres"
+            }
+          },
+          "modals": {
+            "createperiodmodal": {
+              "title": {
+                "4807876c": "Nouvelle Période"
+              },
+              "32ba110d": "Nom de la période",
+              "e8af1339": "Généré automatiquement (ordre croissant).",
+              "68d84d59": "Date de début",
+              "ae467c20": "Date de fin"
+            },
+            "editcontractcancellationmodal": {
+              "54666617": "Pourcentage du séjour",
+              "subtitle": {
+                "94b4927c": "Configuration de base"
+              },
+              "1e8a2055": "Architecture Matrice :",
+              "33ef0800": "L'activation par période et les pénalités surchargées se gèrent directement dans la",
+              "793e9efa": "Grille Annulation",
+              "ad8ce36f": "Nom de la règle",
+              "placeholder": {
+                "03493fca": "ex: Late Cancel Standard",
+                "5fc68eed": "Non requis"
+              },
+              "f08fe9c1": "Jours avant Arrivée",
+              "bb28fd69": "Jours",
+              "47fab217": "Séjour Minimum (Libre)",
+              "7277d445": "Nuits",
+              "28ba0518": "Application No-Show",
+              "b05a2ecf": "Appliquer aux No-Shows",
+              "73fa9da8": "Type de Pénalité",
+              "26db5f97": "Frais en Nuits",
+              "a2ee5b45": "Montant Fixe (Total)",
+              "38bc4d83": "Valeur de Base de Pénalité",
+              "7b2da6bb": "Chambres concernées"
+            },
+            "editcontractearlybookingmodal": {
+              "title": {
+                "ba6e41ad": "Modifier l'Early Booking"
+              },
+              "subtitle": {
+                "db23e114": "Configuration de base · Coquille"
+              },
+              "submitLabel": {
+                "dde4da7b": "Sauvegarder la Coquille"
+              },
+              "a763840e": "Architecture Matrice :",
+              "8bb670f6": "L'activation par période et les surcharges se gèrent directement dans la",
+              "2abd761e": "Grille Early Bookings",
+              "placeholder": {
+                "f329185c": "ex: Early Bird 60 Jours"
+              },
+              "4e1922d7": "Fixe",
+              "391bb95e": "Par Nuit & Pers.",
+              "31b2075b": "Par Chambre & Nuit",
+              "4a65af00": "Forfait / Séjour",
+              "456c26d9": "Montant de la réduction",
+              "08b9f13f": "(optionnel)",
+              "ff3bcbdd": "Réservation du",
+              "a9ae2dad": "Séjour du",
+              "4e80ea26": "Réservation au",
+              "7be5077d": "Séjour au",
+              "0776f351": "Exiger prépaiement",
+              "95035f80": "Pourcentage",
+              "efb0d730": "Limite Prépay.",
+              "71c589dd": "Limite Rooming",
+              "04248244": "Chambres concernées"
+            },
+            "editcontractmonoparentalrulemodal": {
+              "title": {
+                "f2b97c4f": "Modifier la règle monoparentale"
+              },
+              "subtitle": {
+                "3ac58f0e": "Configuration de base · Coquille"
+              },
+              "submitLabel": {
+                "91ed311c": "Mettre à jour"
+              },
+              "baa44125": "Architecture Matrice :",
+              "79df55e7": "L'activation par période et les surcharges se gèrent directement dans la",
+              "6b6a0302": "Grille Monoparentale",
+              "2933997c": "Nom de la règle",
+              "placeholder": {
+                "d911fc2c": "ex: 1 Adulte + 2 Enfants"
+              },
+              "e11605d7": "Zone A : Condition d'application",
+              "2184809c": "Adultes",
+              "d2306576": "Enfants",
+              "a981a557": "Âge min.",
+              "6828e695": "Âge max.",
+              "f962b9e5": "Zone B : Formule de facturation",
+              "2b9ac690": "Base adulte",
+              "d9b9596d": "Single",
+              "1ee5cabd": "Double",
+              "67a34da0": "Majoration enfant (%)",
+              "dd872604": "Base de calcul enfant",
+              "34dabcf5": "Chambre Single",
+              "e1b0ffcd": "Chambre Double",
+              "665f705d": "Demi-Single",
+              "36a7de31": "Demi-Double",
+              "380bcff1": "de la",
+              "930ec509": "(Enfant gratuit).",
+              "5bda79ae": "Chambres concernées"
+            },
+            "editcontractreductionmodal": {
+              "67108475": "Comportement Métier",
+              "title": {
+                "24cf9492": "Modifier la réduction"
+              },
+              "subtitle": {
+                "bdb3ac3f": "Configuration de base · Coquille"
+              },
+              "submitLabel": {
+                "a3e103eb": "Mettre à jour"
+              },
+              "4273eebf": "Enfant",
+              "dea869ee": "Adulte Supplémentaire",
+              "b324581a": "Réduction Standard / Autre",
+              "035e6e9d": "Nom de la réduction",
+              "placeholder": {
+                "9502ee2a": "ex: Réduction Enfant Standard"
+              },
+              "c749ed52": "Âge Minimum",
+              "98b63e8b": "Ans",
+              "04a95f82": "Âge Maximum",
+              "edd20c42": "Type de Calcul",
+              "ca6db49b": "Pourcentage (%)",
+              "ec522aa9": "Fixe (TND)",
+              "c447915c": "Gratuit",
+              "b31f79fc": "Mode d'Application",
+              "a225361f": "Par Nuit et Par Personne",
+              "6ecfc999": "Par Chambre et Par Nuit",
+              "313147b3": "Forfait Unique par Séjour",
+              "da335446": "Chambres concernées"
+            },
+            "editcontractspomodal": {
+              "55382339": "Récompense / Mode",
+              "subtitle": {
+                "59e45280": "Configuration de base · Coquille"
+              },
+              "34d8649d": "Architecture Matrice :",
+              "04fc2705": "L'activation par période et les surcharges se gèrent directement dans la",
+              "ec526077": "Grille SPO",
+              "8093efb7": "SI",
+              "e680d57f": "- Aucune -",
+              "88f6c5ea": "Nuits minimales",
+              "693c92ed": "Early Bird (Advance booking)",
+              "8f25afab": "Long Stay",
+              "e86d88a5": "Honeymooner",
+              "f76b806a": "ALORS",
+              "e7e01c2a": "Réduction (%)",
+              "8ad759ef": "Réduction (Fixe)",
+              "8358d52a": "Nuits gratuites",
+              "f4973079": "Up-grade Chambre",
+              "508198c6": "Up-grade Pension",
+              "6d893549": "Kids Go Free",
+              "22d21365": "Par Nuit & Pers.",
+              "fd5a1f68": "Par Chambre & Nuit",
+              "aeb77aa0": "Forfait / Séjour",
+              "placeholder": {
+                "40a06a0a": "Valeur base",
+                "348ca932": "Stay",
+                "c65e7976": "Pay"
+              },
+              "a6f26bb7": "🏨 Chambres concernées",
+              "2bf57f7f": "🍴 Pensions validées"
+            },
+            "editcontractsupplementmodal": {
+              "53080039": "Supplément Obligatoire",
+              "title": {
+                "b85d7f23": "Modifier le supplément"
+              },
+              "subtitle": {
+                "87d322ba": "Configuration de base · Coquille"
+              },
+              "submitLabel": {
+                "c5b38dcb": "Mettre à jour"
+              },
+              "9ac766fa": "Architecture Matrice :",
+              "b5c85b39": "L'activation par période et les surcharges se gèrent directement dans la",
+              "38dce286": "Grille Suppléments",
+              "6b5afd04": "Comportement Métier",
+              "a8d0bd95": "Autre / Standard",
+              "c5ed0310": "Supplément Single",
+              "c170138a": "Dîner de Gala",
+              "d30e9413": "Supplément de Pension (Repas)",
+              "87efde3c": "Nom du supplément",
+              "placeholder": {
+                "7885ed9e": "ex: Supplément Vue Mer",
+                "a15a9fd1": "SGL = DBL"
+              },
+              "55f4c4e1": "Âge Minimum",
+              "1a8e8d3a": "ans",
+              "7ee9223e": "Âge Maximum",
+              "d1b0b3bc": "Type de Calcul",
+              "db176a40": "Fixe (TND)",
+              "d5cd8ba2": "Pourcentage (%)",
+              "825bffe9": "Formule",
+              "9517f2f2": "Gratuit",
+              "1565911a": "Mode d'Application",
+              "e9a36374": "Par Nuit et Par Personne",
+              "6493e268": "Par Chambre et Par Nuit",
+              "0fd98736": "Forfait Unique par Séjour",
+              "d579d911": "(Optionnel — ex: Saint-Valentin)",
+              "75cec2bc": "Chambres concernées"
+            },
+            "importcontractcancellationmodal": {
+              "7204a209": "Catalogue des Annulations",
+              "ee91a588": "Sélectionnez les règles à importer dans le contrat",
+              "placeholder": {
+                "b1791a3c": "Rechercher une politique par nom..."
+              },
+              "ddd6603d": "Chargement du catalogue...",
+              "9b42cf78": "Pénalité:",
+              "bffdd88b": "No-Show Incl."
+            },
+            "importcontractroomsmodal": {
+              "title": {
+                "0b470d08": "Importer des chambres"
+              },
+              "080120fe": "Toutes les chambres du catalogue sont déjà ajoutées à ce contrat."
+            },
+            "importcontractspomodal": {
+              "1c3b6450": "Catalogue des Offres Spéciales",
+              "8a133cbb": "Sélectionnez les SPO à importer dans le contrat",
+              "placeholder": {
+                "4a2b02cd": "Rechercher une offre par nom..."
+              },
+              "ce0c87d4": "Chargement du catalogue..."
+            }
+          },
+          "sections": {
+            "periodssection": {
+              "42fbd655": "Saisons &amp; Périodes",
+              "18942c2c": "Aucune période définie pour le moment",
+              "170ff15c": "Cliquez sur « Nouvelle Période » pour commencer",
+              "34946c4d": "Nom",
+              "f1789f42": "Date de début",
+              "dad373ba": "Date de fin",
+              "2fdeded1": "Actions",
+              "title": {
+                "36aec923": "Supprimer"
+              }
+            },
+            "roomssection": {
+              "151ee688": "Chambres du Contrat",
+              "dac67c0a": "Aucune chambre associée à ce contrat",
+              "836d12a6": "Cliquez sur « Ajouter des chambres » pour importer depuis le catalogue",
+              "700dda3b": "Chambre",
+              "297d0b87": "Code",
+              "91bb73ca": "Adultes",
+              "065eee1d": "Enfants",
+              "588767e1": "Occupancy Max",
+              "ab4ecccf": "Actions",
+              "title": {
+                "4ea386bc": "Retirer du contrat"
+              }
+            }
+          }
+        },
+        "hooks": {
+          "usecontractcancellation": {
+            "toast": {
+              "success": {
+                "26634425": "Règle importée depuis le catalogue",
+                "07f51d02": "Règle d'annulation créée",
+                "bef7b852": "Règle d'annulation supprimée"
+              }
+            }
+          },
+          "usecontractearlybookings": {
+            "toast": {
+              "success": {
+                "af1a198d": "Early Booking importé avec succès",
+                "becac6d2": "Early Booking supprimé du contrat"
+              }
+            }
+          },
+          "usecontractmonoparentalrules": {
+            "toast": {
+              "success": {
+                "e9253375": "Règle importée avec succès",
+                "99c23aee": "Règle supprimée du contrat"
+              }
+            }
+          },
+          "usecontractreductions": {
+            "toast": {
+              "success": {
+                "ab09445a": "Réduction importée dans le contrat",
+                "1bacf088": "Réduction supprimée du contrat"
+              }
+            }
+          },
+          "usecontracts": {
+            "toast": {
+              "success": {
+                "b9325d34": "Contrat créé avec succès",
+                "5bfb7f2b": "Contrat mis à jour",
+                "2cc43dfd": "Période ajoutée",
+                "0d13dae8": "Période supprimée",
+                "7ddb5960": "Chambre ajoutée au contrat",
+                "ea857a1e": "Chambre retirée du contrat"
+              }
+            }
+          },
+          "usecontractspos": {
+            "toast": {
+              "success": {
+                "2fb61a17": "Offre Spéciale ajoutée avec succès",
+                "d2a1622f": "Offre Spéciale importée avec succès",
+                "7026991c": "Offre Spéciale supprimée"
+              },
+              "error": {
+                "7df53e5e": "Erreur lors de l'ajout",
+                "309da778": "Erreur lors de l'importation",
+                "8f9900a1": "Erreur lors de la mise à jour",
+                "6112f0df": "Erreur lors de la suppression"
+              }
+            }
+          },
+          "usecontractsupplements": {
+            "toast": {
+              "success": {
+                "e9bd8145": "Supplément importé",
+                "a0cb2f2b": "Supplément supprimé"
+              }
+            }
+          }
+        },
+        "pages": {
+          "contractslist": {
+            "placeholder": {
+              "7f2c3259": "TND"
+            }
+          }
+        }
+      },
+      "hotel": {
+        "components": {
+          "edithotelmodal": {
+            "43648523": "Nom de la Banque",
+            "243e2040": "Nom commercial de l'hôtel *",
+            "placeholder": {
+              "38cb0167": "Grand Hôtel Majestic",
+              "27c19c0c": "Nom Prénom",
+              "0d9f6dde": "Avenue Habib Bourguiba, 1001 Tunis",
+              "8ac6dfd2": "email@hotel.com",
+              "1c4e4c18": "SARL Grand Hôtel…",
+              "cb2e3886": "0123456A/P/M/000",
+              "a712cdab": "BIAT, STB, Attijari…",
+              "5bc4d990": "BIATTNTT",
+              "150788b3": "TN59 …"
+            },
+            "b8343faf": "Représentant Légal *",
+            "2ca8c8ab": "Devise (ISO 4217) *",
+            "79a4a688": "— Devise —",
+            "7d0c40d0": "Adresse Complète *",
+            "637932f7": "Catégorie (Étoiles)",
+            "afc60cf6": "Téléphone *",
+            "b2db8638": "Fax",
+            "6e775c60": "Adresses Email",
+            "3d3545d5": "Cliquez pour ajouter une adresse email...",
+            "703a8973": "— Type —",
+            "607ae752": "Raison Sociale (Nom Fiscal)",
+            "9f31c75d": "Matricule Fiscal (VAT)",
+            "55810cf8": "Numéro de Compte (RIB)",
+            "5a2b4f15": "Code SWIFT / BIC",
+            "f56c06a7": "Code IBAN",
+            "dc2c01fd": "* Champs obligatoires"
+          },
+          "exchangeratessection": {
+            "a7e8a083": "to"
+          }
+        },
+        "hooks": {
+          "useexchangerates": {
+            "toast": {
+              "success": {
+                "1908288d": "Taux de change ajouté avec succès",
+                "4438ce0f": "Taux de change mis à jour avec succès",
+                "d7c15eaf": "Taux de change supprimé avec succès"
+              },
+              "error": {
+                "d3e3c941": "Erreur lors de l'ajout du taux de change",
+                "b8ebd596": "Erreur lors de la mise à jour du taux de change",
+                "7bb54bec": "Erreur lors de la suppression du taux de change"
+              }
+            }
+          },
+          "usehotels": {
+            "toast": {
+              "success": {
+                "cba2c083": "Hôtel créé avec succès",
+                "dd70415d": "Hôtel mis à jour",
+                "a982fcc1": "Hôtel archivé avec succès",
+                "df605eb4": "Hôtel restauré avec succès"
+              }
+            }
+          }
+        }
+      },
+      "partners": {
+        "hooks": {
+          "useaffiliates": {
+            "toast": {
+              "success": {
+                "5495dd3f": "Partenaire créé avec succès",
+                "1990512e": "Partenaire mis à jour",
+                "74711f73": "Partenaire archivé avec succès",
+                "f2827e43": "Partenaire restauré avec succès"
+              }
+            }
+          }
+        },
+        "pages": {
+          "affiliatespage": {
+            "5698c3e2": "Gérez vos partenaires commerciaux",
+            "7087748d": "Aucun partenaire enregistré",
+            "2965e80c": "Cliquez sur « Nouveau Partenaire » pour commencer",
+            "8827467a": "Société",
+            "55c3ff30": "Type",
+            "0219ccde": "Représentant",
+            "958306b2": "Email",
+            "title": {
+              "6389cd97": "Voir les contrats",
+              "0b2ca4dc": "Modifier",
+              "0f6c8455": "Supprimer"
+            },
+            "21d528b7": "Action",
+            "6bed5020": "Aucun partenaire archivé",
+            "3c42e6b7": "Nom de la société *",
+            "placeholder": {
+              "24e881e1": "Ex: TUI France",
+              "3b01b337": "Michel Durand",
+              "2b305725": "adresse@mail.com",
+              "f5223833": "Banque Populaire",
+              "3eb7769b": "TN59...",
+              "a41f1ee7": "ABCCTN..."
+            },
+            "efdf284a": "Type de partenaire",
+            "109fc4fc": "Tour Opérateur",
+            "4b5a3f34": "Agence de Voyage",
+            "c3487a68": "Corporate",
+            "40cccbf1": "Représentant légal",
+            "5d377eb4": "Emails (CRM)",
+            "09feda17": "— Type —",
+            "2d2f6ab1": "Aucun email défini.",
+            "86f9d5fa": "Coordonnées Bancaires",
+            "d90e8576": "Nom de la Banque",
+            "72b41251": "IBAN",
+            "ec66f853": "SWIFT / BIC",
+            "0e822787": "Téléphone",
+            "df043293": "Fax",
+            "c7ebb22b": "Adresse"
+          }
+        }
+      },
+      "public": {
+        "landingpage": {
+          "aria-label": {
+            "cb16b8d6": "Pricify home"
+          }
+        }
+      },
+      "rooms": {
+        "components": {
+          "editroomtypemodal": {
+            "placeholder": {
+              "31d16cf5": "DBL"
+            }
+          }
+        },
+        "hooks": {
+          "useroomtypes": {
+            "toast": {
+              "success": {
+                "bd978808": "Chambre créée avec succès",
+                "94e7e417": "Chambre mise à jour",
+                "d36e3358": "Chambre archivée avec succès",
+                "55744ca1": "Chambre restaurée avec succès"
+              }
+            }
+          }
+        },
+        "pages": {
+          "roomtypespage": {
+            "placeholder": {
+              "4f8e2e50": "Rechercher une chambre..."
+            },
+            "6d41bf0a": "Aucune chambre définie pour le moment",
+            "eea025ef": "Cliquez sur « Nouvelle Chambre » pour commencer",
+            "60a25d6c": "Code",
+            "f530c0be": "Libellé",
+            "b23ebeb0": "Occupancy",
+            "3033d562": "Adultes",
+            "8ebed994": "Enfants",
+            "b3557035": "Lit bébé",
+            "a78b3ab3": "Autorisé",
+            "dfd69bda": "Non",
+            "title": {
+              "d44026b9": "Modifier",
+              "b7a64043": "Supprimer"
+            },
+            "ef856737": "Action",
+            "112be6b0": "Aucune chambre archivée"
+          }
+        }
+      },
+      "simulator": {
+        "pages": {
+          "simulatorpage": {
+            "10642227": "Select a room",
+            "dde75327": "Rooms",
+            "155e9de1": "Adults",
+            "29ca0350": "Kids",
+            "de15aed4": "Valid until",
+            "f9fa769d": "No active contract",
+            "8fcd76c5": "Check-in",
+            "a1bdbe16": "Check-out",
+            "8773864b": "Select arrangement",
+            "title": {
+              "a4dfb77a": "Remove room"
+            },
+            "35b620e0": "Room type",
+            "1b108074": "Age",
+            "1c1e22af": "years",
+            "1ccd64b6": "A room needs at least one occupant.",
+            "3e7dbe1c": "Quote detail",
+            "52b26439": "Complete the rooming list to reveal the final net price.",
+            "a59a3b70": "N/A",
+            "afc48449": "Base / occupancy",
+            "5af1a6ca": "Net for this night",
+            "0b6d0510": "Stay of -- nights",
+            "ba95b01b": "Total gross",
+            "556bee2a": "Global discounts",
+            "2f0651d6": "Stay modifiers",
+            "a7cbe69d": "Final net total",
+            "d729c3d7": "Simulator unavailable",
+            "11e77796": "Select a partner"
+          }
+        }
+      },
+      "supervisor": {
+        "pages": {
+          "supervisorplatformsettingspage": {
+            "0c4fc109": "Plan name",
+            "d6837f37": "Monthly price",
+            "6ccec319": "Max hotels",
+            "be35581d": "Max users",
+            "53862b3a": "API access",
+            "a7cae788": "Enabled",
+            "24b15b5f": "Disabled",
+            "0b64cd63": "Support tier",
+            "499e68ec": "Priority",
+            "9a0ed073": "Standard",
+            "ff6ca35f": "Dedicated",
+            "f5b37b70": "Privilege notes"
+          }
+        }
+      }
+    },
+    "pagination": {
+      "summary": "Affichage de {{from}} ? {{to}} sur {{total}}"
+    }
+  }
+}

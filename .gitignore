@@ -1,5 +1,29 @@
-# Logs
-logs
+# ==============================
+# 1. DEPENDENCIES
+# ==============================
+node_modules/
+.pnpm-store/
+
+# ==============================
+# 2. BUILD / COMPILATION
+# ==============================
+dist/
+dist-ssr/
+build/
+
+# ==============================
+# 3. SECURITY & CREDENTIALS
+# ==============================
+# Never commit environment variables or secrets
+.env
+.env.*
+!.env.example
+*.local
+
+# ==============================
+# 4. LOGS
+# ==============================
+logs/
 *.log
 npm-debug.log*
 yarn-debug.log*
@@ -7,26 +31,34 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-node_modules
-dist
-dist-ssr
-*.local
+# ==============================
+# 5. SYSTEM
+# ==============================
+.DS_Store
+Thumbs.db
+Desktop.ini
 
 # ==============================
-# SÉCURITÉ — Fichiers d'environnement
-# Ne JAMAIS commiter VITE_API_URL ou autres secrets
+# 6. IDE / EDITORS
 # ==============================
-.env
-.env.*
-!.env.example
-
-# Editor directories and files
 .vscode/*
 !.vscode/extensions.json
-.idea
-.DS_Store
+.idea/
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
+
+# ==============================
+# 7. TESTS & COVERAGE
+# ==============================
+coverage/
+.nyc_output/
+
+# ==============================
+# 8. MISC
+# ==============================
+.eslintcache
+*.tsbuildinfo
+.gemini/

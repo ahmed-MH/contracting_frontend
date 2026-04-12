@@ -6,6 +6,7 @@ import type {
     CreateTemplateMonoparentalRulePayload,
     UpdateTemplateMonoparentalRulePayload,
 } from '../../../../types';
+import i18next from '../../../../lib/i18n';
 
 export const templateMonoparentalKeys = {
     all: (hotelId: number | undefined) => ['template-monoparental', hotelId] as const,
@@ -43,7 +44,7 @@ export function useCreateTemplateMonoparentalRule() {
             templateMonoparentalService.create(data),
         onSuccess: () => {
             qc.invalidateQueries({ queryKey: templateMonoparentalKeys.all(currentHotel?.id) });
-            toast.success('Règle monoparentale créée');
+            toast.success(i18next.t('auto.features.catalog.monoparental.hooks.usetemplatemonoparentalrules.toast.success.490398e8', { defaultValue: "Règle monoparentale créée" }));
         },
     });
 }
@@ -56,7 +57,7 @@ export function useUpdateTemplateMonoparentalRule() {
             templateMonoparentalService.update(id, data),
         onSuccess: () => {
             qc.invalidateQueries({ queryKey: templateMonoparentalKeys.all(currentHotel?.id) });
-            toast.success('Règle monoparentale mise à jour');
+            toast.success(i18next.t('auto.features.catalog.monoparental.hooks.usetemplatemonoparentalrules.toast.success.bebed912', { defaultValue: "Règle monoparentale mise à jour" }));
         },
     });
 }
@@ -68,7 +69,7 @@ export function useDeleteTemplateMonoparentalRule() {
         mutationFn: (id: number) => templateMonoparentalService.delete(id),
         onSuccess: () => {
             qc.invalidateQueries({ queryKey: templateMonoparentalKeys.all(currentHotel?.id) });
-            toast.success('Règle monoparentale archivée');
+            toast.success(i18next.t('auto.features.catalog.monoparental.hooks.usetemplatemonoparentalrules.toast.success.064f6be3', { defaultValue: "Règle monoparentale archivée" }));
         },
     });
 }
@@ -80,7 +81,7 @@ export function useRestoreTemplateMonoparentalRule() {
         mutationFn: (id: number) => templateMonoparentalService.restore(id),
         onSuccess: () => {
             qc.invalidateQueries({ queryKey: templateMonoparentalKeys.all(currentHotel?.id) });
-            toast.success('Règle monoparentale restaurée');
+            toast.success(i18next.t('auto.features.catalog.monoparental.hooks.usetemplatemonoparentalrules.toast.success.296acd9c', { defaultValue: "Règle monoparentale restaurée" }));
         },
     });
 }

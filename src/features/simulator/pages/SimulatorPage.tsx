@@ -1,24 +1,26 @@
 import { useState, useMemo, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
-    Calendar,
-    User,
-    Baby,
-    Calculator,
-    Info,
-    Plus,
-    Minus,
-    Receipt,
-    Clock,
-    Utensils,
-    Building2,
     AlertCircle,
-    Trash2,
+    Baby,
     BedDouble,
-    ChevronDown, 
-    ChevronUp, 
-    Flame, 
-    CheckCircle2, 
-    Ticket
+    Building2,
+    Calculator,
+    Calendar,
+    CheckCircle2,
+    ChevronDown,
+    ChevronUp,
+    Clock,
+    FileText,
+    Flame,
+    Info,
+    Minus,
+    Plus,
+    Receipt,
+    Ticket,
+    Trash2,
+    User,
+    Utensils,
 } from 'lucide-react';
 import { useArrangements } from '../../arrangements/hooks/useArrangements';
 import { useAffiliates } from '../../partners/hooks/useAffiliates';
@@ -33,95 +35,99 @@ interface RoomingState {
     occupants: { id: string; type: OccupantType; age: number }[];
 }
 
+const inputClassName = 'w-full rounded-2xl border border-white/70 bg-white/80 px-4 py-3 text-sm text-brand-navy shadow-sm outline-none transition focus:border-brand-mint focus:ring-2 focus:ring-brand-mint/20 dark:border-white/10 dark:bg-white/5 dark:text-brand-light';
+const selectClassName = `${inputClassName} cursor-pointer`;
+const labelClassName = 'text-sm font-semibold text-brand-navy dark:text-brand-light';
+
+function formatCurrency(value: number, currency: string) {
+    return `${new Intl.NumberFormat('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value)} ${currency}`;
+}
+
+function formatDate(date: string) {
+    return new Date(date).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric' });
+}
+
 export default function SimulatorPage() {
+    const { t } = useTranslation('common');
     const { currentHotel } = useHotel();
     const { data: affiliates } = useAffiliates();
     const { data: contracts, isLoading: loadingContracts } = useContracts();
     const { data: allArrangements } = useArrangements();
 
-    // ─── Selection State ──────────────────────────────────────────────
     const [selectedAffiliateId, setSelectedAffiliateId] = useState<string>('');
-
-    // ─── Simulation Form State ────────────────────────────────────────
     const [checkIn, setCheckIn] = useState('');
     const [checkOut, setCheckOut] = useState('');
     const [bookingDate, setBookingDate] = useState(new Date().toISOString().split('T')[0]);
     const [arrangementId, setArrangementId] = useState<string>('');
-    
-    // Rooming List V2 State
+
     const generateId = () => crypto.randomUUID();
-    
+
     const [roomingList, setRoomingList] = useState<RoomingState[]>([
-        { 
-            id: generateId(), 
-            roomId: '', 
+        {
+            id: generateId(),
+            roomId: '',
             occupants: [
                 { id: generateId(), type: OccupantType.ADULT, age: 30 },
-                { id: generateId(), type: OccupantType.ADULT, age: 30 }
-            ] 
-        }
+                { id: generateId(), type: OccupantType.ADULT, age: 30 },
+            ],
+        },
     ]);
 
     const [expandedNights, setExpandedNights] = useState<Record<string, boolean>>({});
-
     const { mutate: runSimulation, data: simulationResult, isPending: isSimulating } = useCalculateSimulation();
 
-    // ─── Derived State: Find Active Contract ──────────────────────────
     const activeContractSummary = useMemo(() => {
         if (!selectedAffiliateId || !contracts) return null;
-        return contracts.find(c =>
-            c.status === 'ACTIVE' &&
-            c.affiliates.some(a => a.id === Number(selectedAffiliateId))
+        return contracts.find((contract) =>
+            contract.status === 'ACTIVE' &&
+            contract.affiliates.some((affiliate) => affiliate.id === Number(selectedAffiliateId))
         );
     }, [selectedAffiliateId, contracts]);
 
     const { data: activeContract, isLoading: loadingActiveContract } = useContract(activeContractSummary?.id);
 
-    // ─── Derived State: Allowed Arrangements for Contract ─────────────
     const allowedArrangements = useMemo(() => {
         if (!allArrangements || !activeContract) return [];
         let filtered = allArrangements;
+
         if (activeContract.baseArrangement?.id) {
-            const baseLevel = allArrangements.find(a => a.id === activeContract.baseArrangement!.id)?.level ?? 0;
-            filtered = allArrangements.filter(a => (a.level ?? 0) >= baseLevel);
+            const baseLevel = allArrangements.find((arrangement) => arrangement.id === activeContract.baseArrangement!.id)?.level ?? 0;
+            filtered = allArrangements.filter((arrangement) => (arrangement.level ?? 0) >= baseLevel);
         }
+
         return [...filtered].sort((a, b) => (a.level ?? 0) - (b.level ?? 0));
     }, [allArrangements, activeContract]);
 
-    // ─── Logic ────────────────────────────────────────────────────────
-
     useEffect(() => {
-        // Reset rooming list when contract changes
         setRoomingList([
-            { 
-                id: generateId(), 
-                roomId: '', 
+            {
+                id: generateId(),
+                roomId: '',
                 occupants: [
                     { id: generateId(), type: OccupantType.ADULT, age: 30 },
-                    { id: generateId(), type: OccupantType.ADULT, age: 30 }
-                ] 
-            }
+                    { id: generateId(), type: OccupantType.ADULT, age: 30 },
+                ],
+            },
         ]);
         setArrangementId('');
     }, [activeContract?.id]);
 
-    // Rooming List Actions
     const addRoom = () => {
-        setRoomingList(prev => [
+        setRoomingList((prev) => [
             ...prev,
             {
                 id: generateId(),
                 roomId: '',
                 occupants: [
                     { id: generateId(), type: OccupantType.ADULT, age: 30 },
-                    { id: generateId(), type: OccupantType.ADULT, age: 30 }
-                ]
-            }
+                    { id: generateId(), type: OccupantType.ADULT, age: 30 },
+                ],
+            },
         ]);
     };
 
     const removeRoom = (index: number) => {
-        setRoomingList(prev => prev.filter((_, i) => i !== index));
+        setRoomingList((prev) => prev.filter((_, roomIndex) => roomIndex !== index));
     };
 
     const updateRoomType = (roomIndex: number, roomId: string) => {
@@ -135,14 +141,14 @@ export default function SimulatorPage() {
         newRooms[roomIndex].occupants.push({
             id: generateId(),
             type,
-            age: type === OccupantType.ADULT ? 30 : 8 // default age based on type
+            age: type === OccupantType.ADULT ? 30 : 8,
         });
         setRoomingList(newRooms);
     };
 
     const removeOccupant = (roomIndex: number, occupantIndex: number) => {
         const newRooms = [...roomingList];
-        newRooms[roomIndex].occupants = newRooms[roomIndex].occupants.filter((_, i) => i !== occupantIndex);
+        newRooms[roomIndex].occupants = newRooms[roomIndex].occupants.filter((_, index) => index !== occupantIndex);
         setRoomingList(newRooms);
     };
 
@@ -155,15 +161,15 @@ export default function SimulatorPage() {
     const isFormValid = useMemo(() => {
         if (!activeContract || !arrangementId || !checkIn || !checkOut) return false;
         if (roomingList.length === 0) return false;
-        
+
         for (const room of roomingList) {
             if (!room.roomId) return false;
             if (room.occupants.length === 0) return false;
-            if (!room.occupants.some(o => o.type === OccupantType.ADULT)) return false; // At least one adult per room
+            if (!room.occupants.some((occupant) => occupant.type === OccupantType.ADULT)) return false;
         }
+
         return true;
     }, [activeContract, arrangementId, checkIn, checkOut, roomingList]);
-
 
     const handleRunSimulation = () => {
         if (!isFormValid || !activeContract) return;
@@ -174,452 +180,495 @@ export default function SimulatorPage() {
             checkIn,
             checkOut,
             bookingDate,
-            roomingList: roomingList.map(room => {
+            roomingList: roomingList.map((room) => {
                 let paxOrder = 1;
                 return {
                     roomId: parseInt(room.roomId),
-                    occupants: room.occupants.map(occ => ({
+                    occupants: room.occupants.map((occupant) => ({
                         paxOrder: paxOrder++,
-                        type: occ.type,
-                        age: occ.age
-                    }))
+                        type: occupant.type,
+                        age: occupant.age,
+                    })),
                 };
-            })
+            }),
         };
 
         runSimulation(request);
     };
 
     const toggleNight = (date: string) => {
-        setExpandedNights(prev => ({ ...prev, [date]: !prev[date] }));
+        setExpandedNights((prev) => ({ ...prev, [date]: !prev[date] }));
     };
 
-    // Calculate total occupants for display
-    const totalAdults = roomingList.reduce((acc, room) => acc + room.occupants.filter(o => o.type === OccupantType.ADULT).length, 0);
-    const totalChildren = roomingList.reduce((acc, room) => acc + room.occupants.filter(o => o.type !== OccupantType.ADULT).length, 0);
+    const totalAdults = roomingList.reduce((acc, room) => acc + room.occupants.filter((occupant) => occupant.type === OccupantType.ADULT).length, 0);
+    const totalChildren = roomingList.reduce((acc, room) => acc + room.occupants.filter((occupant) => occupant.type !== OccupantType.ADULT).length, 0);
+    const selectedAffiliate = affiliates?.find((affiliate) => String(affiliate.id) === selectedAffiliateId);
+    const nightsCount = simulationResult?.roomsBreakdown?.[0]?.dailyRates.length ?? 0;
 
     return (
-        <div className="p-8 max-w-7xl mx-auto space-y-8">
+        <div className="space-y-6 p-4 md:p-6">
+            <section className="premium-surface relative overflow-hidden p-6 md:p-7">
+                <div className="pointer-events-none absolute inset-x-0 top-0 h-32 bg-brand-mint/10 dark:bg-brand-navy/80" />
+                <div className="relative flex flex-col gap-6 xl:flex-row xl:items-start xl:justify-between">
+                    <div>
+                        <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-brand-slate">
+                            {t('pages.simulator.header.eyebrow', { defaultValue: 'Pricing Simulator' })}
+                        </p>
+                        <h1 className="mt-3 text-3xl font-semibold tracking-tight text-brand-navy dark:text-white">
+                            {t('pages.simulator.header.title', { defaultValue: 'Quote a stay with contract precision.' })}
+                        </h1>
+                        <p className="mt-3 max-w-3xl text-sm leading-6 text-brand-slate dark:text-brand-light/75">
+                            {t('pages.simulator.header.subtitle', { defaultValue: 'Select a partner, compose a rooming list, and calculate a detailed net quote against the active contract.' })}
+                        </p>
+                    </div>
 
-            {/* ─── Header ────────────────────────────────────────────────── */}
-            <div>
-                <h1 className="text-2xl font-bold text-gray-900">Simulateur de Prix (V2)</h1>
-                <p className="text-gray-500 mt-1">Calculez instantanément le prix d'un séjour avec Rooming List détaillée.</p>
-            </div>
+                    <div className="grid grid-cols-3 gap-3 rounded-2xl border border-white/70 bg-white/65 p-3 shadow-sm dark:border-white/10 dark:bg-white/5">
+                        <div className="rounded-2xl bg-brand-navy px-4 py-3 text-white">
+                            <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-white/60">{t('auto.features.simulator.pages.simulatorpage.dde75327', { defaultValue: "Rooms" })}</p>
+                            <p className="mt-2 text-2xl font-semibold">{roomingList.length}</p>
+                        </div>
+                        <div className="rounded-2xl bg-brand-mint/10 px-4 py-3 text-brand-mint">
+                            <p className="text-[10px] font-semibold uppercase tracking-[0.18em]">{t('auto.features.simulator.pages.simulatorpage.155e9de1', { defaultValue: "Adults" })}</p>
+                            <p className="mt-2 text-2xl font-semibold">{totalAdults}</p>
+                        </div>
+                        <div className="rounded-2xl bg-white/75 px-4 py-3 text-brand-navy dark:bg-white/5 dark:text-white">
+                            <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-brand-slate">{t('auto.features.simulator.pages.simulatorpage.29ca0350', { defaultValue: "Kids" })}</p>
+                            <p className="mt-2 text-2xl font-semibold">{totalChildren}</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
 
-            {/* ─── Step 1: Partner Selection ────────────────────────────── */}
-            <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
-                <div className="flex flex-col md:flex-row md:items-end gap-6">
-                    <div className="flex-1 space-y-1.5">
-                        <label className="text-sm font-semibold text-gray-700 flex items-center gap-2">
-                            <Building2 size={16} className="text-indigo-600" />
-                            Sélectionner un Partenaire (Affilié / TO)
+            <section className="premium-surface p-6">
+                <div className="flex flex-col gap-6 lg:flex-row lg:items-end">
+                    <div className="flex-1 space-y-2">
+                        <label className={`${labelClassName} flex items-center gap-2`}>
+                            <Building2 size={16} className="text-brand-mint" />
+                            {t('pages.simulator.partner.label', { defaultValue: 'Partner / affiliate' })}
                         </label>
                         <select
                             value={selectedAffiliateId}
-                            onChange={(e) => setSelectedAffiliateId(e.target.value)}
-                            className="w-full px-4 py-2.5 bg-gray-50 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all outline-none cursor-pointer"
+                            onChange={(event) => setSelectedAffiliateId(event.target.value)}
+                            className={selectClassName}
                         >
-                            <option value="">-- Choisir un partenaire --</option>
-                            {affiliates?.map(a => (
-                                <option key={a.id} value={a.id}>{a.companyName} {a.reference ? `(${a.reference})` : ''}</option>
+                            <option value="">{t('pages.simulator.partner.placeholder', { defaultValue: 'Choose a partner' })}</option>
+                            {affiliates?.map((affiliate) => (
+                                <option key={affiliate.id} value={affiliate.id}>
+                                    {affiliate.companyName} {affiliate.reference ? `(${affiliate.reference})` : ''}
+                                </option>
                             ))}
                         </select>
                     </div>
 
                     {selectedAffiliateId && (
-                        <div className="flex-2 animate-in fade-in slide-in-from-left-2 duration-300">
+                        <div className="min-w-0 flex-1 animate-in fade-in slide-in-from-left-2 duration-300">
                             {activeContract ? (
-                                <div className="flex items-center gap-4 p-3 bg-emerald-50 rounded-xl border border-emerald-100">
-                                    <div className="w-10 h-10 rounded-lg bg-emerald-500 flex items-center justify-center text-white shrink-0">
+                                <div className="flex items-center gap-4 rounded-2xl border border-brand-mint/20 bg-brand-mint/8 p-4">
+                                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-brand-navy text-white">
                                         <FileText size={20} />
                                     </div>
-                                    <div>
-                                        <p className="text-xs font-bold text-emerald-700 uppercase tracking-wider">Contrat Actif Détecté</p>
-                                        <p className="text-sm font-semibold text-emerald-900">{activeContract.name}</p>
+                                    <div className="min-w-0">
+                                        <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-brand-mint">
+                                            {t('pages.simulator.partner.activeContract', { defaultValue: 'Active contract found' })}
+                                        </p>
+                                        <p className="truncate text-sm font-semibold text-brand-navy dark:text-white">{activeContract.name}</p>
                                     </div>
-                                    <div className="ml-auto text-right pr-2">
-                                        <p className="text-[10px] text-emerald-600 font-medium">Validité</p>
-                                        <p className="text-xs font-bold text-emerald-800"> Jusqu'au {new Date(activeContract.endDate).toLocaleDateString()}</p>
+                                    <div className="ml-auto hidden text-right sm:block">
+                                        <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-brand-slate">{t('auto.features.simulator.pages.simulatorpage.de15aed4', { defaultValue: "Valid until" })}</p>
+                                        <p className="text-xs font-bold text-brand-navy dark:text-white">{formatDate(activeContract.endDate)}</p>
                                     </div>
                                 </div>
                             ) : (loadingContracts || loadingActiveContract || (activeContractSummary && !activeContract)) ? (
-                                <div className="h-16 w-full bg-gray-100 animate-pulse rounded-xl" />
+                                <div className="h-20 w-full animate-pulse rounded-2xl border border-white/70 bg-white/55 dark:border-white/10 dark:bg-white/5" />
                             ) : (
-                                <div className="flex items-center gap-4 p-3 bg-amber-50 rounded-xl border border-amber-100">
-                                    <div className="w-10 h-10 rounded-lg bg-amber-500 flex items-center justify-center text-white shrink-0">
+                                <div className="flex items-center gap-4 rounded-2xl border border-brand-slate/30 bg-brand-slate/10 p-4 text-brand-slate dark:border-brand-slate/30 dark:bg-brand-navy/80 dark:text-brand-light">
+                                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-brand-slate/20 text-white">
                                         <AlertCircle size={20} />
                                     </div>
                                     <div>
-                                        <p className="text-xs font-bold text-amber-700 uppercase tracking-wider">Aucun Contrat Actif</p>
-                                        <p className="text-sm font-medium text-amber-900 text-pretty">Ce partenaire n'a pas de contrat actif pour l'hôtel {currentHotel?.name}.</p>
+                                        <p className="text-[11px] font-bold uppercase tracking-[0.22em]">{t('auto.features.simulator.pages.simulatorpage.f9fa769d', { defaultValue: "No active contract" })}</p>
+                                        <p className="text-sm font-medium">
+                                            {selectedAffiliate?.companyName} has no active contract for {currentHotel?.name ?? 'this hotel'}.
+                                        </p>
                                     </div>
                                 </div>
                             )}
                         </div>
                     )}
                 </div>
-            </div>
+            </section>
 
-            {/* ─── Step 2: Simulation Form (Only if active contract) ─────── */}
             {activeContract && (
-                <div className="grid grid-cols-1 xl:grid-cols-3 gap-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-
-                    {/* ─── LEFT: Form Inputs (2/3) ─── */}
-                    <div className="xl:col-span-2 space-y-6">
-
-                        {/* Card A: Dates & Arrangement */}
-                        <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-                            <div className="px-5 py-4 border-b border-gray-100 bg-gray-50/50 flex items-center gap-2">
-                                <Calendar size={18} className="text-indigo-600" />
-                                <h3 className="font-semibold text-gray-900">Paramètres du Séjour</h3>
+                <div className="grid grid-cols-1 gap-8 animate-in fade-in slide-in-from-bottom-4 duration-500 xl:grid-cols-3">
+                    <div className="space-y-6 xl:col-span-2">
+                        <section className="premium-surface overflow-hidden">
+                            <div className="flex items-center gap-3 border-b border-white/60 px-6 py-5 dark:border-white/10">
+                                <div className="rounded-2xl bg-brand-mint/12 p-3 text-brand-mint">
+                                    <Calendar size={18} />
+                                </div>
+                                <div>
+                                    <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-brand-slate">
+                                        {t('pages.simulator.stay.eyebrow', { defaultValue: 'Stay Setup' })}
+                                    </p>
+                                    <h2 className="text-lg font-semibold text-brand-navy dark:text-white">
+                                        {t('pages.simulator.stay.title', { defaultValue: 'Dates and arrangement' })}
+                                    </h2>
+                                </div>
                             </div>
-                            <div className="p-6">
-                                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                    <div className="space-y-1.5">
-                                        <label className="text-sm font-medium text-gray-700">Date de Check-in</label>
+
+                            <div className="space-y-6 p-6">
+                                <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
+                                    <div className="space-y-2">
+                                        <label className={labelClassName}>{t('auto.features.simulator.pages.simulatorpage.8fcd76c5', { defaultValue: "Check-in" })}</label>
                                         <input
                                             type="date"
                                             value={checkIn}
                                             min={activeContract.startDate.split('T')[0]}
                                             max={activeContract.endDate.split('T')[0]}
-                                            onChange={(e) => setCheckIn(e.target.value)}
-                                            className="w-full px-4 py-2.5 bg-white border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all outline-none"
+                                            onChange={(event) => setCheckIn(event.target.value)}
+                                            className={inputClassName}
                                         />
                                     </div>
-                                    <div className="space-y-1.5">
-                                        <label className="text-sm font-medium text-gray-700">Date de Check-out</label>
+                                    <div className="space-y-2">
+                                        <label className={labelClassName}>{t('auto.features.simulator.pages.simulatorpage.a1bdbe16', { defaultValue: "Check-out" })}</label>
                                         <input
                                             type="date"
                                             value={checkOut}
                                             min={checkIn || activeContract.startDate.split('T')[0]}
                                             max={activeContract.endDate.split('T')[0]}
-                                            onChange={(e) => setCheckOut(e.target.value)}
-                                            className="w-full px-4 py-2.5 bg-white border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all outline-none"
+                                            onChange={(event) => setCheckOut(event.target.value)}
+                                            className={inputClassName}
                                         />
                                     </div>
-                                    <div className="space-y-1.5">
-                                        <label className="text-sm font-medium text-gray-700 flex items-center gap-1.5">
-                                            <Utensils size={14} />
-                                            Arrangement (Pension)
+                                    <div className="space-y-2">
+                                        <label className={`${labelClassName} flex items-center gap-2`}>
+                                            <Utensils size={14} className="text-brand-mint" />
+                                            Arrangement
                                         </label>
                                         <select
                                             value={arrangementId}
-                                            onChange={(e) => setArrangementId(e.target.value)}
-                                            className="w-full px-4 py-2.5 bg-white border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all outline-none cursor-pointer"
+                                            onChange={(event) => setArrangementId(event.target.value)}
+                                            className={selectClassName}
                                         >
-                                            <option value="">Sélectionner...</option>
-                                            {allowedArrangements.map(a => (
-                                                <option key={a.id} value={a.id}>{a.name} ({a.code})</option>
+                                            <option value="">{t('auto.features.simulator.pages.simulatorpage.8773864b', { defaultValue: "Select arrangement" })}</option>
+                                            {allowedArrangements.map((arrangement) => (
+                                                <option key={arrangement.id} value={arrangement.id}>
+                                                    {arrangement.name} ({arrangement.code})
+                                                </option>
                                             ))}
                                         </select>
                                     </div>
                                 </div>
 
-                                <div className="mt-6 pt-6 border-t border-gray-100">
-                                    <div className="max-w-xs space-y-1.5">
-                                        <label className="text-sm font-medium text-gray-700 flex items-center gap-1.5">
-                                            <Clock size={14} className="text-gray-400" />
-                                            Date de Réservation Simulée
+                                <div className="rounded-2xl border border-white/70 bg-white/60 p-4 dark:border-white/10 dark:bg-white/5">
+                                    <div className="max-w-sm space-y-2">
+                                        <label className={`${labelClassName} flex items-center gap-2`}>
+                                            <Clock size={14} className="text-brand-mint" />
+                                            Simulated booking date
                                         </label>
                                         <input
                                             type="date"
                                             value={bookingDate}
-                                            onChange={(e) => setBookingDate(e.target.value)}
-                                            className="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all outline-none"
+                                            onChange={(event) => setBookingDate(event.target.value)}
+                                            className={inputClassName}
                                         />
-                                        <p className="text-[11px] text-gray-500 flex items-center gap-1 mt-1">
-                                            <Info size={12} className="text-indigo-500" />
-                                            Nécessaire pour calculer l'Early Booking ou les SPO.
+                                        <p className="flex items-center gap-1 text-[11px] font-medium text-brand-slate dark:text-brand-light/75">
+                                            <Info size={12} className="text-brand-mint" />
+                                            Used for early booking rules and special offers.
                                         </p>
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        </section>
 
-                        {/* Card B: Rooming List (V2) */}
-                        <div className="space-y-4">
-                            <div className="flex items-center justify-between">
-                                <h3 className="font-bold text-lg text-gray-900 flex items-center gap-2">
-                                    <BedDouble size={20} className="text-indigo-600"/>
-                                    Rooming List
-                                </h3>
-                                <span className="bg-indigo-100 text-indigo-800 text-xs font-bold px-2 py-1 rounded-md">
-                                    {roomingList.length} Chambre{roomingList.length > 1 ? 's' : ''}
+                        <section className="space-y-4">
+                            <div className="flex items-center justify-between gap-4">
+                                <div>
+                                    <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-brand-slate">
+                                        {t('pages.simulator.roomingList.eyebrow', { defaultValue: 'Occupancy' })}
+                                    </p>
+                                    <h2 className="mt-1 flex items-center gap-2 text-xl font-semibold text-brand-navy dark:text-white">
+                                        <BedDouble size={20} className="text-brand-mint" />
+                                        {t('pages.simulator.roomingList.title', { defaultValue: 'Rooming List' })}
+                                    </h2>
+                                </div>
+                                <span className="premium-pill border-brand-mint/20 bg-brand-mint/8 text-brand-mint">
+                                    {roomingList.length} room{roomingList.length > 1 ? 's' : ''}
                                 </span>
                             </div>
 
                             {roomingList.map((room, roomIndex) => {
-                                const selectedRoomMeta = activeContract.contractRooms.find(cr => String(cr.roomType.id) === room.roomId)?.roomType;
+                                const selectedRoomMeta = activeContract.contractRooms.find((contractRoom) => String(contractRoom.roomType.id) === room.roomId)?.roomType;
 
                                 return (
-                                    <div key={room.id} className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden transition-all hover:shadow-md">
-                                        <div className="px-5 py-3 border-b border-gray-100 bg-gray-50/80 flex items-center justify-between">
+                                    <article key={room.id} className="premium-surface overflow-hidden transition hover:-translate-y-0.5">
+                                        <div className="flex items-center justify-between border-b border-white/60 bg-white/45 px-5 py-4 dark:border-white/10 dark:bg-white/5">
                                             <div className="flex items-center gap-3">
-                                                <span className="flex items-center justify-center w-6 h-6 rounded-full bg-indigo-100 text-indigo-700 font-bold text-xs">
+                                                <span className="flex h-8 w-8 items-center justify-center rounded-2xl bg-brand-navy text-xs font-bold text-white">
                                                     {roomIndex + 1}
                                                 </span>
-                                                <h4 className="font-semibold text-gray-800">Chambre {roomIndex + 1}</h4>
+                                                <div>
+                                                    <h3 className="font-semibold text-brand-navy dark:text-white">Room {roomIndex + 1}</h3>
+                                                    <p className="text-xs text-brand-slate dark:text-brand-light/75">{room.occupants.length} occupant{room.occupants.length > 1 ? 's' : ''}</p>
+                                                </div>
                                             </div>
                                             {roomingList.length > 1 && (
-                                                <button 
+                                                <button
+                                                    type="button"
                                                     onClick={() => removeRoom(roomIndex)}
-                                                    className="text-red-500 hover:text-red-700 hover:bg-red-50 p-1.5 rounded-md transition-colors"
-                                                    title="Supprimer la chambre"
+                                                    className="rounded-2xl border border-brand-slate/30 bg-brand-slate/10 p-2 text-brand-slate transition hover:bg-brand-slate/10 dark:border-brand-slate/30 dark:bg-brand-navy/80 dark:text-brand-light/75"
+                                                    title={t('auto.features.simulator.pages.simulatorpage.title.a4dfb77a', { defaultValue: "Remove room" })}
                                                 >
                                                     <Trash2 size={16} />
                                                 </button>
                                             )}
                                         </div>
-                                        
-                                        <div className="p-5 space-y-6">
-                                            <div className="space-y-1.5 max-w-md">
-                                                <label className="text-sm font-medium text-gray-700">Type de Chambre</label>
+
+                                        <div className="space-y-6 p-5">
+                                            <div className="max-w-md space-y-2">
+                                                <label className={labelClassName}>{t('auto.features.simulator.pages.simulatorpage.35b620e0', { defaultValue: "Room type" })}</label>
                                                 <select
                                                     value={room.roomId}
-                                                    onChange={(e) => updateRoomType(roomIndex, e.target.value)}
-                                                    className="w-full px-4 py-2.5 bg-white border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all outline-none cursor-pointer"
+                                                    onChange={(event) => updateRoomType(roomIndex, event.target.value)}
+                                                    className={selectClassName}
                                                 >
-                                                    <option value="">Sélectionner une chambre</option>
-                                                    {activeContract.contractRooms?.map(cr => (
-                                                        <option key={cr.id} value={cr.roomType.id}>
-                                                            {cr.roomType.name} ({cr.roomType.code})
+                                                    <option value="">{t('auto.features.simulator.pages.simulatorpage.10642227', { defaultValue: "Select a room" })}</option>
+                                                    {activeContract.contractRooms?.map((contractRoom) => (
+                                                        <option key={contractRoom.id} value={contractRoom.roomType.id}>
+                                                            {contractRoom.roomType.name} ({contractRoom.roomType.code})
                                                         </option>
                                                     ))}
                                                 </select>
                                                 {selectedRoomMeta && (
-                                                    <p className="text-[11px] text-gray-500 flex items-center gap-1 mt-1">
-                                                        <Info size={12} className="text-indigo-400"/>
-                                                        Capacité: {selectedRoomMeta.minAdults}-{selectedRoomMeta.maxAdults} Adulte(s), Max {selectedRoomMeta.maxChildren} Enfant(s)
+                                                    <p className="flex items-center gap-1 text-[11px] font-medium text-brand-slate dark:text-brand-light/75">
+                                                        <Info size={12} className="text-brand-mint" />
+                                                        Capacity: {selectedRoomMeta.minAdults}-{selectedRoomMeta.maxAdults} adult(s), max {selectedRoomMeta.maxChildren} child(ren)
                                                     </p>
                                                 )}
                                             </div>
 
-                                            <div className="bg-gray-50 rounded-lg p-4 border border-gray-100">
-                                                <div className="flex items-center justify-between mb-4">
-                                                    <h5 className="text-sm font-semibold text-gray-800 flex items-center gap-2">
-                                                        <User size={16} className="text-gray-500"/>
-                                                        Occupants de la chambre
-                                                    </h5>
-                                                    <div className="flex gap-2">
-                                                        <button 
+                                            <div className="rounded-2xl border border-brand-mint/15 bg-brand-mint/8 p-4">
+                                                <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                                                    <h4 className="flex items-center gap-2 text-sm font-semibold text-brand-navy dark:text-white">
+                                                        <User size={16} className="text-brand-mint" />
+                                                        Room occupants
+                                                    </h4>
+                                                    <div className="flex flex-wrap gap-2">
+                                                        <button
+                                                            type="button"
                                                             onClick={() => addOccupant(roomIndex, OccupantType.ADULT)}
-                                                            className="text-xs font-semibold bg-white border border-gray-200 text-gray-700 px-3 py-1.5 rounded-md hover:bg-gray-100 hover:text-gray-900 transition-colors flex items-center gap-1 shadow-sm"
+                                                            className="inline-flex items-center gap-1 rounded-2xl border border-white/70 bg-white/80 px-3 py-2 text-xs font-semibold text-brand-navy shadow-sm transition hover:-translate-y-0.5 hover:border-brand-mint/30 hover:text-brand-mint dark:border-white/10 dark:bg-white/5 dark:text-white"
                                                         >
-                                                            <Plus size={14}/> Adulte
+                                                            <Plus size={14} /> Adult
                                                         </button>
-                                                        <button 
+                                                        <button
+                                                            type="button"
                                                             onClick={() => addOccupant(roomIndex, OccupantType.CHILD)}
-                                                            className="text-xs font-semibold bg-white border border-gray-200 text-gray-700 px-3 py-1.5 rounded-md hover:bg-gray-100 hover:text-gray-900 transition-colors flex items-center gap-1 shadow-sm"
+                                                            className="inline-flex items-center gap-1 rounded-2xl border border-white/70 bg-white/80 px-3 py-2 text-xs font-semibold text-brand-navy shadow-sm transition hover:-translate-y-0.5 hover:border-brand-mint/30 hover:text-brand-mint dark:border-white/10 dark:bg-white/5 dark:text-white"
                                                         >
-                                                            <Plus size={14}/> Enfant
+                                                            <Plus size={14} /> Child
                                                         </button>
                                                     </div>
                                                 </div>
-                                                
+
                                                 <div className="space-y-2">
-                                                    {room.occupants.map((occ, occIndex) => (
-                                                        <div key={occ.id} className="flex items-center gap-4 bg-white p-3 rounded-md border border-gray-200 shadow-sm animate-in fade-in zoom-in-95 duration-200">
-                                                            <div className="flex items-center gap-2 w-32 shrink-0">
-                                                                {occ.type === OccupantType.ADULT ? (
-                                                                    <User size={16} className="text-indigo-500"/>
+                                                    {room.occupants.map((occupant, occupantIndex) => (
+                                                        <div key={occupant.id} className="flex flex-col gap-3 rounded-2xl border border-white/70 bg-white/80 p-3 shadow-sm animate-in fade-in zoom-in-95 duration-200 dark:border-white/10 dark:bg-white/5 sm:flex-row sm:items-center">
+                                                            <div className="flex w-32 shrink-0 items-center gap-2">
+                                                                {occupant.type === OccupantType.ADULT ? (
+                                                                    <User size={16} className="text-brand-mint" />
                                                                 ) : (
-                                                                    <Baby size={16} className="text-pink-500"/>
+                                                                    <Baby size={16} className="text-brand-mint" />
                                                                 )}
-                                                                <span className="text-sm font-semibold text-gray-700">
-                                                                    {occ.type === OccupantType.ADULT ? 'Adulte' : 'Enfant'}
+                                                                <span className="text-sm font-semibold text-brand-navy dark:text-white">
+                                                                    {occupant.type === OccupantType.ADULT ? 'Adult' : 'Child'}
                                                                 </span>
                                                             </div>
 
-                                                            <div className="flex-1 flex items-center gap-3">
-                                                                <label className="text-xs text-gray-500 font-medium">Âge</label>
+                                                            <div className="flex flex-1 items-center gap-3">
+                                                                <label className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-slate">{t('auto.features.simulator.pages.simulatorpage.1b108074', { defaultValue: "Age" })}</label>
                                                                 <input
                                                                     type="number"
                                                                     min="0"
                                                                     max="99"
-                                                                    value={occ.age}
-                                                                    onChange={(e) => updateOccupantAge(roomIndex, occIndex, parseInt(e.target.value) || 0)}
-                                                                    className="w-20 px-2 py-1 bg-gray-50 border border-gray-300 rounded text-sm text-center font-semibold focus:ring-2 focus:ring-indigo-500 outline-none"
+                                                                    value={occupant.age}
+                                                                    onChange={(event) => updateOccupantAge(roomIndex, occupantIndex, parseInt(event.target.value) || 0)}
+                                                                    className="w-24 rounded-xl border border-white/70 bg-white/80 px-3 py-2 text-center text-sm font-semibold text-brand-navy outline-none transition focus:border-brand-mint focus:ring-2 focus:ring-brand-mint/20 dark:border-white/10 dark:bg-white/5 dark:text-white"
                                                                 />
-                                                                <span className="text-xs text-gray-400">ans</span>
+                                                                <span className="text-xs font-medium text-brand-slate">{t('auto.features.simulator.pages.simulatorpage.1c1e22af', { defaultValue: "years" })}</span>
                                                             </div>
 
-                                                            <button 
-                                                                onClick={() => removeOccupant(roomIndex, occIndex)}
-                                                                disabled={room.occupants.length <= 1} // Prevent removing last occupant
-                                                                className="text-gray-400 hover:text-red-500 hover:bg-red-50 p-1.5 rounded transition-colors disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-gray-400"
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => removeOccupant(roomIndex, occupantIndex)}
+                                                                disabled={room.occupants.length <= 1}
+                                                                className="self-start rounded-xl p-2 text-brand-slate transition hover:bg-brand-slate/10 hover:text-brand-slate disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-brand-slate sm:self-auto"
                                                             >
-                                                                <Minus size={16}/>
+                                                                <Minus size={16} />
                                                             </button>
                                                         </div>
                                                     ))}
                                                     {room.occupants.length === 0 && (
-                                                        <p className="text-sm text-red-500 italic py-2">La chambre doit avoir au moins un occupant.</p>
+                                                        <p className="py-2 text-sm font-medium text-brand-slate">{t('auto.features.simulator.pages.simulatorpage.1ccd64b6', { defaultValue: "A room needs at least one occupant." })}</p>
                                                     )}
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
+                                    </article>
                                 );
                             })}
 
                             <button
+                                type="button"
                                 onClick={addRoom}
-                                className="w-full py-3 border-2 border-dashed border-gray-300 rounded-xl text-gray-600 font-semibold text-sm hover:border-indigo-400 hover:text-indigo-600 hover:bg-indigo-50/50 transition-all flex items-center justify-center gap-2"
+                                className="flex w-full items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-brand-mint/30 bg-brand-mint/8 py-4 text-sm font-semibold text-brand-mint transition hover:-translate-y-0.5 hover:border-brand-mint hover:bg-brand-mint/12"
                             >
                                 <Plus size={18} />
-                                Ajouter une autre chambre
+                                Add another room
                             </button>
-                        </div>
+                        </section>
 
                         <button
+                            type="button"
                             onClick={handleRunSimulation}
                             disabled={!isFormValid || isSimulating}
-                            className="w-full group relative flex items-center justify-center gap-3 px-8 py-4 bg-gray-900 text-white rounded-xl font-bold text-lg hover:bg-indigo-600 disabled:bg-gray-300 disabled:cursor-not-allowed active:scale-[0.98] transition-all shadow-xl shadow-gray-200 overflow-hidden mt-8"
+                            className="group relative mt-8 flex w-full items-center justify-center gap-3 overflow-hidden rounded-2xl bg-brand-navy px-8 py-4 text-lg font-bold text-white shadow-md transition hover:-translate-y-0.5 hover:bg-brand-mint disabled:cursor-not-allowed disabled:bg-brand-slate/10 disabled:hover:translate-y-0 dark:disabled:bg-white/10"
                         >
-                            <div className="absolute inset-0 bg-linear-to-r from-indigo-500/0 via-white/10 to-indigo-500/0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
+                            <div className="absolute inset-0 -translate-x-full bg-linear-to-r from-white/0 via-white/15 to-white/0 transition-transform duration-1000 group-hover:translate-x-full" />
                             {isSimulating ? (
-                                <div className="h-6 w-6 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                <div className="h-6 w-6 animate-spin rounded-full border-2 border-white/30 border-t-white" />
                             ) : (
                                 <Calculator size={22} />
                             )}
-                            {isSimulating ? 'Calcul en cours...' : 'Lancer la simulation (Rooming List)'}
+                            {isSimulating ? 'Calculating...' : 'Run rooming list simulation'}
                         </button>
                     </div>
 
-                    {/* ─── RIGHT: Results Panel (1/3) ─── */}
-                    <div className="xl:col-span-1">
+                    <aside className="xl:col-span-1">
                         <div className="sticky top-6 space-y-6">
-                            <div className={`bg-white rounded-2xl border ${simulationResult ? 'border-indigo-500 shadow-indigo-100' : 'border-gray-200'} shadow-xl overflow-hidden flex flex-col transition-all duration-500`}>
-
-                                <div className={`${simulationResult ? 'bg-indigo-600' : 'bg-gray-800'} px-6 py-8 text-white transition-colors duration-500`}>
-                                    <div className="flex items-center justify-between mb-4">
-                                        <Receipt size={24} className="opacity-80" />
-                                        <span className={`text-[10px] font-bold uppercase tracking-widest px-2 py-1 rounded ${simulationResult ? 'bg-white/20' : 'bg-gray-700'}`}>
-                                            {simulationResult ? 'Simulation Complétée' : 'Attente du calcul'}
+                            <section className={`premium-surface overflow-hidden transition-all duration-500 ${simulationResult ? 'ring-1 ring-brand-mint/30' : ''}`}>
+                                <div className="bg-brand-navy px-6 py-8 text-white">
+                                    <div className="mb-5 flex items-center justify-between">
+                                        <div className="rounded-2xl bg-white/10 p-3">
+                                            <Receipt size={24} />
+                                        </div>
+                                        <span className={`rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-[0.18em] ${simulationResult ? 'bg-brand-mint text-white' : 'bg-white/10 text-white/70'}`}>
+                                            {simulationResult ? 'Completed' : 'Awaiting quote'}
                                         </span>
                                     </div>
 
                                     {simulationResult ? (
                                         <div className="animate-in fade-in zoom-in-95 duration-500">
-                                            {/* Display Mode Toggle removed because V2 breaks it down by room explicitly */}
-
                                             <div className="text-4xl font-black tracking-tight">
                                                 {new Intl.NumberFormat('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(simulationResult.totalNet)}
-                                                <span className="text-xl ml-2 font-medium text-indigo-200">{simulationResult.currency}</span>
+                                                <span className="ml-2 text-xl font-medium text-brand-mint">{simulationResult.currency}</span>
                                             </div>
-                                            <p className="text-indigo-100 text-sm mt-2 flex items-center gap-2">
+                                            <p className="mt-3 flex items-center gap-2 text-sm text-white/70">
                                                 <Calendar size={14} />
-                                                {simulationResult.roomsBreakdown?.[0]?.dailyRates.length || 0} {simulationResult.roomsBreakdown?.[0]?.dailyRates.length > 1 ? 'nuits' : 'nuit'} • {totalAdults} {totalAdults > 1 ? 'Adultes' : 'Adulte'} {totalChildren > 0 && `• ${totalChildren} ${totalChildren > 1 ? 'Enfants' : 'Enfant'}`}
+                                                {nightsCount} {nightsCount > 1 ? 'nights' : 'night'} / {totalAdults} {totalAdults > 1 ? 'adults' : 'adult'} {totalChildren > 0 && `/ ${totalChildren} ${totalChildren > 1 ? 'children' : 'child'}`}
                                             </p>
                                         </div>
                                     ) : (
-                                        <>
-                                            <h3 className="text-xl font-bold">Détail du Devis</h3>
-                                            <p className="text-gray-400 text-sm mt-1">Configurez le rooming list pour voir le prix final.</p>
-                                        </>
+                                        <div>
+                                            <h3 className="text-xl font-bold">{t('auto.features.simulator.pages.simulatorpage.3e7dbe1c', { defaultValue: "Quote detail" })}</h3>
+                                            <p className="mt-2 text-sm text-white/60">{t('auto.features.simulator.pages.simulatorpage.52b26439', { defaultValue: "Complete the rooming list to reveal the final net price." })}</p>
+                                        </div>
                                     )}
                                 </div>
 
-                                <div className="p-0 flex-1 flex flex-col">
+                                <div className="flex flex-1 flex-col">
                                     {simulationResult ? (
-                                        <div className="flex-1 overflow-y-auto max-h-[600px] bg-gray-50/50 custom-scrollbar">
-                                            {simulationResult.roomsBreakdown.map((roomBreakdown, rbIdx) => (
-                                                <div key={rbIdx} className="border-b border-gray-200 last:border-0">
-                                                    {/* Room Header */}
-                                                    <div className="bg-gray-100/80 px-6 py-3 border-b border-gray-200 flex justify-between items-center">
+                                        <div className="max-h-[600px] flex-1 overflow-y-auto bg-white/45 dark:bg-white/[0.03]">
+                                            {simulationResult.roomsBreakdown.map((roomBreakdown, roomBreakdownIndex) => (
+                                                <div key={roomBreakdownIndex} className="border-b border-white/70 last:border-0 dark:border-white/10">
+                                                    <div className="flex items-center justify-between border-b border-white/70 bg-white/70 px-6 py-4 dark:border-white/10 dark:bg-white/5">
                                                         <div className="flex flex-col">
-                                                            <span className="text-xs font-bold text-gray-800 uppercase tracking-widest">
-                                                                Chambre {roomBreakdown.roomIndex} 
+                                                            <span className="text-xs font-bold uppercase tracking-[0.2em] text-brand-navy dark:text-white">
+                                                                Room {roomBreakdown.roomIndex}
                                                             </span>
-                                                            {activeContract.contractRooms.find(cr => cr.roomType.id === roomBreakdown.roomId) && (
-                                                                <span className="text-[10px] text-gray-500 font-medium mt-0.5">
-                                                                    {activeContract.contractRooms.find(cr => cr.roomType.id === roomBreakdown.roomId)?.roomType.name}
+                                                            {activeContract.contractRooms.find((contractRoom) => contractRoom.roomType.id === roomBreakdown.roomId) && (
+                                                                <span className="mt-1 text-[11px] font-medium text-brand-slate dark:text-brand-light/75">
+                                                                    {activeContract.contractRooms.find((contractRoom) => contractRoom.roomType.id === roomBreakdown.roomId)?.roomType.name}
                                                                 </span>
                                                             )}
                                                         </div>
-                                                        <span className="text-sm font-black text-indigo-600">
-                                                            {new Intl.NumberFormat('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(roomBreakdown.roomTotalNet)} {simulationResult.currency}
+                                                        <span className="text-sm font-black text-brand-mint">
+                                                            {formatCurrency(roomBreakdown.roomTotalNet, simulationResult.currency)}
                                                         </span>
                                                     </div>
 
-                                                    <div className="divide-y divide-gray-100 bg-white">
-                                                        {roomBreakdown.dailyRates.map((day, idx) => {
-                                                            const displayDailyRate = day.finalDailyRate;
-                                                            // We cannot simply divide baseRate by adults anymore because occupants are mixed. The API returns full room data.
-                                                            const isDetailed = expandedNights[`${rbIdx}-${day.date}`];
+                                                    <div className="divide-y divide-white/70 bg-white/50 dark:divide-white/10 dark:bg-transparent">
+                                                        {roomBreakdown.dailyRates.map((day, dayIndex) => {
+                                                            const isDetailed = expandedNights[`${roomBreakdownIndex}-${day.date}`];
 
                                                             return (
                                                                 <div key={day.date} className="group">
                                                                     <button
-                                                                        onClick={() => toggleNight(`${rbIdx}-${day.date}`)}
-                                                                        className="w-full px-6 py-4 flex items-center justify-between hover:bg-gray-50 transition-colors"
+                                                                        type="button"
+                                                                        onClick={() => toggleNight(`${roomBreakdownIndex}-${day.date}`)}
+                                                                        className="flex w-full items-center justify-between px-6 py-4 text-left transition hover:bg-brand-mint/8"
                                                                     >
                                                                         <div className="flex items-center gap-3">
-                                                                            <div className="text-left">
-                                                                                <p className="text-xs font-bold text-gray-400 uppercase tracking-tighter">Nuit {idx + 1}</p>
-                                                                                <p className="text-sm font-bold text-gray-900">{new Date(day.date).toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric', month: 'short' })}</p>
+                                                                            <div>
+                                                                                <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-brand-slate">Night {dayIndex + 1}</p>
+                                                                                <p className="text-sm font-bold text-brand-navy dark:text-white">
+                                                                                    {new Date(day.date).toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric', month: 'short' })}
+                                                                                </p>
                                                                             </div>
                                                                             {!day.isAvailable && (
-                                                                                <span className="text-[10px] bg-red-50 text-red-600 px-1.5 py-0.5 rounded font-bold uppercase">N/A</span>
+                                                                                <span className="rounded-full bg-brand-slate/10 px-2 py-1 text-[10px] font-bold uppercase text-brand-slate dark:bg-brand-navy/80 dark:text-brand-light/75">{t('auto.features.simulator.pages.simulatorpage.a59a3b70', { defaultValue: "N/A" })}</span>
                                                                             )}
                                                                         </div>
-                                                                        <div className="flex flex-col items-end">
-                                                                            <p className="text-sm font-black text-gray-900 flex items-center gap-2">
-                                                                                {new Intl.NumberFormat('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(displayDailyRate)} {day.currency}
-                                                                                {isDetailed ? <ChevronUp size={16} className="text-gray-400" /> : <ChevronDown size={16} className="text-gray-400" />}
-                                                                            </p>
+                                                                        <div className="flex items-center gap-2 text-sm font-black text-brand-navy dark:text-white">
+                                                                            {formatCurrency(day.finalDailyRate, day.currency)}
+                                                                            {isDetailed ? <ChevronUp size={16} className="text-brand-slate" /> : <ChevronDown size={16} className="text-brand-slate" />}
                                                                         </div>
                                                                     </button>
 
                                                                     {isDetailed && (
-                                                                        <div className="bg-gray-50 p-4 mx-6 mb-4 rounded-lg border border-gray-100 text-sm animate-in slide-in-from-top-2 duration-200 shadow-inner">
-                                                                            {/* Ligne 1 : La Base (occupational net before promos/supplements if possible, or just base unit rate) */}
-                                                                            <div className="flex justify-between text-gray-600 mb-1">
-                                                                                <span>Tarif de base / Occupation</span>
+                                                                        <div className="mx-6 mb-4 rounded-2xl border border-white/70 bg-white/80 p-4 text-sm shadow-inner animate-in slide-in-from-top-2 duration-200 dark:border-white/10 dark:bg-white/5">
+                                                                            <div className="mb-1 flex justify-between text-brand-slate dark:text-brand-light/75">
+                                                                                <span>{t('auto.features.simulator.pages.simulatorpage.afc48449', { defaultValue: "Base / occupancy" })}</span>
                                                                                 <span className={(day.promotionApplied || day.reductionsApplied.length > 0) ? 'line-through opacity-70' : ''}>
-                                                                                    {new Intl.NumberFormat('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(day.netRate)} {day.currency}
+                                                                                    {formatCurrency(day.netRate, day.currency)}
                                                                                 </span>
                                                                             </div>
-                                                                            
-                                                                            {/* Reductions (Occupational - Extra Pax / Mono) */}
-                                                                            {day.reductionsApplied.map((red, rIdx) => (
-                                                                                <div key={rIdx} className="flex justify-between text-gray-600 mb-1">
+
+                                                                            {day.reductionsApplied.map((reduction, reductionIndex) => (
+                                                                                <div key={reductionIndex} className="mb-1 flex justify-between text-brand-slate dark:text-brand-light/75">
                                                                                     <span className="flex items-center gap-1">
-                                                                                        <Info size={12} className="text-gray-400" />
-                                                                                        {red.name}
+                                                                                        <Info size={12} className="text-brand-mint" />
+                                                                                        {reduction.name}
                                                                                     </span>
-                                                                                    <span>+{new Intl.NumberFormat('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(red.amount)} {day.currency}</span>
+                                                                                    <span>+{formatCurrency(reduction.amount, day.currency)}</span>
                                                                                 </div>
                                                                             ))}
 
-                                                                            {/* Promotion */}
                                                                             {day.promotionApplied && (
-                                                                                <div className="flex justify-between text-emerald-600 font-medium mb-1">
+                                                                                <div className="mb-1 flex justify-between font-medium text-brand-mint">
                                                                                     <span className="flex items-center gap-1">
-                                                                                        <Flame size={12} className="text-orange-500" />
+                                                                                        <Flame size={12} className="text-brand-slate" />
                                                                                         {day.promotionApplied.name}
                                                                                     </span>
-                                                                                    <span>{new Intl.NumberFormat('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(day.promotionApplied.amount)} {day.currency}</span>
+                                                                                    <span>{formatCurrency(day.promotionApplied.amount, day.currency)}</span>
                                                                                 </div>
                                                                             )}
 
-                                                                            {/* Supplements */}
-                                                                            {day.supplementsApplied.map((sup, sIdx) => (
-                                                                                <div key={sIdx} className="flex justify-between text-gray-600 mb-1">
-                                                                                    <span>{sup.name}</span>
-                                                                                    <span>+{new Intl.NumberFormat('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(sup.amount)} {day.currency}</span>
+                                                                            {day.supplementsApplied.map((supplement, supplementIndex) => (
+                                                                                <div key={supplementIndex} className="mb-1 flex justify-between text-brand-slate dark:text-brand-light/75">
+                                                                                    <span>{supplement.name}</span>
+                                                                                    <span>+{formatCurrency(supplement.amount, day.currency)}</span>
                                                                                 </div>
                                                                             ))}
 
-                                                                            <div className="flex justify-between font-bold text-gray-800 border-t border-gray-200 pt-2 mt-2">
-                                                                                <span>Net pour cette Nuit</span>
-                                                                                <span className="text-indigo-600">{new Intl.NumberFormat('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(day.finalDailyRate)} {day.currency}</span>
+                                                                            <div className="mt-3 flex justify-between border-t border-white/70 pt-3 font-bold text-brand-navy dark:border-white/10 dark:text-white">
+                                                                                <span>{t('auto.features.simulator.pages.simulatorpage.5af1a6ca', { defaultValue: "Net for this night" })}</span>
+                                                                                <span className="text-brand-mint">{formatCurrency(day.finalDailyRate, day.currency)}</span>
                                                                             </div>
 
                                                                             {!day.isAvailable && (
-                                                                                <p className="text-[10px] text-red-500 font-medium italic mt-2">
-                                                                                    Indisponible: {day.reason}
+                                                                                <p className="mt-3 text-[11px] font-medium italic text-brand-slate">
+                                                                                    Unavailable: {day.reason}
                                                                                 </p>
                                                                             )}
                                                                         </div>
@@ -632,59 +681,58 @@ export default function SimulatorPage() {
                                             ))}
                                         </div>
                                     ) : (
-                                        <div className="flex-1 p-6 space-y-8 opacity-40">
-                                            <div className="space-y-4">
-                                                <div className="flex justify-between text-sm italic">
-                                                    <span>Séjour de -- nuits</span>
+                                        <div className="flex-1 p-6">
+                                            <div className="space-y-5 opacity-50">
+                                                <div className="flex justify-between text-sm italic text-brand-slate">
+                                                    <span>{t('auto.features.simulator.pages.simulatorpage.0b6d0510', { defaultValue: "Stay of -- nights" })}</span>
                                                     <span>--</span>
                                                 </div>
-                                                <div className="space-y-2">
-                                                    {[1, 2, 3].map(i => (
-                                                        <div key={i} className="h-4 w-full bg-gray-100 rounded animate-pulse" />
+                                                <div className="space-y-3">
+                                                    {[1, 2, 3].map((item) => (
+                                                        <div key={item} className="h-4 w-full animate-pulse rounded-full bg-brand-mint/10" />
                                                     ))}
                                                 </div>
                                             </div>
                                         </div>
                                     )}
 
-                                    <div className={`p-6 mt-auto border-t ${simulationResult ? 'bg-gray-50' : 'bg-white'}`}>
+                                    <div className={`mt-auto border-t border-white/70 p-6 dark:border-white/10 ${simulationResult ? 'bg-white/55 dark:bg-white/5' : 'bg-white/30 dark:bg-transparent'}`}>
                                         {simulationResult && (
-                                            <div className="mb-4 space-y-1.5 animate-in fade-in slide-in-from-bottom-1 duration-500">
-                                                <div className="flex justify-between items-center text-[11px] font-bold text-slate-600 uppercase tracking-wider">
-                                                    <span>Total Brut (Global)</span>
-                                                    <span>{new Intl.NumberFormat('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(simulationResult.totalBrut)} {simulationResult.currency}</span>
+                                            <div className="mb-4 space-y-2 animate-in fade-in slide-in-from-bottom-1 duration-500">
+                                                <div className="flex items-center justify-between text-[11px] font-bold uppercase tracking-[0.18em] text-brand-slate">
+                                                    <span>{t('auto.features.simulator.pages.simulatorpage.ba95b01b', { defaultValue: "Total gross" })}</span>
+                                                    <span>{formatCurrency(simulationResult.totalBrut, simulationResult.currency)}</span>
                                                 </div>
                                                 {simulationResult.totalRemise > 0 && (
-                                                    <div className="flex justify-between items-center text-[11px] font-bold text-indigo-500 uppercase tracking-wider">
-                                                        <span>Remises Globales</span>
-                                                        <span>-{new Intl.NumberFormat('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(simulationResult.totalRemise)} {simulationResult.currency}</span>
+                                                    <div className="flex items-center justify-between text-[11px] font-bold uppercase tracking-[0.18em] text-brand-mint">
+                                                        <span>{t('auto.features.simulator.pages.simulatorpage.556bee2a', { defaultValue: "Global discounts" })}</span>
+                                                        <span>-{formatCurrency(simulationResult.totalRemise, simulationResult.currency)}</span>
                                                     </div>
                                                 )}
                                             </div>
                                         )}
 
-                                        {/* Stay Modifiers (Flat Rates) Details */}
                                         {simulationResult?.stayModifiers && simulationResult.stayModifiers.length > 0 && (
-                                            <div className="mb-4 space-y-2 animate-in fade-in slide-in-from-bottom-2 duration-500 border-t border-indigo-100 pt-3 bg-indigo-50/20 -mx-6 px-6 pb-3">
-                                                <div className="flex items-center gap-1.5 mb-2">
-                                                    <Calculator size={12} className="text-indigo-400" />
-                                                    <span className="text-[10px] font-bold text-indigo-400 uppercase tracking-widest">Modificateurs de Séjour</span>
+                                            <div className="-mx-6 mb-4 space-y-2 border-t border-brand-mint/20 bg-brand-mint/8 px-6 pb-3 pt-4 animate-in fade-in slide-in-from-bottom-2 duration-500">
+                                                <div className="mb-2 flex items-center gap-2">
+                                                    <Calculator size={12} className="text-brand-mint" />
+                                                    <span className="text-[10px] font-bold uppercase tracking-[0.22em] text-brand-mint">{t('auto.features.simulator.pages.simulatorpage.2f0651d6', { defaultValue: "Stay modifiers" })}</span>
                                                 </div>
-                                                {simulationResult.stayModifiers.map((mod, mIdx) => {
-                                                    const parts = mod.name.split(' - Formule: ');
+                                                {simulationResult.stayModifiers.map((modifier, modifierIndex) => {
+                                                    const parts = modifier.name.split(' - Formule: ');
                                                     const title = parts[0];
                                                     const formula = parts[1];
 
                                                     return (
-                                                        <div key={mIdx} className="bg-white p-2.5 rounded-xl border border-indigo-50 shadow-sm flex justify-between items-start gap-4">
+                                                        <div key={modifierIndex} className="flex items-start justify-between gap-4 rounded-2xl border border-white/70 bg-white/80 p-3 shadow-sm dark:border-white/10 dark:bg-white/5">
                                                             <div className="flex flex-col">
-                                                                <span className="text-xs font-bold text-gray-800">{title}</span>
+                                                                <span className="text-xs font-bold text-brand-navy dark:text-white">{title}</span>
                                                                 {formula && (
-                                                                    <span className="text-[10px] text-gray-500 mt-0.5">{formula}</span>
+                                                                    <span className="mt-1 text-[10px] text-brand-slate dark:text-brand-light/75">{formula}</span>
                                                                 )}
                                                             </div>
-                                                            <span className={`text-xs font-black whitespace-nowrap shrink-0 ${mod.amount < 0 ? 'text-emerald-600' : 'text-amber-600'}`}>
-                                                                {mod.amount > 0 ? '+' : ''}{new Intl.NumberFormat('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(mod.amount)} {simulationResult.currency}
+                                                            <span className={`shrink-0 whitespace-nowrap text-xs font-black ${modifier.amount < 0 ? 'text-brand-mint' : 'text-brand-slate'}`}>
+                                                                {modifier.amount > 0 ? '+' : ''}{formatCurrency(modifier.amount, simulationResult.currency)}
                                                             </span>
                                                         </div>
                                                     );
@@ -692,78 +740,64 @@ export default function SimulatorPage() {
                                             </div>
                                         )}
 
-                                        <div className="flex justify-between items-end border-t border-gray-200 pt-4">
+                                        <div className="flex items-end justify-between border-t border-white/70 pt-4 dark:border-white/10">
                                             <div className="space-y-1">
-                                                <span className="text-[10px] font-bold text-indigo-600 uppercase tracking-widest">Total Net Final</span>
-                                                <div className="text-3xl font-black text-gray-900 transition-all duration-700">
+                                                <span className="text-[10px] font-bold uppercase tracking-[0.22em] text-brand-mint">{t('auto.features.simulator.pages.simulatorpage.a7cbe69d', { defaultValue: "Final net total" })}</span>
+                                                <div className="text-3xl font-black text-brand-navy transition-all duration-700 dark:text-white">
                                                     {simulationResult ? (
                                                         <>
                                                             {new Intl.NumberFormat('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(simulationResult.totalNet)}
-                                                            <span className="text-sm font-bold text-gray-500 ml-1">{simulationResult.currency}</span>
+                                                            <span className="ml-1 text-sm font-bold text-brand-slate">{simulationResult.currency}</span>
                                                         </>
                                                     ) : '0,00'}
                                                 </div>
                                             </div>
-                                            <Ticket className={`${simulationResult ? 'text-indigo-600' : 'text-gray-200'} transition-colors duration-500`} size={40} />
+                                            <Ticket className={`${simulationResult ? 'text-brand-mint' : 'text-brand-slate/30'} transition-colors duration-500`} size={40} />
                                         </div>
 
                                         {simulationResult && (
-                                            <div className="mt-4 p-3 bg-emerald-50 rounded-xl border border-emerald-100 flex gap-3 animate-in slide-in-from-bottom-2">
-                                                <CheckCircle2 size={16} className="text-emerald-500 shrink-0 mt-0.5" />
-                                                <p className="text-[11px] text-emerald-800 leading-relaxed font-medium">
-                                                    Le prix a été validé selon les conditions du contrat <strong>{activeContract.name}</strong>.
+                                            <div className="mt-4 flex gap-3 rounded-2xl border border-brand-mint/20 bg-brand-mint/8 p-3 animate-in slide-in-from-bottom-2">
+                                                <CheckCircle2 size={16} className="mt-0.5 shrink-0 text-brand-mint" />
+                                                <p className="text-[11px] font-medium leading-relaxed text-brand-navy dark:text-brand-light">
+                                                    Price validated against the conditions of <strong>{activeContract.name}</strong>.
                                                 </p>
                                             </div>
                                         )}
                                     </div>
                                 </div>
-                            </div>
+                            </section>
                         </div>
-                    </div>
-
+                    </aside>
                 </div>
             )}
 
             {!activeContract && selectedAffiliateId && !loadingContracts && (
-                <div className="flex flex-col items-center justify-center py-20 px-4 text-center space-y-4 bg-gray-50 rounded-3xl border-2 border-dashed border-gray-200">
-                    <div className="p-4 bg-gray-100 rounded-full">
-                        <Calculator size={48} className="text-gray-400" />
+                <section className="premium-surface flex flex-col items-center justify-center space-y-4 border-dashed px-4 py-20 text-center">
+                    <div className="rounded-2xl bg-brand-mint/10 p-5 text-brand-mint">
+                        <Calculator size={48} />
                     </div>
                     <div className="max-w-md">
-                        <h3 className="text-lg font-bold text-gray-900">Formulaire Indisponible</h3>
-                        <p className="text-gray-500 text-sm mt-2">
-                            Nous ne pouvons pas charger le simulateur car aucun contrat <strong>ACTIF</strong> n'a été trouvé pour ce partenaire sur cet hôtel.
+                        <h3 className="text-lg font-bold text-brand-navy dark:text-white">{t('auto.features.simulator.pages.simulatorpage.d729c3d7', { defaultValue: "Simulator unavailable" })}</h3>
+                        <p className="mt-2 text-sm text-brand-slate dark:text-brand-light/75">
+                            No active contract was found for this partner on this hotel.
                         </p>
                     </div>
-                </div>
+                </section>
             )}
 
             {!selectedAffiliateId && (
-                <div className="flex flex-col items-center justify-center py-20 px-4 text-center space-y-4 bg-indigo-50/30 rounded-3xl border-2 border-dashed border-indigo-100">
-                    <div className="p-4 bg-indigo-50 rounded-full animate-bounce">
-                        <Building2 size={48} className="text-indigo-400" />
+                <section className="premium-surface flex flex-col items-center justify-center space-y-4 border-dashed px-4 py-20 text-center">
+                    <div className="rounded-2xl bg-brand-mint/10 p-5 text-brand-mint">
+                        <Building2 size={48} />
                     </div>
                     <div className="max-w-md">
-                        <h3 className="text-lg font-bold text-indigo-900">Sélection du Partenaire</h3>
-                        <p className="text-indigo-600/70 text-sm mt-2 font-medium">
-                            Veuillez sélectionner un partenaire ci-dessus pour charger son contrat et commencer la simulation tarifaire.
+                        <h3 className="text-lg font-bold text-brand-navy dark:text-white">{t('auto.features.simulator.pages.simulatorpage.11e77796', { defaultValue: "Select a partner" })}</h3>
+                        <p className="mt-2 text-sm font-medium text-brand-slate dark:text-brand-light/75">
+                            Choose a partner above to load the active contract and start the rate simulation.
                         </p>
                     </div>
-                </div>
+                </section>
             )}
         </div>
     );
-}
-
-// Helper icons missing in imports
-function FileText({ size }: { size: number }) {
-    return (
-        <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" />
-            <polyline points="14 2 14 8 20 8" />
-            <line x1="16" y1="13" x2="8" y2="13" />
-            <line x1="16" y1="17" x2="8" y2="17" />
-            <line x1="10" y1="9" x2="8" y2="9" />
-        </svg>
-    )
 }

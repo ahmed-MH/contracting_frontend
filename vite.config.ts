@@ -9,9 +9,10 @@ export default defineConfig({
     ],
     server: {
         port: 5173,
-        host: true,
+        // Native filesystem events (inotify/FSEvents/ReadDirectoryChanges)
+        // No polling needed when running locally on Windows
         watch: {
-            usePolling: true,
+            usePolling: false,
         },
     },
 });

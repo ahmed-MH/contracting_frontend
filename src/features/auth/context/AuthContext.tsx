@@ -2,6 +2,7 @@ import { createContext, useContext, useState, useEffect, useCallback, type React
 import { useQueryClient } from '@tanstack/react-query';
 import { authService } from '../services/auth.service';
 import type { AuthUser, LoginResponse } from '../types/auth.types';
+import { useTranslation } from 'react-i18next';
 
 const TOKEN_KEY = 'authToken';
 const USER_KEY = 'authUser';
@@ -11,6 +12,8 @@ interface AuthContextType {
     user: AuthUser | null;
     token: string | null;
     isAuthenticated: boolean;
+    isSupervisor: boolean;
+    isAdmin: boolean;
     isLoading: boolean;
     login: (email: string, password: string) => Promise<void>;
     loginWithResponse: (response: LoginResponse) => void;
@@ -29,6 +32,8 @@ function isTokenExpired(token: string): boolean {
 }
 
 export function AuthProvider({ children }: { children: ReactNode }) {
+    const { t } = useTranslation('common');
+    void t;
     const queryClient = useQueryClient();
     const [user, setUser] = useState<AuthUser | null>(null);
     const [token, setToken] = useState<string | null>(null);
@@ -82,6 +87,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 user,
                 token,
                 isAuthenticated: !!token && !!user,
+                isSupervisor: user?.role === 'SUPERVISOR',
+                isAdmin: user?.role === 'ADMIN',
                 isLoading,
                 login,
                 loginWithResponse,

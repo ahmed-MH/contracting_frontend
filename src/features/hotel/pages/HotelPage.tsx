@@ -1,32 +1,117 @@
 import { useState } from 'react';
 import {
-    useArchivedHotels, useCreateHotel, useUpdateHotel,
-    useDeleteHotel, useRestoreHotel, type Hotel, type CreateHotelPayload
+    useArchivedHotels,
+    useCreateHotel,
+    useUpdateHotel,
+    useDeleteHotel,
+    useRestoreHotel,
+    type Hotel,
+    type CreateHotelPayload,
 } from '../hooks/useHotels';
 import { useAuth } from '../../auth/context/AuthContext';
 import { useConfirm } from '../../../context/ConfirmContext';
 import { useHotel } from '../context/HotelContext';
 import {
-    Building2, Plus, Pencil, Trash2, RotateCcw, Archive,
-    ChevronDown, MapPin, User,
-    Landmark, Coins, Star, Mail, Hotel as HotelIcon,
-    ArrowUpRight
+    Archive,
+    ArrowUpRight,
+    Building2,
+    ChevronDown,
+    Coins,
+    Hotel as HotelIcon,
+    Landmark,
+    Mail,
+    MapPin,
+    Pencil,
+    Plus,
+    RotateCcw,
+    Star,
+    Trash2,
+    User,
 } from 'lucide-react';
-import HotelModal from '../components/HotelModal';
+import type { LucideIcon } from 'lucide-react';
+import type { ReactNode } from 'react';
+import { useTranslation } from 'react-i18next';
+import EditHotelModal from '../components/EditHotelModal';
 import ExchangeRatesSection from '../components/ExchangeRatesSection';
 
+function DetailCard({
+    icon: Icon,
+    eyebrow,
+    title,
+    children,
+}: {
+    icon: LucideIcon;
+    eyebrow: string;
+    title: string;
+    children: ReactNode;
+}) {
+    return (
+        <section className="premium-surface p-6">
+            <div className="flex items-center gap-3">
+                <div className="rounded-2xl bg-brand-mint/12 p-3 text-brand-mint">
+                    <Icon size={18} />
+                </div>
+                <div>
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-brand-slate">
+                        {eyebrow}
+                    </p>
+                    <h3 className="text-lg font-semibold text-brand-navy dark:text-white">
+                        {title}
+                    </h3>
+                </div>
+            </div>
+            <div className="mt-6">{children}</div>
+        </section>
+    );
+}
+
+function InfoRow({ label, value }: { label: string; value?: string | number | null }) {
+    return (
+        <div className="rounded-2xl border border-white/70 bg-white/72 px-4 py-3 dark:border-white/10 dark:bg-white/5">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-brand-slate">
+                {label}
+            </p>
+            <p className="mt-2 break-words text-sm font-semibold text-brand-navy dark:text-white">
+                {value || 'Not provided'}
+            </p>
+        </div>
+    );
+}
+
+function Stars({ value }: { value?: number }) {
+    if (!value) {
+        return (
+            <span className="premium-pill border-brand-slate/20 bg-brand-light text-brand-slate dark:border-white/10 dark:bg-white/5 dark:text-brand-light/75">
+                Unrated
+            </span>
+        );
+    }
+
+    return (
+        <span className="inline-flex items-center gap-1 rounded-full border border-brand-slate/30 bg-brand-slate/10 px-3 py-1 text-xs font-semibold text-brand-slate dark:border-brand-slate/30 dark:bg-brand-navy/80 dark:text-brand-light/75">
+            {Array.from({ length: value }).map((_, index) => (
+                <Star key={index} size={13} fill="currentColor" />
+            ))}
+        </span>
+    );
+}
+
 export default function HotelPage() {
+    const { t } = useTranslation('common');
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editing, setEditing] = useState<Hotel | null>(null);
     const [showArchived, setShowArchived] = useState(false);
-    
+
     const { user } = useAuth();
     const { confirm } = useConfirm();
     const isAdmin = user?.role === 'ADMIN';
 
     const { currentHotel, availableHotels, switchHotel, isLoading: isContextLoading } = useHotel();
 
-    const closeModal = () => { setIsModalOpen(false); setEditing(null); };
+    const closeModal = () => {
+        setIsModalOpen(false);
+        setEditing(null);
+    };
     const { data: archivedHotels } = useArchivedHotels(isAdmin && showArchived);
 
     const createMutation = useCreateHotel(closeModal);
@@ -34,113 +119,145 @@ export default function HotelPage() {
     const deleteMutation = useDeleteHotel();
     const restoreMutation = useRestoreHotel();
 
-    const openCreate = () => { setEditing(null); setIsModalOpen(true); };
-    const openEdit = (h: Hotel) => { setEditing(h); setIsModalOpen(true); };
-
-    const handleDelete = async (h: Hotel) => {
-        if (await confirm({
-            title: `Archiver l'hôtel "${h.name}" ?`,
-            description: "L'établissement sera déplacé en archive.",
-            confirmLabel: 'Archiver',
-            variant: 'danger',
-        })) deleteMutation.mutate(h.id);
+    const openCreate = () => {
+        setEditing(null);
+        setIsModalOpen(true);
+    };
+    const openEdit = (hotel: Hotel) => {
+        setEditing(hotel);
+        setIsModalOpen(true);
     };
 
-    const handleRestore = async (h: Hotel) => {
+    const handleDelete = async (hotel: Hotel) => {
         if (await confirm({
-            title: `Restaurer l'hôtel "${h.name}" ?`,
-            description: "L'hôtel redeviendra actif.",
-            confirmLabel: 'Restaurer',
+            title: t('pages.hotel.confirmArchive.title', {
+                defaultValue: 'Archive {{name}}?',
+                name: hotel.name,
+            }),
+            description: t('pages.hotel.confirmArchive.description', {
+                defaultValue: 'This property will move to the archive and no longer appear in the active portfolio.',
+            }),
+            confirmLabel: t('pages.hotel.confirmArchive.confirmLabel', { defaultValue: 'Archive hotel' }),
+            variant: 'danger',
+        })) {
+            deleteMutation.mutate(hotel.id);
+        }
+    };
+
+    const handleRestore = async (hotel: Hotel) => {
+        if (await confirm({
+            title: t('pages.hotel.confirmRestore.title', {
+                defaultValue: 'Restore {{name}}?',
+                name: hotel.name,
+            }),
+            description: t('pages.hotel.confirmRestore.description', {
+                defaultValue: 'This property will return to the active hotel portfolio.',
+            }),
+            confirmLabel: t('pages.hotel.confirmRestore.confirmLabel', { defaultValue: 'Restore hotel' }),
             variant: 'info',
-        })) restoreMutation.mutate(h.id);
+        })) {
+            restoreMutation.mutate(hotel.id);
+        }
     };
 
     const onSubmit = (data: CreateHotelPayload) => {
-        if (editing) { updateMutation.mutate({ id: editing.id, data }); }
-        else { createMutation.mutate(data); }
+        if (editing) {
+            updateMutation.mutate({ id: editing.id, data });
+            return;
+        }
+        createMutation.mutate(data);
     };
 
-    if (isContextLoading) return (
-        <div className="p-8 flex items-center justify-center min-h-[400px]">
-            <div className="animate-spin rounded-full h-8 w-8 border-2 border-indigo-600 border-t-transparent" />
-        </div>
-    );
+    if (isContextLoading) {
+        return (
+            <div className="p-4 md:p-6">
+                <div className="premium-surface flex min-h-[360px] items-center justify-center">
+                    <div className="h-9 w-9 animate-spin rounded-full border-2 border-brand-mint border-t-transparent" />
+                </div>
+            </div>
+        );
+    }
 
     return (
-        <div className="min-h-screen bg-slate-50/50 p-8 pt-6 animate-in fade-in duration-500">
-            <div className="max-w-7xl mx-auto space-y-8">
-
-                {/* ── HEADER DE NAVIGATION ── */}
-                <header className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                    <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 bg-indigo-600 rounded-xl flex items-center justify-center text-white shadow-sm">
-                            <HotelIcon size={24} />
-                        </div>
-                        <div>
-                            <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Configuration Hôtel</h1>
-                            <p className="text-sm font-medium text-gray-400">Gérez vos établissements et paramètres financiers</p>
-                        </div>
+        <div className="space-y-6 p-4 md:p-6">
+            <section className="premium-surface relative overflow-hidden p-6 md:p-7">
+                <div className="pointer-events-none absolute inset-x-0 top-0 h-28 bg-brand-mint/10 dark:bg-brand-navy/80" />
+                <div className="relative flex flex-col gap-6 xl:flex-row xl:items-start xl:justify-between">
+                    <div>
+                        <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-brand-slate">
+                            {t('pages.hotel.header.eyebrow', { defaultValue: 'Hotel Portfolio' })}
+                        </p>
+                        <h1 className="mt-3 text-3xl font-semibold tracking-tight text-brand-navy dark:text-white">
+                            {t('pages.hotel.header.title', { defaultValue: 'Property profile and financial settings.' })}
+                        </h1>
+                        <p className="mt-3 max-w-3xl text-sm leading-6 text-brand-slate dark:text-brand-light/75">
+                            {t('pages.hotel.header.subtitle', { defaultValue: 'Keep property identity, contacts, banking data, and exchange rates aligned with the commercial workspace.' })}
+                        </p>
                     </div>
 
-                    <div className="flex items-center gap-3">
+                    <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
                         {availableHotels.length > 1 && (
-                            <div className="relative group">
+                            <div className="relative">
+                                <HotelIcon size={16} className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-brand-mint" />
                                 <select
                                     value={currentHotel?.id || ''}
-                                    onChange={(e) => switchHotel(Number(e.target.value))}
-                                    className="appearance-none w-64 bg-white border border-gray-200 text-gray-700 text-sm font-semibold rounded-xl pl-4 pr-10 py-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all cursor-pointer shadow-sm"
+                                    onChange={(event) => switchHotel(Number(event.target.value))}
+                                    className="h-11 w-full min-w-64 appearance-none rounded-2xl border border-white/70 bg-white/72 pl-11 pr-10 text-sm font-semibold text-brand-navy shadow-sm outline-none transition focus:border-brand-mint focus:ring-2 focus:ring-brand-mint/20 dark:border-white/10 dark:bg-white/5 dark:text-white"
                                 >
-                                    {availableHotels.map(h => (
-                                        <option key={h.id} value={h.id}>{h.name}</option>
+                                    {availableHotels.map((hotel) => (
+                                        <option key={hotel.id} value={hotel.id}>{hotel.name}</option>
                                     ))}
                                 </select>
-                                <ChevronDown size={14} className="absolute inset-y-0 right-4 flex items-center h-full pointer-events-none text-gray-400" />
+                                <ChevronDown size={15} className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-brand-slate" />
                             </div>
                         )}
 
                         {isAdmin && (
                             <button
+                                type="button"
                                 onClick={openCreate}
-                                className="inline-flex items-center gap-2 px-5 py-2.5 bg-indigo-600 text-white text-sm font-semibold rounded-xl hover:bg-indigo-700 active:scale-[0.98] transition-all shadow-sm cursor-pointer border-none outline-none"
+                                className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl bg-brand-mint px-4 text-sm font-semibold text-white shadow-md transition hover:-translate-y-0.5 hover:bg-brand-mint"
                             >
-                                <Plus size={18} /> Nouvel Hôtel
+                                <Plus size={16} />
+                                {t('pages.hotel.header.newHotel', { defaultValue: 'New hotel' })}
                             </button>
                         )}
                     </div>
-                </header>
+                </div>
+            </section>
 
-                <hr className="border-slate-200/60" />
-
-                {!currentHotel ? (
-                    <div className="py-20 text-center bg-white rounded-[32px] border border-slate-200 shadow-sm border-dashed">
-                        <Building2 size={48} className="mx-auto text-slate-200 mb-4" />
-                        <h3 className="text-slate-900 font-bold mb-1">Aucun hôtel sélectionné</h3>
-                        <p className="text-slate-400 text-sm">Veuillez choisir un établissement pour continuer.</p>
+            {!currentHotel ? (
+                <section className="premium-surface border-dashed p-12 text-center">
+                    <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-3xl bg-brand-mint/10 text-brand-mint">
+                        <Building2 size={30} />
                     </div>
-                ) : (
-                    <div className="space-y-8 animate-in slide-in-from-bottom-2 duration-700">
-                        
-                        {/* ── SECTION DASHBOARD PROFILE ── */}
-                        <div className="flex flex-col lg:flex-row gap-8 items-start lg:items-end justify-between">
-                            <div className="space-y-4">
+                    <h2 className="mt-5 text-xl font-semibold text-brand-navy dark:text-white">
+                        {t('pages.hotel.header.emptyTitle', { defaultValue: 'No hotel selected' })}
+                    </h2>
+                    <p className="mt-2 text-sm text-brand-slate dark:text-brand-light/75">
+                        {t('pages.hotel.header.emptySubtitle', { defaultValue: 'Choose a property to continue.' })}
+                    </p>
+                </section>
+            ) : (
+                <div className="space-y-6">
+                    <section className="rounded-2xl bg-brand-navy p-6 text-white shadow-md">
+                        <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+                            <div>
                                 <div className="flex flex-wrap items-center gap-3">
-                                    <h2 className="text-3xl font-bold text-gray-900 tracking-tight">{currentHotel.name}</h2>
-                                    {currentHotel.stars && (
-                                        <div className="flex items-center gap-0.5 px-2 py-0.5 bg-amber-50 rounded-lg self-center">
-                                            {Array.from({ length: currentHotel.stars }).map((_, i) => (
-                                                <Star key={i} size={12} className="text-amber-400" fill="currentColor" />
-                                            ))}
-                                        </div>
-                                    )}
+                                    <h2 className="text-3xl font-semibold tracking-tight">{currentHotel.name}</h2>
+                                    <Stars value={currentHotel.stars} />
                                 </div>
-                                <div className="flex flex-wrap items-center gap-4 text-sm">
-                                    <span className="text-gray-500 font-medium">Raison Sociale: <span className="text-slate-900 font-bold">{currentHotel.fiscalName || '—'}</span></span>
-                                    <div className="w-1 h-1 rounded-full bg-slate-300" />
-                                    <span className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100 text-slate-600 text-[11px] font-black uppercase tracking-wider">
-                                        REF: {currentHotel.reference || 'HTL-PENDING'}
+                                <div className="mt-4 flex flex-wrap items-center gap-3 text-sm text-brand-slate">
+                                    <span className="inline-flex items-center gap-2 rounded-full bg-white/8 px-3 py-1">
+                                        <Building2 size={14} className="text-brand-mint" />
+                                        {currentHotel.fiscalName || t('common.notAvailable', { defaultValue: 'Legal entity pending' })}
                                     </span>
-                                    <span className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-50 text-indigo-700 text-[11px] font-black uppercase tracking-wider border border-indigo-100">
-                                        <Coins size={12} /> {currentHotel.defaultCurrency}
+                                    <span className="inline-flex items-center gap-2 rounded-full bg-white/8 px-3 py-1">
+                                        <Coins size={14} className="text-brand-mint" />
+                                        {currentHotel.defaultCurrency}
+                                    </span>
+                                    <span className="inline-flex items-center gap-2 rounded-full bg-white/8 px-3 py-1">
+                                        Ref {currentHotel.reference || 'HTL-PENDING'}
                                     </span>
                                 </div>
                             </div>
@@ -148,183 +265,187 @@ export default function HotelPage() {
                             {isAdmin && (
                                 <div className="flex items-center gap-2">
                                     <button
+                                        type="button"
                                         onClick={() => openEdit(currentHotel)}
-                                        className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 text-gray-700 text-sm font-semibold rounded-xl hover:bg-gray-50 hover:border-gray-300 transition-all cursor-pointer shadow-sm active:scale-[0.98]"
+                                        className="inline-flex h-11 items-center gap-2 rounded-2xl border border-white/10 bg-white/8 px-4 text-sm font-semibold text-white transition hover:bg-white/12"
                                     >
-                                        <Pencil size={15} className="text-indigo-500" /> Modifier Profil
+                                        <Pencil size={15} className="text-brand-mint" />
+                                        {t('actions.edit', { defaultValue: 'Edit profile' })}
                                     </button>
                                     <button
+                                        type="button"
                                         onClick={() => handleDelete(currentHotel)}
                                         disabled={deleteMutation.isPending}
-                                        className="p-2 rounded-xl bg-white border border-red-100 text-red-500 hover:bg-red-50 transition-all cursor-pointer shadow-sm active:scale-[0.98] disabled:opacity-50"
+                                        className="inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-brand-slate/30 bg-brand-slate/20 text-brand-slate transition hover:bg-brand-slate/20 disabled:opacity-50"
+                                        aria-label={t('pages.hotel.actions.archive', { defaultValue: 'Archive hotel' })}
                                     >
-                                        <Trash2 size={18} />
+                                        <Trash2 size={17} />
                                     </button>
                                 </div>
                             )}
                         </div>
+                    </section>
 
-                        {/* ── BENTO GRID MODERNISÉ ── */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                            
-                            {/* Card 1 : Localisation & Standard Info */}
-                            <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-6 flex flex-col space-y-6">
-                                <div className="flex items-center gap-3">
-                                    <div className="w-10 h-10 bg-indigo-50 text-indigo-600 rounded-lg flex items-center justify-center">
-                                        <MapPin size={20} />
+                    <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+                        {[
+                            { label: t('pages.hotel.metrics.activeProperties', { defaultValue: 'Active properties' }), value: availableHotels.length, icon: HotelIcon },
+                            { label: t('pages.hotel.metrics.contactEmails', { defaultValue: 'Contact emails' }), value: currentHotel.emails?.length ?? 0, icon: Mail },
+                            { label: t('pages.hotel.metrics.defaultCurrency', { defaultValue: 'Default currency' }), value: currentHotel.defaultCurrency, icon: Coins },
+                            { label: t('pages.hotel.metrics.rating', { defaultValue: 'Rating' }), value: currentHotel.stars ? `${currentHotel.stars} stars` : 'Unrated', icon: Star },
+                        ].map((metric) => {
+                            const Icon = metric.icon;
+                            return (
+                                <div key={metric.label} className="rounded-2xl border border-white/70 bg-white/72 p-5 shadow-sm dark:border-white/10 dark:bg-white/5">
+                                    <div className="flex items-center justify-between gap-4">
+                                        <p className="text-sm font-medium text-brand-slate">{metric.label}</p>
+                                        <div className="rounded-2xl bg-brand-mint/10 p-3 text-brand-mint">
+                                            <Icon size={18} />
+                                        </div>
                                     </div>
-                                    <h3 className="font-bold text-gray-900">Emplacement</h3>
+                                    <p className="mt-6 text-2xl font-semibold tracking-tight text-brand-navy dark:text-white">
+                                        {metric.value}
+                                    </p>
                                 </div>
-                                <div className="space-y-5">
+                            );
+                        })}
+                    </section>
+
+                    <section className="grid gap-6 xl:grid-cols-3">
+                        <DetailCard
+                            icon={MapPin}
+                            eyebrow={t('pages.hotel.cards.location.eyebrow', { defaultValue: 'Location' })}
+                            title={t('pages.hotel.cards.location.title', { defaultValue: 'Property coordinates' })}
+                        >
+                            <div className="space-y-3">
+                                <InfoRow label={t('pages.hotel.fields.address', { defaultValue: 'Address' })} value={currentHotel.address} />
+                                <div className="grid gap-3 sm:grid-cols-2">
+                                    <InfoRow label={t('pages.hotel.fields.phone', { defaultValue: 'Phone' })} value={currentHotel.phone} />
+                                    <InfoRow label={t('pages.hotel.fields.fax', { defaultValue: 'Fax' })} value={currentHotel.fax} />
+                                </div>
+                                <div className="flex items-center gap-3 rounded-2xl border border-brand-mint/15 bg-brand-mint/8 px-4 py-4">
+                                    <User size={17} className="text-brand-mint" />
                                     <div>
-                                        <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1 block">Adresse physique</label>
-                                        <p className="text-sm text-gray-700 font-medium leading-relaxed">{currentHotel.address}</p>
-                                    </div>
-                                    <div className="grid grid-cols-2 gap-4 pt-4 border-t border-gray-50">
-                                        <div>
-                                            <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1 block">Standard</label>
-                                            <p className="text-sm font-bold text-gray-900">{currentHotel.phone}</p>
-                                        </div>
-                                        <div>
-                                            <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1 block">Fax</label>
-                                            <p className="text-sm font-semibold text-gray-400">{currentHotel.fax || '—'}</p>
-                                        </div>
-                                    </div>
-                                    <div className="p-4 bg-gray-50 rounded-xl flex items-center gap-4">
-                                        <div className="w-10 h-10 bg-white border border-gray-100 rounded-lg shadow-sm flex items-center justify-center text-gray-400">
-                                            <User size={18} />
-                                        </div>
-                                        <div>
-                                            <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1 block">Gérant / Légal</label>
-                                            <p className="text-sm font-bold text-gray-900">{currentHotel.legalRepresentative}</p>
-                                        </div>
+                                        <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-brand-slate">
+                                            {t('pages.hotel.fields.legalRepresentative', { defaultValue: 'Legal representative' })}
+                                        </p>
+                                        <p className="mt-1 text-sm font-semibold text-brand-navy dark:text-white">
+                                            {currentHotel.legalRepresentative || 'Not provided'}
+                                        </p>
                                     </div>
                                 </div>
                             </div>
+                        </DetailCard>
 
-                            {/* Card 2 : Hub Email (Simplifié) */}
-                            <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-6 flex flex-col space-y-6">
-                                <div className="flex items-center gap-3">
-                                    <div className="w-10 h-10 bg-blue-50 text-blue-600 rounded-lg flex items-center justify-center">
-                                        <Mail size={20} />
-                                    </div>
-                                    <h3 className="font-bold text-gray-900">Contact Numérique</h3>
-                                </div>
+                        <DetailCard
+                            icon={Mail}
+                            eyebrow={t('pages.hotel.cards.contacts.eyebrow', { defaultValue: 'Contact Hub' })}
+                            title={t('pages.hotel.cards.contacts.title', { defaultValue: 'Operational inboxes' })}
+                        >
+                            {currentHotel.emails && currentHotel.emails.length > 0 ? (
                                 <div className="space-y-3">
-                                    {currentHotel.emails && currentHotel.emails.length > 0 ? (
-                                        currentHotel.emails.map((e, i) => (
-                                            <div key={i} className="flex items-center justify-between p-3 rounded-xl bg-white border border-gray-100 transition-all">
-                                                <div className="min-w-0 flex-1">
-                                                    <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1 block">{e.label}</span>
-                                                    <p className="text-sm font-semibold text-gray-700 break-all">{e.address}</p>
-                                                </div>
-                                                <a href={`mailto:${e.address}`} className="ml-3 p-2 text-gray-300 hover:text-indigo-600 transition-colors shrink-0">
-                                                    <ArrowUpRight size={18} />
-                                                </a>
+                                    {currentHotel.emails.map((email, index) => (
+                                        <div key={`${email.label}-${index}`} className="flex items-center justify-between gap-4 rounded-2xl border border-white/70 bg-white/72 px-4 py-3 dark:border-white/10 dark:bg-white/5">
+                                            <div className="min-w-0">
+                                                <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-brand-slate">{email.label}</p>
+                                                <p className="mt-1 truncate text-sm font-semibold text-brand-navy dark:text-white">{email.address}</p>
                                             </div>
-                                        ))
-                                    ) : (
-                                        <div className="py-10 text-center opacity-30">
-                                            <Mail size={32} className="mx-auto mb-2" />
-                                            <p className="text-xs font-bold uppercase italic tracking-widest">Aucun email</p>
+                                            <a
+                                                href={`mailto:${email.address}`}
+                                                className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-brand-mint/10 text-brand-mint transition hover:bg-brand-mint hover:text-white"
+                                                aria-label={t('pages.hotel.actions.email', { defaultValue: 'Email contact' })}
+                                            >
+                                                <ArrowUpRight size={16} />
+                                            </a>
                                         </div>
-                                    )}
+                                    ))}
+                                </div>
+                            ) : (
+                                <div className="rounded-2xl border border-dashed border-white/70 bg-white/40 px-6 py-10 text-center text-sm text-brand-slate dark:border-white/10 dark:bg-white/5 dark:text-brand-light/75">
+                                    {t('pages.hotel.cards.contacts.empty', { defaultValue: 'No contact email has been configured yet.' })}
+                                </div>
+                            )}
+                        </DetailCard>
+
+                        <DetailCard
+                            icon={Landmark}
+                            eyebrow={t('pages.hotel.cards.banking.eyebrow', { defaultValue: 'Finance' })}
+                            title={t('pages.hotel.cards.banking.title', { defaultValue: 'Fiscal and banking profile' })}
+                        >
+                            <div className="space-y-3">
+                                <InfoRow label={t('pages.hotel.fields.bank', { defaultValue: 'Bank' })} value={currentHotel.bankName} />
+                                <InfoRow label={t('pages.hotel.fields.vatNumber', { defaultValue: 'VAT number' })} value={currentHotel.vatNumber} />
+                                <InfoRow label={t('pages.hotel.fields.accountNumber', { defaultValue: 'Account number' })} value={currentHotel.accountNumber} />
+                                <div className="rounded-2xl bg-brand-navy px-4 py-4 text-white">
+                                    <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-brand-slate">
+                                        {t('pages.hotel.fields.ibanSwift', { defaultValue: 'IBAN / SWIFT' })}
+                                    </p>
+                                    <p className="mt-2 break-all font-mono text-sm">{currentHotel.ibanCode || 'Not provided'}</p>
+                                    <p className="mt-2 font-mono text-sm text-brand-mint">{currentHotel.swiftCode || 'Not provided'}</p>
                                 </div>
                             </div>
+                        </DetailCard>
+                    </section>
 
-                            {/* Card 3 : Financial Focus (Premium) */}
-                            <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-6 flex flex-col space-y-6">
-                                <div className="flex items-center justify-between">
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-10 h-10 bg-amber-50 text-amber-600 rounded-lg flex items-center justify-center">
-                                            <Landmark size={20} />
-                                        </div>
-                                        <h3 className="font-bold text-gray-900">Fiche Bancaire</h3>
-                                    </div>
-                                    <span className="text-xs font-bold text-indigo-600">{currentHotel.bankName || 'Standard'}</span>
-                                </div>
+                    <ExchangeRatesSection />
+                </div>
+            )}
 
-                                <div className="space-y-4">
-                                    <div className="space-y-4">
-                                        <div className="flex justify-between items-end border-b border-gray-100 pb-2">
-                                            <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Matricule Fiscal</span>
-                                            <span className="text-sm font-bold font-mono text-gray-900">{currentHotel.vatNumber || '—'}</span>
-                                        </div>
-                                        <div className="flex justify-between items-end border-b border-gray-100 pb-2">
-                                            <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">RIB / Compte</span>
-                                            <span className="text-sm font-bold font-mono text-gray-900">{currentHotel.accountNumber || '—'}</span>
-                                        </div>
-                                    </div>
-
-                                    <div className="bg-gray-50 p-4 rounded-xl border border-gray-100 space-y-3">
-                                        <div className="space-y-1">
-                                            <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider block">Code IBAN International</label>
-                                            <p className="text-sm font-bold font-mono text-gray-900 break-all leading-relaxed">{currentHotel.ibanCode || '—'}</p>
-                                        </div>
-                                        <div className="flex justify-between items-center pt-2 border-t border-gray-100">
-                                            <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">BIC / SWIFT</span>
-                                            <span className="text-sm font-bold font-mono text-indigo-600">{currentHotel.swiftCode || '—'}</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                        </div>
-
-                        {/* ── SECTION TAUX DE CHANGE ── */}
-                        <div className="pt-10">
-                            <h2 className="text-xl font-bold text-slate-900 mb-6 flex items-center gap-3">
-                                <Coins className="text-indigo-600" size={24} />
-                                Gestion des Taux de Change
+            {isAdmin && (
+                <section className="premium-surface p-6">
+                    <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                        <div>
+                            <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-brand-slate">
+                                {t('pages.hotel.archives.eyebrow', { defaultValue: 'Archive' })}
+                            </p>
+                            <h2 className="mt-2 text-xl font-semibold tracking-tight text-brand-navy dark:text-white">
+                                {t('pages.hotel.archives.title', { defaultValue: 'Archived establishments' })}
                             </h2>
-                            <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-                                <ExchangeRatesSection />
-                            </div>
                         </div>
-
-                    </div>
-                )}
-
-                {/* ── ARCHIVES (DISCRET) ── */}
-                {isAdmin && (
-                    <div className="pt-12 border-t border-slate-200/60">
-                         <button
+                        <button
+                            type="button"
                             onClick={() => setShowArchived(!showArchived)}
-                            className="flex items-center gap-3 text-xs font-bold text-slate-400 hover:text-slate-600 transition-colors uppercase tracking-widest bg-transparent border-none cursor-pointer outline-none"
+                            className="inline-flex h-11 items-center gap-2 rounded-2xl border border-white/70 bg-white/70 px-4 text-sm font-semibold text-brand-slate transition hover:text-brand-navy dark:border-white/10 dark:bg-white/5 dark:text-brand-light/75 dark:hover:text-white"
                         >
                             <Archive size={16} />
-                            {showArchived ? 'Masquer' : 'Afficher'} les établissements archivés ({archivedHotels?.length || 0})
+                            {showArchived
+                                ? t('pages.hotel.archives.hide', { defaultValue: 'Hide archive' })
+                                : t('pages.hotel.archives.show', { defaultValue: 'Show archive' })}
+                            <span className="text-brand-mint">({archivedHotels?.length || 0})</span>
                         </button>
+                    </div>
 
-                        {showArchived && archivedHotels && archivedHotels.length > 0 && (
-                            <div className="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                                {archivedHotels.map(h => (
-                                    <div key={h.id} className="bg-white p-5 rounded-xl border border-gray-200 shadow-sm flex items-center justify-between group grayscale hover:grayscale-0 transition-all">
+                    {showArchived && archivedHotels && archivedHotels.length > 0 && (
+                        <div className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+                            {archivedHotels.map((hotel) => (
+                                <div key={hotel.id} className="rounded-2xl border border-white/70 bg-white/72 p-5 shadow-sm grayscale transition hover:grayscale-0 dark:border-white/10 dark:bg-white/5">
+                                    <div className="flex items-center justify-between gap-4">
                                         <div className="min-w-0">
-                                            <h4 className="font-bold text-slate-800 text-sm truncate">{h.name}</h4>
-                                            <p className="text-[10px] text-slate-400 font-mono italic">{h.reference || 'REF-N/A'}</p>
+                                            <h3 className="truncate text-sm font-semibold text-brand-navy dark:text-white">{hotel.name}</h3>
+                                            <p className="mt-1 text-xs text-brand-slate dark:text-brand-light/75">{hotel.reference || 'REF-N/A'}</p>
                                         </div>
                                         <button
-                                            onClick={() => handleRestore(h)}
-                                            className="p-2 bg-indigo-50 text-indigo-600 rounded-xl hover:bg-indigo-600 hover:text-white transition-all cursor-pointer border-none outline-none"
+                                            type="button"
+                                            onClick={() => handleRestore(hotel)}
+                                            className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-brand-mint/10 text-brand-mint transition hover:bg-brand-mint hover:text-white"
+                                            aria-label={t('pages.hotel.actions.restore', { defaultValue: 'Restore hotel' })}
                                         >
                                             <RotateCcw size={16} />
                                         </button>
                                     </div>
-                                ))}
-                            </div>
-                        )}
-                    </div>
-                )}
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </section>
+            )}
 
-                <HotelModal
-                    isOpen={isModalOpen}
-                    onClose={closeModal}
-                    editing={editing}
-                    onSubmit={onSubmit}
-                    isPending={createMutation.isPending || updateMutation.isPending}
-                />
-            </div>
+            <EditHotelModal
+                isOpen={isModalOpen}
+                onClose={closeModal}
+                editing={editing}
+                onSubmit={onSubmit}
+                isPending={createMutation.isPending || updateMutation.isPending}
+            />
         </div>
     );
 }

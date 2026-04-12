@@ -4,12 +4,15 @@ import { useDeleteContractRoom } from '../../hooks/useContracts';
 import { useConfirm } from '../../../../context/ConfirmContext';
 import { BedDouble, Plus, Trash2 } from 'lucide-react';
 import ImportContractRoomsModal from '../modals/ImportContractRoomsModal';
+import { useTranslation } from 'react-i18next';
 
 interface Props {
     contract: Contract;
 }
 
 export default function RoomsSection({ contract }: Props) {
+    const { t } = useTranslation('common');
+    void t;
     const [showImport, setShowImport] = useState(false);
     const { confirm } = useConfirm();
 
@@ -27,64 +30,64 @@ export default function RoomsSection({ contract }: Props) {
     };
 
     return (
-        <div className="bg-white shadow-sm ring-1 ring-gray-900/5 sm:rounded-xl p-6">
+        <div className="bg-white shadow-sm ring-1 ring-brand-mint sm:rounded-xl p-6">
             {/* ─── Header ─────────────────────────────────────────────── */}
-            <div className="flex items-center justify-between mb-6 pb-4 border-b border-gray-100">
+            <div className="flex items-center justify-between mb-6 pb-4 border-b border-brand-slate/20">
                 <div className="flex items-center gap-3">
-                    <BedDouble size={20} className="text-indigo-600" />
-                    <h2 className="text-base font-semibold text-gray-900">Chambres du Contrat</h2>
-                    <span className="text-xs text-gray-400">({rooms.length})</span>
+                    <BedDouble size={20} className="text-brand-mint" />
+                    <h2 className="text-base font-semibold text-brand-navy">{t('auto.features.contracts.details.sections.roomssection.151ee688', { defaultValue: "Chambres du Contrat" })}</h2>
+                    <span className="text-xs text-brand-slate">({rooms.length})</span>
                 </div>
                 <button onClick={() => setShowImport(true)}
-                    className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 transition-colors cursor-pointer">
+                    className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-brand-mint rounded-xl hover:bg-brand-mint transition-colors cursor-pointer">
                     <Plus size={16} /> Ajouter des chambres
                 </button>
             </div>
 
             {/* ─── Empty State ────────────────────────────────────────── */}
             {rooms.length === 0 && (
-                <div className="rounded-xl bg-gray-100 border border-dashed border-gray-300 p-12 text-center">
-                    <BedDouble size={40} className="mx-auto text-gray-300 mb-3" />
-                    <p className="text-gray-500 text-sm">Aucune chambre associée à ce contrat</p>
-                    <p className="text-gray-400 text-xs mt-1">Cliquez sur « Ajouter des chambres » pour importer depuis le catalogue</p>
+                <div className="rounded-xl bg-brand-light border border-dashed border-brand-slate/20 p-12 text-center">
+                    <BedDouble size={40} className="mx-auto text-brand-slate mb-3" />
+                    <p className="text-brand-slate text-sm">{t('auto.features.contracts.details.sections.roomssection.dac67c0a', { defaultValue: "Aucune chambre associée à ce contrat" })}</p>
+                    <p className="text-brand-slate text-xs mt-1">{t('auto.features.contracts.details.sections.roomssection.836d12a6', { defaultValue: "Cliquez sur « Ajouter des chambres » pour importer depuis le catalogue" })}</p>
                 </div>
             )}
 
             {/* ─── Table ──────────────────────────────────────────────── */}
             {rooms.length > 0 && (
-                <div className="ring-1 ring-gray-900/5 sm:rounded-xl overflow-hidden">
+                <div className="ring-1 ring-brand-mint sm:rounded-xl overflow-hidden">
                     <table className="w-full text-sm text-left">
                         <thead>
-                            <tr className="bg-gray-50 border-b border-gray-200">
-                                <th className="px-5 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Chambre</th>
-                                <th className="px-5 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Code</th>
-                                <th className="px-5 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Adultes</th>
-                                <th className="px-5 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Enfants</th>
-                                <th className="px-5 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Occupancy Max</th>
-                                <th className="px-5 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                            <tr className="bg-brand-light border-b border-brand-slate/20">
+                                <th className="px-5 py-3 text-left text-xs font-medium text-brand-slate uppercase tracking-wider">{t('auto.features.contracts.details.sections.roomssection.700dda3b', { defaultValue: "Chambre" })}</th>
+                                <th className="px-5 py-3 text-left text-xs font-medium text-brand-slate uppercase tracking-wider">{t('auto.features.contracts.details.sections.roomssection.297d0b87', { defaultValue: "Code" })}</th>
+                                <th className="px-5 py-3 text-center text-xs font-medium text-brand-slate uppercase tracking-wider">{t('auto.features.contracts.details.sections.roomssection.91bb73ca', { defaultValue: "Adultes" })}</th>
+                                <th className="px-5 py-3 text-center text-xs font-medium text-brand-slate uppercase tracking-wider">{t('auto.features.contracts.details.sections.roomssection.065eee1d', { defaultValue: "Enfants" })}</th>
+                                <th className="px-5 py-3 text-center text-xs font-medium text-brand-slate uppercase tracking-wider">{t('auto.features.contracts.details.sections.roomssection.588767e1', { defaultValue: "Occupancy Max" })}</th>
+                                <th className="px-5 py-3 text-right text-xs font-medium text-brand-slate uppercase tracking-wider">{t('auto.features.contracts.details.sections.roomssection.ab4ecccf', { defaultValue: "Actions" })}</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-gray-100">
+                        <tbody className="divide-y divide-brand-slate/10">
                             {rooms.map((cr) => (
-                                <tr key={cr.id} className="hover:bg-gray-50 transition-colors">
+                                <tr key={cr.id} className="hover:bg-brand-light transition-colors">
                                     <td className="px-5 py-4 whitespace-nowrap">
                                         <div className="flex flex-col">
-                                            <span className="text-sm font-medium text-gray-900">{cr.roomType?.name ?? `Chambre #${cr.id}`}</span>
-                                            <span className="text-xs text-gray-400 mt-0.5 font-mono tracking-wide">{cr.reference || '-'}</span>
+                                            <span className="text-sm font-medium text-brand-navy">{cr.roomType?.name ?? `Chambre #${cr.id}`}</span>
+                                            <span className="text-xs text-brand-slate mt-0.5 font-mono tracking-wide">{cr.reference || '-'}</span>
                                         </div>
                                     </td>
                                     <td className="px-5 py-3">
-                                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-md bg-indigo-50 text-indigo-700 text-xs font-bold tracking-wide">
+                                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-xl bg-brand-mint/10 text-brand-mint text-xs font-bold tracking-wide">
                                             {cr.roomType?.code ?? '—'}
                                         </span>
                                     </td>
-                                    <td className="px-5 py-3 text-center text-gray-600">{cr.roomType?.minAdults}–{cr.roomType?.maxAdults}</td>
-                                    <td className="px-5 py-3 text-center text-gray-600">{cr.roomType?.minChildren}–{cr.roomType?.maxChildren}</td>
-                                    <td className="px-5 py-3 text-center text-gray-600">{cr.roomType?.maxOccupancy ?? '—'}</td>
+                                    <td className="px-5 py-3 text-center text-brand-slate">{cr.roomType?.minAdults}–{cr.roomType?.maxAdults}</td>
+                                    <td className="px-5 py-3 text-center text-brand-slate">{cr.roomType?.minChildren}–{cr.roomType?.maxChildren}</td>
+                                    <td className="px-5 py-3 text-center text-brand-slate">{cr.roomType?.maxOccupancy ?? '—'}</td>
                                     <td className="px-5 py-3 text-right">
                                         <button onClick={() => handleRemove(cr.id, cr.roomType?.name ?? 'chambre')}
-                                            className="p-1.5 rounded-lg text-gray-400 hover:text-red-600 hover:bg-red-50 transition-colors cursor-pointer"
-                                            title="Retirer du contrat">
+                                            className="p-1.5 rounded-xl text-brand-slate hover:text-brand-slate hover:bg-brand-slate/10 transition-colors cursor-pointer"
+                                            title={t('auto.features.contracts.details.sections.roomssection.title.4ea386bc', { defaultValue: "Retirer du contrat" })}>
                                             <Trash2 size={15} />
                                         </button>
                                     </td>
@@ -92,7 +95,7 @@ export default function RoomsSection({ contract }: Props) {
                             ))}
                         </tbody>
                     </table>
-                    <div className="px-5 py-3 bg-gray-50 border-t border-gray-100 text-xs text-gray-400">
+                    <div className="px-5 py-3 bg-brand-light border-t border-brand-slate/20 text-xs text-brand-slate">
                         {rooms.length} chambre{rooms.length > 1 ? 's' : ''} dans le contrat
                     </div>
                 </div>

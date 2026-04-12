@@ -3,6 +3,7 @@ import { toast } from 'sonner';
 import { arrangementService } from '../services/arrangement.service';
 import type { Arrangement, CreateArrangementPayload, UpdateArrangementPayload } from '../types/arrangement.types';
 import { useHotel } from '../../hotel/context/HotelContext';
+import i18next from '../../../lib/i18n';
 
 export type { Arrangement, CreateArrangementPayload, UpdateArrangementPayload };
 
@@ -42,7 +43,7 @@ export function useCreateArrangement(onSuccess?: () => void) {
         mutationFn: arrangementService.createArrangement,
         onSuccess: () => {
             qc.invalidateQueries({ queryKey: arrangementKeys.all(currentHotel?.id) });
-            toast.success('Arrangement créé avec succès');
+            toast.success(i18next.t('auto.features.arrangements.hooks.usearrangements.toast.success.7dd447e1', { defaultValue: "Arrangement créé avec succès" }));
             onSuccess?.();
         },
     });
@@ -57,7 +58,7 @@ export function useUpdateArrangement(onSuccess?: () => void) {
             arrangementService.updateArrangement(id, data),
         onSuccess: () => {
             qc.invalidateQueries({ queryKey: arrangementKeys.all(currentHotel?.id) });
-            toast.success('Arrangement mis à jour');
+            toast.success(i18next.t('auto.features.arrangements.hooks.usearrangements.toast.success.059e6397', { defaultValue: "Arrangement mis à jour" }));
             onSuccess?.();
         },
     });
@@ -73,7 +74,7 @@ export function useDeleteArrangement() {
             const hid = currentHotel?.id;
             qc.invalidateQueries({ queryKey: arrangementKeys.all(hid) });
             qc.invalidateQueries({ queryKey: arrangementKeys.archived(hid) });
-            toast.success('Arrangement archivé avec succès');
+            toast.success(i18next.t('auto.features.arrangements.hooks.usearrangements.toast.success.2875ad97', { defaultValue: "Arrangement archivé avec succès" }));
         },
     });
 }
@@ -88,7 +89,7 @@ export function useRestoreArrangement() {
             const hid = currentHotel?.id;
             qc.invalidateQueries({ queryKey: arrangementKeys.all(hid) });
             qc.invalidateQueries({ queryKey: arrangementKeys.archived(hid) });
-            toast.success('Arrangement restauré avec succès');
+            toast.success(i18next.t('auto.features.arrangements.hooks.usearrangements.toast.success.efd61953', { defaultValue: "Arrangement restauré avec succès" }));
         },
     });
 }

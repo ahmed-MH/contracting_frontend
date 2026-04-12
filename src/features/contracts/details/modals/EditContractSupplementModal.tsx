@@ -1,28 +1,16 @@
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
-import { X, Save } from 'lucide-react';
+import { zodResolver } from '@hookform/resolvers/zod';
+import ModalShell from '../../../../components/ui/ModalShell';
 import { useUpdateContractSupplement } from '../../hooks/useContractSupplements';
-import type {
-    ContractSupplement,
-    SupplementCalculationType,
-    PricingModifierApplicationType,
-    SupplementSystemCode,
-} from '../../../../types';
+import type { ContractSupplement } from '../../../../types';
 import type { ContractRoom } from '../../types/contract.types';
-
-interface FormValues {
-    name: string;
-    systemCode: SupplementSystemCode;
-    type: SupplementCalculationType;
-    value: number;
-    formula: string;
-    isMandatory: boolean;
-    applicationType: PricingModifierApplicationType;
-    applicableContractRoomIds: number[];
-    specificDate: string;
-    minAge: number;
-    maxAge: number;
-}
+import { useTranslation } from 'react-i18next';
+import {
+    createContractSupplementSchema,
+    type ContractSupplementFormInput,
+    type ContractSupplementFormValues,
+} from '../schemas/contract-detail.schema';
 
 interface Props {
     contractId: number;
@@ -39,9 +27,12 @@ export default function EditContractSupplementModal({
     onClose,
     contractRooms,
 }: Props) {
+    const { t } = useTranslation('common');
+    const schema = useMemo(() => createContractSupplementSchema(t), [t]);
     const updateMutation = useUpdateContractSupplement(contractId);
 
-    const { register, handleSubmit, watch, setValue, reset, formState: { errors, isDirty } } = useForm<FormValues>({
+    const { register, handleSubmit, watch, setValue, reset, formState: { errors, isDirty } } = useForm<ContractSupplementFormInput, unknown, ContractSupplementFormValues>({
+        resolver: zodResolver(schema),
         defaultValues: {
             name: supplement.name,
             systemCode: supplement.systemCode || 'CUSTOM',
@@ -97,7 +88,7 @@ export default function EditContractSupplementModal({
         setValue('applicableContractRoomIds', next, { shouldDirty: true });
     };
 
-    const onSubmit = (data: FormValues) => {
+    const onSubmit = (data: ContractSupplementFormValues) => {
         updateMutation.mutate(
             {
                 suppId: supplement.id,
@@ -122,76 +113,74 @@ export default function EditContractSupplementModal({
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/60 backdrop-blur-xs">
-            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[90vh]">
-                {/* ─── Header ────────────────────────────────────────── */}
-                <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between bg-white sticky top-0 z-10">
-                    <div>
-                        <h3 className="text-lg font-bold text-gray-900">Modifier le supplément</h3>
-                        <p className="text-xs text-gray-400 font-medium uppercase tracking-wider mt-1">Configuration de base · Coquille</p>
-                    </div>
-                    <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-full transition-colors cursor-pointer text-gray-400">
-                        <X size={20} />
-                    </button>
-                </div>
+        <ModalShell
+            isOpen={isOpen}
+            onClose={onClose}
+            title={t('auto.features.contracts.details.modals.editcontractsupplementmodal.title.b85d7f23', { defaultValue: "Modifier le supplément" })}
+            subtitle={t('auto.features.contracts.details.modals.editcontractsupplementmodal.subtitle.87d322ba', { defaultValue: "Configuration de base · Coquille" })}
+            onSubmit={handleSubmit(onSubmit)}
+            submitLabel={t('auto.features.contracts.details.modals.editcontractsupplementmodal.submitLabel.c5b38dcb', { defaultValue: "Mettre à jour" })}
+            isSubmitting={updateMutation.isPending}
+            submitDisabled={!isDirty}
+            maxWidth="max-w-2xl"
+        >
+            <div className="space-y-6">
 
-                <form onSubmit={handleSubmit(onSubmit)} className="overflow-y-auto flex-1">
-                    <div className="p-6 space-y-6">
                         {/* Info Alert */}
-                        <div className="bg-indigo-50 border border-indigo-100 rounded-xl p-4 flex gap-3 text-indigo-700 shadow-sm">
+                        <div className="bg-brand-mint/5 border border-brand-mint/20 rounded-xl p-4 flex gap-3 text-brand-slate shadow-sm">
                             <p className="text-xs leading-relaxed font-medium">
-                                💡 <span className="font-bold">Architecture Matrice :</span> L'activation par période et les surcharges se gèrent directement dans la <span className="text-indigo-900 font-bold">Grille Suppléments</span> principale.
+                                💡 <span className="font-bold text-brand-navy dark:text-brand-light">{t('auto.features.contracts.details.modals.editcontractsupplementmodal.9ac766fa', { defaultValue: "Architecture Matrice :" })}</span> {t('auto.features.contracts.details.modals.editcontractsupplementmodal.b5c85b39', { defaultValue: "L'activation par période et les surcharges se gèrent directement dans la" })} <span className="text-brand-mint font-bold">{t('auto.features.contracts.details.modals.editcontractsupplementmodal.38dce286', { defaultValue: "Grille Suppléments" })}</span> principale.
                             </p>
                         </div>
 
                         <div className="space-y-4">
                             <div>
-                                <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Comportement Métier</label>
+                                <label className="block text-xs font-bold text-brand-navy dark:text-brand-light uppercase tracking-wider mb-2">{t('auto.features.contracts.details.modals.editcontractsupplementmodal.6b5afd04', { defaultValue: "Comportement Métier" })}</label>
                                 <select
                                     {...register('systemCode')}
-                                    className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-all text-sm font-bold"
+                                    className="w-full px-4 py-2.5 bg-brand-light dark:bg-brand-slate/10 border border-brand-slate/20 rounded-xl focus:ring-2 focus:ring-brand-mint transition-all text-sm font-bold text-brand-navy dark:text-brand-light outline-none"
                                 >
-                                    <option value="CUSTOM">Autre / Standard</option>
-                                    <option value="SINGLE_OCCUPANCY">Supplément Single</option>
-                                    <option value="GALA_DINNER">Dîner de Gala</option>
-                                    <option value="MEAL_PLAN">Supplément de Pension (Repas)</option>
+                                    <option value="CUSTOM">{t('auto.features.contracts.details.modals.editcontractsupplementmodal.a8d0bd95', { defaultValue: "Autre / Standard" })}</option>
+                                    <option value="SINGLE_OCCUPANCY">{t('auto.features.contracts.details.modals.editcontractsupplementmodal.c5ed0310', { defaultValue: "Supplément Single" })}</option>
+                                    <option value="GALA_DINNER">{t('auto.features.contracts.details.modals.editcontractsupplementmodal.c170138a', { defaultValue: "Dîner de Gala" })}</option>
+                                    <option value="MEAL_PLAN">{t('auto.features.contracts.details.modals.editcontractsupplementmodal.d30e9413', { defaultValue: "Supplément de Pension (Repas)" })}</option>
                                 </select>
                             </div>
 
                             {/* Name */}
                             <div>
-                                <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Nom du supplément</label>
+                                <label className="block text-xs font-bold text-brand-navy dark:text-brand-light uppercase tracking-wider mb-2">{t('auto.features.contracts.details.modals.editcontractsupplementmodal.87efde3c', { defaultValue: "Nom du supplément" })}</label>
                                 <input
-                                    {...register('name', { required: 'Le nom est requis' })}
-                                    className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-all text-sm font-medium"
-                                    placeholder="ex: Supplément Vue Mer"
+                                    {...register('name')}
+                                    className="w-full px-4 py-2.5 bg-brand-light dark:bg-brand-slate/10 border border-brand-slate/20 rounded-xl focus:ring-2 focus:ring-brand-mint transition-all text-sm font-medium text-brand-navy dark:text-brand-light outline-none"
+                                    placeholder={t('auto.features.contracts.details.modals.editcontractsupplementmodal.placeholder.7885ed9e', { defaultValue: "ex: Supplément Vue Mer" })}
                                 />
-                                {errors.name && <p className="mt-1.5 text-xs font-bold text-red-500">{errors.name.message}</p>}
+                                {errors.name && <p className="mt-1.5 text-xs font-bold text-brand-slate">{errors.name.message}</p>}
                             </div>
 
                             {/* Conditional Age Range for Gala and Meal Plan */}
                             {(watchSystemCode === 'GALA_DINNER' || watchSystemCode === 'MEAL_PLAN') && (
-                                <div className="grid grid-cols-2 gap-4 bg-gray-50 p-4 rounded-xl border border-gray-100">
+                                <div className="grid grid-cols-2 gap-4 bg-brand-light dark:bg-brand-slate/10 p-4 rounded-xl border border-brand-slate/20">
                                     <div>
-                                        <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Âge Minimum</label>
+                                        <label className="block text-xs font-bold text-brand-navy dark:text-brand-light uppercase tracking-wider mb-2">{t('auto.features.contracts.details.modals.editcontractsupplementmodal.55f4c4e1', { defaultValue: "Âge Minimum" })}</label>
                                         <div className="relative">
                                             <input
                                                 type="number"
                                                 {...register('minAge', { valueAsNumber: true, min: 0 })}
-                                                className="w-full px-4 py-2 bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 transition-all text-sm font-bold"
+                                                className="w-full px-4 py-2 bg-white dark:bg-brand-navy/50 border border-brand-slate/20 rounded-xl focus:ring-2 focus:ring-brand-mint transition-all text-sm font-bold text-brand-navy dark:text-brand-light outline-none"
                                             />
-                                            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-bold text-gray-400 uppercase">ans</span>
+                                            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-bold text-brand-slate/50 uppercase">{t('auto.features.contracts.details.modals.editcontractsupplementmodal.1a8e8d3a', { defaultValue: "ans" })}</span>
                                         </div>
                                     </div>
                                     <div>
-                                        <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Âge Maximum</label>
+                                        <label className="block text-xs font-bold text-brand-navy dark:text-brand-light uppercase tracking-wider mb-2">{t('auto.features.contracts.details.modals.editcontractsupplementmodal.7ee9223e', { defaultValue: "Âge Maximum" })}</label>
                                         <div className="relative">
                                             <input
                                                 type="number"
                                                 {...register('maxAge', { valueAsNumber: true, max: 99 })}
-                                                className="w-full px-4 py-2 bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 transition-all text-sm font-bold"
+                                                className="w-full px-4 py-2 bg-white dark:bg-brand-navy/50 border border-brand-slate/20 rounded-xl focus:ring-2 focus:ring-brand-mint transition-all text-sm font-bold text-brand-navy dark:text-brand-light outline-none"
                                             />
-                                            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-bold text-gray-400 uppercase">ans</span>
+                                            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-bold text-brand-slate/50 uppercase">{t('auto.features.contracts.details.modals.editcontractsupplementmodal.1a8e8d3a', { defaultValue: "ans" })}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -200,26 +189,26 @@ export default function EditContractSupplementModal({
                             {/* Type + Application */}
                             <div className="grid grid-cols-2 gap-6">
                                 <div>
-                                    <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Type de Calcul</label>
+                                    <label className="block text-xs font-bold text-brand-navy dark:text-brand-light uppercase tracking-wider mb-2">{t('auto.features.contracts.details.modals.editcontractsupplementmodal.d1b0b3bc', { defaultValue: "Type de Calcul" })}</label>
                                     <select
                                         {...register('type')}
-                                        className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-all text-sm font-bold cursor-pointer"
+                                        className="w-full px-4 py-2.5 bg-brand-light dark:bg-brand-slate/10 border border-brand-slate/20 rounded-xl focus:ring-2 focus:ring-brand-mint focus:bg-white transition-all text-sm font-bold cursor-pointer text-brand-navy dark:text-brand-light outline-none"
                                     >
-                                        <option value="FIXED">Fixe (TND)</option>
-                                        <option value="PERCENTAGE">Pourcentage (%)</option>
-                                        <option value="FORMULA">Formule</option>
-                                        <option value="FREE">Gratuit</option>
+                                        <option value="FIXED">{t('auto.features.contracts.details.modals.editcontractsupplementmodal.db176a40', { defaultValue: "Fixe (TND)" })}</option>
+                                        <option value="PERCENTAGE">{t('auto.features.contracts.details.modals.editcontractsupplementmodal.d5cd8ba2', { defaultValue: "Pourcentage (%)" })}</option>
+                                        <option value="FORMULA">{t('auto.features.contracts.details.modals.editcontractsupplementmodal.825bffe9', { defaultValue: "Formule" })}</option>
+                                        <option value="FREE">{t('auto.features.contracts.details.modals.editcontractsupplementmodal.9517f2f2', { defaultValue: "Gratuit" })}</option>
                                     </select>
                                 </div>
                                 <div className="animate-in fade-in slide-in-from-top-1 duration-200">
-                                    <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Mode d'Application</label>
+                                    <label className="block text-xs font-bold text-brand-navy dark:text-brand-light uppercase tracking-wider mb-2">{t('auto.features.contracts.details.modals.editcontractsupplementmodal.1565911a', { defaultValue: "Mode d'Application" })}</label>
                                     <select
                                         {...register('applicationType')}
-                                        className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-all text-sm font-bold cursor-pointer"
+                                        className="w-full px-4 py-2.5 bg-brand-light dark:bg-brand-slate/10 border border-brand-slate/20 rounded-xl focus:ring-2 focus:ring-brand-mint focus:bg-white transition-all text-sm font-bold cursor-pointer text-brand-navy dark:text-brand-light outline-none"
                                     >
-                                        <option value="PER_NIGHT_PER_PERSON">Par Nuit et Par Personne</option>
-                                        <option value="PER_NIGHT_PER_ROOM">Par Chambre et Par Nuit</option>
-                                        <option value="FLAT_RATE_PER_STAY">Forfait Unique par Séjour</option>
+                                        <option value="PER_NIGHT_PER_PERSON">{t('auto.features.contracts.details.modals.editcontractsupplementmodal.e9a36374', { defaultValue: "Par Nuit et Par Personne" })}</option>
+                                        <option value="PER_NIGHT_PER_ROOM">{t('auto.features.contracts.details.modals.editcontractsupplementmodal.6493e268', { defaultValue: "Par Chambre et Par Nuit" })}</option>
+                                        <option value="FLAT_RATE_PER_STAY">{t('auto.features.contracts.details.modals.editcontractsupplementmodal.0fd98736', { defaultValue: "Forfait Unique par Séjour" })}</option>
                                     </select>
                                 </div>
                             </div>
@@ -227,7 +216,7 @@ export default function EditContractSupplementModal({
                             {/* Value or Formula */}
                             {(watchType === 'FIXED' || watchType === 'PERCENTAGE') && (
                                 <div>
-                                    <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">
+                                    <label className="block text-xs font-bold text-brand-navy dark:text-brand-light uppercase tracking-wider mb-2">
                                         {watchType === 'PERCENTAGE' ? 'Valeur de Base (%)' : 'Montant de Base (TND)'}
                                     </label>
                                     <div className="relative">
@@ -235,9 +224,9 @@ export default function EditContractSupplementModal({
                                             type="number"
                                             step="0.01"
                                             {...register('value', { valueAsNumber: true })}
-                                            className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-all text-sm font-bold"
+                                            className="w-full px-4 py-2.5 bg-brand-light dark:bg-brand-slate/10 border border-brand-slate/20 rounded-xl focus:ring-2 focus:ring-brand-mint transition-all text-sm font-bold text-brand-navy dark:text-brand-light outline-none"
                                         />
-                                        <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[10px] font-bold text-gray-400 uppercase">
+                                        <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[10px] font-bold text-brand-slate/50 uppercase">
                                             {watchType === 'PERCENTAGE' ? '%' : 'TND'}
                                         </span>
                                     </div>
@@ -246,39 +235,35 @@ export default function EditContractSupplementModal({
 
                             {watchType === 'FORMULA' && (
                                 <div>
-                                    <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Formule</label>
+                                    <label className="block text-xs font-bold text-brand-navy dark:text-brand-light uppercase tracking-wider mb-2">{t('auto.features.contracts.details.modals.editcontractsupplementmodal.825bffe9', { defaultValue: "Formule" })}</label>
                                     <input
                                         {...register('formula')}
-                                        placeholder="SGL = DBL"
-                                        className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-all text-sm font-mono"
+                                        placeholder={t('auto.features.contracts.details.modals.editcontractsupplementmodal.placeholder.a15a9fd1', { defaultValue: "SGL = DBL" })}
+                                        className="w-full px-4 py-2.5 bg-brand-light dark:bg-brand-slate/10 border border-brand-slate/20 rounded-xl focus:ring-2 focus:ring-brand-mint transition-all text-sm font-mono text-brand-navy dark:text-brand-light outline-none"
                                     />
                                 </div>
                             )}
 
                             {/* Mandatory */}
-                            <div className="flex items-center gap-3 p-3.5 bg-gray-50 rounded-xl border border-gray-100">
-                                <input
-                                    type="checkbox"
-                                    id="editIsMandatory"
-                                    {...register('isMandatory')}
-                                    className="w-4 h-4 text-indigo-600 border-gray-300 rounded-sm focus:ring-indigo-500 cursor-pointer"
-                                />
-                                <label htmlFor="editIsMandatory" className="text-xs font-bold text-gray-700 uppercase tracking-wider cursor-pointer">Supplément Obligatoire</label>
+                            <div className="flex items-center gap-3 p-3.5 bg-brand-light dark:bg-brand-slate/10 rounded-xl border border-brand-slate/20">
+                                <input type="checkbox" id="editIsMandatory" {...register('isMandatory')}
+                                    className="w-4 h-4 text-brand-mint border-brand-slate/30 rounded-xl focus:ring-brand-mint cursor-pointer" />
+                                <label htmlFor="editIsMandatory" className="text-xs font-bold text-brand-navy dark:text-brand-light uppercase tracking-wider cursor-pointer">{t('auto.features.contracts.details.modals.editcontractsupplementmodal.53080039', { defaultValue: "Supplément Obligatoire" })}</label>
                             </div>
 
                             {/* Specific Event Date */}
-                            <div className="grid grid-cols-2 gap-6 pt-4 border-t border-gray-100">
+                            <div className="grid grid-cols-2 gap-6 pt-4 border-t border-brand-slate/15 dark:border-brand-slate/20">
                                 <div className="col-span-2">
-                                    <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">
+                                    <label className="block text-xs font-bold text-brand-navy dark:text-brand-light uppercase tracking-wider mb-2">
                                         📅 Date Spécifique
-                                        <span className="text-gray-400 font-normal normal-case tracking-normal ml-2">(Optionnel — ex: Saint-Valentin)</span>
+                                        <span className="text-brand-slate/50 font-normal normal-case tracking-normal ml-2">{t('auto.features.contracts.details.modals.editcontractsupplementmodal.d579d911', { defaultValue: "(Optionnel — ex: Saint-Valentin)" })}</span>
                                     </label>
                                     <input
                                         type="date"
                                         {...register('specificDate')}
-                                        className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-all text-sm"
+                                        className="w-full px-4 py-2.5 bg-brand-light dark:bg-brand-slate/10 border border-brand-slate/20 rounded-xl focus:ring-2 focus:ring-brand-mint transition-all text-sm text-brand-navy dark:text-brand-light outline-none"
                                     />
-                                    <p className="text-[11px] text-gray-400 mt-1.5 font-medium">
+                                    <p className="text-[11px] text-brand-slate/60 mt-1.5 font-medium">
                                         Si renseignée, ce supplément sera auto-activé sur la période contenant cette date.
                                     </p>
                                 </div>
@@ -286,24 +271,16 @@ export default function EditContractSupplementModal({
 
                             {/* Room Targeting */}
                             {contractRooms.length > 0 && (
-                                <div className="pt-4 border-t border-gray-100">
-                                    <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-4 text-center">Chambres concernées</label>
+                                <div className="pt-4 border-t border-brand-slate/15 dark:border-brand-slate/20">
+                                    <label className="block text-xs font-bold text-brand-navy dark:text-brand-light uppercase tracking-wider mb-4 text-center">{t('auto.features.contracts.details.modals.editcontractsupplementmodal.75cec2bc', { defaultValue: "Chambres concernées" })}</label>
                                     <div className="grid grid-cols-2 gap-3">
                                         {contractRooms.map((room) => (
-                                            <label key={room.id} className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl border border-gray-200 hover:border-indigo-300 transition-all cursor-pointer group has-checked:bg-indigo-50/50 has-checked:border-indigo-200">
-                                                <input
-                                                    type="checkbox"
-                                                    checked={selectedRoomIds?.includes(room.id) ?? false}
-                                                    onChange={() => toggleRoom(room.id)}
-                                                    className="w-4 h-4 text-indigo-600 border-gray-300 rounded-sm focus:ring-indigo-500 cursor-pointer"
-                                                />
+                                            <label key={room.id} className="flex items-center gap-3 p-3 bg-brand-light dark:bg-brand-slate/10 rounded-xl border border-brand-slate/20 hover:border-brand-mint transition-all cursor-pointer group has-checked:bg-brand-mint/5 has-checked:border-brand-mint/40">
+                                                <input type="checkbox" checked={selectedRoomIds?.includes(room.id) ?? false} onChange={() => toggleRoom(room.id)}
+                                                    className="w-4 h-4 text-brand-mint border-brand-slate/30 rounded-xl focus:ring-brand-mint cursor-pointer" />
                                                 <div className="flex flex-col">
-                                                    <span className="text-xs font-bold text-gray-900 group-hover:text-indigo-600 transition-colors uppercase tracking-tight">
-                                                        {room.roomType?.code}
-                                                    </span>
-                                                    <span className="text-[10px] text-gray-400 font-medium truncate max-w-[180px]">
-                                                        {room.roomType?.name}
-                                                    </span>
+                                                    <span className="text-xs font-bold text-brand-navy dark:text-brand-light group-hover:text-brand-mint transition-colors uppercase tracking-tight">{room.roomType?.code}</span>
+                                                    <span className="text-[10px] text-brand-slate font-medium truncate max-w-[180px]">{room.roomType?.name}</span>
                                                 </div>
                                             </label>
                                         ))}
@@ -312,33 +289,14 @@ export default function EditContractSupplementModal({
                             )}
 
                             {/* Reminder */}
-                            <div className="bg-amber-50 rounded-xl p-4 border border-amber-100 flex items-center gap-3">
-                                <span className="p-1.5 bg-white rounded-lg text-amber-600 shadow-xs ring-1 ring-amber-200">
-                                    <Save size={14} />
-                                </span>
-                                <p className="text-[11px] font-bold text-amber-900 italic">
+                            <div className="bg-brand-slate/10 rounded-xl p-4 border border-brand-slate/30 flex items-center gap-3">
+                                <span className="text-lg">💡</span>
+                                <p className="text-[11px] font-bold text-brand-slate italic">
                                     💡 L'activation par période et les surcharges se gèrent directement dans la Grille.
                                 </p>
                             </div>
                         </div>
-                    </div>
-
-                    {/* ─── Footer ────────────────────────────────────────── */}
-                    <div className="p-6 bg-gray-50 border-t border-gray-100 sticky bottom-0 z-10 flex items-center justify-end gap-3 rounded-b-2xl">
-                        <button type="button" onClick={onClose} className="px-6 py-2.5 text-sm font-bold text-gray-500 hover:text-gray-700 transition-colors cursor-pointer">
-                            Annuler
-                        </button>
-                        <button
-                            type="submit"
-                            disabled={updateMutation.isPending || !isDirty}
-                            className="inline-flex items-center gap-2 px-8 py-2.5 bg-indigo-600 text-white text-sm font-bold rounded-xl hover:bg-indigo-700 transition-all shadow-md active:scale-95 disabled:opacity-50 disabled:grayscale cursor-pointer"
-                        >
-                            {updateMutation.isPending ? <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" /> : <Save size={18} />}
-                            Mettre à jour
-                        </button>
-                    </div>
-                </form>
             </div>
-        </div>
+        </ModalShell>
     );
 }

@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { contractEarlyBookingService } from '../services/contractEarlyBooking.service';
 import type { UpdateContractEarlyBookingPayload } from '../../catalog/early-bookings/types/early-bookings.types';
+import i18next from '../../../lib/i18n';
 
 export const contractEarlyBookingKeys = {
     all: (contractId: number) => ['contract-early-booking', contractId] as const,
@@ -21,7 +22,7 @@ export function useImportEarlyBooking(contractId: number) {
         mutationFn: (templateId: number) => contractEarlyBookingService.importFromTemplate(contractId, templateId),
         onSuccess: () => {
             qc.invalidateQueries({ queryKey: contractEarlyBookingKeys.all(contractId) });
-            toast.success('Early Booking importé avec succès');
+            toast.success(i18next.t('auto.features.contracts.hooks.usecontractearlybookings.toast.success.af1a198d', { defaultValue: "Early Booking importé avec succès" }));
         },
     });
 }
@@ -44,7 +45,7 @@ export function useDeleteContractEarlyBooking(contractId: number) {
         mutationFn: (ebId: number) => contractEarlyBookingService.delete(ebId),
         onSuccess: () => {
             qc.invalidateQueries({ queryKey: contractEarlyBookingKeys.all(contractId) });
-            toast.success('Early Booking supprimé du contrat');
+            toast.success(i18next.t('auto.features.contracts.hooks.usecontractearlybookings.toast.success.becac6d2', { defaultValue: "Early Booking supprimé du contrat" }));
         },
     });
 }

@@ -1,11 +1,11 @@
 import { useParams, useNavigate, Outlet } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useContract } from '../../hooks/useContracts';
 import { useHotel } from '../../../hotel/context/HotelContext';
 import type { Contract } from '../../types/contract.types';
 import ContractHeader from './ContractHeader';
 import ContractTabs from './ContractTabs';
 
-// Shared context type for all child tabs
 export interface ContractOutletContext {
     contract: Contract;
 }
@@ -13,44 +13,39 @@ export interface ContractOutletContext {
 export default function ContractDetailsLayout() {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
+    const { t } = useTranslation('common');
     const { currentHotel, isLoading: hotelLoading } = useHotel();
     const contractId = id ? Number(id) : undefined;
 
-    // Gate on hotel being ready so x-hotel-id header is present on refresh
     const { data: contract, isLoading, isError } = useContract(
         currentHotel ? contractId : undefined,
     );
 
-    // ─── Loading ──────────────────────────────────────────────────────
     if (isLoading || hotelLoading) {
         return (
-            <div className="p-8 flex items-center justify-center h-64">
-                <div className="animate-spin rounded-full h-8 w-8 border-2 border-indigo-600 border-t-transparent" />
+            <div className="p-4 md:p-6">
+                <div className="premium-surface flex h-64 items-center justify-center">
+                    <div className="h-9 w-9 animate-spin rounded-full border-2 border-brand-mint border-t-transparent" />
+                </div>
             </div>
         );
     }
 
-    // ─── Error ────────────────────────────────────────────────────────
     if (isError || !contract) {
         return (
-            <div className="p-8">
-                <div className="rounded-xl bg-red-50 border border-red-200 p-6 text-red-700 text-sm">
-                    Impossible de charger le contrat.
+            <div className="p-4 md:p-6">
+                <div className="premium-surface border-brand-slate/30 bg-brand-slate/10 p-6 text-sm text-brand-slate dark:border-brand-slate/30 dark:bg-brand-navy/80 dark:text-brand-light/75">
+                    {t('pages.contractDetails.loadError', { defaultValue: 'Unable to load contract.' })}
                 </div>
             </div>
         );
     }
 
     return (
-        <div className="flex flex-col min-h-full">
-            {/* ─── Header ─────────────────────────────────────────────── */}
+        <div className="flex min-h-full flex-col p-4 md:p-6">
             <ContractHeader contract={contract} onBack={() => navigate('/contracts')} />
-
-            {/* ─── Tabs Navigation ────────────────────────────────────── */}
             <ContractTabs />
-
-            {/* ─── Active Tab Content ─────────────────────────────────── */}
-            <div className="flex-1 p-8">
+            <div className="mt-6 flex-1">
                 <Outlet context={{ contract } satisfies ContractOutletContext} />
             </div>
         </div>

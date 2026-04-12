@@ -7,6 +7,7 @@ import {
     type UpdateContractCancellationRulePayload,
 } from '../services/cancellationTemplate.service';
 import { useHotel } from '../../../hotel/context/HotelContext';
+import i18next from '../../../../lib/i18n';
 
 export type { TemplateCancellationRule, CreateTemplateCancellationRulePayload, UpdateContractCancellationRulePayload };
 
@@ -46,7 +47,7 @@ export function useCreateTemplateCancellation() {
             templateCancellationService.create(currentHotel!.id, data),
         onSuccess: () => {
             qc.invalidateQueries({ queryKey: ['template-cancellations'] });
-            toast.success('Règle d\'annulation créée');
+            toast.success(i18next.t('auto.features.catalog.cancellation.hooks.usetemplatecancellations.toast.success.5a5e0e13', { defaultValue: "Règle d'annulation créée" }));
         },
     });
 }
@@ -59,7 +60,7 @@ export function useUpdateTemplateCancellation() {
             templateCancellationService.update(currentHotel!.id, id, data),
         onSuccess: () => {
             qc.invalidateQueries({ queryKey: ['template-cancellations'] });
-            toast.success('Règle d\'annulation mise à jour');
+            toast.success(i18next.t('auto.features.catalog.cancellation.hooks.usetemplatecancellations.toast.success.3796d5ab', { defaultValue: "Règle d'annulation mise à jour" }));
         },
     });
 }
@@ -71,7 +72,7 @@ export function useDeleteTemplateCancellation() {
         mutationFn: (id: number) => templateCancellationService.delete(currentHotel!.id, id),
         onSuccess: () => {
             qc.invalidateQueries({ queryKey: ['template-cancellations'] });
-            toast.success('Règle d\'annulation supprimée');
+            toast.success(i18next.t('auto.features.catalog.cancellation.hooks.usetemplatecancellations.toast.success.1ba0a2b4', { defaultValue: "Règle d'annulation supprimée" }));
         },
     });
 }
@@ -83,7 +84,7 @@ export function useRestoreTemplateCancellation() {
         mutationFn: (id: number) => templateCancellationService.restore(currentHotel!.id, id),
         onSuccess: () => {
             qc.invalidateQueries({ queryKey: ['template-cancellations'] });
-            toast.success('Règle d\'annulation restaurée');
+            toast.success(i18next.t('auto.features.catalog.cancellation.hooks.usetemplatecancellations.toast.success.6a8f511d', { defaultValue: "Règle d'annulation restaurée" }));
         },
     });
 }

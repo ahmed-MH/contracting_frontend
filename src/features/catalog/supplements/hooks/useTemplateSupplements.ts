@@ -7,6 +7,7 @@ import {
     type UpdateTemplateSupplementPayload,
 } from '../services/supplementTemplate.service';
 import { useHotel } from '../../../hotel/context/HotelContext';
+import i18next from '../../../../lib/i18n';
 
 export type { TemplateSupplement, CreateTemplateSupplementPayload, UpdateTemplateSupplementPayload };
 
@@ -47,7 +48,7 @@ export function useCreateTemplateSupplement() {
             templateSupplementService.create(data),
         onSuccess: () => {
             qc.invalidateQueries({ queryKey: templateSupplementKeys.all(currentHotel?.id) });
-            toast.success('Supplément créé');
+            toast.success(i18next.t('auto.features.catalog.supplements.hooks.usetemplatesupplements.toast.success.cae80751', { defaultValue: "Supplément créé" }));
         },
     });
 }
@@ -60,7 +61,7 @@ export function useUpdateTemplateSupplement() {
             templateSupplementService.update(id, data),
         onSuccess: () => {
             qc.invalidateQueries({ queryKey: templateSupplementKeys.all(currentHotel?.id) });
-            toast.success('Supplément mis à jour');
+            toast.success(i18next.t('auto.features.catalog.supplements.hooks.usetemplatesupplements.toast.success.dfd6e11b', { defaultValue: "Supplément mis à jour" }));
         },
     });
 }
@@ -72,7 +73,7 @@ export function useDeleteTemplateSupplement() {
         mutationFn: (id: number) => templateSupplementService.delete(id),
         onSuccess: () => {
             qc.invalidateQueries({ queryKey: templateSupplementKeys.all(currentHotel?.id) });
-            toast.success('Supplément archivé');
+            toast.success(i18next.t('auto.features.catalog.supplements.hooks.usetemplatesupplements.toast.success.df1b8517', { defaultValue: "Supplément archivé" }));
         },
     });
 }
@@ -84,7 +85,7 @@ export function useRestoreTemplateSupplement() {
         mutationFn: (id: number) => templateSupplementService.restore(id),
         onSuccess: () => {
             qc.invalidateQueries({ queryKey: templateSupplementKeys.all(currentHotel?.id) });
-            toast.success('Supplément restauré');
+            toast.success(i18next.t('auto.features.catalog.supplements.hooks.usetemplatesupplements.toast.success.54d6cf37', { defaultValue: "Supplément restauré" }));
         },
     });
 }

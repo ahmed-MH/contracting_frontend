@@ -5,6 +5,7 @@ import type {
     UpdateExchangeRatePayload,
 } from '../types/exchange-rate.types';
 import { toast } from 'sonner';
+import i18next from '../../../lib/i18n';
 
 const EXCHANGE_RATES_KEY = 'exchangeRates';
 
@@ -23,10 +24,10 @@ export function useCreateExchangeRate(hotelId: number, onSuccess?: () => void) {
         mutationFn: (data: CreateExchangeRatePayload) => exchangeRateService.createExchangeRate(hotelId, data),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: [EXCHANGE_RATES_KEY, hotelId] });
-            toast.success('Taux de change ajouté avec succès');
+            toast.success(i18next.t('auto.features.hotel.hooks.useexchangerates.toast.success.1908288d', { defaultValue: "Taux de change ajouté avec succès" }));
             onSuccess?.();
         },
-        onError: () => toast.error('Erreur lors de l\'ajout du taux de change'),
+        onError: () => toast.error(i18next.t('auto.features.hotel.hooks.useexchangerates.toast.error.d3e3c941', { defaultValue: "Erreur lors de l'ajout du taux de change" })),
     });
 }
 
@@ -38,10 +39,10 @@ export function useUpdateExchangeRate(hotelId: number, onSuccess?: () => void) {
             exchangeRateService.updateExchangeRate(hotelId, id, data),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: [EXCHANGE_RATES_KEY, hotelId] });
-            toast.success('Taux de change mis à jour avec succès');
+            toast.success(i18next.t('auto.features.hotel.hooks.useexchangerates.toast.success.4438ce0f', { defaultValue: "Taux de change mis à jour avec succès" }));
             onSuccess?.();
         },
-        onError: () => toast.error('Erreur lors de la mise à jour du taux de change'),
+        onError: () => toast.error(i18next.t('auto.features.hotel.hooks.useexchangerates.toast.error.b8ebd596', { defaultValue: "Erreur lors de la mise à jour du taux de change" })),
     });
 }
 
@@ -52,8 +53,8 @@ export function useDeleteExchangeRate(hotelId: number) {
         mutationFn: (id: number) => exchangeRateService.deleteExchangeRate(hotelId, id),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: [EXCHANGE_RATES_KEY, hotelId] });
-            toast.success('Taux de change supprimé avec succès');
+            toast.success(i18next.t('auto.features.hotel.hooks.useexchangerates.toast.success.d7c15eaf', { defaultValue: "Taux de change supprimé avec succès" }));
         },
-        onError: () => toast.error('Erreur lors de la suppression du taux de change'),
+        onError: () => toast.error(i18next.t('auto.features.hotel.hooks.useexchangerates.toast.error.7bb54bec', { defaultValue: "Erreur lors de la suppression du taux de change" })),
     });
 }

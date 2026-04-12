@@ -3,6 +3,7 @@ import { toast } from 'sonner';
 import { roomService } from '../services/room.service';
 import type { RoomType, CreateRoomTypePayload, UpdateRoomTypePayload } from '../types/room.types';
 import { useHotel } from '../../hotel/context/HotelContext';
+import i18next from '../../../lib/i18n';
 
 export type { RoomType, CreateRoomTypePayload, UpdateRoomTypePayload };
 
@@ -42,7 +43,7 @@ export function useCreateRoomType(onSuccess?: () => void) {
         mutationFn: roomService.createRoomType,
         onSuccess: () => {
             qc.invalidateQueries({ queryKey: roomTypeKeys.all(currentHotel?.id) });
-            toast.success('Chambre créée avec succès');
+            toast.success(i18next.t('auto.features.rooms.hooks.useroomtypes.toast.success.bd978808', { defaultValue: "Chambre créée avec succès" }));
             onSuccess?.();
         },
     });
@@ -57,7 +58,7 @@ export function useUpdateRoomType(onSuccess?: () => void) {
             roomService.updateRoomType(id, data),
         onSuccess: () => {
             qc.invalidateQueries({ queryKey: roomTypeKeys.all(currentHotel?.id) });
-            toast.success('Chambre mise à jour');
+            toast.success(i18next.t('auto.features.rooms.hooks.useroomtypes.toast.success.94e7e417', { defaultValue: "Chambre mise à jour" }));
             onSuccess?.();
         },
     });
@@ -73,7 +74,7 @@ export function useDeleteRoomType() {
             const hid = currentHotel?.id;
             qc.invalidateQueries({ queryKey: roomTypeKeys.all(hid) });
             qc.invalidateQueries({ queryKey: roomTypeKeys.archived(hid) });
-            toast.success('Chambre archivée avec succès');
+            toast.success(i18next.t('auto.features.rooms.hooks.useroomtypes.toast.success.d36e3358', { defaultValue: "Chambre archivée avec succès" }));
         },
     });
 }
@@ -88,7 +89,7 @@ export function useRestoreRoomType() {
             const hid = currentHotel?.id;
             qc.invalidateQueries({ queryKey: roomTypeKeys.all(hid) });
             qc.invalidateQueries({ queryKey: roomTypeKeys.archived(hid) });
-            toast.success('Chambre restaurée avec succès');
+            toast.success(i18next.t('auto.features.rooms.hooks.useroomtypes.toast.success.55744ca1', { defaultValue: "Chambre restaurée avec succès" }));
         },
     });
 }

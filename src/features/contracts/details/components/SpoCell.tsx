@@ -1,5 +1,6 @@
 import { useState, useCallback, useRef, memo } from 'react';
 import { Percent, Wallet, Sun } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 interface CellData {
     active: boolean;
@@ -29,6 +30,8 @@ const SpoCell = memo(function SpoCell({
     isContractedPeriod,
     onChange,
 }: SpoCellProps) {
+    const { t } = useTranslation('common');
+    void t;
     const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const [localValue, setLocalValue] = useState(cell.overrideValue);
 
@@ -47,8 +50,8 @@ const SpoCell = memo(function SpoCell({
     // ── Pre-disabled state (not contracted) ──────────────────────
     if (!isContractedPeriod) {
         return (
-            <div className="flex items-center justify-center h-[68px] bg-gray-100/50 opacity-50 cursor-not-allowed" title="Chambres cible non actives">
-                <span className="text-[10px] text-gray-400 italic">Inactif</span>
+            <div className="flex items-center justify-center h-[68px] bg-brand-light opacity-50 cursor-not-allowed" title={t('auto.features.contracts.details.components.spocell.title.9b640f42', { defaultValue: "Chambres cible non actives" })}>
+                <span className="text-[10px] text-brand-slate italic">{t('auto.features.contracts.details.components.spocell.1ca2c9a7', { defaultValue: "Inactif" })}</span>
             </div>
         );
     }
@@ -56,11 +59,11 @@ const SpoCell = memo(function SpoCell({
     // ── Inactive state ────────────────────────────────────────────────
     if (!cell.active) {
         return (
-            <div className="flex items-center justify-between px-3 h-[68px] group/cell bg-gray-50/80 hover:bg-gray-100/60 transition-colors">
-                <span className="text-[11px] text-gray-400 italic select-none">Non appliqué</span>
+            <div className="flex items-center justify-between px-3 h-[68px] group/cell bg-brand-light hover:bg-brand-light transition-colors">
+                <span className="text-[11px] text-brand-slate italic select-none">{t('auto.features.contracts.details.components.spocell.edb8534c', { defaultValue: "Non appliqué" })}</span>
                 <button
                     onClick={handleToggle}
-                    className="relative w-8 h-4 rounded-full bg-gray-300 hover:bg-indigo-400 transition-colors cursor-pointer opacity-0 group-hover/cell:opacity-100 shrink-0"
+                    className="relative w-8 h-4 rounded-full bg-brand-slate/10 hover:bg-brand-mint/10 transition-colors cursor-pointer opacity-0 group-hover/cell:opacity-100 shrink-0"
                 >
                     <span className="block w-3 h-3 rounded-full bg-white absolute top-0.5 left-0.5 shadow-sm" />
                 </button>
@@ -75,15 +78,15 @@ const SpoCell = memo(function SpoCell({
                           : `${baseValue} TND`;
 
     return (
-        <div className="flex flex-col justify-center gap-1.5 px-3 h-[68px] group/cell hover:bg-indigo-50/30 transition-colors">
+        <div className="flex flex-col justify-center gap-1.5 px-3 h-[68px] group/cell hover:bg-brand-mint/10 transition-colors">
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-1">
-                    <span className="text-[10px] font-bold text-indigo-500 uppercase tracking-tighter">Actif</span>
-                    {cell.overrideValue !== '' && <span className="w-1 h-1 rounded-full bg-indigo-500" />}
+                    <span className="text-[10px] font-bold text-brand-mint uppercase tracking-tighter">{t('auto.features.contracts.details.components.spocell.808b2a32', { defaultValue: "Actif" })}</span>
+                    {cell.overrideValue !== '' && <span className="w-1 h-1 rounded-full bg-brand-mint" />}
                 </div>
                 <button
                     onClick={handleToggle}
-                    className="relative w-8 h-4 rounded-full bg-indigo-500 hover:bg-red-400 transition-colors cursor-pointer opacity-0 group-hover/cell:opacity-100 shrink-0"
+                    className="relative w-8 h-4 rounded-full bg-brand-mint hover:bg-brand-slate/20 transition-colors cursor-pointer opacity-0 group-hover/cell:opacity-100 shrink-0"
                 >
                     <span className="block w-3 h-3 rounded-full bg-white absolute top-0.5 right-0.5 shadow-sm" />
                 </button>
@@ -98,19 +101,19 @@ const SpoCell = memo(function SpoCell({
                     onChange={(e) => canOverride && handleValueChange(e.target.value)}
                     placeholder={canOverride ? placeholderText : ''}
                     disabled={!canOverride}
-                    className={`block w-full px-2 py-1 text-xs rounded-md border text-right transition-all outline-none
-                        ${canOverride ? 'focus:ring-1 focus:ring-indigo-400 focus:border-indigo-400' : 'cursor-default border-transparent bg-transparent text-gray-400'}
-                        ${localValue !== '' ? 'border-indigo-300 text-indigo-700 bg-indigo-50/70 font-semibold' : 'border-gray-200 text-gray-500 bg-white'}
+                    className={`block w-full px-2 py-1 text-xs rounded-xl border text-right transition-all outline-none
+                        ${canOverride ? 'focus:ring-1 focus:ring-brand-mint focus:border-brand-mint/30' : 'cursor-default border-transparent bg-transparent text-brand-slate'}
+                        ${localValue !== '' ? 'border-brand-mint/30 text-brand-mint bg-brand-mint/10 font-semibold' : 'border-brand-slate/20 text-brand-slate bg-white'}
                     `}
                 />
                 {canOverride && benefitType === 'PERCENTAGE_DISCOUNT' && (
-                    <Percent size={10} className="absolute left-2 top-1/2 -translate-y-1/2 text-gray-300" />
+                    <Percent size={10} className="absolute left-2 top-1/2 -translate-y-1/2 text-brand-slate" />
                 )}
                 {canOverride && benefitType === 'FIXED_DISCOUNT' && (
-                    <Wallet size={10} className="absolute left-2 top-1/2 -translate-y-1/2 text-gray-300" />
+                    <Wallet size={10} className="absolute left-2 top-1/2 -translate-y-1/2 text-brand-slate" />
                 )}
                 {benefitType === 'FREE_NIGHTS' && (
-                    <Sun size={10} className="absolute left-2 top-1/2 -translate-y-1/2 text-orange-400" />
+                    <Sun size={10} className="absolute left-2 top-1/2 -translate-y-1/2 text-brand-mint" />
                 )}
             </div>
         </div>

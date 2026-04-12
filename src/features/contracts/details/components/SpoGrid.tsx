@@ -1,11 +1,14 @@
-import { useState, useCallback, useEffect } from 'react';
-import { Save, CheckCircle2, Pencil, Trash2 } from 'lucide-react';
+import { useState, useCallback, useEffect, useMemo } from 'react';
+import { Save, Pencil, Trash2, Gift, Info } from 'lucide-react';
 import { toast } from 'sonner';
 import type { ContractSpo, UpdateContractSpoPayload } from '../../../catalog/spos/types/spos.types';
 import type { Period } from '../../../contracts/types/contract.types';
 import type { ContractLineData } from '../../services/contract.service';
 import { contractSpoService } from '../../services/contractSpo.service';
 import SpoCell from './SpoCell';
+import { isEqual } from 'lodash-es';
+import { useTranslation } from 'react-i18next';
+import i18next from '../../../../lib/i18n';
 
 interface Props {
     contractId: number;
@@ -70,104 +73,136 @@ function hasContractedRoomsInPeriod(
 export default function SpoGrid({
     contractId, spos, periods, onSaved, onEdit, onDelete, isDeleting, contractLines,
 }: Props) {
+    const { t } = useTranslation('common');
+    void t;
     const sortedPeriods = [...periods].sort(
         (a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime(),
     );
 
-    const [matrix, setMatrix] = useState<Matrix>(() => buildInitialMatrix(spos));
+    const [initialMatrix, setInitialMatrix] = useState<Matrix>(() => buildInitialMatrix(spos));
+    const [editedMatrix, setEditedMatrix] = useState<Matrix>(initialMatrix);
 
     useEffect(() => {
-        setMatrix(buildInitialMatrix(spos));
+        const newMatrix = buildInitialMatrix(spos);
+        setInitialMatrix(newMatrix);
+        setEditedMatrix(newMatrix);
     }, [spos]);
-    const [savingId, setSavingId] = useState<number | null>(null);
-    const [savedIds, setSavedIds] = useState<Set<number>>(new Set());
 
-    const handleCellChange = useCallback(
-        (spoId: number, periodId: number, patch: Partial<CellData>) => {
-            setMatrix((prev) => ({
-                ...prev,
-                [spoId]: {
-                    ...prev[spoId],
-                    [periodId]: { ...(prev[spoId]?.[periodId] ?? { active: false, overrideValue: '' }), ...patch },
-                },
-            }));
-            setSavedIds((prev) => { const n = new Set(prev); n.delete(spoId); return n; });
-        },
-        [],
-    );
+    const [isSaving, setIsSaving] = useState(false);
 
-    const handleSaveRow = async (spo: ContractSpo) => {
-        setSavingId(spo.id);
+    const isDirty = useMemo(() => !isEqual(initialMatrix, editedMatrix), [initialMatrix, editedMatrix]);
+
+    const handleCellChange = useCallback((spoId: number, periodId: number, patch: Partial<CellData>) => {
+        setEditedMatrix((prev) => {
+            const currentCell = prev[spoId]?.[periodId] ?? { active: false, overrideValue: '' };
+            const newMatrix = { ...prev };
+            newMatrix[spoId] = { ...prev[spoId], [periodId]: { ...currentCell, ...patch } };
+            return newMatrix;
+        });
+    }, []);
+
+    const handleSaveAll = async () => {
+        setIsSaving(true);
         try {
-            // Anti-race condition delay
-            await new Promise(resolve => setTimeout(resolve, 500));
+            const modifiedSpoIds = Object.keys(editedMatrix)
+                .map(Number)
+                .filter(spoId => !isEqual(initialMatrix[spoId], editedMatrix[spoId]));
 
-            const cellMap = matrix[spo.id] ?? {};
-            const applicablePeriods = Object.entries(cellMap)
-                .filter(([, c]) => c.active)
-                .map(([pidStr, c]) => ({
-                    periodId: Number(pidStr),
-                    overrideValue: c.overrideValue !== '' && !isNaN(Number(c.overrideValue))
-                        ? Number(c.overrideValue)
-                        : null,
-                }));
+            if (modifiedSpoIds.length === 0) {
+                toast.info(i18next.t('auto.features.contracts.details.components.spogrid.toast.info.148acb8b', { defaultValue: "Aucune modification à enregistrer." }));
+                return;
+            }
 
-            const payload: UpdateContractSpoPayload = {
-                applicablePeriods
-            };
+            const savePromises = modifiedSpoIds.map(spoId => {
+                const cellMap = editedMatrix[spoId] ?? {};
+                const applicablePeriods = Object.entries(cellMap)
+                    .filter(([, c]) => c.active)
+                    .map(([pidStr, c]) => ({
+                        periodId: Number(pidStr),
+                        overrideValue: c.overrideValue !== '' && !isNaN(Number(c.overrideValue))
+                            ? Number(c.overrideValue)
+                            : null,
+                    }));
 
-            await contractSpoService.update(contractId, spo.id, payload);
-            setSavedIds((prev) => new Set(prev).add(spo.id));
+                const payload: UpdateContractSpoPayload = {
+                    applicablePeriods
+                };
+
+                return contractSpoService.update(contractId, spoId, payload);
+            });
+
+            await Promise.all(savePromises);
+
+            setInitialMatrix(editedMatrix);
             onSaved();
-            toast.success(`Offre "${spo.name}" sauvegardée`);
+            toast.success(`${modifiedSpoIds.length} offre(s) spéciale(s) sauvegardée(s)`);
         } catch (err: any) {
             const msg = err?.response?.data?.message;
             toast.error(Array.isArray(msg) ? msg.join(', ') : (msg ?? 'Erreur lors de la sauvegarde'));
         } finally {
-            setSavingId(null);
+            setIsSaving(false);
         }
     };
 
     if (spos.length === 0) return null;
 
     return (
-        <div className="bg-white shadow-sm ring-1 ring-gray-900/5 rounded-xl overflow-hidden mt-6">
-            <div className="px-5 py-3 border-b border-indigo-100 flex items-center gap-3 bg-linear-to-r from-indigo-50/80 to-purple-50/60">
-                <span className="text-xs font-bold text-indigo-600 uppercase tracking-widest">
-                    Matrice Saisonnière
-                </span>
-                <span className="text-xs text-gray-400">
-                    — Activez / désactivez une offre par période · Surchargez la remise si besoin
-                </span>
+        <div className="bg-white shadow-sm ring-1 ring-brand-mint rounded-xl overflow-hidden mt-6">
+            {/* ── Header ──────────────────────────────────────────────── */}
+            <div className="px-5 py-3 border-b border-brand-mint/30 flex items-center justify-between bg-linear-to-r from-brand-mint to-brand-mint">
+                <div className="flex items-center gap-3">
+                    <span className="bg-brand-mint p-1 rounded-xl text-white">
+                        <Gift size={14} />
+                    </span>
+                    <span className="text-xs font-bold text-brand-mint uppercase tracking-widest">
+                        Matrice d'Offres Spéciales (SPO)
+                    </span>
+                </div>
+                <div className='flex items-center gap-4'>
+                    <div className="flex items-center gap-2 group cursor-help">
+                        <Info size={14} className="text-brand-mint group-hover:text-brand-mint transition-colors" />
+                        <span className="text-[10px] text-brand-slate font-medium">
+                            Activez par période & surchargez la remise si nécessaire
+                        </span>
+                    </div>
+
+                    <button
+                        onClick={handleSaveAll}
+                        disabled={!isDirty || isSaving}
+                        className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-bold rounded-xl bg-brand-mint text-white hover:bg-brand-mint shadow-md shadow-brand-mint/20 disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none transition-all"
+                    >
+                        <Save size={13} />
+                        {isSaving ? 'Enregistrement...' : 'Enregistrer les modifications'}
+                    </button>
+                </div>
             </div>
 
             <div className="overflow-x-auto">
                 <table className="w-full text-sm text-left border-collapse">
                     <thead>
-                        <tr className="bg-gray-50 border-b-2 border-gray-200">
-                            <th className="px-4 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider sticky left-0 bg-gray-50 z-10 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)] min-w-[240px]">
+                        <tr className="bg-brand-light border-b-2 border-brand-slate/20">
+                            <th className="px-4 py-3 text-xs font-bold text-brand-slate uppercase sticky left-0 bg-brand-light z-10 shadow-md min-w-[240px]">
                                 Offre Spéciale
                             </th>
-                            <th className="px-4 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider min-w-[140px]">
+                            <th className="px-4 py-3 text-xs font-bold text-brand-slate uppercase min-w-[140px]">
                                 Configuration
                             </th>
                             {sortedPeriods.map((period) => (
-                                <th key={period.id} className="px-4 py-3 text-center border-l border-gray-100 min-w-[140px]">
-                                    <span className="block text-[11px] font-bold text-gray-700 uppercase">{period.name}</span>
-                                    <span className="text-[9px] text-gray-400 font-medium uppercase mt-0.5 tracking-tighter">
+                                <th key={period.id} className="px-4 py-3 text-center border-l border-brand-slate/20 min-w-[140px]">
+                                    <span className="block text-[11px] font-bold text-brand-navy uppercase">{period.name}</span>
+                                    <span className="text-[9px] text-brand-slate font-medium uppercase mt-0.5 tracking-tighter">
                                         {new Date(period.startDate).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short' })} → {new Date(period.endDate).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short' })}
                                     </span>
                                 </th>
                             ))}
-                            <th className="px-4 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider text-center border-l border-gray-200 min-w-[120px]">
+                            <th className="px-4 py-3 text-xs font-bold text-brand-slate uppercase min-w-[120px] text-center border-l border-brand-slate/20 sticky right-0 bg-brand-light shadow-md">
                                 Actions
                             </th>
                         </tr>
                     </thead>
-                    <tbody className="divide-y divide-gray-100">
+                    <tbody className="divide-y divide-brand-slate/10">
                         {spos.map((spo) => {
-                            const isSaving = savingId === spo.id;
-                            const isSaved = savedIds.has(spo.id);
+                            const isRowDirty = !isEqual(initialMatrix[spo.id], editedMatrix[spo.id]);
                             const roomCodes = (spo.applicableContractRooms ?? []).map(r => r.contractRoom?.roomType?.code || '??');
                             const boardCodes = (spo.applicableArrangements ?? []).map(a => a.arrangement?.code || '??');
 
@@ -176,18 +211,21 @@ export default function SpoGrid({
                             const effectiveValue = (spo.value && Number(spo.value) !== 0) ? spo.value : (isDiscount ? (spo.benefitValue ?? 0) : spo.value);
 
                             return (
-                                <tr key={spo.id} className="group hover:bg-slate-50/40 transition-colors">
-                                    <td className="px-4 py-4 sticky left-0 bg-white z-10 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">
+                                <tr key={spo.id} className="group hover:bg-brand-light transition-colors">
+                                    <td className="px-4 py-4 sticky left-0 bg-white z-10 shadow-md group-hover:bg-brand-light transition-colors">
                                         <div className="flex flex-col gap-1.5">
-                                            <span className="font-bold text-gray-900 text-sm leading-none">{spo.name}</span>
+                                            <div className="flex items-center gap-2">
+                                                <span className="font-bold text-brand-navy text-sm leading-none">{spo.name}</span>
+                                                {isRowDirty && <span className='w-2 h-2 rounded-full bg-brand-slate/20' title='Modifications non enregistrées'></span>}
+                                            </div>
                                             <div className="flex flex-wrap gap-1 mt-1">
                                                 {roomCodes.length > 0 ? (
-                                                    <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-gray-100 text-[10px] font-mono font-bold text-gray-600 border border-gray-200 uppercase">
+                                                    <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-brand-light text-[10px] font-mono font-bold text-brand-slate border border-brand-slate/20 uppercase">
                                                         🏨 {roomCodes.join(', ')}
                                                     </span>
-                                                ) : <span className="text-[10px] text-gray-400 italic">Toutes chambres</span>}
+                                                ) : <span className="text-[10px] text-brand-slate italic">{t('auto.features.contracts.details.components.spogrid.3f2fb0bf', { defaultValue: "Toutes chambres" })}</span>}
                                                 {boardCodes.length > 0 && (
-                                                    <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-amber-50 text-[10px] font-mono font-bold text-amber-600 border border-amber-100 uppercase">
+                                                    <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-brand-slate/10 text-[10px] font-mono font-bold text-brand-slate border border-brand-slate/30 uppercase">
                                                         🍽️ {boardCodes.join(', ')}
                                                     </span>
                                                 )}
@@ -198,20 +236,20 @@ export default function SpoGrid({
                                     <td className="px-4 py-4">
                                         <div className="flex flex-col gap-1">
                                             <div className="flex items-center gap-1.5">
-                                                <span className="text-[10px] font-bold text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded uppercase">{spo.conditionType}</span>
-                                                {spo.conditionValue != null && <span className="text-xs font-mono font-bold text-gray-600">[{spo.conditionValue}]</span>}
+                                                <span className="text-[10px] font-bold text-brand-slate bg-brand-slate/10 px-1.5 py-0.5 rounded uppercase">{spo.conditionType}</span>
+                                                {spo.conditionValue != null && <span className="text-xs font-mono font-bold text-brand-slate">[{spo.conditionValue}]</span>}
                                             </div>
                                             <div className="flex flex-col gap-0.5">
                                                 <div className="flex items-center gap-1.5">
-                                                    <span className="text-[10px] font-bold text-indigo-600 bg-indigo-50 px-1.5 py-0.5 rounded uppercase leading-none">
+                                                    <span className="text-[10px] font-bold text-brand-mint bg-brand-mint/10 px-1.5 py-0.5 rounded uppercase leading-none">
                                                         {BENEFIT_LABELS[spo.benefitType] || spo.benefitType}
                                                     </span>
-                                                    <span className="text-xs font-mono font-bold text-gray-900">
+                                                    <span className="text-xs font-mono font-bold text-brand-navy">
                                                         {spo.benefitType === 'FREE_NIGHTS' ? `${spo.stayNights}=${spo.payNights}` : `${effectiveValue}${spo.benefitType === 'FIXED_DISCOUNT' ? ' TND' : '%'}`}
                                                     </span>
                                                 </div>
                                                 {spo.benefitType === 'FIXED_DISCOUNT' && (
-                                                    <span className="text-[9px] text-gray-400 font-medium ml-1">
+                                                    <span className="text-[9px] text-brand-slate font-medium ml-1">
                                                         ↳ {APP_LABELS[spo.applicationType] ?? spo.applicationType}
                                                     </span>
                                                 )}
@@ -220,10 +258,10 @@ export default function SpoGrid({
                                     </td>
 
                                     {sortedPeriods.map((period) => {
-                                        const cellData = matrix[spo.id]?.[period.id] ?? { active: false, overrideValue: '' };
+                                        const cellData = editedMatrix[spo.id]?.[period.id] ?? { active: false, overrideValue: '' };
                                         const isContracted = hasContractedRoomsInPeriod(spo, period.id, contractLines);
                                         return (
-                                            <td key={period.id} className={`p-0 border-l border-gray-100 ${!isContracted ? 'bg-gray-100/30' : ''}`}>
+                                            <td key={period.id} className={`p-0 border-l border-brand-slate/20 ${!isContracted ? 'bg-brand-light' : ''}`}>
                                                 <SpoCell
                                                     spoId={spo.id}
                                                     periodId={period.id}
@@ -233,35 +271,20 @@ export default function SpoGrid({
                                                     stayNights={spo.stayNights}
                                                     payNights={spo.payNights}
                                                     isContractedPeriod={isContracted}
-                                                    onChange={(sId, pId, patch) => handleCellChange(sId, pId, patch)}
+                                                    onChange={handleCellChange}
                                                 />
                                             </td>
                                         );
                                     })}
 
-                                    <td className="px-4 py-4 border-l border-gray-100 text-center">
-                                        <div className="flex flex-col items-center gap-2">
-                                            {isSaved ? (
-                                                <span className="inline-flex items-center gap-1 text-emerald-600 text-xs font-bold bg-emerald-50 px-2 py-1 rounded-lg">
-                                                    <CheckCircle2 size={12} /> Sauvé
-                                                </span>
-                                            ) : (
-                                                <button
-                                                    onClick={() => handleSaveRow(spo)}
-                                                    disabled={isSaving}
-                                                    className="w-full flex items-center justify-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 shadow-sm disabled:opacity-50 transition-all cursor-pointer"
-                                                >
-                                                    <Save size={12} /> {isSaving ? '...' : 'Sauver'}
-                                                </button>
-                                            )}
-                                            <div className="flex items-center gap-1">
-                                                <button onClick={() => onEdit(spo)} className="p-1.5 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors cursor-pointer" title="Modifier la coquille">
-                                                    <Pencil size={14} />
-                                                </button>
-                                                <button onClick={() => onDelete(spo)} disabled={isDeleting} className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors cursor-pointer disabled:opacity-50" title="Supprimer l'offre">
-                                                    <Trash2 size={14} />
-                                                </button>
-                                            </div>
+                                    <td className="px-4 py-4 border-l border-brand-slate/20 text-center sticky right-0 bg-white group-hover:bg-brand-light transition-colors shadow-md">
+                                        <div className="flex items-center justify-center gap-1 opacity-60 group-hover:opacity-100 transition-opacity">
+                                            <button onClick={() => onEdit(spo)} className="p-1 px-1.5 rounded-xl text-brand-slate hover:text-brand-mint hover:bg-brand-mint/10 transition-colors cursor-pointer" title={t('auto.features.contracts.details.components.spogrid.title.be88e85a', { defaultValue: "Modifier la coquille" })}>
+                                                <Pencil size={12} />
+                                            </button>
+                                            <button onClick={() => onDelete(spo)} disabled={isDeleting} className="p-1 px-1.5 rounded-xl text-brand-slate hover:text-brand-slate hover:bg-brand-slate/10 transition-colors cursor-pointer disabled:opacity-50" title={t('auto.features.contracts.details.components.spogrid.title.32f0bf50', { defaultValue: "Supprimer l'offre" })}>
+                                                <Trash2 size={12} />
+                                            </button>
                                         </div>
                                     </td>
                                 </tr>
@@ -271,20 +294,25 @@ export default function SpoGrid({
                 </table>
             </div>
 
-            <div className="px-5 py-2.5 bg-gray-50 border-t border-gray-100 flex items-center gap-5 text-[11px] text-gray-500">
-                <span className="flex items-center gap-1.5">
-                    <span className="w-2 h-2 rounded-full bg-gray-300 shrink-0" />
+            <div className="px-5 py-3 bg-brand-light border-t border-brand-slate/20 flex items-center gap-6 text-[10px] text-brand-slate font-medium">
+                <span className="flex items-center gap-2">
+                    <span className="w-2.5 h-2.5 rounded-full bg-brand-slate/10" />
                     Non appliqué
                 </span>
-                <span className="flex items-center gap-1.5">
-                    <span className="w-2 h-2 rounded-full bg-indigo-500 shrink-0" />
-                    Actif · base héritée
+                <span className="flex items-center gap-2">
+                    <span className="w-2.5 h-2.5 rounded-full bg-brand-mint" />
+                    Valeur par défaut héritée
                 </span>
-                <span className="flex items-center gap-1.5">
-                    <span className="w-2 h-2 rounded-full bg-indigo-500 ring-2 ring-indigo-200 shrink-0" />
-                    Actif · valeur surchargée
+                <span className="flex items-center gap-2">
+                    <span className="w-2.5 h-2.5 rounded-full bg-brand-mint ring-4 ring-brand-mint" />
+                    Valeur surchargée
+                </span>
+                 <span className="flex items-center gap-2 font-bold">
+                    <span className="w-2.5 h-2.5 rounded-full bg-brand-slate/20" />
+                    Modification non enregistrée
                 </span>
             </div>
         </div>
     );
 }
+

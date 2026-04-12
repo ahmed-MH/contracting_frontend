@@ -7,6 +7,7 @@ import type {
     ContractReduction,
     UpdateContractReductionPayload
 } from '../../catalog/reductions/types/reductions.types';
+import i18next from '../../../lib/i18n';
 
 export type { ContractReduction, UpdateContractReductionPayload };
 
@@ -30,7 +31,7 @@ export function useImportReduction(contractId: number) {
             contractReductionService.importFromTemplate(contractId, templateId),
         onSuccess: () => {
             qc.invalidateQueries({ queryKey: CONTRACT_REDUCTION_KEYS.byContract(contractId) });
-            toast.success('Réduction importée dans le contrat');
+            toast.success(i18next.t('auto.features.contracts.hooks.usecontractreductions.toast.success.ab09445a', { defaultValue: "Réduction importée dans le contrat" }));
         },
     });
 }
@@ -54,7 +55,7 @@ export function useDeleteContractReduction(contractId: number) {
             contractReductionService.delete(contractId, reductionId),
         onSuccess: () => {
             qc.invalidateQueries({ queryKey: CONTRACT_REDUCTION_KEYS.byContract(contractId) });
-            toast.success('Réduction supprimée du contrat');
+            toast.success(i18next.t('auto.features.contracts.hooks.usecontractreductions.toast.success.1bacf088', { defaultValue: "Réduction supprimée du contrat" }));
         },
     });
 }

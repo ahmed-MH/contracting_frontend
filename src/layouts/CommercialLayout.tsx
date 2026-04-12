@@ -1,258 +1,127 @@
-import { useState } from 'react';
-import { NavLink, Outlet, useNavigate } from 'react-router-dom';
-import {
-    Hotel,
-    BedDouble,
-    UtensilsCrossed,
-    Package,
-    Baby,
-    Users,
-    FileText,
-    ChevronRight,
-    ChevronsUpDown,
-    Shield,
-    LogOut,
-    Contact,
-    CalendarCheck,
-    PanelLeftClose,
-    PanelLeftOpen,
-    Gift,
-    ShieldAlert,
-    Calculator
-} from 'lucide-react';
+import { NavLink, Outlet, useLocation } from 'react-router-dom';
 import { clsx } from 'clsx';
-import { useHotel } from '../features/hotel/context/HotelContext';
-import { useAuth } from '../features/auth/context/AuthContext';
-
-interface NavItem {
-    label: string;
-    to: string;
-    icon: React.ReactNode;
-}
-
-const menuSections: { title: string; items: NavItem[] }[] = [
-    {
-        title: 'Mon Produit',
-        items: [
-            { label: 'Hôtel', to: '/product/hotel', icon: <Hotel size={18} /> },
-            { label: 'Chambres', to: '/product/rooms', icon: <BedDouble size={18} /> },
-            { label: 'Arrangements', to: '/product/arrangements', icon: <UtensilsCrossed size={18} /> },
-            { label: 'Suppléments', to: '/product/supplements', icon: <Package size={18} /> },
-            { label: 'Offres Spéciales', to: '/product/spos', icon: <Gift size={18} /> },
-            { label: 'Réductions', to: '/product/reductions', icon: <Baby size={18} /> },
-            { label: 'Monoparental', to: '/product/monoparental', icon: <Contact size={18} /> },
-            { label: 'Early Booking', to: '/product/early-bookings', icon: <CalendarCheck size={18} /> },
-            { label: 'Annulations', to: '/product/cancellations', icon: <ShieldAlert size={18} /> },
-        ],
-    },
-    {
-        title: 'Mes Partenaires',
-        items: [
-            { label: 'Affiliés / TO', to: '/partners/affiliates', icon: <Users size={18} /> },
-        ],
-    },
-    {
-        title: 'Gestion Contrats',
-        items: [
-            { label: 'Liste des contrats', to: '/contracts', icon: <FileText size={18} /> },
-            { label: 'Simulateur de Prix', to: '/simulator', icon: <Calculator size={18} /> },
-        ],
-    },
-];
+import { useTranslation } from 'react-i18next';
+import {
+    commercialPrimaryTabs,
+    commercialProductTabs,
+    getRoleNavigation,
+    isNavigationItemActive,
+    isProductRoute,
+} from './navigation';
+import { BrandLockup, HeaderActions, HotelSelector } from './LayoutControls';
 
 export default function CommercialLayout() {
-    const { currentHotel, availableHotels, isLoading, switchHotel } = useHotel();
-    const { user, logout } = useAuth();
-    const navigate = useNavigate();
-    const [collapsed, setCollapsed] = useState(false);
-
-    const handleLogout = () => {
-        logout();
-        navigate('/login', { replace: true });
-    };
+    const { t } = useTranslation(['auth', 'common']);
+    const location = useLocation();
+    const roleNavigation = getRoleNavigation('COMMERCIAL');
+    const activePrimary = commercialPrimaryTabs.find((item) => isNavigationItemActive(location.pathname, item)) ?? commercialPrimaryTabs[0];
+    const showProductTabs = isProductRoute(location.pathname);
 
     return (
-        <div className="flex h-screen bg-gray-50">
-            {/* ─── Sidebar ────────────────────────────────────────── */}
-            <aside
-                className={clsx(
-                    'bg-gray-900 text-gray-300 flex flex-col shrink-0 transition-all duration-300 ease-in-out',
-                    collapsed ? 'w-[68px]' : 'w-64',
-                )}
-            >
-                {/* Brand + Toggle */}
-                <div className={clsx(
-                    'flex items-center border-b border-gray-800 transition-all duration-300',
-                    collapsed ? 'px-3 py-4 justify-center' : 'px-5 py-5',
-                )}>
-                    {!collapsed && (
-                        <div className="flex-1 min-w-0">
-                            <h1 className="text-lg font-bold text-white tracking-tight truncate">
-                                Contracting Manager
-                            </h1>
-                            <p className="text-xs text-gray-500 mt-0.5">Espace Commercial</p>
-                        </div>
-                    )}
-                    <button
-                        onClick={() => setCollapsed(!collapsed)}
-                        className={clsx(
-                            'p-1.5 rounded-lg text-gray-500 hover:text-white hover:bg-gray-800 transition-colors cursor-pointer shrink-0',
-                            collapsed && 'mx-auto',
-                        )}
-                        title={collapsed ? 'Ouvrir le menu' : 'Réduire le menu'}
-                    >
-                        {collapsed ? <PanelLeftOpen size={18} /> : <PanelLeftClose size={18} />}
-                    </button>
-                </div>
+        <div className="relative min-h-screen overflow-hidden bg-brand-light dark:bg-brand-navy">
+            <div className="pointer-events-none absolute inset-x-0 top-0 h-72 bg-brand-navy/10 dark:bg-brand-light/10" />
 
-                {/* Navigation */}
-                <nav className={clsx(
-                    'flex-1 overflow-y-auto py-4 space-y-6 transition-all duration-300',
-                    collapsed ? 'px-2' : 'px-3',
-                )}>
-                    {menuSections.map((section) => (
-                        <div key={section.title}>
-                            {!collapsed && (
-                                <p className="px-3 mb-2 text-[10px] font-semibold uppercase tracking-widest text-gray-500">
-                                    {section.title}
-                                </p>
-                            )}
-                            <ul className="space-y-0.5">
-                                {section.items.map((item) => (
-                                    <li key={item.to}>
+            <div className="relative flex min-h-screen flex-col">
+                <header className="sticky top-0 z-30 border-b border-white/55 bg-brand-light/72 backdrop-blur-2xl dark:border-white/10 dark:bg-brand-navy/70">
+                    <div className="px-4 pb-4 pt-4 md:px-6 lg:px-8">
+                        <div className="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
+                            <BrandLockup
+                                eyebrow={roleNavigation.eyebrowKey ? t(roleNavigation.eyebrowKey, { defaultValue: roleNavigation.eyebrow }) : roleNavigation.eyebrow}
+                                title={roleNavigation.titleKey ? t(roleNavigation.titleKey, { defaultValue: roleNavigation.title }) : roleNavigation.title}
+                                subtitle={roleNavigation.subtitleKey ? t(roleNavigation.subtitleKey, { defaultValue: roleNavigation.subtitle }) : roleNavigation.subtitle}
+                            />
+                            <HeaderActions
+                                roleLabel={roleNavigation.labelKey ? t(roleNavigation.labelKey, { defaultValue: roleNavigation.label }) : roleNavigation.label}
+                                primaryAction={{ label: t('common:actions.newContract', { defaultValue: 'New Contract' }), to: '/contracts' }}
+                            />
+                        </div>
+
+                        <div className="mt-4 flex flex-col gap-3">
+                            <div className="premium-nav-glass flex flex-wrap items-center gap-2 p-2">
+                                {commercialPrimaryTabs.map((tab) => {
+                                    const Icon = tab.icon;
+                                    const isActive = isNavigationItemActive(location.pathname, tab);
+
+                                    return (
                                         <NavLink
-                                            to={item.to}
-                                            title={collapsed ? item.label : undefined}
-                                            className={({ isActive }) =>
-                                                clsx(
-                                                    'flex items-center rounded-lg text-sm font-medium transition-colors',
-                                                    collapsed
-                                                        ? 'justify-center px-0 py-2.5'
-                                                        : 'gap-3 px-3 py-2',
-                                                    isActive
-                                                        ? 'bg-indigo-600 text-white'
-                                                        : 'hover:bg-gray-800 hover:text-white',
-                                                )
-                                            }
-                                        >
-                                            <span className="shrink-0">{item.icon}</span>
-                                            {!collapsed && (
-                                                <>
-                                                    <span className="flex-1 truncate">{item.label}</span>
-                                                    <ChevronRight size={14} className="opacity-40 shrink-0" />
-                                                </>
-                                            )}
-                                        </NavLink>
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
-                    ))}
-
-                    {/* Admin section — visible only to ADMIN */}
-                    {user?.role === 'ADMIN' && (
-                        <div>
-                            {!collapsed && (
-                                <p className="px-3 mb-2 text-[10px] font-semibold uppercase tracking-widest text-gray-500">
-                                    Administration
-                                </p>
-                            )}
-                            <ul className="space-y-0.5">
-                                <li>
-                                    <NavLink
-                                        to="/admin/users"
-                                        title={collapsed ? 'Utilisateurs' : undefined}
-                                        className={({ isActive }) =>
-                                            clsx(
-                                                'flex items-center rounded-lg text-sm font-medium transition-colors',
-                                                collapsed
-                                                    ? 'justify-center px-0 py-2.5'
-                                                    : 'gap-3 px-3 py-2',
+                                            key={tab.to}
+                                            to={tab.to}
+                                            className={clsx(
+                                                'flex min-w-0 items-center gap-2 rounded-2xl px-4 py-3 text-sm font-semibold transition',
                                                 isActive
-                                                    ? 'bg-indigo-600 text-white'
-                                                    : 'hover:bg-gray-800 hover:text-white',
-                                            )
-                                        }
-                                    >
-                                        <Shield size={18} />
-                                        {!collapsed && (
-                                            <>
-                                                <span className="flex-1">Utilisateurs</span>
-                                                <ChevronRight size={14} className="opacity-40" />
-                                            </>
-                                        )}
-                                    </NavLink>
-                                </li>
-                            </ul>
-                        </div>
-                    )}
-                </nav>
-            </aside>
+                                                    ? 'bg-brand-navy text-white shadow-md'
+                                                    : 'text-brand-slate hover:bg-white/70 hover:text-brand-navy dark:hover:bg-white/8 dark:hover:text-white',
+                                            )}
+                                        >
+                                            <Icon size={16} />
+                                            <span>
+                                                {tab.labelKey ? t(tab.labelKey, { defaultValue: tab.label }) : tab.label}
+                                            </span>
+                                        </NavLink>
+                                    );
+                                })}
+                            </div>
 
-            {/* ─── Right Column (Header + Content) ──────────────── */}
-            <div className="flex-1 flex flex-col min-w-0">
-                {/* ─── Top Header Bar ───────────────────────────── */}
-                <header className="h-14 bg-white border-b border-gray-200 px-6 flex items-center justify-between shrink-0 shadow-sm">
-                    {/* Left: Hotel Switcher */}
-                    <div className="flex items-center gap-3">
-                        {isLoading ? (
-                            <div className="h-8 w-48 rounded-lg bg-gray-100 animate-pulse" />
-                        ) : availableHotels.length <= 1 ? (
-                            <div className="flex items-center gap-2.5 px-3 py-1.5 rounded-lg bg-gray-50 border border-gray-200">
-                                <Hotel size={16} className="text-indigo-600 shrink-0" />
-                                <div className="flex flex-col min-w-0">
-                                    <span className="text-sm font-semibold text-gray-900 truncate">{currentHotel?.name ?? '—'}</span>
-                                    {currentHotel?.reference && (
-                                        <span className="text-[10px] text-gray-400 font-mono tracking-wide">{currentHotel.reference}</span>
-                                    )}
+                            <div className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
+                                <div className="premium-surface flex-1 px-4 py-4">
+                                    <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+                                        <div className="min-w-0">
+                                            <p className="text-[11px] font-semibold uppercase tracking-[0.26em] text-brand-slate">
+                                                {t('common:layouts.commercial.activeWorkspace', { defaultValue: 'Active Workspace' })}
+                                            </p>
+                                            <div className="mt-1 flex flex-wrap items-center gap-3">
+                                                <h2 className="text-xl font-semibold tracking-tight text-brand-navy dark:text-white">
+                                                    {activePrimary.labelKey ? t(activePrimary.labelKey, { defaultValue: activePrimary.label }) : activePrimary.label}
+                                                </h2>
+                                                <span className="premium-pill border-brand-mint/20 bg-brand-mint/8 text-brand-mint">
+                                                    {t('common:layouts.commercial.productionFlow', { defaultValue: 'Production Flow' })}
+                                                </span>
+                                            </div>
+                                            <p className="mt-2 max-w-3xl text-sm text-brand-slate dark:text-brand-light/80">
+                                                {activePrimary.descriptionKey
+                                                    ? t(activePrimary.descriptionKey, { defaultValue: activePrimary.description ?? '' })
+                                                    : (activePrimary.description ?? '')}
+                                            </p>
+                                        </div>
+                                        <HotelSelector className="lg:hidden" />
+                                    </div>
                                 </div>
                             </div>
-                        ) : (
-                            <div className="relative">
-                                <select
-                                    value={currentHotel?.id ?? ''}
-                                    onChange={(e) => switchHotel(Number(e.target.value))}
-                                    className="appearance-none bg-gray-50 text-gray-900 text-sm font-medium pl-9 pr-8 py-1.5 rounded-lg border border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none cursor-pointer hover:bg-gray-100 transition-colors"
-                                >
-                                    {availableHotels.map((h) => (
-                                        <option key={h.id} value={h.id}>
-                                            {h.reference ? `[${h.reference}]` : ''}{h.name}
-                                        </option>
-                                    ))}
-                                </select>
-                                <Hotel size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-indigo-600 pointer-events-none" />
-                                <ChevronsUpDown size={14} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
-                            </div>
-                        )}
-                    </div>
 
-                    {/* Right: User + Logout */}
-                    <div className="flex items-center gap-3">
-                        <div className="flex items-center gap-2.5">
-                            <div className="w-8 h-8 rounded-full bg-indigo-50 flex items-center justify-center text-indigo-600 text-xs font-bold shrink-0">
-                                {user?.firstName?.[0]}{user?.lastName?.[0]}
-                            </div>
-                            <div className="hidden sm:flex flex-col min-w-0">
-                                <p className="text-sm font-medium text-gray-900 truncate">
-                                    {user?.firstName} {user?.lastName}
-                                </p>
-                                <p className="text-[10px] text-gray-400 truncate">{user?.email}</p>
-                            </div>
+                            {showProductTabs && (
+                                <div className="premium-nav-glass flex items-center gap-2 overflow-x-auto p-2">
+                                    {commercialProductTabs.map((item) => {
+                                        const Icon = item.icon;
+                                        const isActive = location.pathname === item.to;
+
+                                        return (
+                                            <NavLink
+                                                key={item.to}
+                                                to={item.to}
+                                                className={clsx(
+                                                    'flex shrink-0 items-center gap-2 rounded-2xl px-3.5 py-2.5 text-sm font-medium transition',
+                                                    isActive
+                                                        ? 'bg-brand-mint text-white'
+                                                        : 'text-brand-slate hover:bg-white/70 hover:text-brand-navy dark:hover:bg-white/8 dark:hover:text-white',
+                                                )}
+                                            >
+                                                <Icon size={15} />
+                                                <span>
+                                                    {item.labelKey ? t(item.labelKey, { defaultValue: item.label }) : item.label}
+                                                </span>
+                                            </NavLink>
+                                        );
+                                    })}
+                                </div>
+                            )}
                         </div>
-                        <div className="w-px h-6 bg-gray-200" />
-                        <button
-                            onClick={handleLogout}
-                            title="Se déconnecter"
-                            className="p-2 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors cursor-pointer"
-                        >
-                            <LogOut size={16} />
-                        </button>
                     </div>
                 </header>
 
-                {/* ─── Main Content ──────────────────────────────── */}
-                <main className="flex-1 overflow-y-auto">
-                    <Outlet />
+                <main className="flex-1 overflow-y-auto px-2 pb-6 pt-4 md:px-4 lg:px-6">
+                    <div className="mx-auto max-w-[1680px]">
+                        <Outlet />
+                    </div>
                 </main>
             </div>
         </div>
