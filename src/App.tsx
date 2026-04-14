@@ -38,6 +38,7 @@ const EarlyBookingsTab = lazy(() => import('./features/contracts/details/tabs/Ea
 const ContractSposTab = lazy(() => import('./features/contracts/details/tabs/ContractSposTab'));
 const CancellationTab = lazy(() => import('./features/contracts/details/tabs/CancellationTab'));
 const SimulatorPage = lazy(() => import('./features/simulator/pages/SimulatorPage'));
+const ContractPreviewPage = lazy(() => import('./features/contracts/pages/ContractPreviewPage'));
 const UsersPage = lazy(() => import('./features/admin/pages/UsersPage'));
 const AdminOverviewPage = lazy(() => import('./features/admin/pages/AdminOverviewPage'));
 const SupervisorOverviewPage = lazy(() => import('./features/supervisor/pages/SupervisorOverviewPage'));
@@ -230,6 +231,15 @@ function App() {
                                 element={
                                     <ProtectedRoute allowedRoles={simulatorAccessRoles}>
                                         <SimulatorPage />
+                                    </ProtectedRoute>
+                                }
+                            />
+
+                            <Route
+                                path="contracts/:id/preview"
+                                element={
+                                    <ProtectedRoute allowedRoles={contractAccessRoles}>
+                                        <ContractPreviewPage />
                                     </ProtectedRoute>
                                 }
                             />
