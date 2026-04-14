@@ -52,7 +52,7 @@ export default function ForgotPasswordPage() {
                     <CheckCircle size={32} className="text-brand-mint" />
                 </div>
 
-                <h1 className="text-[1.75rem] sm:text-[2rem] font-extrabold text-brand-navy dark:text-white tracking-tight mb-2">
+                <h1 className="text-[1.75rem] sm:text-[2rem] font-extrabold text-brand-navy dark:text-brand-light tracking-tight mb-2">
                     {t('auth:forgotPassword.successTitle')}
                 </h1>
                 <p className="text-[14px] text-brand-slate dark:text-brand-light/75 font-medium leading-relaxed mb-8 max-w-xs mx-auto">
@@ -83,7 +83,7 @@ export default function ForgotPasswordPage() {
             </Link>
 
             <div className="mb-8">
-                <h1 className="text-[1.75rem] sm:text-[2rem] font-extrabold text-brand-navy dark:text-white tracking-tight leading-tight">
+                <h1 className="text-[1.75rem] sm:text-[2rem] font-extrabold text-brand-navy dark:text-brand-light tracking-tight leading-tight">
                     {t('auth:forgotPassword.title')}
                 </h1>
                 <p className="text-[14px] text-brand-slate dark:text-brand-light/75 mt-2 font-medium">
@@ -106,7 +106,7 @@ export default function ForgotPasswordPage() {
                         type="email"
                         placeholder={t('auth:forgotPassword.emailPlaceholder')}
                         autoComplete="email"
-                        className="h-12 bg-brand-light dark:bg-brand-navy/80 border-brand-slate/20 dark:border-brand-slate/20 focus:border-brand-mint focus:ring-2 focus:ring-brand-mint/15 rounded-xl px-4 text-[14px] text-brand-navy dark:text-white transition-all"
+                        className="h-12 bg-brand-light dark:bg-brand-navy/80 border-brand-slate/20 dark:border-brand-slate/20 focus:border-brand-mint focus:ring-2 focus:ring-brand-mint/15 rounded-xl px-4 text-[14px] text-brand-navy dark:text-brand-light transition-all"
                         {...register('email')}
                     />
                     {errors.email && (
@@ -121,7 +121,7 @@ export default function ForgotPasswordPage() {
                         type="submit"
                         variant="primary"
                         disabled={loading}
-                        className="w-full h-12 font-bold text-[14px] bg-brand-mint hover:bg-brand-mint text-white border-none shadow-md hover:shadow-md hover:-translate-y-px active:translate-y-0 disabled:opacity-50 disabled:shadow-none"
+                        className="w-full h-12 font-bold text-[14px] bg-brand-mint hover:bg-brand-mint text-brand-light border-none shadow-md hover:shadow-md hover:-translate-y-px active:translate-y-0 disabled:opacity-50 disabled:shadow-none"
                     >
                         {loading ? (
                             <span className="flex items-center gap-2">

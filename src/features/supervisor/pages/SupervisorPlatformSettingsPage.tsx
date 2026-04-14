@@ -16,7 +16,7 @@ const privilegeColumns: SupervisorTableColumn<(typeof planPrivilegeMatrix)[numbe
     {
         key: 'capability',
         label: 'Capability',
-        render: (row) => <span className="font-semibold text-brand-navy dark:text-white">{row.capability}</span>,
+        render: (row) => <span className="font-semibold text-brand-navy dark:text-brand-light">{row.capability}</span>,
     },
     {
         key: 'free',
@@ -41,7 +41,7 @@ const subscriptionColumns: SupervisorTableColumn<(typeof subscriptionWatchlist)[
         label: 'Organization',
         render: (row) => (
             <div>
-                <p className="font-semibold text-brand-navy dark:text-white">{row.organization}</p>
+                <p className="font-semibold text-brand-navy dark:text-brand-light">{row.organization}</p>
                 <p className="mt-1 text-xs text-brand-slate">{row.plan}</p>
             </div>
         ),
@@ -49,7 +49,7 @@ const subscriptionColumns: SupervisorTableColumn<(typeof subscriptionWatchlist)[
     {
         key: 'mrr',
         label: 'MRR',
-        render: (row) => <span className="font-semibold text-brand-navy dark:text-white">{row.mrr}</span>,
+        render: (row) => <span className="font-semibold text-brand-navy dark:text-brand-light">{row.mrr}</span>,
     },
     {
         key: 'renewalDate',
@@ -126,8 +126,8 @@ export default function SupervisorPlatformSettingsPage() {
                             key={plan.name}
                             className={`rounded-2xl border p-6 ${
                                 index === 1
-                                    ? 'border-brand-mint/35 bg-brand-navy text-white shadow-md'
-                                    : 'border-white/70 bg-white/72 text-brand-navy dark:border-white/10 dark:bg-white/5 dark:text-white'
+                                    ? 'border-brand-mint/35 bg-brand-navy text-brand-light shadow-md'
+                                    : 'border-brand-light/70 bg-brand-light/72 text-brand-navy dark:border-brand-light/10 dark:bg-brand-light/5 dark:text-brand-light'
                             }`}
                         >
                             <p className={`text-[11px] font-semibold uppercase tracking-[0.24em] ${
@@ -152,8 +152,8 @@ export default function SupervisorPlatformSettingsPage() {
                                         key={limit}
                                         className={`rounded-2xl px-4 py-3 text-sm ${
                                             index === 1
-                                                ? 'bg-white/8 text-brand-slate'
-                                                : 'bg-brand-light text-brand-navy dark:bg-white/5 dark:text-white'
+                                                ? 'bg-brand-light/8 text-brand-slate'
+                                                : 'bg-brand-light text-brand-navy dark:bg-brand-light/5 dark:text-brand-light'
                                         }`}
                                     >
                                         {t(`pages.supervisor.plans.cards.planCatalog.plans.${index}.limits.${limitIndex}`, { defaultValue: limit })}
@@ -206,14 +206,14 @@ export default function SupervisorPlatformSettingsPage() {
                         <div className="grid gap-4 md:grid-cols-2">
                             <label className="space-y-2">
                                 <span className="text-sm font-medium text-brand-slate">{t('auto.features.supervisor.pages.supervisorplatformsettingspage.53862b3a', { defaultValue: "API access" })}</span>
-                                <select className="h-12 w-full rounded-2xl border border-brand-slate/30 bg-white px-4 text-sm shadow-sm outline-none focus:border-brand-mint focus:ring-2 focus:ring-brand-mint/20 dark:border-brand-slate/50 dark:bg-brand-navy/80 dark:text-white">
+                                <select className="h-12 w-full rounded-2xl border border-brand-slate/30 bg-brand-light px-4 text-sm shadow-sm outline-none focus:border-brand-mint focus:ring-2 focus:ring-brand-mint/20 dark:border-brand-slate/50 dark:bg-brand-navy/80 dark:text-brand-light">
                                     <option>{t('auto.features.supervisor.pages.supervisorplatformsettingspage.a7cae788', { defaultValue: "Enabled" })}</option>
                                     <option>{t('auto.features.supervisor.pages.supervisorplatformsettingspage.24b15b5f', { defaultValue: "Disabled" })}</option>
                                 </select>
                             </label>
                             <label className="space-y-2">
                                 <span className="text-sm font-medium text-brand-slate">{t('auto.features.supervisor.pages.supervisorplatformsettingspage.0b64cd63', { defaultValue: "Support tier" })}</span>
-                                <select className="h-12 w-full rounded-2xl border border-brand-slate/30 bg-white px-4 text-sm shadow-sm outline-none focus:border-brand-mint focus:ring-2 focus:ring-brand-mint/20 dark:border-brand-slate/50 dark:bg-brand-navy/80 dark:text-white">
+                                <select className="h-12 w-full rounded-2xl border border-brand-slate/30 bg-brand-light px-4 text-sm shadow-sm outline-none focus:border-brand-mint focus:ring-2 focus:ring-brand-mint/20 dark:border-brand-slate/50 dark:bg-brand-navy/80 dark:text-brand-light">
                                     <option>{t('auto.features.supervisor.pages.supervisorplatformsettingspage.499e68ec', { defaultValue: "Priority" })}</option>
                                     <option>{t('auto.features.supervisor.pages.supervisorplatformsettingspage.9a0ed073', { defaultValue: "Standard" })}</option>
                                     <option>{t('auto.features.supervisor.pages.supervisorplatformsettingspage.ff6ca35f', { defaultValue: "Dedicated" })}</option>
@@ -226,7 +226,7 @@ export default function SupervisorPlatformSettingsPage() {
                             <textarea
                                 rows={5}
                                 defaultValue="Includes API access, CSV export, platform audit retention, and multi-hotel seat governance."
-                                className="w-full rounded-2xl border border-brand-slate/30 bg-white px-4 py-3 text-sm shadow-sm outline-none transition focus:border-brand-mint focus:ring-2 focus:ring-brand-mint/20 dark:border-brand-slate/50 dark:bg-brand-navy/80 dark:text-white"
+                                className="w-full rounded-2xl border border-brand-slate/30 bg-brand-light px-4 py-3 text-sm shadow-sm outline-none transition focus:border-brand-mint focus:ring-2 focus:ring-brand-mint/20 dark:border-brand-slate/50 dark:bg-brand-navy/80 dark:text-brand-light"
                             />
                         </label>
 

@@ -6,7 +6,6 @@ import type { Period } from '../../../contracts/types/contract.types';
 import { contractMonoparentalService } from '../../services/contractMonoparental.service';
 import { isEqual } from 'lodash-es';
 import { useTranslation } from 'react-i18next';
-import i18next from '../../../../lib/i18n';
 
 interface Props {
     contractId: number;
@@ -45,18 +44,6 @@ function buildInitialMatrix(rules: ContractMonoparentalRule[]): Matrix {
     return matrix;
 }
 
-const BASE_RATE_LABELS: Record<BaseRateType, string> = {
-    SINGLE: 'Single',
-    DOUBLE: 'Double',
-};
-
-const CHILD_SURCHARGE_BASE_LABELS: Record<ChildSurchargeBase, string> = {
-    SINGLE: 'Chambre Single',
-    DOUBLE: 'Chambre Double',
-    HALF_SINGLE: 'Demi-Single',
-    HALF_DOUBLE: 'Demi-Double',
-};
-
 // ── MonoparentalCell ─────────────────────────────────────────────────────
 interface CellProps {
     ruleId: number;
@@ -89,31 +76,53 @@ const MonoparentalCell = memo(function MonoparentalCell({
         emitChange({ overrideChildSurchargeValue: val });
     };
 
+    const baseRateOptions: Record<string, string> = {
+        SINGLE: t('pages.contractDetails.grid.mono.single', { defaultValue: 'Single' }),
+        DOUBLE: t('pages.contractDetails.grid.mono.double', { defaultValue: 'Double' }),
+    };
+
+    const surchargeBaseOptions: Record<string, string> = {
+        SINGLE: t('pages.contractDetails.grid.mono.singleRoom', { defaultValue: 'Single room' }),
+        DOUBLE: t('pages.contractDetails.grid.mono.doubleRoom', { defaultValue: 'Double room' }),
+        HALF_SINGLE: t('pages.contractDetails.grid.mono.halfSingle', { defaultValue: 'Half-Single' }),
+        HALF_DOUBLE: t('pages.contractDetails.grid.mono.halfDouble', { defaultValue: 'Half-Double' }),
+    };
+
     if (!cell.active) {
         return (
             <div className="flex items-center justify-between px-3 h-[180px] group/cell transition-colors hover:bg-brand-light bg-brand-light">
-                <span className="text-[11px] text-brand-slate italic select-none">{t('auto.features.contracts.details.components.monoparentalgrid.a659d759', { defaultValue: "Non appliqué" })}</span>
+                <span className="text-[11px] text-brand-slate italic select-none">
+                    {t('pages.contractDetails.grid.cell.notApplied', { defaultValue: 'Not applied' })}
+                </span>
                 <button
+                    type="button"
                     onClick={handleToggle}
-                    title={t('auto.features.contracts.details.components.monoparentalgrid.title.e6413a78', { defaultValue: "Activer pour cette période" })}
+                    title={t('pages.contractDetails.grid.cell.enableHint', { defaultValue: 'Enable for this period' })}
+                    aria-label={t('pages.contractDetails.grid.cell.enableHint', { defaultValue: 'Enable for this period' })}
                     className="relative w-8 h-4 rounded-full bg-brand-slate/10 hover:bg-brand-mint/10 transition-colors cursor-pointer opacity-0 group-hover/cell:opacity-100 shrink-0"
                 >
-                    <span className="block w-3 h-3 rounded-full bg-white absolute top-0.5 left-0.5 shadow-sm transition-all" />
+                    <span className="block w-3 h-3 rounded-full bg-brand-light absolute top-0.5 left-0.5 shadow-sm transition-all" />
                 </button>
             </div>
         );
     }
 
+    const inheritedLabel = t('pages.contractDetails.grid.mono.inherited', { defaultValue: '(Inherited)' });
+
     return (
         <div className="flex flex-col p-3 h-[180px] group/cell transition-colors hover:bg-brand-mint/10 gap-3">
             <div className="flex items-center justify-between">
-                <span className="text-[10px] font-bold text-brand-mint uppercase tracking-wider select-none">{t('auto.features.contracts.details.components.monoparentalgrid.cdcf47d0', { defaultValue: "Actif" })}</span>
+                <span className="text-[10px] font-bold text-brand-mint uppercase tracking-wider select-none">
+                    {t('pages.contractDetails.grid.cell.active', { defaultValue: 'Active' })}
+                </span>
                 <button
+                    type="button"
                     onClick={handleToggle}
-                    title={t('auto.features.contracts.details.components.monoparentalgrid.title.8dc05cef', { defaultValue: "Désactiver pour cette période" })}
+                    title={t('pages.contractDetails.grid.cell.disableHint', { defaultValue: 'Disable for this period' })}
+                    aria-label={t('pages.contractDetails.grid.cell.disableHint', { defaultValue: 'Disable for this period' })}
                     className="relative w-8 h-4 rounded-full bg-brand-mint hover:bg-brand-slate/20 transition-colors cursor-pointer opacity-0 group-hover/cell:opacity-100 shrink-0"
                 >
-                    <span className="block w-3 h-3 rounded-full bg-white absolute top-0.5 right-0.5 shadow-sm" />
+                    <span className="block w-3 h-3 rounded-full bg-brand-light absolute top-0.5 right-0.5 shadow-sm" />
                 </button>
             </div>
 
@@ -121,49 +130,52 @@ const MonoparentalCell = memo(function MonoparentalCell({
                 {/* Override Base Rate */}
                 <div className="space-y-1">
                     <label className="flex items-center gap-1.5 text-[10px] font-medium text-brand-slate uppercase">
-                        <User size={10} className="text-brand-slate" /> Base
+                        <User size={10} className="text-brand-slate" aria-hidden="true" />
+                        {t('pages.contractDetails.grid.mono.baseLabel', { defaultValue: 'Base' })}
                     </label>
                     <select
                         value={cell.overrideBaseRateType}
                         onChange={(e) => onChange(ruleId, periodId, { overrideBaseRateType: e.target.value as any })}
-                        className={`w-full px-2 py-1 text-[11px] rounded-xl border transition-all focus:outline-none focus:ring-1 focus:ring-brand-mint ${cell.overrideBaseRateType ? 'border-brand-mint/30 bg-brand-mint/10 text-brand-mint font-semibold' : 'border-brand-slate/20 bg-white text-brand-slate'}`}
+                        className={`w-full px-2 py-1 text-[11px] rounded-xl border transition-all focus:outline-none focus:ring-1 focus:ring-brand-mint ${cell.overrideBaseRateType ? 'border-brand-mint/30 bg-brand-mint/10 text-brand-mint font-semibold' : 'border-brand-slate/20 bg-brand-light text-brand-slate'}`}
                     >
-                        <option value="">{BASE_RATE_LABELS[rule.baseRateType]} (Hérité)</option>
-                        <option value="SINGLE">{t('auto.features.contracts.details.components.monoparentalgrid.e4b574d1', { defaultValue: "Single" })}</option>
-                        <option value="DOUBLE">{t('auto.features.contracts.details.components.monoparentalgrid.7b0ef8d8', { defaultValue: "Double" })}</option>
+                        <option value="">{baseRateOptions[rule.baseRateType] ?? rule.baseRateType} {inheritedLabel}</option>
+                        <option value="SINGLE">{t('pages.contractDetails.grid.mono.single', { defaultValue: 'Single' })}</option>
+                        <option value="DOUBLE">{t('pages.contractDetails.grid.mono.double', { defaultValue: 'Double' })}</option>
                     </select>
                 </div>
 
                 {/* Override Child Surcharge Value */}
                 <div className="space-y-1">
                     <label className="flex items-center gap-1.5 text-[10px] font-medium text-brand-slate uppercase">
-                        <Percent size={10} className="text-brand-slate" /> Majoration
+                        <Percent size={10} className="text-brand-slate" aria-hidden="true" />
+                        {t('pages.contractDetails.grid.mono.surchargeLabel', { defaultValue: 'Surcharge' })}
                     </label>
                     <input
                         type="number"
                         min="0"
                         value={localValue}
                         onChange={(e) => handleValueChange(e.target.value)}
-                        placeholder={`${rule.childSurchargePercentage}% (Hérité)`}
-                        className={`w-full px-2 py-1 text-[11px] rounded-xl border text-right transition-all focus:outline-none focus:ring-1 focus:ring-brand-mint ${localValue !== '' ? 'border-brand-mint/30 bg-brand-mint/10 text-brand-mint font-semibold' : 'border-brand-slate/20 bg-white text-brand-slate'}`}
+                        placeholder={`${rule.childSurchargePercentage}% ${inheritedLabel}`}
+                        className={`w-full px-2 py-1 text-[11px] rounded-xl border text-right transition-all focus:outline-none focus:ring-1 focus:ring-brand-mint ${localValue !== '' ? 'border-brand-mint/30 bg-brand-mint/10 text-brand-mint font-semibold' : 'border-brand-slate/20 bg-brand-light text-brand-slate'}`}
                     />
                 </div>
 
                 {/* Override Child Surcharge Base */}
                 <div className="space-y-1">
                     <label className="flex items-center gap-1.5 text-[10px] font-medium text-brand-slate uppercase">
-                        <Calculator size={10} className="text-brand-slate" /> Sur base
+                        <Calculator size={10} className="text-brand-slate" aria-hidden="true" />
+                        {t('pages.contractDetails.grid.mono.basedOn', { defaultValue: 'Based on' })}
                     </label>
                     <select
                         value={cell.overrideChildSurchargeBase}
                         onChange={(e) => onChange(ruleId, periodId, { overrideChildSurchargeBase: e.target.value as any })}
-                        className={`w-full px-2 py-1 text-[11px] rounded-xl border transition-all focus:outline-none focus:ring-1 focus:ring-brand-mint ${cell.overrideChildSurchargeBase ? 'border-brand-mint/30 bg-brand-mint/10 text-brand-mint font-semibold' : 'border-brand-slate/20 bg-white text-brand-slate'}`}
+                        className={`w-full px-2 py-1 text-[11px] rounded-xl border transition-all focus:outline-none focus:ring-1 focus:ring-brand-mint ${cell.overrideChildSurchargeBase ? 'border-brand-mint/30 bg-brand-mint/10 text-brand-mint font-semibold' : 'border-brand-slate/20 bg-brand-light text-brand-slate'}`}
                     >
-                        <option value="">{CHILD_SURCHARGE_BASE_LABELS[rule.childSurchargeBase]} (Hérité)</option>
-                        <option value="SINGLE">{t('auto.features.contracts.details.components.monoparentalgrid.e196bf28', { defaultValue: "Chambre Single" })}</option>
-                        <option value="DOUBLE">{t('auto.features.contracts.details.components.monoparentalgrid.599523ea', { defaultValue: "Chambre Double" })}</option>
-                        <option value="HALF_SINGLE">{t('auto.features.contracts.details.components.monoparentalgrid.8a40ccb4', { defaultValue: "Demi-Single" })}</option>
-                        <option value="HALF_DOUBLE">{t('auto.features.contracts.details.components.monoparentalgrid.7828cd9d', { defaultValue: "Demi-Double" })}</option>
+                        <option value="">{surchargeBaseOptions[rule.childSurchargeBase] ?? rule.childSurchargeBase} {inheritedLabel}</option>
+                        <option value="SINGLE">{t('pages.contractDetails.grid.mono.singleRoom', { defaultValue: 'Single room' })}</option>
+                        <option value="DOUBLE">{t('pages.contractDetails.grid.mono.doubleRoom', { defaultValue: 'Double room' })}</option>
+                        <option value="HALF_SINGLE">{t('pages.contractDetails.grid.mono.halfSingle', { defaultValue: 'Half-Single' })}</option>
+                        <option value="HALF_DOUBLE">{t('pages.contractDetails.grid.mono.halfDouble', { defaultValue: 'Half-Double' })}</option>
                     </select>
                 </div>
             </div>
@@ -175,8 +187,9 @@ const MonoparentalCell = memo(function MonoparentalCell({
 export default function MonoparentalGrid({
     contractId, rules, periods, onSaved, onEdit, onDelete, isDeleting,
 }: Props) {
-    const { t } = useTranslation('common');
-    void t;
+    const { t, i18n } = useTranslation('common');
+    const locale = i18n.language.startsWith('fr') ? 'fr-FR' : 'en-US';
+
     const sortedPeriods = [...periods].sort(
         (a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime(),
     );
@@ -191,7 +204,6 @@ export default function MonoparentalGrid({
     }, [rules]);
 
     const [isSaving, setIsSaving] = useState(false);
-
     const isDirty = useMemo(() => !isEqual(initialMatrix, editedMatrix), [initialMatrix, editedMatrix]);
 
     const handleCellChange = useCallback((ruleId: number, periodId: number, patch: Partial<CellData>) => {
@@ -211,7 +223,7 @@ export default function MonoparentalGrid({
                 .filter(ruleId => !isEqual(initialMatrix[ruleId], editedMatrix[ruleId]));
 
             if (modifiedRuleIds.length === 0) {
-                toast.info(i18next.t('auto.features.contracts.details.components.monoparentalgrid.toast.info.0700a39f', { defaultValue: "Aucune modification à enregistrer." }));
+                toast.info(t('pages.contractDetails.grid.toast.noChanges', { defaultValue: 'No changes to save.' }));
                 return;
             }
 
@@ -234,13 +246,15 @@ export default function MonoparentalGrid({
             });
 
             await Promise.all(savePromises);
-
             setInitialMatrix(editedMatrix);
             onSaved();
-            toast.success(`${modifiedRuleIds.length} règle(s) monoparentale(s) sauvegardée(s)`);
+            toast.success(t('pages.contractDetails.grid.toast.savedMono', {
+                defaultValue: '{{count}} monoparental rule(s) saved',
+                count: modifiedRuleIds.length,
+            }));
         } catch (err: any) {
             const msg = err?.response?.data?.message;
-            toast.error(Array.isArray(msg) ? msg.join(', ') : (msg ?? 'Erreur lors de la sauvegarde'));
+            toast.error(Array.isArray(msg) ? msg.join(', ') : (msg ?? t('pages.contractDetails.grid.toast.saveError', { defaultValue: 'Error saving changes' })));
         } finally {
             setIsSaving(false);
         }
@@ -248,33 +262,47 @@ export default function MonoparentalGrid({
 
     if (rules.length === 0) return null;
 
+    const baseRateLabels: Record<string, string> = {
+        SINGLE: t('pages.contractDetails.grid.mono.single', { defaultValue: 'Single' }),
+        DOUBLE: t('pages.contractDetails.grid.mono.double', { defaultValue: 'Double' }),
+    };
+
+    const surchargeBaseLabels: Record<string, string> = {
+        SINGLE: t('pages.contractDetails.grid.mono.singleRoom', { defaultValue: 'Single room' }),
+        DOUBLE: t('pages.contractDetails.grid.mono.doubleRoom', { defaultValue: 'Double room' }),
+        HALF_SINGLE: t('pages.contractDetails.grid.mono.halfSingle', { defaultValue: 'Half-Single' }),
+        HALF_DOUBLE: t('pages.contractDetails.grid.mono.halfDouble', { defaultValue: 'Half-Double' }),
+    };
+
     return (
-        <div className="bg-white shadow-sm ring-1 ring-brand-mint rounded-xl overflow-hidden">
+        <div className="contract-matrix-surface overflow-hidden">
             {/* ── Header ──────────────────────────────────────────────── */}
-            <div className="px-5 py-3 border-b border-brand-mint/30 flex items-center justify-between bg-linear-to-r from-brand-mint to-brand-mint">
+            <div className="flex flex-col gap-3 border-b border-brand-slate/10 bg-brand-light/80 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
                 <div className="flex items-center gap-3">
-                    <span className="bg-brand-mint p-1 rounded-xl text-white">
+                    <span className="rounded-lg bg-brand-mint/10 p-1.5 text-brand-mint">
                         <Users size={14} />
                     </span>
-                    <span className="text-xs font-bold text-brand-mint uppercase tracking-widest">
-                        Matrice Monoparentale
+                    <span className="text-xs font-bold uppercase tracking-widest text-brand-navy">
+                        {t('pages.contractDetails.grid.monoparentalMatrix', { defaultValue: 'Single-Parent Matrix' })}
                     </span>
                 </div>
-                <div className='flex items-center gap-4'>
+                <div className="flex flex-wrap items-center gap-3">
                     <div className="flex items-center gap-2 group cursor-help">
                         <Info size={14} className="text-brand-mint group-hover:text-brand-mint transition-colors" />
                         <span className="text-[10px] text-brand-slate font-medium">
-                            Surchargez n'importe quel paramètre selon la saison
+                            {t('pages.contractDetails.grid.mono.hint', { defaultValue: 'Override any parameter by season' })}
                         </span>
                     </div>
-
                     <button
+                        type="button"
                         onClick={handleSaveAll}
                         disabled={!isDirty || isSaving}
-                        className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-bold rounded-xl bg-brand-mint text-white hover:bg-brand-mint shadow-md shadow-brand-mint/20 disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none transition-all"
+                        className="inline-flex items-center gap-1.5 rounded-lg bg-brand-mint px-4 py-2 text-xs font-bold text-brand-light transition-colors hover:bg-brand-mint/90 disabled:cursor-not-allowed disabled:opacity-50"
                     >
                         <Save size={13} />
-                        {isSaving ? 'Enregistrement...' : 'Enregistrer les modifications'}
+                        {isSaving
+                            ? t('pages.contractDetails.grid.saving', { defaultValue: 'Saving...' })
+                            : t('pages.contractDetails.grid.saveChanges', { defaultValue: 'Save changes' })}
                     </button>
                 </div>
             </div>
@@ -283,24 +311,25 @@ export default function MonoparentalGrid({
                 <table className="w-full text-sm text-left border-collapse">
                     <thead>
                         <tr className="bg-brand-light border-b-2 border-brand-slate/20">
-                            <th className="px-4 py-3 text-xs font-bold text-brand-slate uppercase sticky left-0 bg-brand-light z-10 shadow-md min-w-[220px]">
-                                Règle & Coquille de Base
+                            <th scope="col" className="px-4 py-3 text-xs font-bold text-brand-slate uppercase sticky left-0 bg-brand-light z-10 shadow-md min-w-[220px]">
+                                {t('pages.contractDetails.grid.col.ruleBase', { defaultValue: 'Rule & Base Template' })}
                             </th>
                             {sortedPeriods.map((period) => (
                                 <th
                                     key={period.id}
+                                    scope="col"
                                     className="px-4 py-3 text-xs font-semibold text-brand-slate min-w-[170px] text-center border-l border-brand-slate/20"
                                 >
                                     <div className="font-bold text-brand-navy">{period.name}</div>
                                     <div className="text-[10px] text-brand-slate font-normal mt-0.5">
-                                        {new Date(period.startDate).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short' })}
+                                        {new Date(period.startDate).toLocaleDateString(locale, { day: '2-digit', month: 'short' })}
                                         {' – '}
-                                        {new Date(period.endDate).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short' })}
+                                        {new Date(period.endDate).toLocaleDateString(locale, { day: '2-digit', month: 'short' })}
                                     </div>
                                 </th>
                             ))}
-                            <th className="px-4 py-3 text-xs font-bold text-brand-slate uppercase min-w-[110px] text-center border-l border-brand-slate/20 sticky right-0 bg-brand-light shadow-md">
-                                Actions
+                            <th scope="col" className="px-4 py-3 text-xs font-bold text-brand-slate uppercase min-w-[110px] text-center border-l border-brand-slate/20 sticky right-0 bg-brand-light shadow-md">
+                                {t('pages.contractDetails.grid.col.actions', { defaultValue: 'Actions' })}
                             </th>
                         </tr>
                     </thead>
@@ -314,14 +343,25 @@ export default function MonoparentalGrid({
 
                             return (
                                 <tr key={rule.id} className="group hover:bg-brand-light transition-colors">
-                                    <td className="px-4 py-4 align-middle sticky left-0 bg-white z-10 shadow-md group-hover:bg-brand-light transition-colors">
+                                    <td className="px-4 py-4 align-middle sticky left-0 bg-brand-light z-10 shadow-md group-hover:bg-brand-light transition-colors">
                                         <div className="space-y-3">
                                             <div className="flex-1 min-w-0">
                                                 <div className="flex items-center gap-1.5 flex-wrap">
                                                     <span className="font-bold text-brand-navy text-sm leading-tight">{rule.name}</span>
-                                                    {isRowDirty && <span className='w-2 h-2 rounded-full bg-brand-slate/20' title='Modifications non enregistrées'></span>}
+                                                    {isRowDirty && (
+                                                        <span
+                                                            className="w-2 h-2 rounded-full bg-brand-slate/20"
+                                                            title={t('pages.contractDetails.grid.unsavedChanges', { defaultValue: 'Unsaved changes' })}
+                                                        />
+                                                    )}
                                                     <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold bg-brand-mint/10 text-brand-mint leading-none shrink-0 border border-brand-mint/30">
-                                                        {rule.adultCount} Ad + {rule.childCount} Ch ({rule.minAge}-{rule.maxAge}a)
+                                                        {t('pages.contractDetails.grid.mono.compo', {
+                                                            defaultValue: '{{adults}}A + {{children}}C ({{min}}-{{max}}y)',
+                                                            adults: rule.adultCount,
+                                                            children: rule.childCount,
+                                                            min: rule.minAge,
+                                                            max: rule.maxAge,
+                                                        })}
                                                     </span>
                                                 </div>
                                                 {roomCodes.length > 0 ? (
@@ -329,21 +369,23 @@ export default function MonoparentalGrid({
                                                         🏨 {roomCodes.join(' · ')}
                                                     </p>
                                                 ) : (
-                                                    <p className="text-[10px] text-brand-slate mt-0.5 italic">{t('auto.features.contracts.details.components.monoparentalgrid.3af84798', { defaultValue: "Toutes chambres" })}</p>
+                                                    <p className="text-[10px] text-brand-slate mt-0.5 italic">
+                                                        {t('pages.contractDetails.grid.allRooms', { defaultValue: 'All rooms' })}
+                                                    </p>
                                                 )}
                                             </div>
 
-                                            {/* Formula Preview */}
+                                            {/* Formula preview */}
                                             <div className="p-2 rounded-xl bg-brand-light border border-brand-slate/20 flex flex-col gap-1">
                                                 <div className="flex items-center justify-between text-[10px] text-brand-slate font-medium uppercase tracking-tighter">
-                                                    <span>{t('auto.features.contracts.details.components.monoparentalgrid.c8ee5f3e', { defaultValue: "Formule de base" })}</span>
+                                                    <span>{t('pages.contractDetails.grid.mono.baseFormula', { defaultValue: 'Base formula' })}</span>
                                                 </div>
                                                 <div className="text-[11px] leading-tight text-brand-slate">
-                                                    <span className="font-bold text-brand-navy">{BASE_RATE_LABELS[rule.baseRateType]}</span>
+                                                    <span className="font-bold text-brand-navy">{baseRateLabels[rule.baseRateType] ?? rule.baseRateType}</span>
                                                     <span className="mx-1">+</span>
                                                     <span className="font-bold text-brand-navy">{rule.childSurchargePercentage}%</span>
-                                                    <span className="mx-1">{t('auto.features.contracts.details.components.monoparentalgrid.435d1958', { defaultValue: "de" })}</span>
-                                                    <span className="font-bold text-brand-navy truncate block mt-0.5">{CHILD_SURCHARGE_BASE_LABELS[rule.childSurchargeBase]}</span>
+                                                    <span className="mx-1">{t('pages.contractDetails.grid.mono.of', { defaultValue: 'of' })}</span>
+                                                    <span className="font-bold text-brand-navy truncate block mt-0.5">{surchargeBaseLabels[rule.childSurchargeBase] ?? rule.childSurchargeBase}</span>
                                                 </div>
                                             </div>
                                         </div>
@@ -352,7 +394,7 @@ export default function MonoparentalGrid({
                                     {sortedPeriods.map((period) => (
                                         <td
                                             key={period.id}
-                                            className={`p-0 border-l border-brand-slate/20 align-top`}
+                                            className="p-0 border-l border-brand-slate/20 align-top"
                                         >
                                             <MonoparentalCell
                                                 ruleId={rule.id}
@@ -364,20 +406,24 @@ export default function MonoparentalGrid({
                                         </td>
                                     ))}
 
-                                    <td className="px-3 py-4 border-l border-brand-slate/20 text-center align-middle sticky right-0 bg-white group-hover:bg-brand-light transition-colors shadow-md">
+                                    <td className="px-3 py-4 border-l border-brand-slate/20 text-center align-middle sticky right-0 bg-brand-light group-hover:bg-brand-light transition-colors shadow-md">
                                         <div className="flex items-center justify-center gap-1 opacity-60 group-hover:opacity-100 transition-opacity">
                                             <button
+                                                type="button"
                                                 onClick={() => onEdit(rule)}
                                                 className="p-1 px-1.5 rounded-xl text-brand-slate hover:text-brand-mint hover:bg-brand-mint/10 transition-colors cursor-pointer"
-                                                title={t('auto.features.contracts.details.components.monoparentalgrid.title.1c2903ed', { defaultValue: "Modifier la coquille" })}
+                                                title={t('pages.contractDetails.grid.editTemplate', { defaultValue: 'Edit template' })}
+                                                aria-label={t('pages.contractDetails.grid.editTemplate', { defaultValue: 'Edit template' })}
                                             >
                                                 <Pencil size={12} />
                                             </button>
                                             <button
+                                                type="button"
                                                 onClick={() => onDelete(rule)}
                                                 disabled={isDeleting}
                                                 className="p-1 px-1.5 rounded-xl text-brand-slate hover:text-brand-slate hover:bg-brand-slate/10 transition-colors cursor-pointer disabled:opacity-50"
-                                                title={t('auto.features.contracts.details.components.monoparentalgrid.title.a3a309c2', { defaultValue: "Supprimer du contrat" })}
+                                                title={t('pages.contractDetails.grid.removeFromContract', { defaultValue: 'Remove from contract' })}
+                                                aria-label={t('pages.contractDetails.grid.removeFromContract', { defaultValue: 'Remove from contract' })}
                                             >
                                                 <Trash2 size={12} />
                                             </button>
@@ -393,22 +439,21 @@ export default function MonoparentalGrid({
             <div className="px-5 py-3 bg-brand-light border-t border-brand-slate/20 flex items-center flex-wrap gap-x-8 gap-y-2 text-[10px] text-brand-slate font-medium">
                 <span className="flex items-center gap-2">
                     <span className="w-2.5 h-2.5 rounded-full bg-brand-slate/10" />
-                    Non appliqué
+                    {t('pages.contractDetails.grid.legend.notApplied', { defaultValue: 'Not applied' })}
                 </span>
                 <span className="flex items-center gap-2">
                     <span className="w-2.5 h-2.5 rounded-full bg-brand-mint" />
-                    Valeur par défaut héritée
+                    {t('pages.contractDetails.grid.legend.defaultInherited', { defaultValue: 'Default inherited' })}
                 </span>
                 <span className="flex items-center gap-2">
                     <span className="w-2.5 h-2.5 rounded-full bg-brand-mint ring-4 ring-brand-mint" />
-                    Valeur surchargée
+                    {t('pages.contractDetails.grid.legend.overridden', { defaultValue: 'Value overridden' })}
                 </span>
-                 <span className="flex items-center gap-2 font-bold">
+                <span className="flex items-center gap-2 font-bold">
                     <span className="w-2.5 h-2.5 rounded-full bg-brand-slate/20" />
-                    Modification non enregistrée
+                    {t('pages.contractDetails.grid.legend.unsaved', { defaultValue: 'Unsaved change' })}
                 </span>
             </div>
         </div>
     );
 }
-

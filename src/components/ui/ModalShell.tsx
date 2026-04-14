@@ -1,8 +1,9 @@
-import { useEffect } from 'react';
+import { useId } from 'react';
 import { X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Button } from './Button';
 import { Save } from 'lucide-react';
+import ModalPortal from './ModalPortal';
 
 /**
  * ModalShell — shared self-contained overlay for all business modals.
@@ -60,14 +61,8 @@ export default function ModalShell({
     children,
 }: ModalShellProps) {
     const { t } = useTranslation('common');
-    // Close on Escape
-    useEffect(() => {
-        const handler = (e: KeyboardEvent) => {
-            if (e.key === 'Escape') onClose();
-        };
-        if (isOpen) document.addEventListener('keydown', handler);
-        return () => document.removeEventListener('keydown', handler);
-    }, [isOpen, onClose]);
+    const titleId = useId();
+    const subtitleId = useId();
 
     if (!isOpen) return null;
     const resolvedSubmitLabel = submitLabel ?? t('actions.save', { defaultValue: 'Save' });
@@ -76,7 +71,7 @@ export default function ModalShell({
     const builtInFooter = (
         <div className="
             px-6 py-4 sticky bottom-0 z-10
-            flex items-center justify-end gap-3
+            flex flex-wrap items-center justify-end gap-3
             border-t border-brand-slate/15 dark:border-brand-slate/20
             bg-brand-light/80 dark:bg-brand-navy/80 backdrop-blur-sm
             rounded-b-2xl
@@ -96,7 +91,7 @@ export default function ModalShell({
                 className="gap-2 px-6 disabled:opacity-50 disabled:cursor-not-allowed"
             >
                 {isSubmitting
-                    ? <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    ? <div className="w-4 h-4 border-2 border-brand-light border-t-transparent rounded-full animate-spin" />
                     : <Save size={16} />
                 }
                 {resolvedSubmitLabel}
@@ -107,7 +102,7 @@ export default function ModalShell({
     const customFooter = footer ? (
         <div className="
             px-6 py-4 sticky bottom-0 z-10
-            flex items-center justify-end gap-3
+            flex flex-wrap items-center justify-end gap-3
             border-t border-brand-slate/15 dark:border-brand-slate/20
             bg-brand-light/80 dark:bg-brand-navy/80 backdrop-blur-sm
             rounded-b-2xl
@@ -123,7 +118,7 @@ export default function ModalShell({
             px-6 py-4 sticky top-0 z-10
             flex items-center justify-between
             border-b border-brand-slate/15 dark:border-brand-slate/20
-            bg-white dark:bg-brand-navy
+            bg-brand-light dark:bg-brand-navy
         ">
             <div className="flex items-center gap-3">
                 {icon && (
@@ -132,11 +127,11 @@ export default function ModalShell({
                     </div>
                 )}
                 <div>
-                    <h3 className="text-lg font-bold text-brand-navy dark:text-brand-light">
+                    <h3 id={titleId} className="text-lg font-bold text-brand-navy dark:text-brand-light">
                         {title}
                     </h3>
                     {subtitle && (
-                        <p className="text-xs text-brand-slate font-medium uppercase tracking-wider mt-0.5">
+                        <p id={subtitleId} className="text-xs text-brand-slate font-medium uppercase tracking-wider mt-0.5">
                             {subtitle}
                         </p>
                     )}
@@ -145,6 +140,7 @@ export default function ModalShell({
             <button
                 type="button"
                 onClick={onClose}
+                aria-label={t('actions.close', { defaultValue: 'Close' })}
                 className="p-2 rounded-full transition-colors cursor-pointer
                     text-brand-slate hover:text-brand-navy hover:bg-brand-slate/10
                     dark:hover:text-brand-light dark:hover:bg-brand-slate/20"
@@ -158,18 +154,19 @@ export default function ModalShell({
         relative z-10 w-full ${maxWidth} mx-auto
         flex flex-col max-h-[90vh] overflow-hidden
         rounded-2xl shadow-md
-        bg-white dark:bg-brand-navy
-        border border-transparent dark:border-brand-slate/20
+        bg-brand-light/95 dark:bg-brand-navy/95 backdrop-blur-xl
+        border border-brand-light/60 dark:border-brand-light/10
     `;
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+        <ModalPortal isOpen={isOpen} onClose={onClose}>
+        <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4 bg-brand-navy/55 backdrop-blur-sm animate-in fade-in">
             {/* Backdrop — click to close */}
             <div className="absolute inset-0" onClick={onClose} />
 
             {/* Panel */}
             {onSubmit ? (
-                <form onSubmit={onSubmit} className={panelClasses}>
+                <form onSubmit={onSubmit} className={panelClasses} role="dialog" aria-modal="true" aria-labelledby={titleId} aria-describedby={subtitle ? subtitleId : undefined}>
                     {header}
                     <div className="flex-1 overflow-y-auto">
                         {children}
@@ -177,7 +174,7 @@ export default function ModalShell({
                     {resolvedFooter}
                 </form>
             ) : (
-                <div className={panelClasses}>
+                <div className={panelClasses} role="dialog" aria-modal="true" aria-labelledby={titleId} aria-describedby={subtitle ? subtitleId : undefined}>
                     {header}
                     <div className="flex-1 overflow-y-auto">
                         {children}
@@ -186,5 +183,6 @@ export default function ModalShell({
                 </div>
             )}
         </div>
+        </ModalPortal>
     );
 }

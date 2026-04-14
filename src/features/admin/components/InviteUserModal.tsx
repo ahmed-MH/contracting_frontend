@@ -18,7 +18,7 @@ export default function InviteUserModal({ isOpen, onClose }: InviteUserModalProp
     const queryClient = useQueryClient();
     const { t } = useTranslation('common');
     const schema = useMemo(() => createInviteUserSchema(t), [t]);
-    const inputClassName = 'w-full rounded-2xl border border-white/70 bg-white/80 px-4 py-3 text-sm text-brand-navy shadow-sm outline-none transition focus:border-brand-mint focus:ring-2 focus:ring-brand-mint/20 dark:border-white/10 dark:bg-white/5 dark:text-brand-light';
+    const inputClassName = 'w-full rounded-2xl border border-brand-light/70 bg-brand-light/80 px-4 py-3 text-sm text-brand-navy shadow-sm outline-none transition focus:border-brand-mint focus:ring-2 focus:ring-brand-mint/20 dark:border-brand-light/10 dark:bg-brand-light/5 dark:text-brand-light';
     const helperTextClassName = 'mt-2 text-xs leading-5 text-brand-slate dark:text-brand-light/75';
 
     const { data: hotels = [] } = useQuery({
@@ -93,7 +93,7 @@ export default function InviteUserModal({ isOpen, onClose }: InviteUserModalProp
                         <label className="mb-1 block text-sm font-medium text-brand-navy dark:text-brand-light">
                             {t('pages.users.modals.invite.assignedHotels', { defaultValue: 'Assigned Hotels' })} *
                         </label>
-                        <div className="max-h-52 space-y-2 overflow-y-auto rounded-2xl border border-white/70 bg-white/70 p-3 dark:border-white/10 dark:bg-white/5">
+                        <div className="max-h-52 space-y-2 overflow-y-auto rounded-2xl border border-brand-light/70 bg-brand-light/70 p-3 dark:border-brand-light/10 dark:bg-brand-light/5">
                             {hotels.map((hotel) => (
                                 <label key={hotel.id} className="flex cursor-pointer items-center gap-3 rounded-2xl border border-transparent px-3 py-2 text-sm text-brand-navy transition hover:border-brand-mint/15 hover:bg-brand-mint/8 dark:text-brand-light dark:hover:bg-brand-mint/10">
                                     <input
@@ -114,14 +114,14 @@ export default function InviteUserModal({ isOpen, onClose }: InviteUserModalProp
                     <button
                         type="button"
                         onClick={onClose}
-                        className="rounded-2xl border border-white/70 bg-white/70 px-4 py-2.5 text-sm font-medium text-brand-slate transition hover:text-brand-navy dark:border-white/10 dark:bg-white/5 dark:text-brand-light/75 dark:hover:text-white"
+                        className="rounded-2xl border border-brand-light/70 bg-brand-light/70 px-4 py-2.5 text-sm font-medium text-brand-slate transition hover:text-brand-navy dark:border-brand-light/10 dark:bg-brand-light/5 dark:text-brand-light/75 dark:hover:text-brand-light"
                     >
                         {t('actions.cancel', { defaultValue: 'Cancel' })}
                     </button>
                     <button
                         type="submit"
                         disabled={inviteMutation.isPending}
-                        className="rounded-2xl bg-brand-mint px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-mint disabled:opacity-50"
+                        className="rounded-2xl bg-brand-mint px-4 py-2.5 text-sm font-semibold text-brand-light transition hover:bg-brand-mint disabled:opacity-50"
                     >
                         {inviteMutation.isPending
                             ? t('pages.users.modals.invite.sending', { defaultValue: 'Sending...' })

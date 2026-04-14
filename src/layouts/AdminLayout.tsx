@@ -39,13 +39,13 @@ export default function AdminLayout() {
             <div className="relative flex min-h-screen">
                 <aside
                     className={clsx(
-                        'hidden shrink-0 border-r border-white/60 bg-white/72 px-4 py-5 shadow-md backdrop-blur-2xl transition-[width,padding] duration-300 dark:border-white/10 dark:bg-brand-navy/72 lg:flex lg:flex-col',
+                        'hidden shrink-0 border-r border-brand-light/60 bg-brand-light/72 px-4 py-5 shadow-md backdrop-blur-2xl transition-[width,padding] duration-300 dark:border-brand-light/10 dark:bg-brand-navy/72 lg:flex lg:flex-col',
                         isSidebarCollapsed ? 'w-[104px]' : 'w-[320px]',
                     )}
                 >
                     <div
                         className={clsx(
-                            'rounded-2xl border border-white/70 bg-white/80 shadow-sm dark:border-white/10 dark:bg-white/5',
+                            'rounded-2xl border border-brand-light/70 bg-brand-light/80 shadow-sm dark:border-brand-light/10 dark:bg-brand-light/5',
                             isSidebarCollapsed ? 'p-4' : 'px-4 py-3',
                         )}
                     >
@@ -58,7 +58,7 @@ export default function AdminLayout() {
                                 <>
                                     <Logo />
                                     <div>
-                                        <p className="text-sm font-semibold text-brand-navy dark:text-white">
+                                        <p className="text-sm font-semibold text-brand-navy dark:text-brand-light">
                                             {t('common:navigation.roles.admin.label', { defaultValue: 'Admin' })}
                                         </p>
                                         <p className="mt-0.5 text-xs text-brand-slate dark:text-brand-light/65">
@@ -94,21 +94,21 @@ export default function AdminLayout() {
                                                         ? [
                                                             'flex items-center justify-center rounded-3xl px-0 py-3',
                                                             isActive
-                                                                ? 'bg-brand-navy text-white shadow-md'
-                                                                : 'text-brand-slate hover:bg-white/75 hover:text-brand-navy dark:text-brand-light/75 dark:hover:bg-white/8 dark:hover:text-white',
+                                                                ? 'bg-brand-navy text-brand-light shadow-md'
+                                                                : 'text-brand-slate hover:bg-brand-light/75 hover:text-brand-navy dark:text-brand-light/75 dark:hover:bg-brand-light/8 dark:hover:text-brand-light',
                                                         ]
                                                         : [
                                                             'block rounded-3xl border px-4 py-3',
                                                             isActive
-                                                                ? 'border-brand-mint/25 bg-brand-navy text-white shadow-md'
-                                                                : 'border-transparent bg-white/52 text-brand-slate hover:border-white/80 hover:bg-white/90 hover:text-brand-navy dark:bg-white/5 dark:hover:bg-white/8 dark:hover:text-white',
+                                                                ? 'border-brand-mint/25 bg-brand-navy text-brand-light shadow-md'
+                                                                : 'border-transparent bg-brand-light/52 text-brand-slate hover:border-brand-light/80 hover:bg-brand-light/90 hover:text-brand-navy dark:bg-brand-light/5 dark:hover:bg-brand-light/8 dark:hover:text-brand-light',
                                                         ],
                                                 )}
                                             >
                                                 <div className={clsx('flex', isSidebarCollapsed ? 'items-center justify-center' : 'items-start gap-3')}>
                                                     <div className={clsx(
                                                         'rounded-2xl p-2.5',
-                                                        isActive ? 'bg-white/10 text-brand-mint' : 'bg-brand-mint/10 text-brand-mint',
+                                                        isActive ? 'bg-brand-light/10 text-brand-mint' : 'bg-brand-mint/10 text-brand-mint',
                                                     )}>
                                                         <Icon size={17} />
                                                     </div>
@@ -144,7 +144,7 @@ export default function AdminLayout() {
                             <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-brand-mint">
                                 {t('common:layouts.admin.billingGuardrails.title', { defaultValue: 'Billing Guardrails' })}
                             </p>
-                            <p className="mt-2 text-sm font-medium text-brand-navy dark:text-white">
+                            <p className="mt-2 text-sm font-medium text-brand-navy dark:text-brand-light">
                                 {t('common:layouts.admin.billingGuardrails.renewals', { defaultValue: '3 renewals need attention before the next cycle closes.' })}
                             </p>
                             <p className="mt-1 text-sm text-brand-slate dark:text-brand-light/75">
@@ -155,7 +155,7 @@ export default function AdminLayout() {
                 </aside>
 
                 <div className="flex min-w-0 flex-1 flex-col">
-                    <header className="sticky top-0 z-30 border-b border-white/55 bg-brand-light/74 backdrop-blur-2xl dark:border-white/10 dark:bg-brand-navy/70">
+                    <header className="sticky top-0 z-30 border-b border-brand-light/55 bg-brand-light/74 backdrop-blur-2xl dark:border-brand-light/10 dark:bg-brand-navy/70">
                         <div className="px-4 py-3 md:px-6 lg:px-8">
                             <div className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
                                 <div className="lg:hidden">
@@ -170,7 +170,7 @@ export default function AdminLayout() {
                                     <button
                                         type="button"
                                         onClick={() => setIsSidebarCollapsed((value) => !value)}
-                                        className="inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-white/60 bg-white/70 text-brand-slate shadow-sm backdrop-blur-xl transition hover:text-brand-navy dark:border-white/10 dark:bg-white/5 dark:text-brand-light/75 dark:hover:text-white"
+                                        className="inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-brand-light/60 bg-brand-light/70 text-brand-slate shadow-sm backdrop-blur-xl transition hover:text-brand-navy dark:border-brand-light/10 dark:bg-brand-light/5 dark:text-brand-light/75 dark:hover:text-brand-light"
                                         aria-label={isSidebarCollapsed
                                             ? t('common:layouts.admin.sidebar.expandSidebar', { defaultValue: 'Expand sidebar' })
                                             : t('common:layouts.admin.sidebar.collapseSidebar', { defaultValue: 'Collapse sidebar' })}
@@ -183,7 +183,7 @@ export default function AdminLayout() {
                                             {t('common:layouts.admin.workspace', { defaultValue: 'Admin workspace' })}
                                         </p>
                                         <div className="mt-1">
-                                            <h1 className="text-lg font-semibold tracking-tight text-brand-navy dark:text-white">
+                                            <h1 className="text-lg font-semibold tracking-tight text-brand-navy dark:text-brand-light">
                                                 {activeItem
                                                     ? (activeItem.labelKey
                                                         ? t(activeItem.labelKey, { defaultValue: activeItem.label })
@@ -220,8 +220,8 @@ export default function AdminLayout() {
                                             className={clsx(
                                                 'premium-nav-glass flex items-center gap-2 px-3 py-2 text-sm font-medium transition',
                                                 isActive
-                                                    ? 'border-brand-mint/20 bg-brand-navy text-white'
-                                                    : 'text-brand-slate hover:text-brand-navy dark:hover:text-white',
+                                                    ? 'border-brand-mint/20 bg-brand-navy text-brand-light'
+                                                    : 'text-brand-slate hover:text-brand-navy dark:hover:text-brand-light',
                                             )}
                                         >
                                             <Icon size={15} />

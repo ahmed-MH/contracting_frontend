@@ -28,6 +28,7 @@ export interface NavigationItem {
     description?: string;
     descriptionKey?: string;
     matchPrefixes?: string[];
+    exact?: boolean;
 }
 
 export interface NavigationSection {
@@ -151,7 +152,7 @@ export const adminSections: NavigationSection[] = [
 
 export const commercialPrimaryTabs: NavigationItem[] = [
     {
-        label: 'Hotels',
+        label: 'Hotel',
         labelKey: 'common:navigation.commercial.primary.hotels.label',
         to: '/product/hotel',
         icon: Hotel,
@@ -160,7 +161,16 @@ export const commercialPrimaryTabs: NavigationItem[] = [
         matchPrefixes: ['/product/hotel'],
     },
     {
-        label: 'Catalog',
+        label: 'Partners',
+        labelKey: 'common:navigation.commercial.primary.partners.label',
+        to: '/partners/affiliates',
+        icon: Users,
+        description: 'Distribution partners and tour operators.',
+        descriptionKey: 'common:navigation.commercial.primary.partners.description',
+        matchPrefixes: ['/partners'],
+    },
+    {
+        label: 'Catalogue',
         labelKey: 'common:navigation.commercial.primary.catalog.label',
         to: '/product/rooms',
         icon: Package,
@@ -176,15 +186,6 @@ export const commercialPrimaryTabs: NavigationItem[] = [
             '/product/early-bookings',
             '/product/cancellations',
         ],
-    },
-    {
-        label: 'Partners',
-        labelKey: 'common:navigation.commercial.primary.partners.label',
-        to: '/partners/affiliates',
-        icon: Users,
-        description: 'Distribution partners and tour operators.',
-        descriptionKey: 'common:navigation.commercial.primary.partners.description',
-        matchPrefixes: ['/partners'],
     },
     {
         label: 'Contracts',
@@ -215,6 +216,124 @@ export const commercialProductTabs: NavigationItem[] = [
     { label: 'Monoparental', labelKey: 'common:navigation.commercial.product.monoparental', to: '/product/monoparental', icon: Contact },
     { label: 'Early Booking', labelKey: 'common:navigation.commercial.product.earlyBooking', to: '/product/early-bookings', icon: CalendarCheck },
     { label: 'Cancellations', labelKey: 'common:navigation.commercial.product.cancellations', to: '/product/cancellations', icon: ShieldAlert },
+];
+
+export const commercialWorkspaceSections: NavigationSection[] = [
+    {
+        title: 'Hotel Setup',
+        titleKey: 'common:navigation.commercial.workspace.hotelSetup',
+        items: [
+            {
+                label: 'Rooms',
+                labelKey: 'common:navigation.commercial.product.rooms',
+                to: '/product/rooms',
+                icon: BedDouble,
+                description: 'Room types and sellable inventory.',
+                matchPrefixes: ['/product/rooms'],
+            },
+            {
+                label: 'Arrangements',
+                labelKey: 'common:navigation.commercial.product.arrangements',
+                to: '/product/arrangements',
+                icon: UtensilsCrossed,
+                description: 'Board bases used by contracts and rates.',
+                matchPrefixes: ['/product/arrangements'],
+            },
+            {
+                label: 'Exchange Rates',
+                labelKey: 'common:navigation.commercial.product.exchangeRates',
+                to: '/product/hotel',
+                icon: CircleDollarSign,
+                description: 'Hotel currency and exchange settings.',
+                matchPrefixes: ['/product/hotel'],
+            },
+        ],
+    },
+    {
+        title: 'Partners',
+        titleKey: 'common:navigation.commercial.workspace.partners',
+        items: [
+            {
+                label: 'Affiliates',
+                labelKey: 'common:navigation.commercial.primary.partners.label',
+                to: '/partners/affiliates',
+                icon: Users,
+                description: 'Tour operators and distribution partners.',
+                matchPrefixes: ['/partners'],
+            },
+        ],
+    },
+    {
+        title: 'Catalog',
+        titleKey: 'common:navigation.commercial.workspace.catalog',
+        items: [
+            { label: 'Supplements', labelKey: 'common:navigation.commercial.product.supplements', to: '/product/supplements', icon: Package, matchPrefixes: ['/product/supplements'] },
+            { label: 'Reductions', labelKey: 'common:navigation.commercial.product.reductions', to: '/product/reductions', icon: Sparkles, matchPrefixes: ['/product/reductions'] },
+            { label: 'SPO', labelKey: 'common:navigation.commercial.product.spos', to: '/product/spos', icon: Gift, matchPrefixes: ['/product/spos'] },
+            { label: 'Early Booking', labelKey: 'common:navigation.commercial.product.earlyBooking', to: '/product/early-bookings', icon: CalendarCheck, matchPrefixes: ['/product/early-bookings'] },
+            { label: 'Monoparental', labelKey: 'common:navigation.commercial.product.monoparental', to: '/product/monoparental', icon: Contact, matchPrefixes: ['/product/monoparental'] },
+            { label: 'Cancellation', labelKey: 'common:navigation.commercial.product.cancellations', to: '/product/cancellations', icon: ShieldAlert, matchPrefixes: ['/product/cancellations'] },
+        ],
+    },
+    {
+        title: 'Contracts',
+        titleKey: 'common:navigation.commercial.workspace.contracts',
+        items: [
+            {
+                label: 'Contracts list',
+                labelKey: 'common:navigation.commercial.primary.contracts.label',
+                to: '/contracts',
+                icon: FileText,
+                description: 'Agreement roster and lifecycle status.',
+                exact: true,
+            },
+            {
+                label: 'Contract details',
+                labelKey: 'common:navigation.commercial.workspace.contractDetails',
+                to: '/contracts',
+                icon: Briefcase,
+                description: 'Periods, rooms, rates, and rule workbench.',
+                matchPrefixes: ['/contracts/'],
+            },
+        ],
+    },
+    {
+        title: 'Tools',
+        titleKey: 'common:navigation.commercial.workspace.tools',
+        items: [
+            {
+                label: 'Simulator',
+                labelKey: 'common:navigation.commercial.primary.simulator.label',
+                to: '/simulator',
+                icon: Calculator,
+                description: 'Calculate contracted prices for a stay.',
+                matchPrefixes: ['/simulator'],
+            },
+        ],
+    },
+];
+
+export const commercialTopNavGroups: NavigationSection[] = commercialWorkspaceSections.filter((section) =>
+    ['Hotel Setup', 'Partners', 'Catalog'].includes(section.title),
+);
+
+export const commercialTopNavItems: NavigationItem[] = [
+    {
+        label: 'Contracts',
+        labelKey: 'common:navigation.commercial.primary.contracts.label',
+        to: '/contracts',
+        icon: FileText,
+        description: 'Agreement roster and lifecycle status.',
+        matchPrefixes: ['/contracts'],
+    },
+    {
+        label: 'Simulator',
+        labelKey: 'common:navigation.commercial.primary.simulator.label',
+        to: '/simulator',
+        icon: Calculator,
+        description: 'Calculate contracted prices for a stay.',
+        matchPrefixes: ['/simulator'],
+    },
 ];
 
 export const agentTabs: NavigationItem[] = [
@@ -275,7 +394,7 @@ const roleConfigs: Record<UserRole, RoleNavigationConfig> = {
         subtitle: 'Stay in flow while editing inventory, partners, and contract data.',
         subtitleKey: 'common:navigation.roles.commercial.subtitle',
         defaultPath: '/contracts',
-        sections: [{ title: 'Workspace', titleKey: 'common:navigation.roles.commercial.sectionTitle', items: commercialPrimaryTabs }],
+        sections: commercialWorkspaceSections,
     },
     AGENT: {
         role: 'AGENT',
@@ -301,6 +420,10 @@ export function getDefaultPathForRole(role?: UserRole | null): string {
 }
 
 export function isNavigationItemActive(pathname: string, item: NavigationItem): boolean {
+    if (item.exact) {
+        return pathname === item.to;
+    }
+
     if (pathname === item.to) {
         return true;
     }
@@ -310,6 +433,10 @@ export function isNavigationItemActive(pathname: string, item: NavigationItem): 
 
 export function isProductRoute(pathname: string): boolean {
     return pathname.startsWith('/product/');
+}
+
+export function isCatalogRoute(pathname: string): boolean {
+    return isProductRoute(pathname) && !pathname.startsWith('/product/hotel');
 }
 
 export function isContractRoute(pathname: string): boolean {

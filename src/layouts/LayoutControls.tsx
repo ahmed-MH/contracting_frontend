@@ -32,12 +32,15 @@ interface HeaderActionsProps {
     };
     compact?: boolean;
     showHotel?: boolean;
+    compactAccount?: boolean;
+    withGroupDividers?: boolean;
+    className?: string;
 }
 
 export function BrandLockup({ eyebrow, title, subtitle, compact = false }: BrandLockupProps) {
     return (
         <div className="flex items-start gap-3">
-            <div className="rounded-2xl border border-white/65 bg-white/70 p-2.5 shadow-sm backdrop-blur-xl dark:border-white/10 dark:bg-white/5">
+            <div className="rounded-2xl border border-brand-light/65 bg-brand-light/70 p-2.5 shadow-sm backdrop-blur-xl dark:border-brand-light/10 dark:bg-brand-light/5">
                 <Logo className={compact ? 'scale-90' : ''} />
             </div>
             <div className="min-w-0">
@@ -45,7 +48,7 @@ export function BrandLockup({ eyebrow, title, subtitle, compact = false }: Brand
                     {eyebrow}
                 </p>
                 <h1 className={clsx(
-                    'truncate font-semibold tracking-tight text-brand-navy dark:text-white',
+                    'truncate font-semibold tracking-tight text-brand-navy dark:text-brand-light',
                     compact ? 'text-base' : 'text-xl md:text-2xl',
                 )}>
                     {title}
@@ -65,7 +68,7 @@ export function HotelSelector({ compact = false, className }: { compact?: boolea
     const { currentHotel, availableHotels, isLoading, switchHotel } = useHotel();
 
     if (isLoading) {
-        return <div className={clsx('h-11 w-52 animate-pulse rounded-2xl bg-white/50 dark:bg-white/5', className)} />;
+        return <div className={clsx('h-11 w-52 animate-pulse rounded-2xl border border-brand-light/50 bg-transparent dark:border-brand-light/10', className)} />;
     }
 
     if (availableHotels.length === 0) {
@@ -75,14 +78,14 @@ export function HotelSelector({ compact = false, className }: { compact?: boolea
     if (availableHotels.length === 1) {
         return (
             <div className={clsx(
-                'inline-flex min-w-0 items-center gap-3 rounded-2xl border border-white/60 bg-white/70 px-3 py-2 shadow-sm backdrop-blur-xl dark:border-white/10 dark:bg-white/5',
+                'inline-flex min-w-0 items-center gap-3 rounded-2xl border border-brand-light/60 bg-transparent px-3 py-2 backdrop-blur-xl transition-colors hover:bg-brand-light/55 dark:border-brand-light/10 dark:hover:bg-brand-light/5',
                 className,
             )}>
-                <div className="rounded-xl bg-brand-mint/12 p-2 text-brand-mint">
+                <div className="rounded-xl bg-brand-light/55 p-2 text-brand-slate dark:bg-transparent dark:text-brand-light/45">
                     <Hotel size={16} />
                 </div>
                 <div className="min-w-0">
-                    <p className="truncate text-sm font-semibold text-brand-navy dark:text-white">{currentHotel?.name ?? t('common:entities.hotel', { defaultValue: 'Hotel' })}</p>
+                    <p className="truncate text-sm font-semibold text-brand-navy dark:text-brand-light">{currentHotel?.name ?? t('common:entities.hotel', { defaultValue: 'Hotel' })}</p>
                     {currentHotel?.reference && (
                         <p className="truncate text-[11px] uppercase tracking-[0.16em] text-brand-slate">
                             {currentHotel.reference}
@@ -95,12 +98,12 @@ export function HotelSelector({ compact = false, className }: { compact?: boolea
 
     return (
         <div className={clsx('relative min-w-0', className)}>
-            <Hotel size={16} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-brand-mint" />
+            <Hotel size={16} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-brand-slate dark:text-brand-light/45" />
             <select
                 value={currentHotel?.id ?? ''}
                 onChange={(event) => switchHotel(Number(event.target.value))}
                 className={clsx(
-                    'w-full appearance-none rounded-2xl border border-white/60 bg-white/72 pl-10 pr-10 text-sm font-medium text-brand-navy shadow-sm outline-none backdrop-blur-xl transition focus:border-brand-mint focus:ring-2 focus:ring-brand-mint/20 dark:border-white/10 dark:bg-white/5 dark:text-white',
+                    'w-full appearance-none rounded-2xl border border-brand-light/60 bg-transparent pl-10 pr-10 text-sm font-medium text-brand-navy outline-none backdrop-blur-xl transition-colors hover:bg-brand-light/55 focus:border-brand-mint focus:ring-2 focus:ring-brand-mint/20 dark:border-brand-light/10 dark:text-brand-light dark:hover:bg-brand-light/5',
                     compact ? 'h-10 min-w-[210px]' : 'h-11 min-w-[240px]',
                 )}
             >
@@ -120,6 +123,9 @@ export function HeaderActions({
     primaryAction,
     compact = false,
     showHotel = true,
+    compactAccount = false,
+    withGroupDividers = false,
+    className,
 }: HeaderActionsProps) {
     const { t } = useTranslation(['auth', 'common']);
     const navigate = useNavigate();
@@ -130,17 +136,21 @@ export function HeaderActions({
 
     return (
         <div className={clsx(
-            'flex items-center gap-2 md:gap-3',
+            'flex flex-wrap items-center gap-2 md:gap-3',
             compact && 'gap-2',
+            className,
         )}>
             {showHotel && <HotelSelector compact={compact} className="hidden lg:block" />}
+            {withGroupDividers && showHotel && (
+                <span className="hidden h-10 w-px bg-brand-navy/10 dark:bg-brand-light/10 lg:block" aria-hidden="true" />
+            )}
             <LanguageSwitcher compact={compact} />
 
             {primaryAction && (
                 <button
                     type="button"
                     onClick={() => navigate(primaryAction.to)}
-                    className="inline-flex h-11 items-center gap-2 rounded-2xl bg-brand-mint px-4 text-sm font-semibold text-white shadow-md transition hover:-translate-y-0.5 hover:bg-brand-mint/90"
+                    className="inline-flex h-11 items-center gap-2 rounded-2xl bg-brand-mint px-4 text-sm font-semibold text-brand-light shadow-md transition hover:-translate-y-0.5 hover:bg-brand-mint/90"
                 >
                     <ActionIcon size={16} />
                     <span className="hidden xl:inline">{primaryAction.label}</span>
@@ -150,18 +160,21 @@ export function HeaderActions({
             <button
                 type="button"
                 onClick={toggleTheme}
-                className="inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-white/60 bg-white/70 text-brand-slate shadow-sm backdrop-blur-xl transition hover:text-brand-navy dark:border-white/10 dark:bg-white/5 dark:text-brand-light/80 dark:hover:text-white"
+                className="inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-brand-light/60 bg-brand-light/70 text-brand-slate shadow-sm backdrop-blur-xl transition-colors hover:bg-brand-light/80 hover:text-brand-navy dark:border-brand-light/10 dark:bg-brand-light/5 dark:text-brand-light/80 dark:hover:bg-brand-light/8 dark:hover:text-brand-light"
                 aria-label={t('common:actions.toggleTheme', { defaultValue: 'Toggle theme' })}
             >
                 {isDark ? <Sun size={17} /> : <Moon size={17} />}
             </button>
 
-            <div className="hidden min-w-0 items-center gap-3 rounded-2xl border border-white/60 bg-white/72 px-3 py-2 shadow-sm backdrop-blur-xl md:flex dark:border-white/10 dark:bg-white/5">
+            <div className={clsx(
+                'hidden min-w-0 items-center rounded-2xl border border-brand-light/60 bg-brand-light/72 shadow-sm backdrop-blur-xl md:flex dark:border-brand-light/10 dark:bg-brand-light/5',
+                compactAccount ? 'gap-1.5 px-2 py-1.5' : 'gap-3 px-3 py-2',
+            )}>
                 <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-brand-mint/14 text-sm font-bold text-brand-mint">
                     {user?.firstName?.[0]}{user?.lastName?.[0]}
                 </div>
-                <div className="min-w-0">
-                    <p className="truncate text-sm font-semibold text-brand-navy dark:text-white">
+                <div className={clsx('min-w-0', compactAccount && 'hidden')}>
+                    <p className="truncate text-sm font-semibold text-brand-navy dark:text-brand-light">
                         {user?.firstName} {user?.lastName}
                     </p>
                     <p className="truncate text-[11px] uppercase tracking-[0.16em] text-brand-slate">
@@ -174,7 +187,7 @@ export function HeaderActions({
                         logout();
                         navigate('/login', { replace: true });
                     }}
-                    className="inline-flex h-9 w-9 items-center justify-center rounded-xl text-brand-slate transition hover:bg-brand-mint/10 hover:text-brand-mint dark:hover:bg-brand-mint/15"
+                    className="inline-flex h-9 w-9 items-center justify-center rounded-xl text-brand-slate transition-colors hover:bg-brand-mint/10 hover:text-brand-mint dark:hover:bg-brand-mint/15"
                     aria-label={t('common:actions.logOut', { defaultValue: 'Log out' })}
                 >
                     <LogOut size={16} />

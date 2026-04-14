@@ -39,7 +39,7 @@ export function LanguageSwitcher({ compact = false, className }: LanguageSwitche
     return (
         <div
             className={clsx(
-                'inline-flex items-center gap-1.5 rounded-2xl border border-white/60 bg-white/72 px-2 py-1 shadow-sm backdrop-blur-xl dark:border-white/10 dark:bg-white/5',
+                'inline-flex items-center gap-1.5 rounded-2xl border border-brand-light/60 bg-brand-light/72 px-2 py-1 shadow-sm backdrop-blur-xl dark:border-brand-light/10 dark:bg-brand-light/5',
                 compact && 'py-0.5',
                 className,
             )}
@@ -55,10 +55,10 @@ export function LanguageSwitcher({ compact = false, className }: LanguageSwitche
                         type="button"
                         onClick={() => handleLanguageChange(option.code)}
                         className={clsx(
-                            'rounded-xl px-2.5 py-1 text-xs font-semibold tracking-wide transition',
+                            'rounded-xl px-2.5 py-1 text-xs font-semibold tracking-wide transition-colors',
                             currentLanguage === option.code
-                                ? 'bg-brand-mint text-white shadow-md'
-                                : 'text-brand-slate hover:text-brand-navy dark:text-brand-light/75 dark:hover:text-white',
+                                ? 'bg-brand-mint text-brand-light shadow-md'
+                                : 'text-brand-slate hover:text-brand-navy dark:text-brand-light/75 dark:hover:text-brand-light',
                         )}
                     >
                         {option.label}

@@ -45,14 +45,14 @@ export default function SupervisorLayout() {
             <div className="relative flex min-h-screen">
                 <aside
                     className={clsx(
-                        'hidden shrink-0 border-r border-white/60 bg-brand-navy px-4 py-5 text-white shadow-md transition-[width,padding] duration-300 lg:flex lg:flex-col',
+                        'hidden shrink-0 border-r border-brand-light/60 bg-brand-navy px-4 py-5 text-brand-light shadow-md transition-[width,padding] duration-300 lg:flex lg:flex-col',
                         isSidebarCollapsed ? 'w-[104px]' : 'w-[320px]',
                     )}
                 >
                     <div className={clsx('flex items-center', isSidebarCollapsed ? 'justify-center' : 'justify-start')}>
                         <div
                             className={clsx(
-                                'rounded-2xl border border-white/10 bg-white/6 shadow-sm backdrop-blur-xl',
+                                'rounded-2xl border border-brand-light/10 bg-brand-light/6 shadow-sm backdrop-blur-xl',
                                 isSidebarCollapsed ? 'p-4' : 'px-4 py-3',
                             )}
                         >
@@ -64,7 +64,7 @@ export default function SupervisorLayout() {
                                 <div className="flex items-center gap-3">
                                     <Logo tone="light" />
                                     <div>
-                                        <p className="text-sm font-semibold text-white">
+                                        <p className="text-sm font-semibold text-brand-light">
                                             {t('common:layouts.supervisor.sidebar.supervisor', { defaultValue: 'Supervisor' })}
                                         </p>
                                         <p className="mt-0.5 text-xs text-brand-light/65">
@@ -100,20 +100,20 @@ export default function SupervisorLayout() {
                                                         ? [
                                                             'flex items-center justify-center rounded-3xl px-0 py-3',
                                                             isActive
-                                                                ? 'bg-white/10 text-white shadow-md'
-                                                                : 'text-brand-light/75 hover:bg-white/6 hover:text-white',
+                                                                ? 'bg-brand-light/10 text-brand-light shadow-md'
+                                                                : 'text-brand-light/75 hover:bg-brand-light/6 hover:text-brand-light',
                                                         ]
                                                         : [
                                                             'flex items-start gap-3 rounded-3xl px-4 py-3',
                                                             isActive
-                                                                ? 'bg-white/10 text-white shadow-md'
-                                                                : 'text-brand-light/75 hover:bg-white/6 hover:text-white',
+                                                                ? 'bg-brand-light/10 text-brand-light shadow-md'
+                                                                : 'text-brand-light/75 hover:bg-brand-light/6 hover:text-brand-light',
                                                         ],
                                                 )}
                                             >
                                                 <div className={clsx(
                                                     'rounded-2xl p-2.5',
-                                                    isActive ? 'bg-brand-mint/18 text-brand-mint' : 'bg-white/5 text-brand-light/75',
+                                                    isActive ? 'bg-brand-mint/18 text-brand-mint' : 'bg-brand-light/5 text-brand-light/75',
                                                 )}>
                                                     <Icon size={17} />
                                                 </div>
@@ -142,13 +142,13 @@ export default function SupervisorLayout() {
 
                     {!isSidebarCollapsed && (
                         <>
-                            <div className="mt-8 rounded-2xl border border-white/10 bg-white/6 p-4">
+                            <div className="mt-8 rounded-2xl border border-brand-light/10 bg-brand-light/6 p-4">
                                 <p className="text-[11px] font-semibold uppercase tracking-[0.26em] text-brand-light/65">
                                     {t('common:layouts.supervisor.sidebar.systemHealth', { defaultValue: 'System Health' })}
                                 </p>
                                 <div className="mt-4 space-y-3">
                                     {systemHealthSignals.map((signal) => (
-                                        <div key={signal.label} className="flex items-center justify-between rounded-2xl bg-white/5 px-3 py-2">
+                                        <div key={signal.label} className="flex items-center justify-between rounded-2xl bg-brand-light/5 px-3 py-2">
                                             <span className="text-sm text-brand-light/75">
                                                 {t(signal.labelKey, { defaultValue: signal.label })}
                                             </span>
@@ -165,13 +165,13 @@ export default function SupervisorLayout() {
                                 </div>
                             </div>
 
-                            <div className="mt-4 rounded-2xl border border-white/10 bg-white/6 p-4">
+                            <div className="mt-4 rounded-2xl border border-brand-light/10 bg-brand-light/6 p-4">
                                 <p className="text-[11px] font-semibold uppercase tracking-[0.26em] text-brand-light/65">
                                     {t('common:layouts.supervisor.sidebar.liveLogs', { defaultValue: 'Live Logs' })}
                                 </p>
                                 <div className="mt-4 space-y-3">
                                     {platformLogs.map((entry, index) => (
-                                        <div key={entry} className="rounded-2xl border border-white/6 bg-brand-navy/70 px-3 py-3">
+                                        <div key={entry} className="rounded-2xl border border-brand-light/6 bg-brand-navy/70 px-3 py-3">
                                             <p className="text-sm text-brand-light/75">
                                                 {t(`common:layouts.supervisor.logs.${index}`, { defaultValue: entry })}
                                             </p>
@@ -184,7 +184,7 @@ export default function SupervisorLayout() {
                 </aside>
 
                 <div className="flex min-w-0 flex-1 flex-col">
-                    <header className="sticky top-0 z-30 border-b border-white/55 bg-brand-light/74 backdrop-blur-2xl dark:border-white/10 dark:bg-brand-navy/70">
+                    <header className="sticky top-0 z-30 border-b border-brand-light/55 bg-brand-light/74 backdrop-blur-2xl dark:border-brand-light/10 dark:bg-brand-navy/70">
                         <div className="px-4 py-3 md:px-6 lg:px-8">
                             <div className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
                                 <div className="lg:hidden">
@@ -199,7 +199,7 @@ export default function SupervisorLayout() {
                                     <button
                                         type="button"
                                         onClick={() => setIsSidebarCollapsed((value) => !value)}
-                                        className="inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-white/60 bg-white/70 text-brand-slate shadow-sm backdrop-blur-xl transition hover:text-brand-navy dark:border-white/10 dark:bg-white/5 dark:text-brand-light/75 dark:hover:text-white"
+                                        className="inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-brand-light/60 bg-brand-light/70 text-brand-slate shadow-sm backdrop-blur-xl transition hover:text-brand-navy dark:border-brand-light/10 dark:bg-brand-light/5 dark:text-brand-light/75 dark:hover:text-brand-light"
                                         aria-label={isSidebarCollapsed
                                             ? t('common:layouts.supervisor.sidebar.expandSidebar', { defaultValue: 'Expand sidebar' })
                                             : t('common:layouts.supervisor.sidebar.collapseSidebar', { defaultValue: 'Collapse sidebar' })}
@@ -212,7 +212,7 @@ export default function SupervisorLayout() {
                                             {t('common:layouts.supervisor.workspace', { defaultValue: 'Supervisor workspace' })}
                                         </p>
                                         <div className="mt-1">
-                                            <h1 className="text-lg font-semibold tracking-tight text-brand-navy dark:text-white">
+                                            <h1 className="text-lg font-semibold tracking-tight text-brand-navy dark:text-brand-light">
                                                 {activeItem
                                                     ? (activeItem.labelKey
                                                         ? t(activeItem.labelKey, { defaultValue: activeItem.label })
@@ -248,8 +248,8 @@ export default function SupervisorLayout() {
                                             className={clsx(
                                                 'premium-nav-glass flex items-center gap-2 px-3 py-2 text-sm font-medium transition',
                                                 isActive
-                                                    ? 'border-brand-mint/20 bg-brand-navy text-white'
-                                                    : 'text-brand-slate hover:text-brand-navy dark:hover:text-white',
+                                                    ? 'border-brand-mint/20 bg-brand-navy text-brand-light'
+                                                    : 'text-brand-slate hover:text-brand-navy dark:hover:text-brand-light',
                                             )}
                                         >
                                             <Icon size={15} />

@@ -11,6 +11,7 @@ import { EMAIL_LABELS } from '../../../constants/emailLabels';
 import { CURRENCIES } from '../../../constants/currencies';
 import { useTranslation } from 'react-i18next';
 import { createHotelSchema, type HotelFormInput, type HotelFormValues } from '../schemas/hotel.schema';
+import ModalPortal from '../../../components/ui/ModalPortal';
 
 interface EditHotelModalProps {
     isOpen: boolean;
@@ -87,8 +88,9 @@ export default function EditHotelModal({ isOpen, onClose, editing, onSubmit, isP
     const handleVatChange = (e: React.ChangeEvent<HTMLInputElement>) => setValue('vatNumber', e.target.value.toUpperCase().replace(/\s/g, ''));
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-            <div className="bg-white dark:bg-brand-navy border border-transparent dark:border-brand-slate/20 rounded-2xl shadow-md w-full max-w-2xl overflow-hidden flex flex-col max-h-[92vh]">
+        <ModalPortal isOpen={isOpen} onClose={onClose}>
+        <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4 bg-brand-navy/55 backdrop-blur-sm">
+            <div className="bg-brand-light dark:bg-brand-navy border border-transparent dark:border-brand-slate/20 rounded-2xl shadow-md w-full max-w-2xl overflow-hidden flex flex-col max-h-[92vh]">
 
                 {/* Header */}
                 <div className="px-6 py-4 border-b border-brand-slate/15 dark:border-brand-slate/20 flex items-center justify-between shrink-0">
@@ -297,8 +299,8 @@ export default function EditHotelModal({ isOpen, onClose, editing, onSubmit, isP
                                 Annuler
                             </button>
                             <button type="submit" disabled={isPending || (!isDirty && editing !== null)}
-                                className="inline-flex items-center gap-2 px-7 py-2.5 bg-brand-mint text-white text-sm font-bold rounded-xl hover:bg-brand-mint/90 active:scale-95 transition-all shadow-md shadow-brand-mint/20 disabled:opacity-50 disabled:grayscale cursor-pointer border-none outline-none">
-                                {isPending ? <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" /> : <Save size={16} />}
+                                className="inline-flex items-center gap-2 px-7 py-2.5 bg-brand-mint text-brand-light text-sm font-bold rounded-xl hover:bg-brand-mint/90 active:scale-95 transition-all shadow-md shadow-brand-mint/20 disabled:opacity-50 disabled:grayscale cursor-pointer border-none outline-none">
+                                {isPending ? <div className="w-4 h-4 border-2 border-brand-light border-t-transparent rounded-full animate-spin" /> : <Save size={16} />}
                                 {editing ? 'Enregistrer les modifications' : 'Créer l\'établissement'}
                             </button>
                         </div>
@@ -306,5 +308,6 @@ export default function EditHotelModal({ isOpen, onClose, editing, onSubmit, isP
                 </form>
             </div>
         </div>
+        </ModalPortal>
     );
 }

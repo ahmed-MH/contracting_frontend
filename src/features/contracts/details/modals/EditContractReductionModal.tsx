@@ -180,7 +180,7 @@ export default function EditContractReductionModal({
                                                     valueAsNumber: true, 
                                                     min: watchSystemCode === 'EXTRA_ADULT' ? 3 : 1 
                                                 })}
-                                                className="w-full px-4 py-2 bg-white dark:bg-brand-navy/50 border border-brand-slate/20 rounded-xl focus:ring-2 focus:ring-brand-mint transition-all text-sm font-bold text-brand-navy dark:text-brand-light outline-none"
+                                                className="w-full px-4 py-2 bg-brand-light dark:bg-brand-navy/50 border border-brand-slate/20 rounded-xl focus:ring-2 focus:ring-brand-mint transition-all text-sm font-bold text-brand-navy dark:text-brand-light outline-none"
                                                 placeholder={watchSystemCode === 'EXTRA_ADULT' ? 'ex: 3' : 'ex: 1'}
                                             />
                                         </div>
@@ -193,23 +193,23 @@ export default function EditContractReductionModal({
                                 {watchSystemCode === 'CHILD' && (
                                     <div className="col-span-2 grid grid-cols-2 gap-4 mt-2">
                                         <div>
-                                            <label className="block text-xs font-bold text-brand-navy dark:text-brand-light uppercase tracking-wider mb-2">{t('auto.features.contracts.details.modals.editcontractreductionmodal.c749ed52', { defaultValue: "Âge Minimum" })}</label>
+                                    <label className="block text-xs font-bold text-brand-navy dark:text-brand-light uppercase tracking-wider mb-2">{t('auto.features.contracts.details.modals.editcontractreductionmodal.c749ed52', { defaultValue: "Age Minimum" })}</label>
                                             <div className="relative">
                                                 <input
                                                     type="number"
                                                     {...register('minAge', { valueAsNumber: true, min: 0 })}
-                                                    className="w-full px-4 py-2 bg-white dark:bg-brand-navy/50 border border-brand-slate/20 rounded-xl focus:ring-2 focus:ring-brand-mint transition-all text-sm font-bold text-brand-navy dark:text-brand-light outline-none"
+                                                    className="w-full px-4 py-2 bg-brand-light dark:bg-brand-navy/50 border border-brand-slate/20 rounded-xl focus:ring-2 focus:ring-brand-mint transition-all text-sm font-bold text-brand-navy dark:text-brand-light outline-none"
                                                 />
                                                 <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-bold text-brand-slate/50 uppercase">{t('auto.features.contracts.details.modals.editcontractreductionmodal.98b63e8b', { defaultValue: "Ans" })}</span>
                                             </div>
                                         </div>
                                         <div>
-                                            <label className="block text-xs font-bold text-brand-navy dark:text-brand-light uppercase tracking-wider mb-2">{t('auto.features.contracts.details.modals.editcontractreductionmodal.04a95f82', { defaultValue: "Âge Maximum" })}</label>
+                                    <label className="block text-xs font-bold text-brand-navy dark:text-brand-light uppercase tracking-wider mb-2">{t('auto.features.contracts.details.modals.editcontractreductionmodal.04a95f82', { defaultValue: "Age Maximum" })}</label>
                                             <div className="relative">
                                                 <input
                                                     type="number"
                                                     {...register('maxAge', { valueAsNumber: true, max: 17 })}
-                                                    className="w-full px-4 py-2 bg-white dark:bg-brand-navy/50 border border-brand-slate/20 rounded-xl focus:ring-2 focus:ring-brand-mint transition-all text-sm font-bold text-brand-navy dark:text-brand-light outline-none"
+                                                    className="w-full px-4 py-2 bg-brand-light dark:bg-brand-navy/50 border border-brand-slate/20 rounded-xl focus:ring-2 focus:ring-brand-mint transition-all text-sm font-bold text-brand-navy dark:text-brand-light outline-none"
                                                 />
                                                 <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-bold text-brand-slate/50 uppercase">{t('auto.features.contracts.details.modals.editcontractreductionmodal.98b63e8b', { defaultValue: "Ans" })}</span>
                                             </div>
@@ -224,7 +224,7 @@ export default function EditContractReductionModal({
                                     <label className="block text-xs font-bold text-brand-navy dark:text-brand-light uppercase tracking-wider mb-2">{t('auto.features.contracts.details.modals.editcontractreductionmodal.edd20c42', { defaultValue: "Type de Calcul" })}</label>
                                     <select
                                         {...register('calculationType')}
-                                        className="w-full px-4 py-2.5 bg-brand-light dark:bg-brand-slate/10 border border-brand-slate/20 rounded-xl focus:ring-2 focus:ring-brand-mint focus:bg-white transition-all text-sm font-bold cursor-pointer text-brand-navy dark:text-brand-light outline-none"
+                                        className="w-full px-4 py-2.5 bg-brand-light dark:bg-brand-slate/10 border border-brand-slate/20 rounded-xl focus:ring-2 focus:ring-brand-mint focus:bg-brand-light transition-all text-sm font-bold cursor-pointer text-brand-navy dark:text-brand-light outline-none"
                                     >
                                         <option value="PERCENTAGE">{t('auto.features.contracts.details.modals.editcontractreductionmodal.ca6db49b', { defaultValue: "Pourcentage (%)" })}</option>
                                         <option value="FIXED">{t('auto.features.contracts.details.modals.editcontractreductionmodal.ec522aa9', { defaultValue: "Fixe (TND)" })}</option>
@@ -235,7 +235,7 @@ export default function EditContractReductionModal({
                                     <label className="block text-xs font-bold text-brand-navy dark:text-brand-light uppercase tracking-wider mb-2">{t('auto.features.contracts.details.modals.editcontractreductionmodal.b31f79fc', { defaultValue: "Mode d'Application" })}</label>
                                     <select
                                         {...register('applicationType')}
-                                        className="w-full px-4 py-2.5 bg-brand-light dark:bg-brand-slate/10 border border-brand-slate/20 rounded-xl focus:ring-2 focus:ring-brand-mint focus:bg-white transition-all text-sm font-bold cursor-pointer text-brand-navy dark:text-brand-light outline-none"
+                                        className="w-full px-4 py-2.5 bg-brand-light dark:bg-brand-slate/10 border border-brand-slate/20 rounded-xl focus:ring-2 focus:ring-brand-mint focus:bg-brand-light transition-all text-sm font-bold cursor-pointer text-brand-navy dark:text-brand-light outline-none"
                                     >
                                         <option value="PER_NIGHT_PER_PERSON">{t('auto.features.contracts.details.modals.editcontractreductionmodal.a225361f', { defaultValue: "Par Nuit et Par Personne" })}</option>
                                         <option value="PER_NIGHT_PER_ROOM">{t('auto.features.contracts.details.modals.editcontractreductionmodal.6ecfc999', { defaultValue: "Par Chambre et Par Nuit" })}</option>

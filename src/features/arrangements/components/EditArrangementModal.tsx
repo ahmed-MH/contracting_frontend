@@ -68,9 +68,9 @@ export default function EditArrangementModal({
                 form="arrangement-form"
                 type="submit"
                 disabled={isPending || (!isDirty && editing !== null)}
-                className="inline-flex items-center gap-2 px-8 py-2.5 bg-brand-mint text-white text-sm font-bold rounded-xl hover:bg-brand-mint/90 transition-all shadow-md active:scale-95 disabled:opacity-50 disabled:grayscale cursor-pointer"
+                className="inline-flex items-center gap-2 px-8 py-2.5 bg-brand-mint text-brand-light text-sm font-bold rounded-xl hover:bg-brand-mint/90 transition-all shadow-md active:scale-95 disabled:opacity-50 disabled:grayscale cursor-pointer"
             >
-                {isPending ? <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" /> : <Save size={16} />}
+                {isPending ? <div className="w-4 h-4 border-2 border-brand-light border-t-transparent rounded-full animate-spin" /> : <Save size={16} />}
                 {editing
                     ? t('pages.arrangements.modal.saveChanges', { defaultValue: 'Save changes' })
                     : t('pages.arrangements.modal.create', { defaultValue: 'Create arrangement' })}

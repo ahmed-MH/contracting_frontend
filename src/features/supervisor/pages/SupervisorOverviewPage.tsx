@@ -19,7 +19,7 @@ const watchlistColumns: SupervisorTableColumn<(typeof subscriptionWatchlist)[num
         label: 'Organization',
         render: (row) => (
             <div>
-                <p className="font-semibold text-brand-navy dark:text-white">{row.organization}</p>
+                <p className="font-semibold text-brand-navy dark:text-brand-light">{row.organization}</p>
                 <p className="mt-1 text-xs text-brand-slate">Plan {row.plan}</p>
             </div>
         ),
@@ -27,7 +27,7 @@ const watchlistColumns: SupervisorTableColumn<(typeof subscriptionWatchlist)[num
     {
         key: 'mrr',
         label: 'MRR',
-        render: (row) => <span className="font-semibold text-brand-navy dark:text-white">{row.mrr}</span>,
+        render: (row) => <span className="font-semibold text-brand-navy dark:text-brand-light">{row.mrr}</span>,
     },
     {
         key: 'renewalDate',
@@ -82,10 +82,10 @@ export default function SupervisorOverviewPage() {
                 >
                     <div className="space-y-4">
                         {mrrSegments.map((segment, index) => (
-                            <div key={segment.name} className="rounded-2xl border border-white/70 bg-white/72 p-5 dark:border-white/10 dark:bg-white/5">
+                            <div key={segment.name} className="rounded-2xl border border-brand-light/70 bg-brand-light/72 p-5 dark:border-brand-light/10 dark:bg-brand-light/5">
                                 <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
                                     <div>
-                                        <p className="text-lg font-semibold text-brand-navy dark:text-white">
+                                        <p className="text-lg font-semibold text-brand-navy dark:text-brand-light">
                                             {t(`pages.supervisor.overview.cards.mrrComposition.segments.${index}.name`, { defaultValue: segment.name })}
                                         </p>
                                         <p className="mt-1 text-sm text-brand-slate dark:text-brand-light/75">
@@ -93,7 +93,7 @@ export default function SupervisorOverviewPage() {
                                         </p>
                                     </div>
                                     <div className="text-left md:text-right">
-                                        <p className="text-2xl font-semibold text-brand-navy dark:text-white">{segment.mrr}</p>
+                                        <p className="text-2xl font-semibold text-brand-navy dark:text-brand-light">{segment.mrr}</p>
                                         <p className="text-sm text-brand-mint">
                                             {t('pages.supervisor.overview.cards.mrrComposition.ofMrr', { defaultValue: '{{share}} of platform MRR', share: segment.share })}
                                         </p>
@@ -109,7 +109,7 @@ export default function SupervisorOverviewPage() {
                     title={t('pages.supervisor.overview.cards.executivePulse.title', { defaultValue: 'Governance-safe status feed' })}
                     description={t('pages.supervisor.overview.cards.executivePulse.description', { defaultValue: 'Signals that matter for supervisors without exposing contracts, rooms, catalogs, or simulators.' })}
                 >
-                    <div className="rounded-2xl bg-brand-navy px-5 py-5 text-white">
+                    <div className="rounded-2xl bg-brand-navy px-5 py-5 text-brand-light">
                         <p className="text-sm text-brand-slate">
                             {t('pages.supervisor.overview.cards.executivePulse.readinessLabel', { defaultValue: 'Platform readiness' })}
                         </p>
@@ -121,7 +121,7 @@ export default function SupervisorOverviewPage() {
 
                     <div className="mt-4 space-y-3">
                         {platformPulse.map((item, index) => (
-                            <div key={item} className="rounded-2xl border border-brand-mint/15 bg-brand-mint/8 px-4 py-3 text-sm text-brand-navy dark:text-white">
+                            <div key={item} className="rounded-2xl border border-brand-mint/15 bg-brand-mint/8 px-4 py-3 text-sm text-brand-navy dark:text-brand-light">
                                 {t(`pages.supervisor.overview.cards.executivePulse.items.${index}`, { defaultValue: item })}
                             </div>
                         ))}

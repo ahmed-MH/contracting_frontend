@@ -169,7 +169,7 @@ export default function EditContractEarlyBookingModal({
                                     step="0.01"
                                     min="0"
                                     {...register('value', { valueAsNumber: true })}
-                                    className="w-full pl-4 pr-10 py-2 bg-white border border-brand-slate/30 rounded-xl text-sm font-black text-brand-slate focus:ring-2 focus:ring-brand-mint outline-none"
+                                    className="w-full pl-4 pr-10 py-2 bg-brand-light border border-brand-slate/30 rounded-xl text-sm font-black text-brand-slate focus:ring-2 focus:ring-brand-mint outline-none"
                                 />
                                 <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-bold text-brand-slate">
                                     {calcType === 'PERCENTAGE' ? '%' : 'TND'}
@@ -215,7 +215,7 @@ export default function EditContractEarlyBookingModal({
                                 </p>
                                 <label className="relative inline-flex items-center cursor-pointer">
                                     <input type="checkbox" {...register('isPrepaid')} className="sr-only peer" />
-                                    <div className="w-9 h-5 bg-brand-slate/20 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-brand-mint">
+                                    <div className="w-9 h-5 bg-brand-slate/20 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-brand-light after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-brand-mint">
                                     </div>
                                     <span className="ml-2 text-xs font-bold text-brand-slate uppercase tracking-wide">{t('auto.features.contracts.details.modals.editcontractearlybookingmodal.0776f351', { defaultValue: "Exiger prépaiement" })}</span>
                                 </label>
@@ -224,15 +224,15 @@ export default function EditContractEarlyBookingModal({
                                 <div className="grid grid-cols-3 gap-4 bg-brand-mint/5 p-4 rounded-xl border border-brand-mint/20">
                                     <div>
                                         <label className="block text-[10px] font-bold text-brand-mint uppercase tracking-wider mb-1.5">{t('auto.features.contracts.details.modals.editcontractearlybookingmodal.95035f80', { defaultValue: "Pourcentage" })}</label>
-                                        <input type="number" min="0" max="100" {...register('prepaymentPercentage', { valueAsNumber: true })} className="w-full px-3 py-2 bg-white dark:bg-brand-navy/50 border border-brand-mint/20 rounded-xl text-sm font-bold focus:ring-2 focus:ring-brand-mint outline-none dark:text-brand-light" />
+                                        <input type="number" min="0" max="100" {...register('prepaymentPercentage', { valueAsNumber: true })} className="w-full px-3 py-2 bg-brand-light dark:bg-brand-navy/50 border border-brand-mint/20 rounded-xl text-sm font-bold focus:ring-2 focus:ring-brand-mint outline-none dark:text-brand-light" />
                                     </div>
                                     <div>
                                         <label className="block text-[10px] font-bold text-brand-mint uppercase tracking-wider mb-1.5">{t('auto.features.contracts.details.modals.editcontractearlybookingmodal.efb0d730', { defaultValue: "Limite Prépay." })}</label>
-                                        <input type="date" {...register('prepaymentDeadlineDate')} className="w-full px-3 py-2 bg-white dark:bg-brand-navy/50 border border-brand-mint/20 rounded-xl text-sm focus:ring-2 focus:ring-brand-mint outline-none dark:text-brand-light" />
+                                        <input type="date" {...register('prepaymentDeadlineDate')} className="w-full px-3 py-2 bg-brand-light dark:bg-brand-navy/50 border border-brand-mint/20 rounded-xl text-sm focus:ring-2 focus:ring-brand-mint outline-none dark:text-brand-light" />
                                     </div>
                                     <div>
                                         <label className="block text-[10px] font-bold text-brand-mint uppercase tracking-wider mb-1.5">{t('auto.features.contracts.details.modals.editcontractearlybookingmodal.71c589dd', { defaultValue: "Limite Rooming" })}</label>
-                                        <input type="date" {...register('roomingListDeadlineDate')} className="w-full px-3 py-2 bg-white dark:bg-brand-navy/50 border border-brand-mint/20 rounded-xl text-sm focus:ring-2 focus:ring-brand-mint outline-none dark:text-brand-light" />
+                                        <input type="date" {...register('roomingListDeadlineDate')} className="w-full px-3 py-2 bg-brand-light dark:bg-brand-navy/50 border border-brand-mint/20 rounded-xl text-sm focus:ring-2 focus:ring-brand-mint outline-none dark:text-brand-light" />
                                     </div>
                                 </div>
                             )}

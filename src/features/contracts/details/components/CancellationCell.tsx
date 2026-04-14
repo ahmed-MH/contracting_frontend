@@ -73,11 +73,13 @@ const CancellationCell = React.memo(({
                     {t('pages.contractDetails.cancellationCell.inactive', { defaultValue: 'Not applied' })}
                 </span>
                 <button
+                    type="button"
                     onClick={() => onToggle(true)}
                     title={t('pages.contractDetails.cancellationCell.activateForPeriod', { defaultValue: 'Enable for this period' })}
+                    aria-label={t('pages.contractDetails.cancellationCell.activateForPeriod', { defaultValue: 'Enable for this period' })}
                     className="relative w-8 h-4 rounded-full bg-brand-slate/10 hover:bg-brand-mint/10 transition-colors cursor-pointer opacity-0 group-hover/cell:opacity-100 shrink-0"
                 >
-                    <span className="block w-3 h-3 rounded-full bg-white absolute top-0.5 left-0.5 shadow-sm transition-all" />
+                    <span className="block w-3 h-3 rounded-full bg-brand-light absolute top-0.5 left-0.5 shadow-sm transition-all" />
                 </button>
             </div>
         );
@@ -90,11 +92,13 @@ const CancellationCell = React.memo(({
                     {t('pages.contractDetails.cancellationCell.active', { defaultValue: 'Active' })}
                 </span>
                 <button
+                    type="button"
                     onClick={() => onToggle(false)}
                     title={t('pages.contractDetails.cancellationCell.disableForPeriod', { defaultValue: 'Disable for this period' })}
+                    aria-label={t('pages.contractDetails.cancellationCell.disableForPeriod', { defaultValue: 'Disable for this period' })}
                     className="relative w-8 h-4 rounded-full bg-brand-mint hover:bg-brand-slate/20 transition-colors cursor-pointer opacity-0 group-hover/cell:opacity-100 shrink-0"
                 >
-                    <span className="block w-3 h-3 rounded-full bg-white absolute top-0.5 right-0.5 shadow-sm" />
+                    <span className="block w-3 h-3 rounded-full bg-brand-light absolute top-0.5 right-0.5 shadow-sm" />
                 </button>
             </div>
 
@@ -113,7 +117,7 @@ const CancellationCell = React.memo(({
                         suffix: getSuffix(),
                     })}
                     title={t('pages.contractDetails.cancellationCell.inheritHint', { defaultValue: 'Leave empty to inherit the base value' })}
-                    className={`block w-full pl-6 pr-2 py-1 text-xs rounded-xl border text-right transition-all focus:outline-none focus:ring-1 focus:ring-brand-mint focus:border-brand-mint/30 ${localValue !== '' ? 'border-brand-mint/30 text-brand-mint bg-brand-mint/10 font-semibold' : 'border-brand-slate/20 text-brand-slate bg-white'}`}
+                    className={`block w-full pl-6 pr-2 py-1 text-xs rounded-xl border text-right transition-all focus:outline-none focus:ring-1 focus:ring-brand-mint focus:border-brand-mint/30 ${localValue !== '' ? 'border-brand-mint/30 text-brand-mint bg-brand-mint/10 font-semibold' : 'border-brand-slate/20 text-brand-slate bg-brand-light'}`}
                 />
                 {localValue !== '' && (
                     <div className="absolute top-0.5 right-0.5 w-1.5 h-1.5 rounded-full bg-brand-mint pointer-events-none" />

@@ -90,80 +90,93 @@ export default function SpoTemplatesPage() {
     };
 
     return (
-        <div className="p-8">
-            <div className="flex items-center justify-between mb-8">
-                <div>
-                    <h1 className="text-2xl font-bold text-brand-navy flex items-center gap-3">
-                        <Gift className="text-brand-mint" size={28} />
-                        {t('pages.catalog.spo.header.title', { defaultValue: 'Catalogue SPO' })}
-                    </h1>
-                    <p className="text-sm text-brand-slate mt-1">{t('auto.features.catalog.spos.pages.spotemplatespage.2b1c2c3d', { defaultValue: "Gérez vos modèles d'offres spéciales (templates)" })}</p>
+        <div className="space-y-4 p-4 md:p-6 animate-in fade-in duration-500">
+            <section className="premium-surface relative overflow-hidden p-5 md:p-6">
+                <div className="pointer-events-none absolute inset-x-0 top-0 h-20 bg-brand-mint/10 dark:bg-brand-mint/8" />
+                <div className="relative flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
+                    <div className="max-w-3xl">
+                        <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-brand-slate">
+                            {t('pages.catalog.spo.header.kicker', { defaultValue: 'Special offers' })}
+                        </p>
+                        <h1 className="mt-3 flex items-center gap-3 text-3xl font-semibold tracking-tight text-brand-navy dark:text-brand-light">
+                            <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-brand-mint/10 text-brand-mint">
+                                <Gift size={24} />
+                            </span>
+                            {t('pages.catalog.spo.header.title', { defaultValue: 'Catalogue SPO' })}
+                        </h1>
+                        <p className="mt-3 max-w-3xl text-sm leading-6 text-brand-slate dark:text-brand-light/75">{t('auto.features.catalog.spos.pages.spotemplatespage.2b1c2c3d', { defaultValue: "Gérez vos modèles d'offres spéciales (templates)" })}</p>
+                    </div>
+                    <button
+                        onClick={() => { setEditingSpo(null); setIsModalOpen(true); }}
+                        className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl bg-brand-mint px-4 text-sm font-semibold text-brand-light shadow-md transition hover:-translate-y-0.5 hover:bg-brand-mint cursor-pointer border-none outline-none lg:mt-9"
+                    >
+                        <Plus size={16} /> Nouveau Modèle
+                    </button>
                 </div>
-                <button
-                    onClick={() => { setEditingSpo(null); setIsModalOpen(true); }}
-                    className="inline-flex items-center gap-2 px-4 py-2.5 bg-brand-mint text-white text-sm font-medium rounded-xl hover:bg-brand-mint transition-colors shadow-sm cursor-pointer border-none outline-none"
-                >
-                    <Plus size={16} /> Nouveau Modèle
-                </button>
-            </div>
-
-            <div className="mb-6">
-                <div className="relative max-w-sm">
-                    <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-brand-slate" />
-                    <input
-                        type="text"
-                        placeholder={t('pages.catalog.spo.header.searchPlaceholder', { defaultValue: 'Rechercher une SPO...' })}
-                        value={search}
-                        onChange={(e) => setSearch(e.target.value)}
-                        className="w-full pl-9 pr-4 py-2 border border-brand-slate/20 rounded-xl text-sm focus:ring-2 focus:ring-brand-mint outline-none"
-                    />
+                <div className="relative mt-5 flex flex-col gap-3 border-t border-brand-slate/10 pt-5 dark:border-brand-light/10 md:flex-row md:items-center md:justify-between">
+                    <div className="relative w-full max-w-md">
+                        <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-brand-slate" />
+                        <input
+                            type="text"
+                            placeholder={t('pages.catalog.spo.header.searchPlaceholder', { defaultValue: 'Rechercher une SPO...' })}
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
+                            className="w-full rounded-2xl border border-brand-slate/20 bg-brand-light/70 py-3 pl-9 pr-4 text-sm text-brand-navy outline-none transition focus:border-brand-mint/40 focus:ring-2 focus:ring-brand-mint/15 dark:border-brand-light/10 dark:bg-brand-light/5 dark:text-brand-light"
+                        />
+                    </div>
+                    {pageData?.meta && (
+                        <span className="premium-pill w-fit border-brand-mint/20 bg-brand-mint/8 text-brand-mint">
+                            {pageData.meta.total} {t('pages.catalog.spo.header.totalLabel', { defaultValue: 'templates' })}
+                        </span>
+                    )}
                 </div>
-            </div>
+            </section>
 
             {isLoading && (
-                <div className="flex items-center justify-center h-48">
+                <div className="premium-surface flex h-48 items-center justify-center">
                     <div className="animate-spin rounded-full h-8 w-8 border-2 border-brand-mint/30 border-t-transparent" />
                 </div>
             )}
 
             {isError && (
-                <div className="rounded-xl bg-brand-slate/10 border border-brand-slate/30 p-6 text-brand-slate text-sm font-bold">
+                <div className="premium-surface border-brand-slate/20 p-6 text-sm font-semibold text-brand-slate dark:text-brand-light/75">
                     {t('pages.catalog.spo.states.loadError', { defaultValue: 'Impossible de charger le catalogue SPO.' })}
                 </div>
             )}
 
             {!isLoading && !isError && pageData?.data.length === 0 && (
-                <div className="rounded-xl bg-brand-light border border-dashed border-brand-slate/20 p-12 text-center">
+                <div className="premium-surface border-dashed border-brand-slate/25 p-12 text-center">
                     <Gift size={40} className="mx-auto text-brand-slate mb-3" />
                     <p className="text-brand-slate text-sm">{t('auto.features.catalog.spos.pages.spotemplatespage.01f592bf', { defaultValue: "Aucune offre spéciale trouvée" })}</p>
                 </div>
             )}
 
             {pageData && pageData.data.length > 0 && (
-                <div className="bg-white rounded-xl border border-brand-slate/20 shadow-sm overflow-hidden">
-                    <table className="w-full text-sm text-left">
-                        <thead>
-                            <tr className="bg-brand-light border-b border-brand-slate/20">
-                                <th className="px-5 py-3 font-semibold text-brand-slate text-xs uppercase tracking-wide">{t('auto.features.catalog.spos.pages.spotemplatespage.994aa2d8', { defaultValue: "Modèle" })}</th>
-                                <th className="px-6 py-3 font-semibold text-brand-slate text-xs uppercase tracking-wide">{t('auto.features.catalog.spos.pages.spotemplatespage.3bbd1cbc', { defaultValue: "SI / Condition" })}</th>
-                                <th className="px-4 py-3 font-semibold text-brand-slate text-center"><GitMerge size={14} className="mx-auto rotate-90" /></th>
-                                <th className="px-6 py-3 font-semibold text-brand-slate text-xs uppercase tracking-wide">{t('auto.features.catalog.spos.pages.spotemplatespage.4420b633', { defaultValue: "ALORS / Avantage" })}</th>
-                                <th className="px-5 py-3 font-semibold text-brand-slate text-xs uppercase tracking-wide text-right">{t('auto.features.catalog.spos.pages.spotemplatespage.a6e99000', { defaultValue: "Actions" })}</th>
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-brand-slate/10">
-                            {pageData.data.map((spo: TemplateSpo) => (
-                                <tr key={spo.id} className="hover:bg-brand-light transition-colors group">
+                <div className="premium-surface overflow-hidden">
+                    <div className="overflow-x-auto">
+                        <table className="min-w-[900px] w-full text-left text-sm">
+                            <thead>
+                                <tr className="border-b border-brand-slate/15 bg-brand-mint/6 dark:border-brand-light/10 dark:bg-brand-light/5">
+                                    <th className="px-5 py-4 text-xs font-semibold uppercase tracking-wide text-brand-slate dark:text-brand-light/65">{t('auto.features.catalog.spos.pages.spotemplatespage.994aa2d8', { defaultValue: "Modèle" })}</th>
+                                    <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wide text-brand-slate dark:text-brand-light/65">{t('auto.features.catalog.spos.pages.spotemplatespage.3bbd1cbc', { defaultValue: "SI / Condition" })}</th>
+                                    <th className="px-4 py-4 text-center text-brand-slate dark:text-brand-light/55"><GitMerge size={14} className="mx-auto rotate-90" /></th>
+                                    <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wide text-brand-slate dark:text-brand-light/65">{t('auto.features.catalog.spos.pages.spotemplatespage.4420b633', { defaultValue: "ALORS / Avantage" })}</th>
+                                    <th className="px-5 py-4 text-right text-xs font-semibold uppercase tracking-wide text-brand-slate dark:text-brand-light/65">{t('auto.features.catalog.spos.pages.spotemplatespage.a6e99000', { defaultValue: "Actions" })}</th>
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-brand-slate/10 dark:divide-brand-light/10">
+                                {pageData.data.map((spo: TemplateSpo) => (
+                                    <tr key={spo.id} className="group transition-colors hover:bg-brand-mint/5 dark:hover:bg-brand-light/5">
                                     <td className="px-5 py-4 whitespace-nowrap">
                                         <div className="flex flex-col">
-                                            <span className="font-medium text-brand-navy leading-tight">{spo.name}</span>
-                                            <span className="text-sm text-brand-slate font-mono">{spo.reference || 'SPO-PENDING'}</span>
+                                            <span className="font-semibold text-brand-navy leading-tight dark:text-brand-light">{spo.name || spo.reference || 'SPO'}</span>
+                                            <span className="text-sm text-brand-slate font-mono dark:text-brand-light/55">{spo.reference || 'SPO-PENDING'}</span>
                                         </div>
                                     </td>
                                     <td className="px-6 py-4">
                                         <div className="flex items-center gap-2">
                                             <div className="w-1.5 h-1.5 rounded-full bg-brand-slate/20" />
-                                            <span className="text-brand-navy font-bold whitespace-nowrap">{formatCondition(spo)}</span>
+                                            <span className="text-brand-navy font-semibold whitespace-nowrap dark:text-brand-light">{formatCondition(spo)}</span>
                                         </div>
                                     </td>
                                     <td className="px-4 py-4 text-brand-slate">
@@ -187,14 +200,15 @@ export default function SpoTemplatesPage() {
                                             </button>
                                         </div>
                                     </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
 
                     {/* ─── Pagination Standard ────────────────────────────────── */}
                     {pageData?.meta && pageData.meta.lastPage > 0 && (
-                        <div className="px-5 py-3 bg-brand-light border-t border-brand-slate/20 flex items-center justify-between">
+                        <div className="flex items-center justify-between border-t border-brand-slate/15 bg-brand-mint/5 px-5 py-3 dark:border-brand-light/10 dark:bg-brand-light/5">
                             <p className="text-xs text-brand-slate font-medium tracking-tight">
                                 {t('auto.pagination.summary', { defaultValue: 'Affichage de {{from}} ? {{to}} sur {{total}}', from: (page - 1) * limit + 1, to: Math.min(page * limit, pageData.meta.total), total: pageData.meta.total })}
                             </p>
@@ -206,7 +220,7 @@ export default function SpoTemplatesPage() {
                                 >
                                     <ChevronLeft size={18} />
                                 </button>
-                                <div className="flex items-center px-2.5 text-xs font-bold text-brand-slate bg-white border border-brand-slate/20 rounded-xl h-9 min-w-[36px] justify-center shadow-xs">
+                                <div className="flex h-9 min-w-[52px] items-center justify-center rounded-xl border border-brand-slate/20 bg-brand-light/70 px-2.5 text-xs font-bold text-brand-slate shadow-sm dark:border-brand-light/10 dark:bg-brand-light/5 dark:text-brand-light">
                                     {page} / {pageData.meta.lastPage}
                                 </div>
                                 <button
@@ -225,29 +239,31 @@ export default function SpoTemplatesPage() {
             {isAdmin && (
                 <div className="mt-10">
                     <button onClick={() => setShowArchived(!showArchived)}
-                        className="inline-flex items-center gap-2 text-sm font-bold text-brand-slate hover:text-brand-navy transition-colors cursor-pointer border-none bg-transparent outline-none">
+                        className="inline-flex items-center gap-2 text-sm font-bold text-brand-slate hover:text-brand-navy transition-colors cursor-pointer border-none bg-transparent outline-none dark:hover:text-brand-light">
                         {showArchived ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
                         <Archive size={16} />
                         Offres archivées {archivedSpos ? `(${archivedSpos.length})` : ''}
                     </button>
 
                     {showArchived && archivedSpos && archivedSpos.length > 0 && (
-                        <div className="mt-4 bg-brand-light rounded-xl border border-brand-slate/20 overflow-hidden opacity-80 shadow-xs">
-                            <table className="w-full text-sm text-left">
-                                <tbody className="divide-y divide-brand-slate/10">
-                                    {archivedSpos.map((spo: TemplateSpo) => (
-                                        <tr key={spo.id} className="hover:bg-brand-light transition-colors">
-                                            <td className="px-5 py-3 text-brand-slate font-bold">{spo.name}</td>
-                                            <td className="px-5 py-3 text-right">
-                                                <button onClick={() => handleRestore(spo)}
-                                                    className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-brand-mint/10 text-brand-mint text-xs font-bold rounded-xl hover:bg-brand-mint/10 transition-colors cursor-pointer border-none shadow-xs">
-                                                    <RotateCcw size={14} /> Restaurer
-                                                </button>
-                                            </td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
+                        <div className="premium-surface mt-4 overflow-hidden opacity-80">
+                            <div className="overflow-x-auto">
+                                <table className="w-full min-w-[520px] text-left text-sm">
+                                    <tbody className="divide-y divide-brand-slate/10 dark:divide-brand-light/10">
+                                        {archivedSpos.map((spo: TemplateSpo) => (
+                                            <tr key={spo.id} className="transition-colors hover:bg-brand-mint/5 dark:hover:bg-brand-light/5">
+                                                <td className="px-5 py-3 text-brand-slate font-bold dark:text-brand-light/75">{spo.name}</td>
+                                                <td className="px-5 py-3 text-right">
+                                                    <button onClick={() => handleRestore(spo)}
+                                                        className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-brand-mint/10 text-brand-mint text-xs font-bold rounded-xl hover:bg-brand-mint/10 transition-colors cursor-pointer border-none shadow-xs">
+                                                        <RotateCcw size={14} /> Restaurer
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     )}
                 </div>

@@ -102,7 +102,7 @@ export default function EditMonoparentalTemplateModal({
     }, [editItem, reset, isOpen]);
 
     const Stepper = ({ value, onChange, min, max }: { value: number, onChange: (v: number) => void, min: number, max?: number }) => (
-        <div className="flex items-center border border-brand-slate/20 rounded-xl overflow-hidden bg-white dark:bg-brand-navy w-full h-10 shadow-sm">
+        <div className="flex items-center border border-brand-slate/20 rounded-xl overflow-hidden bg-brand-light dark:bg-brand-navy w-full h-10 shadow-sm">
             <button type="button" onClick={() => onChange(Math.max(min, value - 1))}
                 className="shrink-0 w-10 h-full flex items-center justify-center bg-brand-light dark:bg-brand-slate/10 hover:bg-brand-slate/10 dark:hover:bg-brand-slate/20 text-brand-slate border-r border-brand-slate/20 transition-colors focus:outline-none cursor-pointer font-bold">
                 -
@@ -124,10 +124,10 @@ export default function EditMonoparentalTemplateModal({
                 form="monoparental-template-form"
                 type="submit"
                 disabled={isPending || !isDirty}
-                className="inline-flex items-center gap-2 px-8 py-2.5 bg-brand-mint text-white text-sm font-bold rounded-xl hover:bg-brand-mint/90 transition-all shadow-md active:scale-95 disabled:opacity-50 disabled:grayscale cursor-pointer"
+                className="inline-flex items-center gap-2 px-8 py-2.5 bg-brand-mint text-brand-light text-sm font-bold rounded-xl hover:bg-brand-mint/90 transition-all shadow-md active:scale-95 disabled:opacity-50 disabled:grayscale cursor-pointer"
             >
                 {isPending ? (
-                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    <div className="w-4 h-4 border-2 border-brand-light border-t-transparent rounded-full animate-spin" />
                 ) : (
                     <Save size={16} />
                 )}
@@ -148,7 +148,7 @@ export default function EditMonoparentalTemplateModal({
             <form id="monoparental-template-form" onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-6">
                 {/* Summary Card */}
                 <div className="bg-brand-mint/10 dark:bg-brand-mint/5 border border-brand-mint/20 rounded-xl p-4 flex gap-4 text-brand-navy dark:text-brand-light shadow-sm">
-                    <div className="bg-white dark:bg-brand-navy p-2.5 rounded-xl shadow-sm h-fit">
+                    <div className="bg-brand-light dark:bg-brand-navy p-2.5 rounded-xl shadow-sm h-fit">
                         <Users size={20} className="text-brand-mint" />
                     </div>
                     <div className="text-xs leading-relaxed">
@@ -175,11 +175,11 @@ export default function EditMonoparentalTemplateModal({
                             <Stepper value={childCount} onChange={(v) => setValue('childCount', v, { shouldDirty: true })} min={1} />
                         </div>
                         <div>
-                            <label className="block text-xs font-bold text-brand-navy dark:text-brand-light uppercase tracking-wider mb-2">{t('auto.features.catalog.monoparental.components.editmonoparentaltemplatemodal.19ec857f', { defaultValue: "Âge min" })}</label>
+                                <label className="block text-xs font-bold text-brand-navy dark:text-brand-light uppercase tracking-wider mb-2">{t('auto.features.catalog.monoparental.components.editmonoparentaltemplatemodal.19ec857f', { defaultValue: "Age min" })}</label>
                             <Stepper value={minAge} onChange={(v) => setValue('minAge', v, { shouldDirty: true })} min={0} />
                         </div>
                         <div>
-                            <label className="block text-xs font-bold text-brand-navy dark:text-brand-light uppercase tracking-wider mb-2">{t('auto.features.catalog.monoparental.components.editmonoparentaltemplatemodal.445d75ea', { defaultValue: "Âge max" })}</label>
+                                <label className="block text-xs font-bold text-brand-navy dark:text-brand-light uppercase tracking-wider mb-2">{t('auto.features.catalog.monoparental.components.editmonoparentaltemplatemodal.445d75ea', { defaultValue: "Age max" })}</label>
                             <Stepper value={maxAge} onChange={(v) => setValue('maxAge', v, { shouldDirty: true })} min={0} max={17} />
                         </div>
                     </div>

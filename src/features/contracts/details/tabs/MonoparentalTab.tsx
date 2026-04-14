@@ -12,6 +12,7 @@ import type { ContractMonoparentalRule } from '../../../../types';
 import ImportMonoparentalRuleModal from '../../../catalog/monoparental/components/ImportMonoparentalRuleModal';
 import EditContractMonoparentalRuleModal from '../modals/EditContractMonoparentalRuleModal';
 import MonoparentalGrid from '../components/MonoparentalGrid';
+import { ContractSectionEmpty, ContractSectionLoading, ContractSectionShell } from '../components/ContractSection';
 
 export default function MonoparentalTab() {
     const { contract } = useOutletContext<ContractOutletContext>();
@@ -38,11 +39,28 @@ export default function MonoparentalTab() {
         }
     };
 
+    const importAction = (
+        <button
+            onClick={() => setShowImport(true)}
+            className="inline-flex items-center gap-2 rounded-lg bg-brand-mint px-4 py-2 text-sm font-medium text-brand-light shadow-sm transition-colors hover:bg-brand-mint/90"
+        >
+            <Plus size={16} />
+            {t('pages.contractDetails.monoparental.importFromCatalog', { defaultValue: 'Import from Catalog' })}
+        </button>
+    );
+
     if (isLoading) {
         return (
-            <div className="flex items-center justify-center py-12">
-                <div className="animate-spin rounded-full h-8 w-8 border-2 border-brand-mint/30 border-t-transparent" />
-            </div>
+            <ContractSectionShell
+                icon={Contact}
+                title={t('pages.contractDetails.monoparental.title', { defaultValue: 'Monoparental Rules' })}
+                description={t('pages.contractDetails.monoparental.description', {
+                    defaultValue: 'Configure single-parent commercial conditions and period applicability.',
+                })}
+                action={importAction}
+            >
+                <ContractSectionLoading label={t('states.loading', { defaultValue: 'Loading...' })} />
+            </ContractSectionShell>
         );
     }
 
@@ -50,46 +68,33 @@ export default function MonoparentalTab() {
 
     return (
         <>
-            <div className="flex items-center justify-between mb-6">
-                <div className="flex items-center gap-3">
-                    <Contact size={20} className="text-brand-mint" />
-                    <h2 className="text-base font-semibold text-brand-navy">
-                        {t('pages.contractDetails.monoparental.title', { defaultValue: 'Monoparental Rules' })}
-                    </h2>
-                    <span className="text-xs text-brand-slate">({items.length})</span>
-                </div>
-                <button
-                    onClick={() => setShowImport(true)}
-                    className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-brand-mint rounded-xl hover:bg-brand-mint transition-colors cursor-pointer"
-                >
-                    <Plus size={16} />
-                    {t('pages.contractDetails.monoparental.importFromCatalog', { defaultValue: 'Import from Catalog' })}
-                </button>
-            </div>
-
-            {items.length === 0 && (
-                <div className="rounded-xl bg-brand-light border border-dashed border-brand-slate/20 p-12 text-center">
-                    <Contact size={40} className="mx-auto text-brand-slate mb-3" />
-                    <p className="text-brand-slate text-sm">
-                        {t('pages.contractDetails.monoparental.emptyTitle', { defaultValue: 'No monoparental rule' })}
-                    </p>
-                    <p className="text-brand-slate text-xs mt-1">
-                        {t('pages.contractDetails.monoparental.emptySubtitle', { defaultValue: 'Import from the catalog to get started' })}
-                    </p>
-                </div>
-            )}
-
-            {items.length > 0 && (
-                <MonoparentalGrid
-                    contractId={contract.id}
-                    rules={items}
-                    periods={contract.periods ?? []}
-                    onSaved={() => refetch()}
-                    onEdit={setEditingRule}
-                    onDelete={handleDelete}
-                    isDeleting={deleteMutation.isPending}
-                />
-            )}
+            <ContractSectionShell
+                icon={Contact}
+                title={t('pages.contractDetails.monoparental.title', { defaultValue: 'Monoparental Rules' })}
+                description={t('pages.contractDetails.monoparental.description', {
+                    defaultValue: 'Configure single-parent commercial conditions and period applicability.',
+                })}
+                count={items.length}
+                action={importAction}
+            >
+                {items.length === 0 ? (
+                    <ContractSectionEmpty
+                        icon={Contact}
+                        title={t('pages.contractDetails.monoparental.emptyTitle', { defaultValue: 'No monoparental rule' })}
+                        description={t('pages.contractDetails.monoparental.emptySubtitle', { defaultValue: 'Import from the catalog to get started' })}
+                    />
+                ) : (
+                    <MonoparentalGrid
+                        contractId={contract.id}
+                        rules={items}
+                        periods={contract.periods ?? []}
+                        onSaved={() => refetch()}
+                        onEdit={setEditingRule}
+                        onDelete={handleDelete}
+                        isDeleting={deleteMutation.isPending}
+                    />
+                )}
+            </ContractSectionShell>
 
             <ImportMonoparentalRuleModal
                 contractId={contract.id}

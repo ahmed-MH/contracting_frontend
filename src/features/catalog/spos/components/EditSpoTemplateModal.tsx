@@ -90,8 +90,8 @@ export default function EditSpoTemplateModal({ isOpen, onClose, editItem }: Edit
                 Annuler
             </button>
             <button form="spo-template-form" type="submit" disabled={isPending || !isDirty}
-                className="inline-flex items-center gap-2 px-8 py-2.5 bg-brand-mint text-white text-sm font-bold rounded-xl hover:bg-brand-mint/90 transition-all shadow-md active:scale-95 disabled:opacity-50 disabled:grayscale cursor-pointer">
-                {isPending ? <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" /> : <Save size={16} />}
+                className="inline-flex items-center gap-2 px-8 py-2.5 bg-brand-mint text-brand-light text-sm font-bold rounded-xl hover:bg-brand-mint/90 transition-all shadow-md active:scale-95 disabled:opacity-50 disabled:grayscale cursor-pointer">
+                {isPending ? <div className="w-4 h-4 border-2 border-brand-light border-t-transparent rounded-full animate-spin" /> : <Save size={16} />}
                 {isEditing ? 'Mettre à jour' : 'Ajouter au catalogue'}
             </button>
         </>
@@ -126,11 +126,11 @@ export default function EditSpoTemplateModal({ isOpen, onClose, editItem }: Edit
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 relative">
                         {/* SI (Condition) */}
                         <div className="space-y-4 p-5 bg-brand-slate/10 dark:bg-brand-navy/80 rounded-2xl border border-brand-slate/30 dark:border-brand-slate/30 relative">
-                            <div className="absolute -top-3 left-6 px-3 py-1 bg-brand-slate/20 text-white text-[10px] font-black rounded-full shadow-sm">{t('auto.features.catalog.spos.components.editspotemplatemodal.4a2293e3', { defaultValue: "SI (CONDITION)" })}</div>
+                            <div className="absolute -top-3 left-6 px-3 py-1 bg-brand-slate/20 text-brand-light text-[10px] font-black rounded-full shadow-sm">{t('auto.features.catalog.spos.components.editspotemplatemodal.4a2293e3', { defaultValue: "SI (CONDITION)" })}</div>
                             <div className="pt-2">
                                 <label className="block text-[10px] font-bold text-brand-slate dark:text-brand-light/75 uppercase tracking-wider mb-1.5">{t('auto.features.catalog.spos.components.editspotemplatemodal.5683cbd2', { defaultValue: "Déclencheur" })}</label>
                                 <select {...register('conditionType')}
-                                    className="w-full px-3 py-2.5 bg-white dark:bg-brand-navy border border-brand-slate/30 dark:border-brand-slate/30 rounded-xl text-sm font-bold focus:ring-2 focus:ring-brand-mint transition-all cursor-pointer appearance-none shadow-sm text-brand-navy dark:text-brand-light">
+                                    className="w-full px-3 py-2.5 bg-brand-light dark:bg-brand-navy border border-brand-slate/30 dark:border-brand-slate/30 rounded-xl text-sm font-bold focus:ring-2 focus:ring-brand-mint transition-all cursor-pointer appearance-none shadow-sm text-brand-navy dark:text-brand-light">
                                     <option value="NONE">{t('auto.features.catalog.spos.components.editspotemplatemodal.3aa41669', { defaultValue: "Aucune (Automatique)" })}</option>
                                     <option value="MIN_NIGHTS">{t('auto.features.catalog.spos.components.editspotemplatemodal.8560aa42', { defaultValue: "Nuits minimales" })}</option>
                                     <option value="EARLY_BIRD">{t('auto.features.catalog.spos.components.editspotemplatemodal.9424a69a', { defaultValue: "Réservation anticipée" })}</option>
@@ -148,7 +148,7 @@ export default function EditSpoTemplateModal({ isOpen, onClose, editItem }: Edit
                                             {watchConditionType === 'EARLY_BIRD' ? <Calendar size={16} /> : <Moon size={16} />}
                                         </div>
                                         <input type="number" {...register('conditionValue', { valueAsNumber: true })}
-                                            className="w-full pl-10 pr-4 py-2 bg-white dark:bg-brand-navy border border-brand-slate/30 dark:border-brand-slate/30 rounded-xl text-sm font-bold focus:ring-2 focus:ring-brand-mint outline-none text-brand-navy dark:text-brand-light"
+                                            className="w-full pl-10 pr-4 py-2 bg-brand-light dark:bg-brand-navy border border-brand-slate/30 dark:border-brand-slate/30 rounded-xl text-sm font-bold focus:ring-2 focus:ring-brand-mint outline-none text-brand-navy dark:text-brand-light"
                                             placeholder={t('auto.features.catalog.spos.components.editspotemplatemodal.placeholder.99b01594', { defaultValue: "Val." })} />
                                     </div>
                                 </div>
@@ -157,12 +157,12 @@ export default function EditSpoTemplateModal({ isOpen, onClose, editItem }: Edit
 
                         {/* ALORS (Benefit) */}
                         <div className="space-y-4 p-5 bg-brand-mint/5 dark:bg-brand-mint/5 rounded-2xl border border-brand-mint/20 relative">
-                            <div className="absolute -top-3 left-6 px-3 py-1 bg-brand-mint text-white text-[10px] font-black rounded-full shadow-sm">{t('auto.features.catalog.spos.components.editspotemplatemodal.49be0fdb', { defaultValue: "ALORS (AVANTAGE)" })}</div>
+                            <div className="absolute -top-3 left-6 px-3 py-1 bg-brand-mint text-brand-light text-[10px] font-black rounded-full shadow-sm">{t('auto.features.catalog.spos.components.editspotemplatemodal.49be0fdb', { defaultValue: "ALORS (AVANTAGE)" })}</div>
                             <div className="pt-2">
                                 <label className="block text-[10px] font-bold text-brand-mint uppercase tracking-wider mb-1.5">{t('auto.features.catalog.spos.components.editspotemplatemodal.57a5b7ff', { defaultValue: "Récompense / Mode" })}</label>
                                 <div className="grid grid-cols-2 gap-2">
                                     <select {...register('benefitType')}
-                                        className="w-full px-3 py-2.5 bg-white dark:bg-brand-navy border border-brand-mint/20 rounded-xl text-sm font-bold focus:ring-2 focus:ring-brand-mint transition-all cursor-pointer appearance-none shadow-sm text-brand-navy dark:text-brand-light">
+                                        className="w-full px-3 py-2.5 bg-brand-light dark:bg-brand-navy border border-brand-mint/20 rounded-xl text-sm font-bold focus:ring-2 focus:ring-brand-mint transition-all cursor-pointer appearance-none shadow-sm text-brand-navy dark:text-brand-light">
                                         <option value="PERCENTAGE_DISCOUNT">{t('auto.features.catalog.spos.components.editspotemplatemodal.cbe4d27f', { defaultValue: "Réduction %" })}</option>
                                         <option value="FIXED_DISCOUNT">{t('auto.features.catalog.spos.components.editspotemplatemodal.6f6d348c', { defaultValue: "Réduction Fixe" })}</option>
                                         <option value="FREE_NIGHTS">{t('auto.features.catalog.spos.components.editspotemplatemodal.4e2a5c5f', { defaultValue: "Nuits offertes" })}</option>
@@ -171,7 +171,7 @@ export default function EditSpoTemplateModal({ isOpen, onClose, editItem }: Edit
                                         <option value="KIDS_GO_FREE">{t('auto.features.catalog.spos.components.editspotemplatemodal.1b9311c5', { defaultValue: "Enfants Gratuits" })}</option>
                                     </select>
                                     <select {...register('applicationType')}
-                                        className="w-full px-3 py-2.5 bg-white dark:bg-brand-navy border border-brand-mint/20 rounded-xl text-[10px] text-brand-mint font-bold outline-none focus:ring-2 focus:ring-brand-mint cursor-pointer appearance-none shadow-sm">
+                                        className="w-full px-3 py-2.5 bg-brand-light dark:bg-brand-navy border border-brand-mint/20 rounded-xl text-[10px] text-brand-mint font-bold outline-none focus:ring-2 focus:ring-brand-mint cursor-pointer appearance-none shadow-sm">
                                         <option value="PER_NIGHT_PER_PERSON">{t('auto.features.catalog.spos.components.editspotemplatemodal.58bbb40f', { defaultValue: "Par Nuit et Personne" })}</option>
                                         <option value="PER_NIGHT_PER_ROOM">{t('auto.features.catalog.spos.components.editspotemplatemodal.f63ed76b', { defaultValue: "Par Chambre et Nuit" })}</option>
                                         <option value="FLAT_RATE_PER_STAY">{t('auto.features.catalog.spos.components.editspotemplatemodal.33e21f25', { defaultValue: "Forfait / Séjour" })}</option>
@@ -187,7 +187,7 @@ export default function EditSpoTemplateModal({ isOpen, onClose, editItem }: Edit
                                                 watchBenefitType === 'FREE_NIGHTS' ? <Moon size={16} /> : <Wallet size={16} />}
                                         </div>
                                         <input type="number" step="0.01" {...register('benefitValue', { valueAsNumber: true })}
-                                            className="w-full pl-10 pr-4 py-2 bg-white dark:bg-brand-navy border border-brand-mint/20 rounded-xl text-sm font-bold focus:ring-2 focus:ring-brand-mint outline-none text-brand-navy dark:text-brand-light"
+                                            className="w-full pl-10 pr-4 py-2 bg-brand-light dark:bg-brand-navy border border-brand-mint/20 rounded-xl text-sm font-bold focus:ring-2 focus:ring-brand-mint outline-none text-brand-navy dark:text-brand-light"
                                             placeholder={t('auto.features.catalog.spos.components.editspotemplatemodal.placeholder.99b01594', { defaultValue: "Val." })} />
                                     </div>
                                 </div>

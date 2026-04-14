@@ -107,10 +107,10 @@ export default function EditReductionTemplateModal({
                 form="reduction-template-form"
                 type="submit"
                 disabled={isPending || !isDirty}
-                className="inline-flex items-center gap-2 px-8 py-2.5 bg-brand-mint text-white text-sm font-bold rounded-xl hover:bg-brand-mint/90 transition-all shadow-md active:scale-95 disabled:opacity-50 disabled:grayscale cursor-pointer"
+                className="inline-flex items-center gap-2 px-8 py-2.5 bg-brand-mint text-brand-light text-sm font-bold rounded-xl hover:bg-brand-mint/90 transition-all shadow-md active:scale-95 disabled:opacity-50 disabled:grayscale cursor-pointer"
             >
                 {isPending ? (
-                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    <div className="w-4 h-4 border-2 border-brand-light border-t-transparent rounded-full animate-spin" />
                 ) : (
                     <Save size={16} />
                 )}
@@ -167,7 +167,7 @@ export default function EditReductionTemplateModal({
                                 <input
                                     type="number"
                                     {...register('paxOrder', { valueAsNumber: true, min: watchSystemCode === 'EXTRA_ADULT' ? 3 : 1 })}
-                                    className="w-full px-4 py-2 bg-white dark:bg-brand-navy border border-brand-slate/20 rounded-xl focus:ring-2 focus:ring-brand-mint transition-all text-sm font-bold text-brand-navy dark:text-brand-light"
+                                    className="w-full px-4 py-2 bg-brand-light dark:bg-brand-navy border border-brand-slate/20 rounded-xl focus:ring-2 focus:ring-brand-mint transition-all text-sm font-bold text-brand-navy dark:text-brand-light"
                                     placeholder={watchSystemCode === 'EXTRA_ADULT' ? 'ex: 3' : 'ex: 1'}
                                 />
                                 <p className="text-[10px] text-brand-slate mt-1">
@@ -179,18 +179,18 @@ export default function EditReductionTemplateModal({
                         {watchSystemCode === 'CHILD' && (
                             <div className="col-span-2 grid grid-cols-2 gap-4 mt-2">
                                 <div>
-                                    <label className="block text-xs font-bold text-brand-navy dark:text-brand-light uppercase tracking-wider mb-2">{t('auto.features.catalog.reductions.components.editreductiontemplatemodal.f16cf0d8', { defaultValue: "Âge Minimum" })}</label>
+                            <label className="block text-xs font-bold text-brand-navy dark:text-brand-light uppercase tracking-wider mb-2">{t('auto.features.catalog.reductions.components.editreductiontemplatemodal.f16cf0d8', { defaultValue: "Age Minimum" })}</label>
                                     <div className="relative">
                                         <input type="number" {...register('minAge', { valueAsNumber: true, min: 0 })}
-                                            className="w-full px-4 py-2 bg-white dark:bg-brand-navy border border-brand-slate/20 rounded-xl focus:ring-2 focus:ring-brand-mint transition-all text-sm font-bold text-brand-navy dark:text-brand-light" />
+                                            className="w-full px-4 py-2 bg-brand-light dark:bg-brand-navy border border-brand-slate/20 rounded-xl focus:ring-2 focus:ring-brand-mint transition-all text-sm font-bold text-brand-navy dark:text-brand-light" />
                                         <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-bold text-brand-slate uppercase">{t('auto.features.catalog.reductions.components.editreductiontemplatemodal.8b613ce1', { defaultValue: "ans" })}</span>
                                     </div>
                                 </div>
                                 <div>
-                                    <label className="block text-xs font-bold text-brand-navy dark:text-brand-light uppercase tracking-wider mb-2">{t('auto.features.catalog.reductions.components.editreductiontemplatemodal.8911a3eb', { defaultValue: "Âge Maximum" })}</label>
+                            <label className="block text-xs font-bold text-brand-navy dark:text-brand-light uppercase tracking-wider mb-2">{t('auto.features.catalog.reductions.components.editreductiontemplatemodal.8911a3eb', { defaultValue: "Age Maximum" })}</label>
                                     <div className="relative">
                                         <input type="number" {...register('maxAge', { valueAsNumber: true, max: 17 })}
-                                            className="w-full px-4 py-2 bg-white dark:bg-brand-navy border border-brand-slate/20 rounded-xl focus:ring-2 focus:ring-brand-mint transition-all text-sm font-bold text-brand-navy dark:text-brand-light" />
+                                            className="w-full px-4 py-2 bg-brand-light dark:bg-brand-navy border border-brand-slate/20 rounded-xl focus:ring-2 focus:ring-brand-mint transition-all text-sm font-bold text-brand-navy dark:text-brand-light" />
                                         <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-bold text-brand-slate uppercase">{t('auto.features.catalog.reductions.components.editreductiontemplatemodal.8b613ce1', { defaultValue: "ans" })}</span>
                                     </div>
                                 </div>

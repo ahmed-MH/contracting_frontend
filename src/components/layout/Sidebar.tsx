@@ -70,7 +70,7 @@ export default function Sidebar({ collapsed, onToggle, userRole }: SidebarProps)
         <aside
             className={clsx(
                 'flex flex-col shrink-0 h-full transition-all duration-300 ease-in-out',
-                'bg-white border-r border-brand-slate/15',
+                'bg-brand-light border-r border-brand-slate/15',
                 'dark:bg-brand-navy dark:border-brand-slate/20',
                 collapsed ? 'w-[68px]' : 'w-64',
             )}

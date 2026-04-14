@@ -78,7 +78,7 @@ export default function EditRoomTypeModal({
         str.replace(/\w\S*/g, (word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase());
 
     const onFormSubmit = (data: RoomTypeFormValues) => onSubmit(data);
-    const numInputCls = 'w-full bg-white dark:bg-brand-navy border border-brand-slate/20 rounded-xl px-3 py-1.5 text-sm font-bold focus:ring-2 focus:ring-brand-mint outline-none text-brand-navy dark:text-brand-light';
+    const numInputCls = 'w-full bg-brand-light dark:bg-brand-navy border border-brand-slate/20 rounded-xl px-3 py-1.5 text-sm font-bold focus:ring-2 focus:ring-brand-mint outline-none text-brand-navy dark:text-brand-light';
 
     const footer = (
         <>
@@ -93,9 +93,9 @@ export default function EditRoomTypeModal({
                 form="room-type-form"
                 type="submit"
                 disabled={isPending || (!isDirty && editing !== null)}
-                className="inline-flex items-center gap-2 px-8 py-2.5 bg-brand-mint text-white text-sm font-bold rounded-xl hover:bg-brand-mint/90 transition-all shadow-md active:scale-95 disabled:opacity-50 disabled:grayscale cursor-pointer"
+                className="inline-flex items-center gap-2 px-8 py-2.5 bg-brand-mint text-brand-light text-sm font-bold rounded-xl hover:bg-brand-mint/90 transition-all shadow-md active:scale-95 disabled:opacity-50 disabled:grayscale cursor-pointer"
             >
-                {isPending ? <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" /> : <Save size={16} />}
+                {isPending ? <div className="w-4 h-4 border-2 border-brand-light border-t-transparent rounded-full animate-spin" /> : <Save size={16} />}
                 {editing
                     ? t('pages.roomTypes.modal.update', { defaultValue: 'Update room' })
                     : t('pages.roomTypes.modal.create', { defaultValue: 'Create room' })}
@@ -208,7 +208,7 @@ export default function EditRoomTypeModal({
 
                 <div className="p-4 bg-brand-light dark:bg-brand-slate/10 rounded-2xl border border-brand-slate/15 dark:border-brand-slate/20 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                     <div className="flex items-center gap-3">
-                        <div className="p-2 bg-white dark:bg-brand-navy rounded-xl shadow-sm border border-brand-slate/15 dark:border-brand-slate/20 text-brand-slate">
+                        <div className="p-2 bg-brand-light dark:bg-brand-navy rounded-xl shadow-sm border border-brand-slate/15 dark:border-brand-slate/20 text-brand-slate">
                             <Settings2 size={18} />
                         </div>
                         <div>
@@ -222,7 +222,7 @@ export default function EditRoomTypeModal({
                     </div>
                     <label className="relative inline-flex items-center cursor-pointer group">
                         <input type="checkbox" {...register('allowCotOverMax')} className="sr-only peer" />
-                        <div className="w-11 h-6 bg-brand-slate/20 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-brand-mint/20 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-brand-slate/30 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-brand-mint" />
+                        <div className="w-11 h-6 bg-brand-slate/20 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-brand-mint/20 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-brand-light after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-brand-light after:border-brand-slate/30 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-brand-mint" />
                     </label>
                 </div>
             </form>

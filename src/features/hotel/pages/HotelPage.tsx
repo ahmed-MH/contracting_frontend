@@ -33,6 +33,7 @@ import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import EditHotelModal from '../components/EditHotelModal';
 import ExchangeRatesSection from '../components/ExchangeRatesSection';
+import { GuidedPageHeader } from '../../../components/layout/Workspace';
 
 function DetailCard({
     icon: Icon,
@@ -55,7 +56,7 @@ function DetailCard({
                     <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-brand-slate">
                         {eyebrow}
                     </p>
-                    <h3 className="text-lg font-semibold text-brand-navy dark:text-white">
+                    <h3 className="text-lg font-semibold text-brand-navy dark:text-brand-light">
                         {title}
                     </h3>
                 </div>
@@ -67,11 +68,11 @@ function DetailCard({
 
 function InfoRow({ label, value }: { label: string; value?: string | number | null }) {
     return (
-        <div className="rounded-2xl border border-white/70 bg-white/72 px-4 py-3 dark:border-white/10 dark:bg-white/5">
+        <div className="rounded-2xl border border-brand-light/70 bg-brand-light/72 px-4 py-3 dark:border-brand-light/10 dark:bg-brand-light/5">
             <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-brand-slate">
                 {label}
             </p>
-            <p className="mt-2 break-words text-sm font-semibold text-brand-navy dark:text-white">
+            <p className="mt-2 break-words text-sm font-semibold text-brand-navy dark:text-brand-light">
                 {value || 'Not provided'}
             </p>
         </div>
@@ -81,7 +82,7 @@ function InfoRow({ label, value }: { label: string; value?: string | number | nu
 function Stars({ value }: { value?: number }) {
     if (!value) {
         return (
-            <span className="premium-pill border-brand-slate/20 bg-brand-light text-brand-slate dark:border-white/10 dark:bg-white/5 dark:text-brand-light/75">
+            <span className="premium-pill border-brand-slate/20 bg-brand-light text-brand-slate dark:border-brand-light/10 dark:bg-brand-light/5 dark:text-brand-light/75">
                 Unrated
             </span>
         );
@@ -180,14 +181,18 @@ export default function HotelPage() {
 
     return (
         <div className="space-y-6 p-4 md:p-6">
-            <section className="premium-surface relative overflow-hidden p-6 md:p-7">
-                <div className="pointer-events-none absolute inset-x-0 top-0 h-28 bg-brand-mint/10 dark:bg-brand-navy/80" />
-                <div className="relative flex flex-col gap-6 xl:flex-row xl:items-start xl:justify-between">
-                    <div>
+            <GuidedPageHeader
+                icon={HotelIcon}
+                kicker={t('pages.hotel.header.eyebrow', { defaultValue: 'Hotel Portfolio' })}
+                title={t('pages.hotel.header.title', { defaultValue: 'Property profile and financial settings.' })}
+                description={t('pages.hotel.header.subtitle', { defaultValue: 'Keep property identity, contacts, banking data, and exchange rates aligned with the commercial workspace.' })}
+                actions={(
+                <>
+                    <div className="hidden">
                         <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-brand-slate">
                             {t('pages.hotel.header.eyebrow', { defaultValue: 'Hotel Portfolio' })}
                         </p>
-                        <h1 className="mt-3 text-3xl font-semibold tracking-tight text-brand-navy dark:text-white">
+                        <h1 className="mt-3 text-3xl font-semibold tracking-tight text-brand-navy dark:text-brand-light">
                             {t('pages.hotel.header.title', { defaultValue: 'Property profile and financial settings.' })}
                         </h1>
                         <p className="mt-3 max-w-3xl text-sm leading-6 text-brand-slate dark:text-brand-light/75">
@@ -202,7 +207,7 @@ export default function HotelPage() {
                                 <select
                                     value={currentHotel?.id || ''}
                                     onChange={(event) => switchHotel(Number(event.target.value))}
-                                    className="h-11 w-full min-w-64 appearance-none rounded-2xl border border-white/70 bg-white/72 pl-11 pr-10 text-sm font-semibold text-brand-navy shadow-sm outline-none transition focus:border-brand-mint focus:ring-2 focus:ring-brand-mint/20 dark:border-white/10 dark:bg-white/5 dark:text-white"
+                                    className="h-11 w-full min-w-64 appearance-none rounded-2xl border border-brand-light/70 bg-brand-light/72 pl-11 pr-10 text-sm font-semibold text-brand-navy shadow-sm outline-none transition focus:border-brand-mint focus:ring-2 focus:ring-brand-mint/20 dark:border-brand-light/10 dark:bg-brand-light/5 dark:text-brand-light"
                                 >
                                     {availableHotels.map((hotel) => (
                                         <option key={hotel.id} value={hotel.id}>{hotel.name}</option>
@@ -216,22 +221,23 @@ export default function HotelPage() {
                             <button
                                 type="button"
                                 onClick={openCreate}
-                                className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl bg-brand-mint px-4 text-sm font-semibold text-white shadow-md transition hover:-translate-y-0.5 hover:bg-brand-mint"
+                                className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl bg-brand-mint px-4 text-sm font-semibold text-brand-light shadow-md transition hover:-translate-y-0.5 hover:bg-brand-mint"
                             >
                                 <Plus size={16} />
                                 {t('pages.hotel.header.newHotel', { defaultValue: 'New hotel' })}
                             </button>
                         )}
                     </div>
-                </div>
-            </section>
+                </>
+                )}
+            />
 
             {!currentHotel ? (
                 <section className="premium-surface border-dashed p-12 text-center">
                     <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-3xl bg-brand-mint/10 text-brand-mint">
                         <Building2 size={30} />
                     </div>
-                    <h2 className="mt-5 text-xl font-semibold text-brand-navy dark:text-white">
+                    <h2 className="mt-5 text-xl font-semibold text-brand-navy dark:text-brand-light">
                         {t('pages.hotel.header.emptyTitle', { defaultValue: 'No hotel selected' })}
                     </h2>
                     <p className="mt-2 text-sm text-brand-slate dark:text-brand-light/75">
@@ -240,7 +246,7 @@ export default function HotelPage() {
                 </section>
             ) : (
                 <div className="space-y-6">
-                    <section className="rounded-2xl bg-brand-navy p-6 text-white shadow-md">
+                    <section className="rounded-2xl bg-brand-navy p-6 text-brand-light shadow-md">
                         <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
                             <div>
                                 <div className="flex flex-wrap items-center gap-3">
@@ -248,15 +254,15 @@ export default function HotelPage() {
                                     <Stars value={currentHotel.stars} />
                                 </div>
                                 <div className="mt-4 flex flex-wrap items-center gap-3 text-sm text-brand-slate">
-                                    <span className="inline-flex items-center gap-2 rounded-full bg-white/8 px-3 py-1">
+                                    <span className="inline-flex items-center gap-2 rounded-full bg-brand-light/8 px-3 py-1">
                                         <Building2 size={14} className="text-brand-mint" />
                                         {currentHotel.fiscalName || t('common.notAvailable', { defaultValue: 'Legal entity pending' })}
                                     </span>
-                                    <span className="inline-flex items-center gap-2 rounded-full bg-white/8 px-3 py-1">
+                                    <span className="inline-flex items-center gap-2 rounded-full bg-brand-light/8 px-3 py-1">
                                         <Coins size={14} className="text-brand-mint" />
                                         {currentHotel.defaultCurrency}
                                     </span>
-                                    <span className="inline-flex items-center gap-2 rounded-full bg-white/8 px-3 py-1">
+                                    <span className="inline-flex items-center gap-2 rounded-full bg-brand-light/8 px-3 py-1">
                                         Ref {currentHotel.reference || 'HTL-PENDING'}
                                     </span>
                                 </div>
@@ -267,7 +273,7 @@ export default function HotelPage() {
                                     <button
                                         type="button"
                                         onClick={() => openEdit(currentHotel)}
-                                        className="inline-flex h-11 items-center gap-2 rounded-2xl border border-white/10 bg-white/8 px-4 text-sm font-semibold text-white transition hover:bg-white/12"
+                                        className="inline-flex h-11 items-center gap-2 rounded-2xl border border-brand-light/10 bg-brand-light/8 px-4 text-sm font-semibold text-brand-light transition hover:bg-brand-light/12"
                                     >
                                         <Pencil size={15} className="text-brand-mint" />
                                         {t('actions.edit', { defaultValue: 'Edit profile' })}
@@ -295,14 +301,14 @@ export default function HotelPage() {
                         ].map((metric) => {
                             const Icon = metric.icon;
                             return (
-                                <div key={metric.label} className="rounded-2xl border border-white/70 bg-white/72 p-5 shadow-sm dark:border-white/10 dark:bg-white/5">
+                                <div key={metric.label} className="rounded-2xl border border-brand-light/70 bg-brand-light/72 p-5 shadow-sm dark:border-brand-light/10 dark:bg-brand-light/5">
                                     <div className="flex items-center justify-between gap-4">
                                         <p className="text-sm font-medium text-brand-slate">{metric.label}</p>
                                         <div className="rounded-2xl bg-brand-mint/10 p-3 text-brand-mint">
                                             <Icon size={18} />
                                         </div>
                                     </div>
-                                    <p className="mt-6 text-2xl font-semibold tracking-tight text-brand-navy dark:text-white">
+                                    <p className="mt-6 text-2xl font-semibold tracking-tight text-brand-navy dark:text-brand-light">
                                         {metric.value}
                                     </p>
                                 </div>
@@ -328,7 +334,7 @@ export default function HotelPage() {
                                         <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-brand-slate">
                                             {t('pages.hotel.fields.legalRepresentative', { defaultValue: 'Legal representative' })}
                                         </p>
-                                        <p className="mt-1 text-sm font-semibold text-brand-navy dark:text-white">
+                                        <p className="mt-1 text-sm font-semibold text-brand-navy dark:text-brand-light">
                                             {currentHotel.legalRepresentative || 'Not provided'}
                                         </p>
                                     </div>
@@ -344,14 +350,14 @@ export default function HotelPage() {
                             {currentHotel.emails && currentHotel.emails.length > 0 ? (
                                 <div className="space-y-3">
                                     {currentHotel.emails.map((email, index) => (
-                                        <div key={`${email.label}-${index}`} className="flex items-center justify-between gap-4 rounded-2xl border border-white/70 bg-white/72 px-4 py-3 dark:border-white/10 dark:bg-white/5">
+                                        <div key={`${email.label}-${index}`} className="flex items-center justify-between gap-4 rounded-2xl border border-brand-light/70 bg-brand-light/72 px-4 py-3 dark:border-brand-light/10 dark:bg-brand-light/5">
                                             <div className="min-w-0">
                                                 <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-brand-slate">{email.label}</p>
-                                                <p className="mt-1 truncate text-sm font-semibold text-brand-navy dark:text-white">{email.address}</p>
+                                                <p className="mt-1 truncate text-sm font-semibold text-brand-navy dark:text-brand-light">{email.address}</p>
                                             </div>
                                             <a
                                                 href={`mailto:${email.address}`}
-                                                className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-brand-mint/10 text-brand-mint transition hover:bg-brand-mint hover:text-white"
+                                                className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-brand-mint/10 text-brand-mint transition hover:bg-brand-mint hover:text-brand-light"
                                                 aria-label={t('pages.hotel.actions.email', { defaultValue: 'Email contact' })}
                                             >
                                                 <ArrowUpRight size={16} />
@@ -360,7 +366,7 @@ export default function HotelPage() {
                                     ))}
                                 </div>
                             ) : (
-                                <div className="rounded-2xl border border-dashed border-white/70 bg-white/40 px-6 py-10 text-center text-sm text-brand-slate dark:border-white/10 dark:bg-white/5 dark:text-brand-light/75">
+                                <div className="rounded-2xl border border-dashed border-brand-light/70 bg-brand-light/40 px-6 py-10 text-center text-sm text-brand-slate dark:border-brand-light/10 dark:bg-brand-light/5 dark:text-brand-light/75">
                                     {t('pages.hotel.cards.contacts.empty', { defaultValue: 'No contact email has been configured yet.' })}
                                 </div>
                             )}
@@ -375,7 +381,7 @@ export default function HotelPage() {
                                 <InfoRow label={t('pages.hotel.fields.bank', { defaultValue: 'Bank' })} value={currentHotel.bankName} />
                                 <InfoRow label={t('pages.hotel.fields.vatNumber', { defaultValue: 'VAT number' })} value={currentHotel.vatNumber} />
                                 <InfoRow label={t('pages.hotel.fields.accountNumber', { defaultValue: 'Account number' })} value={currentHotel.accountNumber} />
-                                <div className="rounded-2xl bg-brand-navy px-4 py-4 text-white">
+                                <div className="rounded-2xl bg-brand-navy px-4 py-4 text-brand-light">
                                     <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-brand-slate">
                                         {t('pages.hotel.fields.ibanSwift', { defaultValue: 'IBAN / SWIFT' })}
                                     </p>
@@ -397,14 +403,14 @@ export default function HotelPage() {
                             <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-brand-slate">
                                 {t('pages.hotel.archives.eyebrow', { defaultValue: 'Archive' })}
                             </p>
-                            <h2 className="mt-2 text-xl font-semibold tracking-tight text-brand-navy dark:text-white">
+                            <h2 className="mt-2 text-xl font-semibold tracking-tight text-brand-navy dark:text-brand-light">
                                 {t('pages.hotel.archives.title', { defaultValue: 'Archived establishments' })}
                             </h2>
                         </div>
                         <button
                             type="button"
                             onClick={() => setShowArchived(!showArchived)}
-                            className="inline-flex h-11 items-center gap-2 rounded-2xl border border-white/70 bg-white/70 px-4 text-sm font-semibold text-brand-slate transition hover:text-brand-navy dark:border-white/10 dark:bg-white/5 dark:text-brand-light/75 dark:hover:text-white"
+                            className="inline-flex h-11 items-center gap-2 rounded-2xl border border-brand-light/70 bg-brand-light/70 px-4 text-sm font-semibold text-brand-slate transition hover:text-brand-navy dark:border-brand-light/10 dark:bg-brand-light/5 dark:text-brand-light/75 dark:hover:text-brand-light"
                         >
                             <Archive size={16} />
                             {showArchived
@@ -417,16 +423,16 @@ export default function HotelPage() {
                     {showArchived && archivedHotels && archivedHotels.length > 0 && (
                         <div className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
                             {archivedHotels.map((hotel) => (
-                                <div key={hotel.id} className="rounded-2xl border border-white/70 bg-white/72 p-5 shadow-sm grayscale transition hover:grayscale-0 dark:border-white/10 dark:bg-white/5">
+                                <div key={hotel.id} className="rounded-2xl border border-brand-light/70 bg-brand-light/72 p-5 shadow-sm grayscale transition hover:grayscale-0 dark:border-brand-light/10 dark:bg-brand-light/5">
                                     <div className="flex items-center justify-between gap-4">
                                         <div className="min-w-0">
-                                            <h3 className="truncate text-sm font-semibold text-brand-navy dark:text-white">{hotel.name}</h3>
+                                            <h3 className="truncate text-sm font-semibold text-brand-navy dark:text-brand-light">{hotel.name}</h3>
                                             <p className="mt-1 text-xs text-brand-slate dark:text-brand-light/75">{hotel.reference || 'REF-N/A'}</p>
                                         </div>
                                         <button
                                             type="button"
                                             onClick={() => handleRestore(hotel)}
-                                            className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-brand-mint/10 text-brand-mint transition hover:bg-brand-mint hover:text-white"
+                                            className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-brand-mint/10 text-brand-mint transition hover:bg-brand-mint hover:text-brand-light"
                                             aria-label={t('pages.hotel.actions.restore', { defaultValue: 'Restore hotel' })}
                                         >
                                             <RotateCcw size={16} />

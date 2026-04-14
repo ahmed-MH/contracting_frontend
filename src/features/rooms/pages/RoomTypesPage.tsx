@@ -5,6 +5,7 @@ import { useAuth } from '../../auth/context/AuthContext';
 import { useConfirm } from '../../../context/ConfirmContext';
 import { BedDouble, Plus, Pencil, Trash2, RotateCcw, Archive, ChevronDown, ChevronRight, Search } from 'lucide-react';
 import EditRoomTypeModal from '../components/EditRoomTypeModal';
+import { GuidedPageHeader } from '../../../components/layout/Workspace';
 
 export default function RoomTypesPage() {
     const { t } = useTranslation('common');
@@ -83,7 +84,7 @@ export default function RoomTypesPage() {
 
     if (isLoading) {
         return (
-            <div className="p-4 md:p-8 flex items-center justify-center h-48">
+            <div className="space-y-6 p-4 md:p-6 animate-in fade-in duration-500">
                 <div className="animate-spin rounded-full h-8 w-8 border-2 border-brand-mint/30 border-t-transparent" />
             </div>
         );
@@ -91,8 +92,8 @@ export default function RoomTypesPage() {
 
     if (isError) {
         return (
-            <div className="p-4 md:p-8">
-                <div className="rounded-xl bg-brand-slate/10 border border-brand-slate/20 p-6 text-brand-navy text-sm">
+            <div className="space-y-6 p-4 md:p-6 animate-in fade-in duration-500">
+                <div className="premium-surface border-brand-slate/20 p-6 text-sm text-brand-navy dark:text-brand-light">
                     Impossible de charger les types de chambres.
                 </div>
             </div>
@@ -100,55 +101,63 @@ export default function RoomTypesPage() {
     }
 
     return (
-        <div className="p-4 md:p-8 animate-in fade-in duration-500">
+        <div className="space-y-6 p-4 md:p-6 animate-in fade-in duration-500">
             {/* Header */}
-            <div className="flex items-center justify-between mb-8">
-                <div>
-                    <h1 className="text-2xl font-bold text-brand-navy flex items-center gap-3">
+            <GuidedPageHeader
+                icon={BedDouble}
+                kicker={t('pages.rooms.header.kicker', { defaultValue: 'Hotel Setup' })}
+                title={t('pages.rooms.header.title', { defaultValue: 'Types de Chambres' })}
+                description={t('pages.rooms.header.subtitle', { defaultValue: "Define the hotel's sellable room inventory." })}
+                actions={(
+                <>
+                <div className="hidden">
+                    <h1 className="flex items-center gap-3 text-3xl font-semibold tracking-tight text-brand-navy dark:text-brand-light">
                         <BedDouble className="text-brand-mint" size={28} />
                         Types de Chambres
                     </h1>
-                    <p className="text-sm text-brand-slate mt-1">
+                    <p className="mt-3 max-w-3xl text-sm leading-6 text-brand-slate dark:text-brand-light/75">
                         Définissez les chambres vendables de l'hôtel
                     </p>
                 </div>
                 <button
                     onClick={openCreate}
-                    className="inline-flex items-center gap-2 px-4 py-2.5 bg-brand-mint text-white text-sm font-medium rounded-xl hover:bg-brand-mint/90 transition-colors shadow-sm cursor-pointer border-none outline-none"
+                    className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl bg-brand-mint px-4 text-sm font-semibold text-brand-light shadow-md transition hover:-translate-y-0.5 hover:bg-brand-mint cursor-pointer border-none outline-none"
                 >
                     <Plus size={16} />
                     Nouvelle Chambre
                 </button>
-            </div>
+                </>
+                )}
+            />
 
             {/* ─── Search Bar ──────────────────────────────────────────── */}
-            <div className="mb-6">
-                <div className="relative max-w-sm">
+            <section className="premium-surface p-4">
+                <div className="relative w-full max-w-md">
                     <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-brand-slate/70" />
                     <input
                         type="text"
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
                         placeholder={t('auto.features.rooms.pages.roomtypespage.placeholder.4f8e2e50', { defaultValue: "Rechercher une chambre..." })}
-                        className="w-full pl-9 pr-4 py-2 border border-brand-slate/25 rounded-xl text-sm focus:ring-2 focus:ring-brand-mint focus:border-brand-mint outline-none"
+                        className="w-full rounded-xl border border-brand-slate/20 bg-brand-light/70 py-2.5 pl-9 pr-4 text-sm text-brand-navy outline-none transition focus:border-brand-mint/40 focus:ring-2 focus:ring-brand-mint/15 dark:border-brand-light/10 dark:bg-brand-light/5 dark:text-brand-light"
                     />
                 </div>
-            </div>
+            </section>
 
             {/* Table */}
             {(!isLoading && !isError && roomTypes?.length === 0) ? (
-                <div className="rounded-xl bg-brand-slate/10 border border-dashed border-brand-slate/25 p-12 text-center">
+                <div className="premium-surface border-dashed border-brand-slate/25 p-12 text-center">
                     <BedDouble size={40} className="mx-auto text-brand-slate/45 mb-3" />
                     <p className="text-brand-slate text-sm">{t('auto.features.rooms.pages.roomtypespage.6d41bf0a', { defaultValue: "Aucune chambre définie pour le moment" })}</p>
                     <p className="text-brand-slate/70 text-xs mt-1">{t('auto.features.rooms.pages.roomtypespage.eea025ef', { defaultValue: "Cliquez sur « Nouvelle Chambre » pour commencer" })}</p>
                 </div>
             ) : roomTypes && roomTypes.length > 0 && displayedRoomTypes?.length === 0 ? (
-                <div className="rounded-xl bg-brand-slate/10 border border-dashed border-brand-slate/25 p-12 text-center">
+                <div className="premium-surface border-dashed border-brand-slate/25 p-12 text-center">
                     <BedDouble size={40} className="mx-auto text-brand-slate/45 mb-3" />
                     <p className="text-brand-slate text-sm">Aucune chambre trouvée pour "{search}"</p>
                 </div>
             ) : displayedRoomTypes && displayedRoomTypes.length > 0 && (
-                <div className="bg-white dark:bg-brand-navy rounded-xl border border-brand-slate/15 shadow-sm overflow-hidden animate-in slide-in-from-bottom-2 duration-300">
+                <div className="premium-surface overflow-x-auto animate-in slide-in-from-bottom-2 duration-300">
                     <table className="w-full text-sm text-left">
                         <thead>
                             <tr className="bg-brand-light/80 border-b border-brand-slate/15">
@@ -235,7 +244,7 @@ export default function RoomTypesPage() {
                     </button>
 
                     {showArchived && displayedArchivedTypes && displayedArchivedTypes.length > 0 && (
-                        <div className="mt-4 bg-brand-light/80 rounded-xl border border-brand-slate/15 overflow-hidden opacity-80">
+                        <div className="premium-surface mt-4 overflow-x-auto opacity-80">
                             <table className="w-full text-sm text-left">
                                 <thead>
                                     <tr className="bg-brand-slate/10 border-b border-brand-slate/15">

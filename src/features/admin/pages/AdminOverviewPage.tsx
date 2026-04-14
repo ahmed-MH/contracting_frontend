@@ -43,14 +43,14 @@ export default function AdminOverviewPage() {
                         const Icon = metric.icon;
 
                         return (
-                            <div key={metric.label} className="rounded-2xl border border-white/70 bg-white/72 p-4 shadow-sm dark:border-white/10 dark:bg-white/5">
+                            <div key={metric.label} className="rounded-2xl border border-brand-light/70 bg-brand-light/72 p-4 shadow-sm dark:border-brand-light/10 dark:bg-brand-light/5">
                                 <div className="flex items-center justify-between">
                                     <p className="text-sm font-medium text-brand-slate">{metric.label}</p>
                                     <div className="rounded-2xl bg-brand-mint/10 p-2 text-brand-mint">
                                         <Icon size={16} />
                                     </div>
                                 </div>
-                                <p className="mt-6 text-3xl font-semibold tracking-tight text-brand-navy dark:text-white">
+                                <p className="mt-6 text-3xl font-semibold tracking-tight text-brand-navy dark:text-brand-light">
                                     {metric.value}
                                 </p>
                             </div>
@@ -74,14 +74,14 @@ export default function AdminOverviewPage() {
                         </p>
                     </div>
 
-                    <div className="mt-6 rounded-2xl bg-brand-navy px-5 py-4 text-white">
+                    <div className="mt-6 rounded-2xl bg-brand-navy px-5 py-4 text-brand-light">
                         <p className="text-sm text-brand-slate">{t('pages.adminOverview.billing.nextInvoice', { defaultValue: 'Next invoice window' })}</p>
                         <p className="mt-2 text-3xl font-semibold tracking-tight">{t('auto.features.admin.pages.adminoverviewpage.fb3c2467', { defaultValue: "14 Apr" })}</p>
                     </div>
 
                     <div className="mt-5 space-y-3">
                         {billingHighlights.map((item) => (
-                            <div key={item} className="rounded-2xl border border-brand-mint/15 bg-brand-mint/8 px-4 py-3 text-sm text-brand-navy dark:text-white">
+                            <div key={item} className="rounded-2xl border border-brand-mint/15 bg-brand-mint/8 px-4 py-3 text-sm text-brand-navy dark:text-brand-light">
                                 {item}
                             </div>
                         ))}
@@ -98,16 +98,16 @@ export default function AdminOverviewPage() {
                     )}
                 >
                     <div className="grid gap-4 md:grid-cols-2">
-                        <div className="rounded-2xl border border-white/70 bg-white/72 p-5 dark:border-white/10 dark:bg-white/5">
+                        <div className="rounded-2xl border border-brand-light/70 bg-brand-light/72 p-5 dark:border-brand-light/10 dark:bg-brand-light/5">
                             <p className="text-sm font-medium text-brand-slate">{t('pages.adminOverview.team.admins.title', { defaultValue: 'Admins' })}</p>
-                            <p className="mt-3 text-4xl font-semibold tracking-tight text-brand-navy dark:text-white">{admins}</p>
+                            <p className="mt-3 text-4xl font-semibold tracking-tight text-brand-navy dark:text-brand-light">{admins}</p>
                             <p className="mt-2 text-sm text-brand-slate dark:text-brand-light/75">
                                 {t('pages.adminOverview.team.admins.subtitle', { defaultValue: 'Governance, billing, and platform operations.' })}
                             </p>
                         </div>
-                        <div className="rounded-2xl border border-white/70 bg-white/72 p-5 dark:border-white/10 dark:bg-white/5">
+                        <div className="rounded-2xl border border-brand-light/70 bg-brand-light/72 p-5 dark:border-brand-light/10 dark:bg-brand-light/5">
                             <p className="text-sm font-medium text-brand-slate">{t('pages.adminOverview.team.commercials.title', { defaultValue: 'Commercials' })}</p>
-                            <p className="mt-3 text-4xl font-semibold tracking-tight text-brand-navy dark:text-white">{commercials}</p>
+                            <p className="mt-3 text-4xl font-semibold tracking-tight text-brand-navy dark:text-brand-light">{commercials}</p>
                             <p className="mt-2 text-sm text-brand-slate dark:text-brand-light/75">
                                 {t('pages.adminOverview.team.commercials.subtitle', { defaultValue: 'Production users handling product, partners, and contracts.' })}
                             </p>
@@ -123,7 +123,7 @@ export default function AdminOverviewPage() {
             >
                 <div className="grid gap-3 lg:grid-cols-3">
                     {immediatePriorities.map((item) => (
-                        <div key={item} className="rounded-2xl border border-white/70 bg-white/72 px-4 py-4 text-sm text-brand-navy dark:border-white/10 dark:bg-white/5 dark:text-white">
+                        <div key={item} className="rounded-2xl border border-brand-light/70 bg-brand-light/72 px-4 py-4 text-sm text-brand-navy dark:border-brand-light/10 dark:bg-brand-light/5 dark:text-brand-light">
                             {item}
                         </div>
                     ))}

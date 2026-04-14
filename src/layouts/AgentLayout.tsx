@@ -42,8 +42,8 @@ export default function AgentLayout() {
                                             className={clsx(
                                                 'inline-flex items-center gap-2 rounded-2xl px-4 py-2.5 text-sm font-semibold transition',
                                                 isActive
-                                                    ? 'bg-brand-navy text-white shadow-md'
-                                                    : 'bg-white/65 text-brand-slate hover:text-brand-navy dark:bg-white/5 dark:hover:text-white',
+                                                    ? 'bg-brand-navy text-brand-light shadow-md'
+                                                    : 'bg-brand-light/65 text-brand-slate hover:text-brand-navy dark:bg-brand-light/5 dark:hover:text-brand-light',
                                             )}
                                         >
                                             <Icon size={15} />

@@ -153,7 +153,7 @@ export default function EditContractCancellationModal({
                                     <input
                                         type="number"
                                         {...register('minStayCondition', { valueAsNumber: true, min: 0 })}
-                                        className="w-full px-4 py-2.5 bg-brand-light border border-brand-slate/20 rounded-xl focus:ring-2 focus:ring-brand-mint focus:bg-white transition-all text-sm font-bold placeholder:font-medium"
+                                        className="w-full px-4 py-2.5 bg-brand-light border border-brand-slate/20 rounded-xl focus:ring-2 focus:ring-brand-mint focus:bg-brand-light transition-all text-sm font-bold placeholder:font-medium"
                                         placeholder={t('auto.features.contracts.details.modals.editcontractcancellationmodal.placeholder.5fc68eed', { defaultValue: "Non requis" })}
                                     />
                                     <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[10px] font-bold text-brand-slate uppercase">{t('auto.features.contracts.details.modals.editcontractcancellationmodal.7277d445', { defaultValue: "Nuits" })}</span>
@@ -162,7 +162,7 @@ export default function EditContractCancellationModal({
                         </div>
 
                         <div className="p-4 bg-brand-mint/5 rounded-xl border border-brand-mint/20 flex items-start gap-3">
-                            <div className="p-1.5 bg-white dark:bg-brand-navy/50 rounded-xl text-brand-mint shadow-sm ring-1 ring-brand-mint/20 mt-0.5">
+                            <div className="p-1.5 bg-brand-light dark:bg-brand-navy/50 rounded-xl text-brand-mint shadow-sm ring-1 ring-brand-mint/20 mt-0.5">
                                 <AlertCircle size={14} />
                             </div>
                             <div>

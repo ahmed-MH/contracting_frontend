@@ -70,3 +70,56 @@ export interface SimulationResponse {
     roomsBreakdown: RoomBreakdownDto[];
     stayModifiers: ModifierDto[];
 }
+
+// ─── Proforma Invoice ────────────────────────────────────────────────
+
+export interface ProformaInvoice {
+    id: number;
+    hotelId: number;
+    affiliateId: number;
+    contractId: number;
+    reference: string;
+    status: 'GENERATED' | 'CANCELLED';
+    currency: string;
+    customerName: string;
+    customerEmail?: string;
+    checkIn: string;
+    checkOut: string;
+    bookingDate: string;
+    boardTypeName: string;
+    roomingSummary: any;
+    simulationInputSnapshot: any;
+    calculationSnapshot: any;
+    totalsSnapshot: {
+        subtotal: number;
+        discountTotal: number;
+        grandTotal: number;
+    };
+    notes?: string;
+    generatedByUserId: number;
+    generatedAt: string;
+    createdAt: string;
+    updatedAt: string;
+}
+
+export interface CreateProformaPayload {
+    affiliateId: number;
+    contractId: number;
+    customerName: string;
+    customerEmail?: string;
+    checkIn: string;
+    checkOut: string;
+    bookingDate: string;
+    boardTypeName: string;
+    currency: string;
+    roomingSummary: any;
+    simulationInput: any;
+    calculationResult: any;
+    totals: {
+        subtotal: number;
+        discountTotal: number;
+        grandTotal: number;
+    };
+    notes?: string;
+}
+

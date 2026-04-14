@@ -114,7 +114,7 @@ export default function CreatePeriodModal({ isOpen, onClose, onSubmit, isPending
                         Annuler
                     </button>
                     <button type="submit" disabled={isPending}
-                        className="px-4 py-2 text-sm font-medium text-white bg-brand-mint rounded-xl hover:bg-brand-mint/90 transition-colors disabled:opacity-50 cursor-pointer">
+                        className="px-4 py-2 text-sm font-medium text-brand-light bg-brand-mint rounded-xl hover:bg-brand-mint/90 transition-colors disabled:opacity-50 cursor-pointer">
                         {isPending ? 'Ajout...' : 'Ajouter'}
                     </button>
                 </div>

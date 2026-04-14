@@ -13,7 +13,7 @@ interface AdminPageHeaderProps {
 
 const badgeToneClasses = {
     mint: 'border-brand-mint/20 bg-brand-mint/8 text-brand-mint',
-    navy: 'border-brand-navy/10 bg-brand-navy text-white dark:border-white/10 dark:bg-white/8 dark:text-white',
+    navy: 'border-brand-navy/10 bg-brand-navy text-brand-light dark:border-brand-light/10 dark:bg-brand-light/8 dark:text-brand-light',
     amber: 'border-brand-slate/30 bg-brand-slate/10 text-brand-slate dark:border-brand-slate/30 dark:bg-brand-navy/80 dark:text-brand-light/75',
 } as const;
 
@@ -36,7 +36,7 @@ export default function AdminPageHeader({
                         <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-brand-slate">
                             {eyebrow}
                         </p>
-                        <h1 className="mt-3 text-3xl font-semibold tracking-tight text-brand-navy dark:text-white">
+                        <h1 className="mt-3 text-3xl font-semibold tracking-tight text-brand-navy dark:text-brand-light">
                             {title}
                         </h1>
                         <p className="mt-3 max-w-3xl text-sm leading-6 text-brand-slate dark:text-brand-light/75">

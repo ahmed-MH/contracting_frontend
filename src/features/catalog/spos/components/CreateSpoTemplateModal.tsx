@@ -93,7 +93,7 @@ export default function CreateSpoTemplateModal({ isOpen, onClose, editItem }: Cr
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
 
                 {/* Info de base */}
-                <div className="bg-white p-4 rounded-xl border border-brand-slate/20 shadow-md">
+                <div className="bg-brand-light p-4 rounded-xl border border-brand-slate/20 shadow-md">
                     <label className="block text-sm font-semibold text-brand-navy mb-1.5 flex items-center gap-2">
                         <FileText size={16} className="text-brand-slate" /> Nom de l'offre
                     </label>
@@ -122,7 +122,7 @@ export default function CreateSpoTemplateModal({ isOpen, onClose, editItem }: Cr
                                 <label className="block text-sm font-medium text-brand-slate mb-1">{t('auto.features.catalog.spos.components.createspotemplatemodal.57987910', { defaultValue: "Type de condition" })}</label>
                                 <select
                                     {...register('conditionType')}
-                                    className="w-full px-3 py-2 bg-white border border-brand-slate/30 rounded-xl text-sm focus:ring-2 focus:ring-brand-mint focus:border-brand-slate/30 outline-none text-brand-navy"
+                                    className="w-full px-3 py-2 bg-brand-light border border-brand-slate/30 rounded-xl text-sm focus:ring-2 focus:ring-brand-mint focus:border-brand-slate/30 outline-none text-brand-navy"
                                 >
                                     <option value="NONE">{t('auto.features.catalog.spos.components.createspotemplatemodal.2c845701', { defaultValue: "Aucune (Toujours applicable)" })}</option>
                                     <option value="MIN_NIGHTS">{t('auto.features.catalog.spos.components.createspotemplatemodal.514d470e', { defaultValue: "Nuits minimales (Min. Nights)" })}</option>
@@ -141,7 +141,7 @@ export default function CreateSpoTemplateModal({ isOpen, onClose, editItem }: Cr
                                         <input
                                             type="number"
                                             {...register('conditionValue', { valueAsNumber: true })}
-                                            className="w-full px-3 py-2 bg-white border border-brand-slate/30 rounded-xl text-sm focus:ring-2 focus:ring-brand-mint focus:border-brand-slate/30 outline-none text-brand-navy pl-9"
+                                            className="w-full px-3 py-2 bg-brand-light border border-brand-slate/30 rounded-xl text-sm focus:ring-2 focus:ring-brand-mint focus:border-brand-slate/30 outline-none text-brand-navy pl-9"
                                             placeholder={t('auto.features.catalog.spos.components.createspotemplatemodal.placeholder.abd39585', { defaultValue: "Ex: 3" })}
                                         />
                                         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-brand-slate">
@@ -218,7 +218,7 @@ export default function CreateSpoTemplateModal({ isOpen, onClose, editItem }: Cr
                     <button
                         type="submit"
                         disabled={createMutation.isPending || updateMutation.isPending}
-                        className="px-4 py-2 text-sm font-medium text-white bg-brand-mint rounded-xl hover:bg-brand-mint/90 transition-colors disabled:opacity-50 cursor-pointer shadow-md shadow-brand-mint/20"
+                        className="px-4 py-2 text-sm font-medium text-brand-light bg-brand-mint rounded-xl hover:bg-brand-mint/90 transition-colors disabled:opacity-50 cursor-pointer shadow-md shadow-brand-mint/20"
                     >
                         {isEditing ? 'Enregistrer les modifications' : 'Créer l\'offre'}
                     </button>

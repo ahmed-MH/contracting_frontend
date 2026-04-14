@@ -95,8 +95,8 @@ export default function EditEarlyBookingTemplateModal({
                 Annuler
             </button>
             <button form="early-booking-template-form" type="submit" disabled={isPending || !isDirty}
-                className="inline-flex items-center gap-2 px-8 py-2.5 bg-brand-mint text-white text-sm font-bold rounded-xl hover:bg-brand-mint/90 transition-all shadow-md active:scale-95 disabled:opacity-50 disabled:grayscale cursor-pointer">
-                {isPending ? <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" /> : <Save size={16} />}
+                className="inline-flex items-center gap-2 px-8 py-2.5 bg-brand-mint text-brand-light text-sm font-bold rounded-xl hover:bg-brand-mint/90 transition-all shadow-md active:scale-95 disabled:opacity-50 disabled:grayscale cursor-pointer">
+                {isPending ? <div className="w-4 h-4 border-2 border-brand-light border-t-transparent rounded-full animate-spin" /> : <Save size={16} />}
                 {editItem ? 'Enregistrer' : 'Créer le Template'}
             </button>
         </>
@@ -165,11 +165,11 @@ export default function EditEarlyBookingTemplateModal({
                             <div className="grid grid-cols-2 gap-3">
                                 <div>
                                     <label className="block text-[10px] font-bold text-brand-mint dark:text-brand-light/75 uppercase mb-1">{t('auto.features.catalog.early.bookings.components.editearlybookingtemplatemodal.6b67ef39', { defaultValue: "Du" })}</label>
-                                    <input type="date" {...register('bookingWindowStart')} className="w-full px-3 py-2 bg-white dark:bg-brand-navy border border-brand-mint/30 dark:border-brand-mint/30 rounded-xl text-xs font-bold focus:ring-2 focus:ring-brand-mint outline-none transition-all text-brand-navy dark:text-brand-light" />
+                                    <input type="date" {...register('bookingWindowStart')} className="w-full px-3 py-2 bg-brand-light dark:bg-brand-navy border border-brand-mint/30 dark:border-brand-mint/30 rounded-xl text-xs font-bold focus:ring-2 focus:ring-brand-mint outline-none transition-all text-brand-navy dark:text-brand-light" />
                                 </div>
                                 <div>
                                     <label className="block text-[10px] font-bold text-brand-mint dark:text-brand-light/75 uppercase mb-1">{t('auto.features.catalog.early.bookings.components.editearlybookingtemplatemodal.e21bd01e', { defaultValue: "Au" })}</label>
-                                    <input type="date" {...register('bookingWindowEnd')} className="w-full px-3 py-2 bg-white dark:bg-brand-navy border border-brand-mint/30 dark:border-brand-mint/30 rounded-xl text-xs font-bold focus:ring-2 focus:ring-brand-mint outline-none transition-all text-brand-navy dark:text-brand-light" />
+                                    <input type="date" {...register('bookingWindowEnd')} className="w-full px-3 py-2 bg-brand-light dark:bg-brand-navy border border-brand-mint/30 dark:border-brand-mint/30 rounded-xl text-xs font-bold focus:ring-2 focus:ring-brand-mint outline-none transition-all text-brand-navy dark:text-brand-light" />
                                 </div>
                             </div>
                         </div>
@@ -181,11 +181,11 @@ export default function EditEarlyBookingTemplateModal({
                             <div className="grid grid-cols-2 gap-3">
                                 <div>
                                     <label className="block text-[10px] font-bold text-brand-mint dark:text-brand-light/75 uppercase mb-1">{t('auto.features.catalog.early.bookings.components.editearlybookingtemplatemodal.6b67ef39', { defaultValue: "Du" })}</label>
-                                    <input type="date" {...register('stayWindowStart')} className="w-full px-3 py-2 bg-white dark:bg-brand-navy border border-brand-mint/30 dark:border-brand-mint/30 rounded-xl text-xs font-bold focus:ring-2 focus:ring-brand-mint outline-none transition-all text-brand-navy dark:text-brand-light" />
+                                    <input type="date" {...register('stayWindowStart')} className="w-full px-3 py-2 bg-brand-light dark:bg-brand-navy border border-brand-mint/30 dark:border-brand-mint/30 rounded-xl text-xs font-bold focus:ring-2 focus:ring-brand-mint outline-none transition-all text-brand-navy dark:text-brand-light" />
                                 </div>
                                 <div>
                                     <label className="block text-[10px] font-bold text-brand-mint dark:text-brand-light/75 uppercase mb-1">{t('auto.features.catalog.early.bookings.components.editearlybookingtemplatemodal.e21bd01e', { defaultValue: "Au" })}</label>
-                                    <input type="date" {...register('stayWindowEnd')} className="w-full px-3 py-2 bg-white dark:bg-brand-navy border border-brand-mint/30 dark:border-brand-mint/30 rounded-xl text-xs font-bold focus:ring-2 focus:ring-brand-mint outline-none transition-all text-brand-navy dark:text-brand-light" />
+                                    <input type="date" {...register('stayWindowEnd')} className="w-full px-3 py-2 bg-brand-light dark:bg-brand-navy border border-brand-mint/30 dark:border-brand-mint/30 rounded-xl text-xs font-bold focus:ring-2 focus:ring-brand-mint outline-none transition-all text-brand-navy dark:text-brand-light" />
                                 </div>
                             </div>
                         </div>
@@ -207,17 +207,17 @@ export default function EditEarlyBookingTemplateModal({
                             <div className="p-4 bg-brand-mint/10 dark:bg-brand-mint/5 rounded-2xl border border-brand-mint/20">
                                 <label className="flex items-center gap-2 text-[10px] font-bold text-brand-mint uppercase mb-2"><CreditCard size={14} /> {t('auto.features.catalog.early.bookings.components.editearlybookingtemplatemodal.0ecb9ba0', { defaultValue: "% Prépaiement" })}</label>
                                 <input type="number" {...register('prepaymentPercentage', { valueAsNumber: true })}
-                                    className="w-full px-3 py-2 bg-white dark:bg-brand-navy border border-brand-mint/20 rounded-xl text-sm font-bold focus:ring-2 focus:ring-brand-mint outline-none text-brand-navy dark:text-brand-light" />
+                                    className="w-full px-3 py-2 bg-brand-light dark:bg-brand-navy border border-brand-mint/20 rounded-xl text-sm font-bold focus:ring-2 focus:ring-brand-mint outline-none text-brand-navy dark:text-brand-light" />
                             </div>
                             <div className="p-4 bg-brand-slate/10 dark:bg-brand-navy/80 rounded-2xl border border-brand-slate/30 dark:border-brand-slate/30">
                                 <label className="flex items-center gap-2 text-[10px] font-bold text-brand-slate dark:text-brand-light/75 uppercase mb-2"><Clock size={14} /> {t('auto.features.catalog.early.bookings.components.editearlybookingtemplatemodal.bcbe5929', { defaultValue: "Date Limite (Pay)" })}</label>
                                 <input type="date" {...register('prepaymentDeadlineDate')}
-                                    className="w-full px-3 py-2 bg-white dark:bg-brand-navy border border-brand-slate/30 dark:border-brand-slate/30 rounded-xl text-xs font-bold focus:ring-2 focus:ring-brand-mint outline-none text-brand-navy dark:text-brand-light" />
+                                    className="w-full px-3 py-2 bg-brand-light dark:bg-brand-navy border border-brand-slate/30 dark:border-brand-slate/30 rounded-xl text-xs font-bold focus:ring-2 focus:ring-brand-mint outline-none text-brand-navy dark:text-brand-light" />
                             </div>
                             <div className="p-4 bg-brand-mint/10 dark:bg-brand-mint/20 rounded-2xl border border-brand-mint/30 dark:border-brand-mint/30">
                                 <label className="flex items-center gap-2 text-[10px] font-bold text-brand-mint dark:text-brand-light/75 uppercase mb-2"><ClipboardList size={14} /> {t('auto.features.catalog.early.bookings.components.editearlybookingtemplatemodal.7d300fa2', { defaultValue: "Rooming List" })}</label>
                                 <input type="date" {...register('roomingListDeadlineDate')}
-                                    className="w-full px-3 py-2 bg-white dark:bg-brand-navy border border-brand-mint/30 dark:border-brand-mint/30 rounded-xl text-xs font-bold focus:ring-2 focus:ring-brand-mint outline-none text-brand-navy dark:text-brand-light" />
+                                    className="w-full px-3 py-2 bg-brand-light dark:bg-brand-navy border border-brand-mint/30 dark:border-brand-mint/30 rounded-xl text-xs font-bold focus:ring-2 focus:ring-brand-mint outline-none text-brand-navy dark:text-brand-light" />
                             </div>
                         </div>
                     ) : (

@@ -9,6 +9,7 @@ import type { ContractEarlyBooking } from '../../../catalog/early-bookings/types
 import ImportEarlyBookingModal from '../../../catalog/early-bookings/components/ImportEarlyBookingModal';
 import EditContractEarlyBookingModal from '../modals/EditContractEarlyBookingModal';
 import EarlyBookingGrid from '../components/EarlyBookingGrid';
+import { ContractSectionEmpty, ContractSectionLoading, ContractSectionShell } from '../components/ContractSection';
 
 export default function EarlyBookingsTab() {
     const { contract } = useOutletContext<ContractOutletContext>();
@@ -35,11 +36,28 @@ export default function EarlyBookingsTab() {
         }
     };
 
+    const importAction = (
+        <button
+            onClick={() => setShowImport(true)}
+            className="inline-flex items-center gap-2 rounded-lg bg-brand-mint px-4 py-2 text-sm font-medium text-brand-light shadow-sm transition-colors hover:bg-brand-mint/90"
+        >
+            <Plus size={16} />
+            {t('pages.contractDetails.earlyBookings.importFromCatalog', { defaultValue: 'Import from Catalog' })}
+        </button>
+    );
+
     if (isLoading) {
         return (
-            <div className="flex items-center justify-center py-12">
-                <div className="animate-spin rounded-full h-8 w-8 border-2 border-brand-mint/30 border-t-transparent" />
-            </div>
+            <ContractSectionShell
+                icon={CalendarCheck}
+                title={t('pages.contractDetails.earlyBookings.title', { defaultValue: 'Early Bookings' })}
+                description={t('pages.contractDetails.earlyBookings.description', {
+                    defaultValue: 'Attach booking-window incentives and configure their contract applicability.',
+                })}
+                action={importAction}
+            >
+                <ContractSectionLoading label={t('states.loading', { defaultValue: 'Loading...' })} />
+            </ContractSectionShell>
         );
     }
 
@@ -47,47 +65,34 @@ export default function EarlyBookingsTab() {
 
     return (
         <>
-            <div className="flex items-center justify-between mb-6">
-                <div className="flex items-center gap-3">
-                    <CalendarCheck size={20} className="text-brand-mint" />
-                    <h2 className="text-base font-semibold text-brand-navy">
-                        {t('pages.contractDetails.earlyBookings.title', { defaultValue: 'Early Bookings' })}
-                    </h2>
-                    <span className="text-xs text-brand-slate">({items.length})</span>
-                </div>
-                <button
-                    onClick={() => setShowImport(true)}
-                    className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-brand-mint rounded-xl hover:bg-brand-mint cursor-pointer shadow-md shadow-brand-mint/20 transition-all hover:scale-[1.02]"
-                >
-                    <Plus size={16} />
-                    {t('pages.contractDetails.earlyBookings.importFromCatalog', { defaultValue: 'Import from Catalog' })}
-                </button>
-            </div>
-
-            {items.length === 0 && (
-                <div className="rounded-xl bg-brand-light border border-dashed border-brand-slate/20 p-12 text-center">
-                    <CalendarCheck size={40} className="mx-auto text-brand-slate mb-3" />
-                    <p className="text-brand-slate text-sm font-semibold tracking-tight">
-                        {t('pages.contractDetails.earlyBookings.emptyTitle', { defaultValue: 'No Early Booking configured' })}
-                    </p>
-                    <p className="text-brand-slate text-xs mt-1">
-                        {t('pages.contractDetails.earlyBookings.emptySubtitle', {
+            <ContractSectionShell
+                icon={CalendarCheck}
+                title={t('pages.contractDetails.earlyBookings.title', { defaultValue: 'Early Bookings' })}
+                description={t('pages.contractDetails.earlyBookings.description', {
+                    defaultValue: 'Attach booking-window incentives and configure their contract applicability.',
+                })}
+                count={items.length}
+                action={importAction}
+            >
+                {items.length === 0 ? (
+                    <ContractSectionEmpty
+                        icon={CalendarCheck}
+                        title={t('pages.contractDetails.earlyBookings.emptyTitle', { defaultValue: 'No Early Booking configured' })}
+                        description={t('pages.contractDetails.earlyBookings.emptySubtitle', {
                             defaultValue: 'Import offers from the hotel catalog to apply them to this contract.',
                         })}
-                    </p>
-                </div>
-            )}
-
-            {items.length > 0 && (
-                <EarlyBookingGrid
-                    earlyBookings={items}
-                    periods={contract.periods ?? []}
-                    onSaved={() => refetch()}
-                    onEdit={(eb) => setEditingEB(eb)}
-                    onDelete={handleDelete}
-                    isDeleting={deleteMutation.isPending}
-                />
-            )}
+                    />
+                ) : (
+                    <EarlyBookingGrid
+                        earlyBookings={items}
+                        periods={contract.periods ?? []}
+                        onSaved={() => refetch()}
+                        onEdit={(eb) => setEditingEB(eb)}
+                        onDelete={handleDelete}
+                        isDeleting={deleteMutation.isPending}
+                    />
+                )}
+            </ContractSectionShell>
 
             <ImportEarlyBookingModal contractId={contract.id} isOpen={showImport} onClose={() => setShowImport(false)} />
 

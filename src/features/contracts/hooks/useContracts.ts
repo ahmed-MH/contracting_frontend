@@ -12,6 +12,10 @@ import { useHotel } from '../../hotel/context/HotelContext';
 import i18next from '../../../lib/i18n';
 
 function getErrorMessage(error: any, defaultMessage: string): string {
+    const activationErrors = error?.response?.data?.validation?.errors;
+    if (Array.isArray(activationErrors) && activationErrors.length > 0) {
+        return activationErrors[0]?.message ?? defaultMessage;
+    }
     if (error?.response?.data?.message) {
         const msg = error.response.data.message;
         return Array.isArray(msg) ? msg.join(', ') : msg;
@@ -40,6 +44,14 @@ export function useContract(id: number | undefined) {
         queryKey: contractKeys.detail(id),
         queryFn: () => contractService.getContractById(id!),
         enabled: !!id,
+    });
+}
+
+export function useContractActivationCheck(contractId: number | undefined, enabled = false) {
+    return useQuery({
+        queryKey: [...contractKeys.detail(contractId), 'activation-check'],
+        queryFn: () => contractService.validateActivation(contractId!),
+        enabled: !!contractId && enabled,
     });
 }
 

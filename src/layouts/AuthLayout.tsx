@@ -11,7 +11,7 @@ export default function AuthLayout() {
 
     return (
         <div className="min-h-screen w-full flex font-inter selection:bg-brand-mint/20 bg-brand-light dark:bg-brand-navy">
-            <div className="w-full md:w-[52%] lg:w-[46%] xl:w-[44%] min-h-screen flex flex-col bg-white dark:bg-brand-navy relative z-10">
+            <div className="w-full md:w-[52%] lg:w-[46%] xl:w-[44%] min-h-screen flex flex-col bg-brand-light dark:bg-brand-navy relative z-10">
                 <div className="shrink-0 px-8 sm:px-12 pt-8 sm:pt-10 pb-4 flex items-center justify-between gap-4">
                     <Link
                         to="/"
@@ -24,7 +24,7 @@ export default function AuthLayout() {
                         <button
                             type="button"
                             onClick={toggleTheme}
-                            className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-brand-slate/20 bg-white text-brand-slate shadow-sm transition hover:text-brand-navy dark:border-white/10 dark:bg-white/5 dark:text-brand-light/75 dark:hover:text-white"
+                            className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-brand-slate/20 bg-brand-light text-brand-slate shadow-sm transition hover:text-brand-navy dark:border-brand-light/10 dark:bg-brand-light/5 dark:text-brand-light/75 dark:hover:text-brand-light"
                             aria-label={t('actions.toggleTheme', { defaultValue: 'Toggle theme' })}
                         >
                             {isDark ? <Sun size={16} /> : <Moon size={16} />}
@@ -76,11 +76,11 @@ export default function AuthLayout() {
                         }}
                     />
 
-                    <div className="absolute left-0 top-0 bottom-0 w-px bg-gradient-to-b from-transparent via-white/[0.06] to-transparent" />
+                    <div className="absolute left-0 top-0 bottom-0 w-px bg-gradient-to-b from-transparent via-brand-light/[0.06] to-transparent" />
 
                     <div className="relative z-10 flex flex-col h-full px-10 md:px-12 xl:px-16 py-10 xl:py-12">
                         <div className="shrink-0">
-                            <div className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-white/[0.05] border border-white/[0.09] backdrop-blur-sm">
+                            <div className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-brand-light/[0.05] border border-brand-light/[0.09] backdrop-blur-sm">
                                 <span className="flex h-2 w-2 rounded-full bg-brand-mint shadow-sm animate-pulse" />
                                 <span className="text-[11px] font-semibold text-brand-light/80 tracking-[0.13em] uppercase">
                                     {t('authLayout.badge', { defaultValue: 'Pricify Contracting' })}
@@ -90,7 +90,7 @@ export default function AuthLayout() {
 
                         <div className="flex-1 flex flex-col justify-center gap-6 py-8">
                             <div>
-                                <h2 className="text-[2rem] xl:text-[3rem] font-black text-white leading-[1.1] tracking-tight mb-4">
+                                <h2 className="text-[2rem] xl:text-[3rem] font-black text-brand-light leading-[1.1] tracking-tight mb-4">
                                     {t('authLayout.hero.titleLine1', { defaultValue: 'Contracting' })} <br />
                                     {t('authLayout.hero.titleLine2Prefix', { defaultValue: 'Hospitality' })}{' '}
                                     <span className="text-brand-mint">{t('authLayout.hero.titleAccent', { defaultValue: 'Reinvented.' })}</span>
@@ -101,11 +101,11 @@ export default function AuthLayout() {
                             </div>
 
                             <div className="grid grid-cols-1 gap-3 max-w-[480px] xl:grid-cols-2">
-                                <div className="group p-4 rounded-xl bg-white/[0.03] border border-white/[0.08] hover:border-brand-mint/30 hover:bg-white/[0.055] backdrop-blur-sm transition-all duration-300">
+                                <div className="group p-4 rounded-xl bg-brand-light/[0.03] border border-brand-light/[0.08] hover:border-brand-mint/30 hover:bg-brand-light/[0.055] backdrop-blur-sm transition-all duration-300">
                                     <div className="w-8 h-8 rounded-xl bg-brand-mint/10 flex items-center justify-center mb-2.5">
                                         <FileText size={15} className="text-brand-mint" />
                                     </div>
-                                    <p className="text-[13px] font-bold text-white mb-1 leading-tight">
+                                    <p className="text-[13px] font-bold text-brand-light mb-1 leading-tight">
                                         {t('authLayout.cards.contracts.title', { defaultValue: 'Contract management' })}
                                     </p>
                                     <p className="text-[11.5px] text-brand-light/55 font-medium leading-snug">
@@ -113,11 +113,11 @@ export default function AuthLayout() {
                                     </p>
                                 </div>
 
-                                <div className="group p-4 rounded-xl bg-white/[0.03] border border-white/[0.08] hover:border-brand-mint/30 hover:bg-white/[0.055] backdrop-blur-sm transition-all duration-300">
+                                <div className="group p-4 rounded-xl bg-brand-light/[0.03] border border-brand-light/[0.08] hover:border-brand-mint/30 hover:bg-brand-light/[0.055] backdrop-blur-sm transition-all duration-300">
                                     <div className="w-8 h-8 rounded-xl bg-brand-mint/10 flex items-center justify-center mb-2.5">
                                         <BarChart3 size={15} className="text-brand-mint" />
                                     </div>
-                                    <p className="text-[13px] font-bold text-white mb-1 leading-tight">
+                                    <p className="text-[13px] font-bold text-brand-light mb-1 leading-tight">
                                         {t('authLayout.cards.rates.title', { defaultValue: 'Rate grids' })}
                                     </p>
                                     <p className="text-[11.5px] text-brand-light/55 font-medium leading-snug">
@@ -125,11 +125,11 @@ export default function AuthLayout() {
                                     </p>
                                 </div>
 
-                                <div className="group p-4 rounded-xl bg-white/[0.03] border border-white/[0.08] hover:border-brand-mint/30 hover:bg-white/[0.055] backdrop-blur-sm transition-all duration-300">
+                                <div className="group p-4 rounded-xl bg-brand-light/[0.03] border border-brand-light/[0.08] hover:border-brand-mint/30 hover:bg-brand-light/[0.055] backdrop-blur-sm transition-all duration-300">
                                     <div className="w-8 h-8 rounded-xl bg-brand-mint/10 flex items-center justify-center mb-2.5">
                                         <Calculator size={15} className="text-brand-mint" />
                                     </div>
-                                    <p className="text-[13px] font-bold text-white mb-1 leading-tight">
+                                    <p className="text-[13px] font-bold text-brand-light mb-1 leading-tight">
                                         {t('authLayout.cards.simulator.title', { defaultValue: 'Price simulator' })}
                                     </p>
                                     <p className="text-[11.5px] text-brand-light/55 font-medium leading-snug">
@@ -137,11 +137,11 @@ export default function AuthLayout() {
                                     </p>
                                 </div>
 
-                                <div className="group p-4 rounded-xl bg-white/[0.03] border border-white/[0.08] hover:border-brand-mint/30 hover:bg-white/[0.055] backdrop-blur-sm transition-all duration-300">
+                                <div className="group p-4 rounded-xl bg-brand-light/[0.03] border border-brand-light/[0.08] hover:border-brand-mint/30 hover:bg-brand-light/[0.055] backdrop-blur-sm transition-all duration-300">
                                     <div className="w-8 h-8 rounded-xl bg-brand-mint/10 flex items-center justify-center mb-2.5">
                                         <Building2 size={15} className="text-brand-mint" />
                                     </div>
-                                    <p className="text-[13px] font-bold text-white mb-1 leading-tight">
+                                    <p className="text-[13px] font-bold text-brand-light mb-1 leading-tight">
                                         {t('authLayout.cards.multiHotel.title', { defaultValue: 'Multi-hotels' })}
                                     </p>
                                     <p className="text-[11.5px] text-brand-light/55 font-medium leading-snug">

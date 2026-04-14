@@ -162,23 +162,23 @@ export default function EditContractSupplementModal({
                             {(watchSystemCode === 'GALA_DINNER' || watchSystemCode === 'MEAL_PLAN') && (
                                 <div className="grid grid-cols-2 gap-4 bg-brand-light dark:bg-brand-slate/10 p-4 rounded-xl border border-brand-slate/20">
                                     <div>
-                                        <label className="block text-xs font-bold text-brand-navy dark:text-brand-light uppercase tracking-wider mb-2">{t('auto.features.contracts.details.modals.editcontractsupplementmodal.55f4c4e1', { defaultValue: "Âge Minimum" })}</label>
+                                <label className="block text-xs font-bold text-brand-navy dark:text-brand-light uppercase tracking-wider mb-2">{t('auto.features.contracts.details.modals.editcontractsupplementmodal.55f4c4e1', { defaultValue: "Age Minimum" })}</label>
                                         <div className="relative">
                                             <input
                                                 type="number"
                                                 {...register('minAge', { valueAsNumber: true, min: 0 })}
-                                                className="w-full px-4 py-2 bg-white dark:bg-brand-navy/50 border border-brand-slate/20 rounded-xl focus:ring-2 focus:ring-brand-mint transition-all text-sm font-bold text-brand-navy dark:text-brand-light outline-none"
+                                                className="w-full px-4 py-2 bg-brand-light dark:bg-brand-navy/50 border border-brand-slate/20 rounded-xl focus:ring-2 focus:ring-brand-mint transition-all text-sm font-bold text-brand-navy dark:text-brand-light outline-none"
                                             />
                                             <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-bold text-brand-slate/50 uppercase">{t('auto.features.contracts.details.modals.editcontractsupplementmodal.1a8e8d3a', { defaultValue: "ans" })}</span>
                                         </div>
                                     </div>
                                     <div>
-                                        <label className="block text-xs font-bold text-brand-navy dark:text-brand-light uppercase tracking-wider mb-2">{t('auto.features.contracts.details.modals.editcontractsupplementmodal.7ee9223e', { defaultValue: "Âge Maximum" })}</label>
+                                <label className="block text-xs font-bold text-brand-navy dark:text-brand-light uppercase tracking-wider mb-2">{t('auto.features.contracts.details.modals.editcontractsupplementmodal.7ee9223e', { defaultValue: "Age Maximum" })}</label>
                                         <div className="relative">
                                             <input
                                                 type="number"
                                                 {...register('maxAge', { valueAsNumber: true, max: 99 })}
-                                                className="w-full px-4 py-2 bg-white dark:bg-brand-navy/50 border border-brand-slate/20 rounded-xl focus:ring-2 focus:ring-brand-mint transition-all text-sm font-bold text-brand-navy dark:text-brand-light outline-none"
+                                                className="w-full px-4 py-2 bg-brand-light dark:bg-brand-navy/50 border border-brand-slate/20 rounded-xl focus:ring-2 focus:ring-brand-mint transition-all text-sm font-bold text-brand-navy dark:text-brand-light outline-none"
                                             />
                                             <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-bold text-brand-slate/50 uppercase">{t('auto.features.contracts.details.modals.editcontractsupplementmodal.1a8e8d3a', { defaultValue: "ans" })}</span>
                                         </div>
@@ -192,7 +192,7 @@ export default function EditContractSupplementModal({
                                     <label className="block text-xs font-bold text-brand-navy dark:text-brand-light uppercase tracking-wider mb-2">{t('auto.features.contracts.details.modals.editcontractsupplementmodal.d1b0b3bc', { defaultValue: "Type de Calcul" })}</label>
                                     <select
                                         {...register('type')}
-                                        className="w-full px-4 py-2.5 bg-brand-light dark:bg-brand-slate/10 border border-brand-slate/20 rounded-xl focus:ring-2 focus:ring-brand-mint focus:bg-white transition-all text-sm font-bold cursor-pointer text-brand-navy dark:text-brand-light outline-none"
+                                        className="w-full px-4 py-2.5 bg-brand-light dark:bg-brand-slate/10 border border-brand-slate/20 rounded-xl focus:ring-2 focus:ring-brand-mint focus:bg-brand-light transition-all text-sm font-bold cursor-pointer text-brand-navy dark:text-brand-light outline-none"
                                     >
                                         <option value="FIXED">{t('auto.features.contracts.details.modals.editcontractsupplementmodal.db176a40', { defaultValue: "Fixe (TND)" })}</option>
                                         <option value="PERCENTAGE">{t('auto.features.contracts.details.modals.editcontractsupplementmodal.d5cd8ba2', { defaultValue: "Pourcentage (%)" })}</option>
@@ -204,7 +204,7 @@ export default function EditContractSupplementModal({
                                     <label className="block text-xs font-bold text-brand-navy dark:text-brand-light uppercase tracking-wider mb-2">{t('auto.features.contracts.details.modals.editcontractsupplementmodal.1565911a', { defaultValue: "Mode d'Application" })}</label>
                                     <select
                                         {...register('applicationType')}
-                                        className="w-full px-4 py-2.5 bg-brand-light dark:bg-brand-slate/10 border border-brand-slate/20 rounded-xl focus:ring-2 focus:ring-brand-mint focus:bg-white transition-all text-sm font-bold cursor-pointer text-brand-navy dark:text-brand-light outline-none"
+                                        className="w-full px-4 py-2.5 bg-brand-light dark:bg-brand-slate/10 border border-brand-slate/20 rounded-xl focus:ring-2 focus:ring-brand-mint focus:bg-brand-light transition-all text-sm font-bold cursor-pointer text-brand-navy dark:text-brand-light outline-none"
                                     >
                                         <option value="PER_NIGHT_PER_PERSON">{t('auto.features.contracts.details.modals.editcontractsupplementmodal.e9a36374', { defaultValue: "Par Nuit et Par Personne" })}</option>
                                         <option value="PER_NIGHT_PER_ROOM">{t('auto.features.contracts.details.modals.editcontractsupplementmodal.6493e268', { defaultValue: "Par Chambre et Par Nuit" })}</option>

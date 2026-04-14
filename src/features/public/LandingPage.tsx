@@ -67,7 +67,7 @@ const bentoCards = [
             'Build, activate, and maintain partner agreements with structured periods, rate grids, supplements, reductions, early booking logic, special offers, and cancellation rules.',
         icon: FileStack,
         className: 'md:col-span-1 xl:col-span-3',
-        tone: 'white',
+        tone: 'light',
         bullets: ['Partner-linked contracts', 'Granular pricing conditions', 'Lifecycle control from draft to active'],
     },
     {
@@ -85,7 +85,7 @@ const bentoCards = [
             'Keep tour operators, agencies, and B2B travel partners connected to the right commercial conditions, contracts, and communication records in one place.',
         icon: Users,
         className: 'md:col-span-1 xl:col-span-2',
-        tone: 'white',
+        tone: 'light',
         bullets: ['Affiliate-linked contracts', 'Centralized B2B partner records', 'Faster collaboration with distribution partners'],
     },
     {
@@ -94,7 +94,7 @@ const bentoCards = [
             'Give directors a high-level view of hotels, teams, and permissions while keeping every user focused on the work that matches their responsibility.',
         icon: CircleDollarSign,
         className: 'md:col-span-2 xl:col-span-3',
-        tone: 'white',
+        tone: 'light',
         bullets: ['Team access and role control', 'Portfolio-wide visibility', 'Cleaner coordination across directors and operators'],
     },
     {
@@ -103,7 +103,7 @@ const bentoCards = [
             'Model hotels, rooms, arrangements, affiliates, and pricing catalogs in one connected flow that feeds every contract and simulator decision.',
         icon: Hotel,
         className: 'md:col-span-2 xl:col-span-4',
-        tone: 'white',
+        tone: 'light',
         bullets: ['Hotel portfolio and exchange rates', 'Room and arrangement catalogs', 'Supplements, SPOs, reductions, and more'],
     },
 ] as const;
@@ -148,16 +148,16 @@ const footerLinks = [
     { key: 'landing.nav.control', defaultLabel: 'Control', href: '#security' },
 ] as const;
 
-function surfaceTone(tone: 'navy' | 'mint' | 'white') {
+function surfaceTone(tone: 'navy' | 'mint' | 'light') {
     if (tone === 'navy') {
-        return 'border-brand-navy/10 bg-brand-navy text-white shadow-md dark:border-white/10 dark:bg-brand-navy/80';
+        return 'border-brand-navy/10 bg-brand-navy text-brand-light shadow-md dark:border-brand-light/10 dark:bg-brand-navy/80';
     }
 
     if (tone === 'mint') {
         return 'border-brand-mint/20 bg-brand-mint/10 text-brand-navy shadow-md dark:border-brand-mint/30 dark:bg-brand-navy/80 dark:text-brand-light';
     }
 
-    return 'border-white/70 bg-white/78 text-brand-navy shadow-md dark:border-white/10 dark:bg-brand-navy/80 dark:text-brand-light';
+    return 'border-brand-light/70 bg-brand-light/78 text-brand-navy shadow-md dark:border-brand-light/10 dark:bg-brand-navy/80 dark:text-brand-light';
 }
 
 export default function LandingPage() {
@@ -182,12 +182,12 @@ export default function LandingPage() {
                 <div
                     className={`mx-auto flex w-full max-w-7xl items-center justify-between gap-4 rounded-2xl border px-4 py-3 transition-all duration-300 md:px-6 ${
                         isScrolled
-                            ? 'border-white/70 bg-white/72 shadow-md backdrop-blur-2xl dark:border-white/10 dark:bg-brand-navy/80'
-                            : 'border-white/55 bg-white/54 backdrop-blur-xl dark:border-white/10 dark:bg-brand-navy/80'
+                            ? 'border-brand-light/70 bg-brand-light/72 shadow-md backdrop-blur-2xl dark:border-brand-light/10 dark:bg-brand-navy/80'
+                            : 'border-brand-light/55 bg-brand-light/54 backdrop-blur-xl dark:border-brand-light/10 dark:bg-brand-navy/80'
                     }`}
                 >
                     <Link to="/" className="flex shrink-0 items-center gap-3" aria-label={t('auto.features.public.landingpage.aria-label.cb16b8d6', { defaultValue: "Pricify home" })}>
-                        <div className="rounded-2xl border border-white/70 bg-white/80 px-3 py-2 shadow-sm dark:border-white/10 dark:bg-brand-navy/80">
+                        <div className="rounded-2xl border border-brand-light/70 bg-brand-light/80 px-3 py-2 shadow-sm dark:border-brand-light/10 dark:bg-brand-navy/80">
                             <Logo />
                         </div>
                     </Link>
@@ -197,7 +197,7 @@ export default function LandingPage() {
                             <a
                                 key={item.key}
                                 href={item.href}
-                                className="text-sm font-medium text-brand-slate transition hover:text-brand-navy dark:text-brand-light/75 dark:hover:text-white"
+                                className="text-sm font-medium text-brand-slate transition hover:text-brand-navy dark:text-brand-light/75 dark:hover:text-brand-light"
                             >
                                 {t(item.key, { defaultValue: item.defaultLabel })}
                             </a>
@@ -209,20 +209,20 @@ export default function LandingPage() {
                         <button
                             type="button"
                             onClick={toggleTheme}
-                            className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-xl border border-white/70 bg-white/80 text-brand-slate shadow-sm transition hover:text-brand-navy dark:border-white/10 dark:bg-brand-navy/80 dark:text-brand-light/75 dark:hover:text-white"
+                            className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-xl border border-brand-light/70 bg-brand-light/80 text-brand-slate shadow-sm transition hover:text-brand-navy dark:border-brand-light/10 dark:bg-brand-navy/80 dark:text-brand-light/75 dark:hover:text-brand-light"
                             aria-label={t('actions.toggleTheme', { defaultValue: 'Toggle theme' })}
                         >
                             {isDark ? <Sun size={16} /> : <Moon size={16} />}
                         </button>
                         <Link
                             to="/login"
-                            className="hidden min-h-11 items-center justify-center rounded-xl px-4 text-sm font-semibold text-brand-navy transition hover:bg-white/60 dark:text-brand-light dark:hover:bg-brand-navy/80 md:inline-flex"
+                            className="hidden min-h-11 items-center justify-center rounded-xl px-4 text-sm font-semibold text-brand-navy transition hover:bg-brand-light/60 dark:text-brand-light dark:hover:bg-brand-navy/80 md:inline-flex"
                         >
                             {t('landing.actions.login', { defaultValue: 'Log in' })}
                         </Link>
                         <Link
                             to="/plans"
-                            className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-brand-mint px-4 text-sm font-semibold text-white shadow-md transition hover:-translate-y-0.5 hover:bg-brand-mint md:px-5"
+                            className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-brand-mint px-4 text-sm font-semibold text-brand-light shadow-md transition hover:-translate-y-0.5 hover:bg-brand-mint md:px-5"
                         >
                             {t('landing.actions.getStarted', { defaultValue: 'Get Started' })}
                             <ArrowRight size={16} />
@@ -252,7 +252,7 @@ export default function LandingPage() {
                                 {heroPills.map((item) => (
                                     <span
                                         key={item.key}
-                                        className="inline-flex items-center rounded-full border border-white/70 bg-white/82 px-4 py-2 text-sm font-medium text-brand-slate shadow-sm backdrop-blur-xl dark:border-white/10 dark:bg-brand-navy/80 dark:text-brand-light"
+                                        className="inline-flex items-center rounded-full border border-brand-light/70 bg-brand-light/82 px-4 py-2 text-sm font-medium text-brand-slate shadow-sm backdrop-blur-xl dark:border-brand-light/10 dark:bg-brand-navy/80 dark:text-brand-light"
                                     >
                                         {t(item.key, { defaultValue: item.defaultLabel })}
                                     </span>
@@ -262,14 +262,14 @@ export default function LandingPage() {
                             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
                                 <Link
                                     to="/plans"
-                                    className="inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl bg-brand-navy px-6 text-base font-semibold text-white shadow-md transition hover:-translate-y-0.5 hover:bg-brand-navy"
+                                    className="inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl bg-brand-navy px-6 text-base font-semibold text-brand-light shadow-md transition hover:-translate-y-0.5 hover:bg-brand-navy"
                                 >
                                     {t('landing.actions.getStarted', { defaultValue: 'Get Started' })}
                                     <ArrowRight size={18} />
                                 </Link>
                                 <a
                                     href="#features"
-                                    className="inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl border border-brand-navy/10 bg-white/76 px-6 text-base font-semibold text-brand-navy backdrop-blur-xl transition hover:bg-white dark:border-white/10 dark:bg-brand-navy/80 dark:text-brand-light dark:hover:bg-brand-navy/80"
+                                    className="inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl border border-brand-navy/10 bg-brand-light/76 px-6 text-base font-semibold text-brand-navy backdrop-blur-xl transition hover:bg-brand-light dark:border-brand-light/10 dark:bg-brand-navy/80 dark:text-brand-light dark:hover:bg-brand-navy/80"
                                 >
                                     {t('landing.hero.explore', { defaultValue: 'Explore the product surface' })}
                                 </a>
@@ -286,7 +286,7 @@ export default function LandingPage() {
                                 {heroHighlights.map((item) => (
                                     <div
                                         key={item.key}
-                                        className="rounded-2xl border border-white/70 bg-white/78 px-4 py-4 shadow-md backdrop-blur-xl dark:border-white/10 dark:bg-brand-navy/80"
+                                        className="rounded-2xl border border-brand-light/70 bg-brand-light/78 px-4 py-4 shadow-md backdrop-blur-xl dark:border-brand-light/10 dark:bg-brand-navy/80"
                                     >
                                         <p className="text-sm font-semibold text-brand-navy dark:text-brand-light">{t(item.key, { defaultValue: item.defaultLabel })}</p>
                                     </div>
@@ -302,7 +302,7 @@ export default function LandingPage() {
                                 <div className="absolute bottom-0 left-0 h-32 w-32 rounded-full bg-brand-navy/8 blur-3xl" />
 
                                 <div className="relative grid gap-4">
-                                    <div className="rounded-2xl border border-brand-navy/10 bg-brand-navy p-5 text-white shadow-md">
+                                    <div className="rounded-2xl border border-brand-navy/10 bg-brand-navy p-5 text-brand-light shadow-md">
                                         <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
                                             <div>
                                                 <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-brand-slate">
@@ -317,24 +317,24 @@ export default function LandingPage() {
                                                 </p>
                                             </div>
 
-                                            <div className="rounded-2xl border border-white/10 bg-white/8 px-4 py-3">
+                                            <div className="rounded-2xl border border-brand-light/10 bg-brand-light/8 px-4 py-3">
                                                 <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-brand-mint">
                                                     Core teams
                                                 </p>
-                                                <p className="mt-2 text-sm font-medium text-white">
+                                                <p className="mt-2 text-sm font-medium text-brand-light">
                                                     Directors / Contracting / Front-Desk
                                                 </p>
                                             </div>
                                         </div>
 
                                         <div className="mt-5 grid gap-4 md:grid-cols-[0.92fr,1.08fr]">
-                                            <div className="rounded-2xl border border-white/10 bg-white/[0.05] p-4">
+                                            <div className="rounded-2xl border border-brand-light/10 bg-brand-light/[0.05] p-4">
                                                 <div className="flex items-center justify-between">
                                                     <div>
                                                         <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-slate">
                                                             Executive view
                                                         </p>
-                                                        <p className="mt-2 text-lg font-semibold text-white">
+                                                        <p className="mt-2 text-lg font-semibold text-brand-light">
                                                             Multi-property oversight
                                                         </p>
                                                     </div>
@@ -350,26 +350,26 @@ export default function LandingPage() {
                                                     ].map(([value, label]) => (
                                                         <div
                                                             key={value}
-                                                            className="rounded-2xl border border-white/8 bg-white/[0.06] px-4 py-3"
+                                                            className="rounded-2xl border border-brand-light/8 bg-brand-light/[0.06] px-4 py-3"
                                                         >
-                                                            <p className="text-lg font-semibold text-white">{value}</p>
+                                                            <p className="text-lg font-semibold text-brand-light">{value}</p>
                                                             <p className="mt-1 text-xs leading-6 text-brand-slate">{label}</p>
                                                         </div>
                                                     ))}
                                                 </div>
                                             </div>
 
-                                            <div className="rounded-2xl border border-white/10 bg-brand-mint/10 p-4">
+                                            <div className="rounded-2xl border border-brand-light/10 bg-brand-mint/10 p-4">
                                                 <div className="flex items-center justify-between">
                                                     <div>
                                                         <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-slate">
                                                             Operational workspace
                                                         </p>
-                                                        <p className="mt-2 text-lg font-semibold text-white">
+                                                        <p className="mt-2 text-lg font-semibold text-brand-light">
                                                             Contract-ready operations
                                                         </p>
                                                     </div>
-                                                    <div className="rounded-2xl bg-white/10 p-3 text-brand-mint">
+                                                    <div className="rounded-2xl bg-brand-light/10 p-3 text-brand-mint">
                                                         <BriefcaseBusiness size={18} />
                                                     </div>
                                                 </div>
@@ -381,9 +381,9 @@ export default function LandingPage() {
                                                     ].map(([title, copy]) => (
                                                         <div
                                                             key={title}
-                                                            className="rounded-2xl border border-white/8 bg-brand-navy/30 px-4 py-3"
+                                                            className="rounded-2xl border border-brand-light/8 bg-brand-navy/30 px-4 py-3"
                                                         >
-                                                            <p className="text-sm font-semibold text-white">{title}</p>
+                                                            <p className="text-sm font-semibold text-brand-light">{title}</p>
                                                             <p className="mt-1 text-xs leading-6 text-brand-slate">{copy}</p>
                                                         </div>
                                                     ))}
@@ -393,7 +393,7 @@ export default function LandingPage() {
                                     </div>
 
                                     <div className="grid gap-4 md:grid-cols-[1.05fr,0.95fr]">
-                                        <div className="rounded-2xl border border-white/70 bg-white/82 p-4 shadow-md backdrop-blur-xl dark:border-white/10 dark:bg-brand-navy/80">
+                                        <div className="rounded-2xl border border-brand-light/70 bg-brand-light/82 p-4 shadow-md backdrop-blur-xl dark:border-brand-light/10 dark:bg-brand-navy/80">
                                             <div className="flex items-center justify-between">
                                                 <div>
                                                     <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-brand-slate dark:text-brand-light/75">
@@ -403,7 +403,7 @@ export default function LandingPage() {
                                                         Every pricing rule stays connected.
                                                     </h3>
                                                 </div>
-                                                <div className="rounded-2xl bg-brand-navy/8 p-3 text-brand-navy dark:bg-white/10 dark:text-brand-mint">
+                                                <div className="rounded-2xl bg-brand-navy/8 p-3 text-brand-navy dark:bg-brand-light/10 dark:text-brand-mint">
                                                     <FileStack size={18} />
                                                 </div>
                                             </div>
@@ -416,7 +416,7 @@ export default function LandingPage() {
                                                 ].map((item) => (
                                                     <div
                                                         key={item}
-                                                        className="rounded-2xl border border-brand-navy/8 bg-brand-light px-4 py-3 text-sm font-medium text-brand-slate dark:border-white/10 dark:bg-brand-navy/80 dark:text-brand-light"
+                                                        className="rounded-2xl border border-brand-navy/8 bg-brand-light px-4 py-3 text-sm font-medium text-brand-slate dark:border-brand-light/10 dark:bg-brand-navy/80 dark:text-brand-light"
                                                     >
                                                         {item}
                                                     </div>
@@ -434,7 +434,7 @@ export default function LandingPage() {
                                                         Quote with confidence.
                                                     </h3>
                                                 </div>
-                                                <div className="rounded-2xl bg-white/70 p-3 text-brand-mint dark:bg-white/10">
+                                                <div className="rounded-2xl bg-brand-light/70 p-3 text-brand-mint dark:bg-brand-light/10">
                                                     <Calculator size={18} />
                                                 </div>
                                             </div>
@@ -446,7 +446,7 @@ export default function LandingPage() {
                                                 ].map(([title, value]) => (
                                                     <div
                                                         key={title}
-                                                        className="flex items-start justify-between gap-4 rounded-2xl border border-white/70 bg-white/76 px-4 py-3 dark:border-white/10 dark:bg-brand-navy/80"
+                                                        className="flex items-start justify-between gap-4 rounded-2xl border border-brand-light/70 bg-brand-light/76 px-4 py-3 dark:border-brand-light/10 dark:bg-brand-navy/80"
                                                     >
                                                         <div>
                                                             <p className="text-sm font-semibold text-brand-navy dark:text-brand-light">{title}</p>
@@ -464,10 +464,10 @@ export default function LandingPage() {
                     </div>
                 </section>
 
-                <section className="border-y border-white/60 bg-white/42 px-4 py-4 backdrop-blur-xl dark:border-white/10 dark:bg-brand-navy/80 md:px-6">
+                <section className="border-y border-brand-light/60 bg-brand-light/42 px-4 py-4 backdrop-blur-xl dark:border-brand-light/10 dark:bg-brand-navy/80 md:px-6">
                     <div className="mx-auto flex max-w-7xl flex-col gap-4 md:flex-row md:items-center md:justify-between">
                         <div className="flex items-center gap-3">
-                            <span className="premium-pill border-brand-navy/10 bg-white/70 text-brand-slate dark:border-white/10 dark:bg-brand-navy/80 dark:text-brand-light/75">
+                            <span className="premium-pill border-brand-navy/10 bg-brand-light/70 text-brand-slate dark:border-brand-light/10 dark:bg-brand-navy/80 dark:text-brand-light/75">
                                 {t('landing.trust.badge', { defaultValue: 'Built for modern hospitality operations' })}
                             </span>
                         </div>
@@ -560,21 +560,21 @@ export default function LandingPage() {
                                         className={`rounded-2xl border p-6 backdrop-blur-xl ${card.className} ${surfaceTone(card.tone)}`}
                                     >
                                         <div className="flex items-start justify-between gap-4">
-                                            <div className={`inline-flex rounded-2xl p-3 ${darkTone ? 'bg-white/10 text-brand-mint' : 'bg-brand-navy/8 text-brand-mint'}`}>
+                                            <div className={`inline-flex rounded-2xl p-3 ${darkTone ? 'bg-brand-light/10 text-brand-mint' : 'bg-brand-navy/8 text-brand-mint'}`}>
                                                 <Icon size={20} />
                                             </div>
                                             <span
                                                 className={`rounded-full px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] ${
                                                     darkTone
-                                                        ? 'bg-white/10 text-brand-slate'
-                                                        : 'border border-brand-navy/10 bg-white/70 text-brand-slate dark:border-white/10 dark:bg-brand-navy/80 dark:text-brand-light/75'
+                                                        ? 'bg-brand-light/10 text-brand-slate'
+                                                        : 'border border-brand-navy/10 bg-brand-light/70 text-brand-slate dark:border-brand-light/10 dark:bg-brand-navy/80 dark:text-brand-light/75'
                                                 }`}
                                             >
                                                 {t('landing.bento.badge', { defaultValue: 'Hotel value' })}
                                             </span>
                                         </div>
 
-                                        <h3 className={`mt-6 text-2xl font-semibold tracking-tight ${darkTone ? 'text-white' : 'text-brand-navy'}`}>
+                                        <h3 className={`mt-6 text-2xl font-semibold tracking-tight ${darkTone ? 'text-brand-light' : 'text-brand-navy'}`}>
                                             {t(`landing.bento.cards.${cardIndex}.title`, { defaultValue: card.title })}
                                         </h3>
                                         <p className={`mt-3 text-sm leading-7 ${darkTone ? 'text-brand-slate' : 'text-brand-slate'}`}>
@@ -587,8 +587,8 @@ export default function LandingPage() {
                                                     key={bullet}
                                                     className={`rounded-2xl px-4 py-3 text-sm ${
                                                         darkTone
-                                                            ? 'bg-white/[0.06] text-brand-slate'
-                                                            : 'border border-brand-navy/8 bg-white/64 text-brand-navy dark:border-white/10 dark:bg-brand-navy/80 dark:text-brand-light'
+                                                            ? 'bg-brand-light/[0.06] text-brand-slate'
+                                                            : 'border border-brand-navy/8 bg-brand-light/64 text-brand-navy dark:border-brand-light/10 dark:bg-brand-navy/80 dark:text-brand-light'
                                                     }`}
                                                 >
                                                     {t(`landing.bento.cards.${cardIndex}.bullets.${bulletIndex}`, { defaultValue: bullet })}
@@ -602,7 +602,7 @@ export default function LandingPage() {
                     </div>
                 </section>
 
-                <section id="roles" className="bg-white/50 px-4 py-18 backdrop-blur-xl dark:bg-brand-navy/80 md:px-6 md:py-22">
+                <section id="roles" className="bg-brand-light/50 px-4 py-18 backdrop-blur-xl dark:bg-brand-navy/80 md:px-6 md:py-22">
                     <div className="mx-auto max-w-7xl">
                         <div className="max-w-3xl">
                             <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-brand-slate">
@@ -640,7 +640,7 @@ export default function LandingPage() {
                                             {card.points.map((point, pointIndex) => (
                                                 <div
                                                     key={point}
-                                                    className="rounded-2xl border border-white/70 bg-white/72 px-4 py-4 text-sm leading-7 text-brand-slate dark:border-white/10 dark:bg-brand-navy/80 dark:text-brand-light/75"
+                                                    className="rounded-2xl border border-brand-light/70 bg-brand-light/72 px-4 py-4 text-sm leading-7 text-brand-slate dark:border-brand-light/10 dark:bg-brand-navy/80 dark:text-brand-light/75"
                                                 >
                                                     {t(`landing.roles.cards.${roleIndex}.points.${pointIndex}`, { defaultValue: point })}
                                                 </div>
@@ -690,7 +690,7 @@ export default function LandingPage() {
                                         const Icon = item.icon;
 
                                         return (
-                                            <article key={item.title} className="rounded-2xl border border-white/70 bg-white/78 p-5 shadow-sm dark:border-white/10 dark:bg-brand-navy/80">
+                                            <article key={item.title} className="rounded-2xl border border-brand-light/70 bg-brand-light/78 p-5 shadow-sm dark:border-brand-light/10 dark:bg-brand-navy/80">
                                                 <div className="inline-flex rounded-2xl bg-brand-mint/10 p-3 text-brand-mint">
                                                     <Icon size={18} />
                                                 </div>
@@ -711,9 +711,9 @@ export default function LandingPage() {
 
                 <section id="cta" className="px-4 pb-24 pt-6 md:px-6">
                     <div className="mx-auto max-w-7xl">
-                        <div className="relative overflow-hidden rounded-2xl border border-brand-navy/10 bg-brand-navy px-6 py-10 text-white shadow-md md:px-10 md:py-14">
+                        <div className="relative overflow-hidden rounded-2xl border border-brand-navy/10 bg-brand-navy px-6 py-10 text-brand-light shadow-md md:px-10 md:py-14">
                             <div className="absolute -right-12 -top-12 h-52 w-52 rounded-full bg-brand-mint/18 blur-3xl" />
-                            <div className="absolute -bottom-16 left-0 h-56 w-56 rounded-full bg-white/8 blur-3xl" />
+                            <div className="absolute -bottom-16 left-0 h-56 w-56 rounded-full bg-brand-light/8 blur-3xl" />
 
                             <div className="relative flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
                                 <div className="max-w-3xl">
@@ -731,14 +731,14 @@ export default function LandingPage() {
                                 <div className="flex flex-col gap-3 sm:flex-row">
                                     <Link
                                         to="/login"
-                                        className="inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl bg-brand-mint px-6 text-base font-semibold text-white transition hover:bg-brand-mint"
+                                        className="inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl bg-brand-mint px-6 text-base font-semibold text-brand-light transition hover:bg-brand-mint"
                                     >
                                         {t('landing.actions.signIn', { defaultValue: 'Sign in' })}
                                         <ArrowRight size={18} />
                                     </Link>
                                     <a
                                         href="#platform"
-                                        className="inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl border border-white/12 bg-white/6 px-6 text-base font-semibold text-white transition hover:bg-white/10"
+                                        className="inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl border border-brand-light/12 bg-brand-light/6 px-6 text-base font-semibold text-brand-light transition hover:bg-brand-light/10"
                                     >
                                         {t('landing.cta.reviewWorkflow', { defaultValue: 'Review the hotel workflow' })}
                                     </a>
@@ -749,10 +749,10 @@ export default function LandingPage() {
                 </section>
             </main>
 
-            <footer className="border-t border-white/60 bg-white/62 px-4 py-10 backdrop-blur-xl dark:border-white/10 dark:bg-brand-navy/80 md:px-6">
+            <footer className="border-t border-brand-light/60 bg-brand-light/62 px-4 py-10 backdrop-blur-xl dark:border-brand-light/10 dark:bg-brand-navy/80 md:px-6">
                     <div className="mx-auto flex max-w-7xl flex-col gap-8 md:flex-row md:items-end md:justify-between">
                         <div className="max-w-md">
-                            <div className="inline-flex rounded-2xl border border-white/70 bg-white/82 px-3 py-2 shadow-sm dark:border-white/10 dark:bg-brand-navy/80">
+                            <div className="inline-flex rounded-2xl border border-brand-light/70 bg-brand-light/82 px-3 py-2 shadow-sm dark:border-brand-light/10 dark:bg-brand-navy/80">
                                 <Logo />
                             </div>
                             <p className="mt-4 text-sm leading-7 text-brand-slate">
@@ -763,7 +763,7 @@ export default function LandingPage() {
                     <div className="flex flex-col gap-4 md:items-end">
                         <div className="flex flex-wrap gap-4 text-sm font-medium text-brand-slate">
                             {footerLinks.map((item) => (
-                                <a key={item.key} href={item.href} className="transition hover:text-brand-navy dark:hover:text-white">
+                                <a key={item.key} href={item.href} className="transition hover:text-brand-navy dark:hover:text-brand-light">
                                     {t(item.key, { defaultValue: item.defaultLabel })}
                                 </a>
                             ))}

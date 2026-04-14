@@ -85,7 +85,7 @@ export default function ExchangeRatesSection() {
                         <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-brand-slate">
                             {t('pages.hotel.exchangeRates.eyebrow', { defaultValue: 'Currency Control' })}
                         </p>
-                        <h2 className="mt-2 text-xl font-semibold tracking-tight text-brand-navy dark:text-white">
+                        <h2 className="mt-2 text-xl font-semibold tracking-tight text-brand-navy dark:text-brand-light">
                             {t('pages.hotel.exchangeRates.title', { defaultValue: 'Exchange rates' })}
                         </h2>
                         <p className="mt-2 max-w-3xl text-sm leading-6 text-brand-slate dark:text-brand-light/75">
@@ -104,7 +104,7 @@ export default function ExchangeRatesSection() {
                             setEditingRate(null);
                             setIsModalOpen(true);
                         }}
-                        className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl bg-brand-mint px-4 text-sm font-semibold text-white shadow-md transition hover:-translate-y-0.5 hover:bg-brand-mint"
+                        className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl bg-brand-mint px-4 text-sm font-semibold text-brand-light shadow-md transition hover:-translate-y-0.5 hover:bg-brand-mint"
                     >
                         <Plus size={16} />
                         {t('pages.hotel.exchangeRates.addRate', { defaultValue: 'Add rate' })}
@@ -114,15 +114,15 @@ export default function ExchangeRatesSection() {
 
             <div className="mt-6">
                 {isLoading ? (
-                    <div className="flex h-36 items-center justify-center rounded-2xl border border-white/70 bg-white/55 dark:border-white/10 dark:bg-white/5">
+                    <div className="flex h-36 items-center justify-center rounded-2xl border border-brand-light/70 bg-brand-light/55 dark:border-brand-light/10 dark:bg-brand-light/5">
                         <div className="h-9 w-9 animate-spin rounded-full border-2 border-brand-mint border-t-transparent" />
                     </div>
                 ) : !rates || rates.length === 0 ? (
-                    <div className="rounded-2xl border border-dashed border-white/70 bg-white/40 px-6 py-12 text-center dark:border-white/10 dark:bg-white/5">
+                    <div className="rounded-2xl border border-dashed border-brand-light/70 bg-brand-light/40 px-6 py-12 text-center dark:border-brand-light/10 dark:bg-brand-light/5">
                         <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-3xl bg-brand-mint/10 text-brand-mint">
                             <Coins size={26} />
                         </div>
-                        <p className="mt-4 text-sm font-semibold text-brand-navy dark:text-white">
+                        <p className="mt-4 text-sm font-semibold text-brand-navy dark:text-brand-light">
                             {t('pages.hotel.exchangeRates.emptyTitle', { defaultValue: 'No exchange rate configured.' })}
                         </p>
                         <p className="mt-1 text-xs text-brand-slate dark:text-brand-light/75">
@@ -130,10 +130,10 @@ export default function ExchangeRatesSection() {
                         </p>
                     </div>
                 ) : (
-                    <div className="overflow-hidden rounded-2xl border border-white/70 bg-white/55 shadow-sm dark:border-white/10 dark:bg-white/5">
+                    <div className="overflow-hidden rounded-2xl border border-brand-light/70 bg-brand-light/55 shadow-sm dark:border-brand-light/10 dark:bg-brand-light/5">
                         <div className="overflow-x-auto">
                             <table className="min-w-full text-left text-sm">
-                                <thead className="bg-white/70 text-brand-slate dark:bg-white/5">
+                                <thead className="bg-brand-light/70 text-brand-slate dark:bg-brand-light/5">
                                     <tr>
                                         <th className="px-5 py-4 font-semibold uppercase tracking-[0.18em]">
                                             {t('pages.hotel.exchangeRates.table.currency', { defaultValue: 'Currency' })}
@@ -154,7 +154,7 @@ export default function ExchangeRatesSection() {
                                         )}
                                     </tr>
                                 </thead>
-                                <tbody className="divide-y divide-white/60 dark:divide-white/10">
+                                <tbody className="divide-y divide-brand-light/60 dark:divide-brand-light/10">
                                     {rates.map((rate) => {
                                         const now = new Date();
                                         const validFrom = new Date(rate.validFrom);
@@ -165,21 +165,21 @@ export default function ExchangeRatesSection() {
 
                                         if (validUntil && validUntil < now) {
                                             status = t('pages.hotel.exchangeRates.status.expired', { defaultValue: 'Expired' });
-                                            statusClass = 'border-brand-slate/20 bg-brand-light text-brand-slate dark:border-white/10 dark:bg-white/5 dark:text-brand-light/75';
+                                            statusClass = 'border-brand-slate/20 bg-brand-light text-brand-slate dark:border-brand-light/10 dark:bg-brand-light/5 dark:text-brand-light/75';
                                         } else if (validFrom > now) {
                                             status = t('pages.hotel.exchangeRates.status.scheduled', { defaultValue: 'Scheduled' });
                                             statusClass = 'border-brand-slate/30 bg-brand-slate/10 text-brand-slate dark:border-brand-slate/30 dark:bg-brand-navy/80 dark:text-brand-light/75';
                                         }
 
                                         return (
-                                            <tr key={rate.id} className="bg-white/35 transition hover:bg-white/60 dark:bg-transparent dark:hover:bg-white/5">
+                                            <tr key={rate.id} className="bg-brand-light/35 transition hover:bg-brand-light/60 dark:bg-transparent dark:hover:bg-brand-light/5">
                                                 <td className="px-5 py-4 align-top">
-                                                    <span className="inline-flex h-10 min-w-14 items-center justify-center rounded-2xl bg-brand-navy px-3 text-xs font-bold text-white">
+                                                    <span className="inline-flex h-10 min-w-14 items-center justify-center rounded-2xl bg-brand-navy px-3 text-xs font-bold text-brand-light">
                                                         {rate.currency}
                                                     </span>
                                                 </td>
                                                 <td className="px-5 py-4 align-top">
-                                                    <div className="font-mono text-sm text-brand-navy dark:text-white">
+                                                    <div className="font-mono text-sm text-brand-navy dark:text-brand-light">
                                                         <span className="text-brand-slate">1 {rate.currency} = </span>
                                                         <span className="font-bold">{rate.rate.toFixed(4)}</span>
                                                         <span className="text-brand-slate"> {currentHotel.defaultCurrency}</span>
@@ -207,7 +207,7 @@ export default function ExchangeRatesSection() {
                                                                     setEditingRate(rate);
                                                                     setIsModalOpen(true);
                                                                 }}
-                                                                className="inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-white/70 bg-white/70 text-brand-slate transition hover:text-brand-navy dark:border-white/10 dark:bg-white/5 dark:text-brand-light/75 dark:hover:text-white"
+                                                                className="inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-brand-light/70 bg-brand-light/70 text-brand-slate transition hover:text-brand-navy dark:border-brand-light/10 dark:bg-brand-light/5 dark:text-brand-light/75 dark:hover:text-brand-light"
                                                                 aria-label={t('actions.edit', { defaultValue: 'Edit' })}
                                                             >
                                                                 <Pencil size={15} />

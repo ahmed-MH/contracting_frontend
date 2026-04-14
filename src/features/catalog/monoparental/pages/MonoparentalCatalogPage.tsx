@@ -111,71 +111,83 @@ export default function MonoparentalCatalogPage() {
     };
 
     return (
-        <div className="p-8">
-            <div className="flex items-center justify-between mb-8">
-                <div>
-                    <h1 className="text-2xl font-bold text-brand-navy flex items-center gap-3">
-                        <Users className="text-brand-mint" size={28} />
-                        {t('pages.catalog.monoparental.header.title', { defaultValue: 'Catalogue Monoparental' })}
-                    </h1>
-                    <p className="text-sm text-brand-slate mt-1">{t('auto.features.catalog.monoparental.pages.monoparentalcatalogpage.0df487fc', { defaultValue: "Gérez les exceptions de tarification monoparentale (templates)" })}</p>
+        <div className="space-y-4 p-4 md:p-6 animate-in fade-in duration-500">
+            <section className="premium-surface relative overflow-hidden p-5 md:p-6">
+                <div className="pointer-events-none absolute inset-x-0 top-0 h-20 bg-brand-mint/10 dark:bg-brand-mint/8" />
+                <div className="relative flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
+                    <div className="max-w-3xl">
+                        <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-brand-slate">
+                            {t('pages.catalog.monoparental.header.kicker', { defaultValue: 'Family pricing' })}
+                        </p>
+                        <h1 className="mt-3 flex items-center gap-3 text-3xl font-semibold tracking-tight text-brand-navy dark:text-brand-light">
+                            <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-brand-mint/10 text-brand-mint">
+                                <Users size={24} />
+                            </span>
+                            {t('pages.catalog.monoparental.header.title', { defaultValue: 'Catalogue Monoparental' })}
+                        </h1>
+                        <p className="mt-3 max-w-3xl text-sm leading-6 text-brand-slate dark:text-brand-light/75">{t('auto.features.catalog.monoparental.pages.monoparentalcatalogpage.0df487fc', { defaultValue: "Gérez les exceptions de tarification monoparentale (templates)" })}</p>
+                    </div>
+                    <button onClick={openCreate}
+                        className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl bg-brand-mint px-4 text-sm font-semibold text-brand-light shadow-md transition hover:-translate-y-0.5 hover:bg-brand-mint cursor-pointer border-none outline-none lg:mt-9">
+                        <Plus size={16} /> Nouvelle Règle
+                    </button>
                 </div>
-                <button onClick={openCreate}
-                    className="inline-flex items-center gap-2 px-4 py-2.5 bg-brand-mint text-white text-sm font-medium rounded-xl hover:bg-brand-mint transition-colors shadow-sm cursor-pointer border-none outline-none">
-                    <Plus size={16} /> Nouvelle Règle
-                </button>
-            </div>
-
-            <div className="mb-6">
-                <div className="relative max-w-sm">
-                    <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-brand-slate" />
-                    <input
-                        type="text"
-                        value={search}
-                        onChange={(e) => setSearch(e.target.value)}
-                        placeholder={t('auto.features.catalog.monoparental.pages.monoparentalcatalogpage.placeholder.9a24f186', { defaultValue: "Rechercher une règle..." })}
-                        className="w-full pl-9 pr-4 py-2 border border-brand-slate/20 rounded-xl text-sm focus:ring-2 focus:ring-brand-mint outline-none"
-                    />
+                <div className="relative mt-5 flex flex-col gap-3 border-t border-brand-slate/10 pt-5 dark:border-brand-light/10 md:flex-row md:items-center md:justify-between">
+                    <div className="relative w-full max-w-md">
+                        <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-brand-slate" />
+                        <input
+                            type="text"
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
+                            placeholder={t('auto.features.catalog.monoparental.pages.monoparentalcatalogpage.placeholder.9a24f186', { defaultValue: "Rechercher une règle..." })}
+                            className="w-full rounded-2xl border border-brand-slate/20 bg-brand-light/70 py-3 pl-9 pr-4 text-sm text-brand-navy outline-none transition focus:border-brand-mint/40 focus:ring-2 focus:ring-brand-mint/15 dark:border-brand-light/10 dark:bg-brand-light/5 dark:text-brand-light"
+                        />
+                    </div>
+                    {meta && (
+                        <span className="premium-pill w-fit border-brand-mint/20 bg-brand-mint/8 text-brand-mint">
+                            {meta.total} {t('pages.catalog.monoparental.header.totalLabel', { defaultValue: 'templates' })}
+                        </span>
+                    )}
                 </div>
-            </div>
+            </section>
 
             {isLoading && (
-                <div className="flex items-center justify-center h-48">
+                <div className="premium-surface flex h-48 items-center justify-center">
                     <div className="animate-spin rounded-full h-8 w-8 border-2 border-brand-mint/30 border-t-transparent" />
                 </div>
             )}
 
             {isError && (
-                <div className="rounded-xl bg-brand-slate/10 border border-brand-slate/30 p-6 text-brand-slate text-sm font-bold">
+                <div className="premium-surface border-brand-slate/20 p-6 text-sm font-semibold text-brand-slate dark:text-brand-light/75">
                     Impossible de charger les règles monoparentales.
                 </div>
             )}
 
             {!isLoading && !isError && rules.length === 0 && (
-                <div className="rounded-xl bg-brand-light border border-dashed border-brand-slate/20 p-12 text-center">
+                <div className="premium-surface border-dashed border-brand-slate/25 p-12 text-center">
                     <Users size={40} className="mx-auto text-brand-slate mb-3" />
                     <p className="text-brand-slate text-sm">{t('auto.features.catalog.monoparental.pages.monoparentalcatalogpage.a64abcb0', { defaultValue: "Aucune règle monoparentale trouvée" })}</p>
                 </div>
             )}
 
             {rules.length > 0 && (
-                <div className="bg-white rounded-xl border border-brand-slate/20 shadow-sm overflow-hidden">
+                <div className="premium-surface overflow-x-auto">
                     <table className="w-full text-sm text-left">
                         <thead>
-                            <tr className="bg-brand-light border-b border-brand-slate/20">
-                                <th className="px-5 py-3 font-semibold text-brand-slate text-xs uppercase tracking-wide">{t('auto.features.catalog.monoparental.pages.monoparentalcatalogpage.f130a297', { defaultValue: "Configuration" })}</th>
-                                <th className="px-5 py-3 font-semibold text-brand-slate text-xs uppercase tracking-wide">{t('auto.features.catalog.monoparental.pages.monoparentalcatalogpage.f23226d9', { defaultValue: "Déclencheur (Pax)" })}</th>
-                                <th className="px-5 py-3 font-semibold text-brand-slate text-xs uppercase tracking-wide">{t('auto.features.catalog.monoparental.pages.monoparentalcatalogpage.f4984b1a', { defaultValue: "Formule Tarifaire" })}</th>
-                                <th className="px-5 py-3 font-semibold text-brand-slate text-xs uppercase tracking-wide text-right">{t('auto.features.catalog.monoparental.pages.monoparentalcatalogpage.0bba5166', { defaultValue: "Actions" })}</th>
+                            <tr className="border-b border-brand-slate/15 bg-brand-mint/6 dark:border-brand-light/10 dark:bg-brand-light/5">
+                                <th className="px-5 py-4 text-xs font-semibold uppercase tracking-wide text-brand-slate dark:text-brand-light/65">{t('auto.features.catalog.monoparental.pages.monoparentalcatalogpage.f130a297', { defaultValue: "Configuration" })}</th>
+                                <th className="px-5 py-4 text-xs font-semibold uppercase tracking-wide text-brand-slate dark:text-brand-light/65">{t('auto.features.catalog.monoparental.pages.monoparentalcatalogpage.f23226d9', { defaultValue: "Déclencheur (Pax)" })}</th>
+                                <th className="px-5 py-4 text-xs font-semibold uppercase tracking-wide text-brand-slate dark:text-brand-light/65">{t('auto.features.catalog.monoparental.pages.monoparentalcatalogpage.f4984b1a', { defaultValue: "Formule Tarifaire" })}</th>
+                                <th className="px-5 py-4 text-right text-xs font-semibold uppercase tracking-wide text-brand-slate dark:text-brand-light/65">{t('auto.features.catalog.monoparental.pages.monoparentalcatalogpage.0bba5166', { defaultValue: "Actions" })}</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-brand-slate/10">
+                        <tbody className="divide-y divide-brand-slate/10 dark:divide-brand-light/10">
                             {rules.map((r) => (
-                                <tr key={r.id} className="hover:bg-brand-light transition-colors group">
+                                <tr key={r.id} className="group transition-colors hover:bg-brand-mint/5 dark:hover:bg-brand-light/5">
                                     <td className="px-5 py-4 whitespace-nowrap">
                                         <div className="flex flex-col">
-                                            <span className="font-medium text-brand-navy leading-tight">{r.name}</span>
-                                            <span className="text-sm text-brand-slate font-mono">{r.reference || 'MON-PENDING'}</span>
+                                            <span className="font-semibold text-brand-navy leading-tight dark:text-brand-light">{r.name}</span>
+                                            <span className="text-sm text-brand-slate font-mono dark:text-brand-light/55">{r.reference || 'MON-PENDING'}</span>
                                         </div>
                                     </td>
                                     <td className="px-5 py-4 whitespace-nowrap">
@@ -220,7 +232,7 @@ export default function MonoparentalCatalogPage() {
 
                     {/* ─── Pagination Standard ────────────────────────────────── */}
                     {meta && meta.lastPage > 0 && (
-                        <div className="px-5 py-3 bg-brand-light border-t border-brand-slate/20 flex items-center justify-between">
+                        <div className="flex items-center justify-between border-t border-brand-slate/15 bg-brand-mint/5 px-5 py-3 dark:border-brand-light/10 dark:bg-brand-light/5">
                             <p className="text-xs text-brand-slate font-medium tracking-tight">
                                 {t('auto.pagination.summary', { defaultValue: 'Affichage de {{from}} ? {{to}} sur {{total}}', from: (page - 1) * limit + 1, to: Math.min(page * limit, meta.total), total: meta.total })}
                             </p>
@@ -232,7 +244,7 @@ export default function MonoparentalCatalogPage() {
                                 >
                                     <ChevronLeft size={18} />
                                 </button>
-                                <div className="flex items-center px-2.5 text-xs font-bold text-brand-slate bg-white border border-brand-slate/20 rounded-xl h-9 min-w-[36px] justify-center shadow-xs">
+                                <div className="flex h-9 min-w-[52px] items-center justify-center rounded-xl border border-brand-slate/20 bg-brand-light/70 px-2.5 text-xs font-bold text-brand-slate shadow-sm dark:border-brand-light/10 dark:bg-brand-light/5 dark:text-brand-light">
                                     {page} / {meta.lastPage}
                                 </div>
                                 <button
@@ -251,22 +263,22 @@ export default function MonoparentalCatalogPage() {
             {isAdmin && (
                 <div className="mt-10">
                     <button onClick={() => setShowArchived(!showArchived)}
-                        className="inline-flex items-center gap-2 text-sm text-brand-slate hover:text-brand-navy transition-colors cursor-pointer border-none bg-transparent outline-none font-bold">
+                        className="inline-flex items-center gap-2 text-sm font-bold text-brand-slate hover:text-brand-navy transition-colors cursor-pointer border-none bg-transparent outline-none dark:hover:text-brand-light">
                         {showArchived ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
                         <Archive size={16} />
                         Règles archivées {archivedRules ? `(${archivedRules.length})` : ''}
                     </button>
 
                     {showArchived && archivedRules && archivedRules.length > 0 && (
-                        <div className="mt-4 bg-brand-light rounded-xl border border-brand-slate/20 overflow-hidden opacity-80 shadow-xs">
+                        <div className="premium-surface mt-4 overflow-x-auto opacity-80">
                             <table className="w-full text-sm text-left">
-                                <tbody className="divide-y divide-brand-slate/10">
+                                <tbody className="divide-y divide-brand-slate/10 dark:divide-brand-light/10">
                                     {archivedRules.map((r: any) => (
-                                        <tr key={r.id} className="hover:bg-brand-light transition-colors">
-                                            <td className="px-5 py-3 text-brand-slate font-bold">{r.name}</td>
+                                        <tr key={r.id} className="transition-colors hover:bg-brand-mint/5 dark:hover:bg-brand-light/5">
+                                            <td className="px-5 py-3 text-brand-slate font-bold dark:text-brand-light/75">{r.name}</td>
                                             <td className="px-5 py-3 text-right">
                                                 <button onClick={() => handleRestore(r)}
-                                                    className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-brand-mint/10 text-brand-mint text-xs font-bold rounded-xl hover:bg-brand-mint/10 transition-colors cursor-pointer border-none shadow-xs">
+                                                    className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-brand-mint/10 text-brand-mint text-xs font-bold rounded-xl hover:bg-brand-mint/10 transition-colors cursor-pointer border-none shadow-sm">
                                                     <RotateCcw size={14} /> Restaurer
                                                 </button>
                                             </td>

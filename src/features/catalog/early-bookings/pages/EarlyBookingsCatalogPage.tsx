@@ -97,48 +97,60 @@ export default function EarlyBookingsCatalogPage() {
     };
 
     return (
-        <div className="p-8">
-            <div className="flex items-center justify-between mb-8">
-                <div>
-                    <h1 className="text-2xl font-bold text-brand-navy flex items-center gap-3">
-                        <Calendar className="text-brand-mint" size={28} />
-                        {t('pages.catalog.earlyBookings.header.title', { defaultValue: 'Catalogue Early Booking' })}
-                    </h1>
-                    <p className="text-sm text-brand-slate mt-1">{t('auto.features.catalog.early.bookings.pages.earlybookingscatalogpage.6c3403db', { defaultValue: "Définitions des offres de réservations anticipées (templates)" })}</p>
+        <div className="space-y-4 p-4 md:p-6 animate-in fade-in duration-500">
+            <section className="premium-surface relative overflow-hidden p-5 md:p-6">
+                <div className="pointer-events-none absolute inset-x-0 top-0 h-20 bg-brand-mint/10 dark:bg-brand-mint/8" />
+                <div className="relative flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
+                    <div className="max-w-3xl">
+                        <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-brand-slate">
+                            {t('pages.catalog.earlyBookings.header.kicker', { defaultValue: 'Advance offers' })}
+                        </p>
+                        <h1 className="mt-3 flex items-center gap-3 text-3xl font-semibold tracking-tight text-brand-navy dark:text-brand-light">
+                            <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-brand-mint/10 text-brand-mint">
+                                <Calendar size={24} />
+                            </span>
+                            {t('pages.catalog.earlyBookings.header.title', { defaultValue: 'Catalogue Early Booking' })}
+                        </h1>
+                        <p className="mt-3 max-w-3xl text-sm leading-6 text-brand-slate dark:text-brand-light/75">{t('auto.features.catalog.early.bookings.pages.earlybookingscatalogpage.6c3403db', { defaultValue: "Définitions des offres de réservations anticipées (templates)" })}</p>
+                    </div>
+                    <button onClick={openCreate}
+                        className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl bg-brand-mint px-4 text-sm font-semibold text-brand-light shadow-md transition hover:-translate-y-0.5 hover:bg-brand-mint cursor-pointer border-none outline-none lg:mt-9">
+                        <Plus size={16} /> Nouvel Early Booking
+                    </button>
                 </div>
-                <button onClick={openCreate}
-                    className="inline-flex items-center gap-2 px-4 py-2.5 bg-brand-mint text-white text-sm font-medium rounded-xl hover:bg-brand-mint transition-colors shadow-sm cursor-pointer border-none outline-none">
-                    <Plus size={16} /> Nouvel Early Booking
-                </button>
-            </div>
-
-            <div className="mb-6">
-                <div className="relative max-w-sm">
-                    <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-brand-slate" />
-                    <input
-                        type="text"
-                        value={search}
-                        onChange={(e) => setSearch(e.target.value)}
-                        placeholder={t('pages.catalog.earlyBookings.header.searchPlaceholder', { defaultValue: 'Rechercher un template...' })}
-                        className="w-full pl-9 pr-4 py-2 border border-brand-slate/20 rounded-xl text-sm focus:ring-2 focus:ring-brand-mint outline-none"
-                    />
+                <div className="relative mt-5 flex flex-col gap-3 border-t border-brand-slate/10 pt-5 dark:border-brand-light/10 md:flex-row md:items-center md:justify-between">
+                    <div className="relative w-full max-w-md">
+                        <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-brand-slate" />
+                        <input
+                            type="text"
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
+                            placeholder={t('pages.catalog.earlyBookings.header.searchPlaceholder', { defaultValue: 'Rechercher un template...' })}
+                            className="w-full rounded-2xl border border-brand-slate/20 bg-brand-light/70 py-3 pl-9 pr-4 text-sm text-brand-navy outline-none transition focus:border-brand-mint/40 focus:ring-2 focus:ring-brand-mint/15 dark:border-brand-light/10 dark:bg-brand-light/5 dark:text-brand-light"
+                        />
+                    </div>
+                    {meta && (
+                        <span className="premium-pill w-fit border-brand-mint/20 bg-brand-mint/8 text-brand-mint">
+                            {meta.total} {t('pages.catalog.earlyBookings.header.totalLabel', { defaultValue: 'templates' })}
+                        </span>
+                    )}
                 </div>
-            </div>
+            </section>
 
             {isLoading && (
-                <div className="flex items-center justify-center h-48">
+                <div className="premium-surface flex h-48 items-center justify-center">
                     <div className="animate-spin rounded-full h-8 w-8 border-2 border-brand-mint/30 border-t-transparent" />
                 </div>
             )}
 
             {isError && (
-                <div className="rounded-xl bg-brand-slate/10 border border-brand-slate/30 p-6 text-brand-slate text-sm font-bold">
+                <div className="premium-surface border-brand-slate/20 p-6 text-sm font-semibold text-brand-slate dark:text-brand-light/75">
                     {t('pages.catalog.earlyBookings.states.loadError', { defaultValue: 'Impossible de charger le catalogue Early Booking.' })}
                 </div>
             )}
 
             {!isLoading && !isError && earlyBookings.length === 0 && (
-                <div className="rounded-xl bg-brand-light border border-dashed border-brand-slate/20 p-12 text-center">
+                <div className="premium-surface border-dashed border-brand-slate/25 p-12 text-center">
                     <Calendar size={40} className="mx-auto text-brand-slate mb-3" />
                     <p className="text-brand-slate text-sm">{t('auto.features.catalog.early.bookings.pages.earlybookingscatalogpage.d0a626c9', { defaultValue: "Aucun template trouvé" })}</p>
                 </div>
@@ -157,25 +169,25 @@ export default function EarlyBookingsCatalogPage() {
             {isAdmin && (
                 <div className="mt-10">
                     <button onClick={() => setShowArchived(!showArchived)}
-                        className="inline-flex items-center gap-2 text-sm text-brand-slate hover:text-brand-navy transition-colors cursor-pointer border-none bg-transparent outline-none font-bold">
+                        className="inline-flex items-center gap-2 text-sm font-bold text-brand-slate hover:text-brand-navy transition-colors cursor-pointer border-none bg-transparent outline-none dark:hover:text-brand-light">
                         {showArchived ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
                         <Archive size={16} />
                         Templates archivés {archivedEarlyBookings ? `(${archivedEarlyBookings.length})` : ''}
                     </button>
 
                     {showArchived && archivedEarlyBookings && archivedEarlyBookings.length > 0 && (
-                        <div className="mt-4 bg-brand-light rounded-xl border border-brand-slate/20 overflow-hidden opacity-80 shadow-xs">
+                        <div className="premium-surface mt-4 overflow-x-auto opacity-80">
                             <table className="w-full text-sm text-left">
-                                <tbody className="divide-y divide-brand-slate/10">
+                                <tbody className="divide-y divide-brand-slate/10 dark:divide-brand-light/10">
                                     {archivedEarlyBookings.map((eb: any) => (
-                                        <tr key={eb.id} className="hover:bg-brand-light transition-colors">
-                                            <td className="px-5 py-3 text-brand-slate font-bold">{eb.name}</td>
+                                        <tr key={eb.id} className="transition-colors hover:bg-brand-mint/5 dark:hover:bg-brand-light/5">
+                                            <td className="px-5 py-3 text-brand-slate font-bold dark:text-brand-light/75">{eb.name}</td>
                                             <td className="px-5 py-3 text-center text-[10px] text-brand-slate font-mono italic">
                                                 {eb.bookingWindowStart ? `${eb.bookingWindowStart} -> ${eb.bookingWindowEnd}` : 'Fenêtre libre'}
                                             </td>
                                             <td className="px-5 py-3 text-right">
                                                 <button onClick={() => handleRestore(eb)}
-                                                    className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-brand-mint/10 text-brand-mint text-xs font-bold rounded-xl hover:bg-brand-mint/10 transition-colors cursor-pointer border-none shadow-xs">
+                                                    className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-brand-mint/10 text-brand-mint text-xs font-bold rounded-xl hover:bg-brand-mint/10 transition-colors cursor-pointer border-none shadow-sm">
                                                     <RotateCcw size={14} /> Restaurer
                                                 </button>
                                             </td>

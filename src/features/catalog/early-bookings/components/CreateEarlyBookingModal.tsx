@@ -180,7 +180,7 @@ export default function CreateEarlyBookingModal({
                         Annuler
                     </button>
                     <button type="submit" disabled={isPending}
-                        className="px-4 py-2 text-sm font-medium text-white bg-brand-mint rounded-xl hover:bg-brand-mint/90 transition-colors disabled:opacity-50 cursor-pointer shadow-md shadow-brand-mint/20">
+                        className="px-4 py-2 text-sm font-medium text-brand-light bg-brand-mint rounded-xl hover:bg-brand-mint/90 transition-colors disabled:opacity-50 cursor-pointer shadow-md shadow-brand-mint/20">
                         {isPending ? (initialData ? 'Mise à jour...' : 'Création...') : (initialData ? 'Enregistrer les modifications' : 'Créer le Template')}
                     </button>
                 </div>

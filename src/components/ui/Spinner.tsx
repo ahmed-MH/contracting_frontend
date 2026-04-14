@@ -4,7 +4,7 @@ interface SpinnerProps {
     className?: string;
 }
 
-export const Spinner = ({ className = 'h-4 w-4 text-white' }: SpinnerProps) => {
+export const Spinner = ({ className = 'h-4 w-4 text-brand-light' }: SpinnerProps) => {
     const { t } = useTranslation('common');
     void t;
 

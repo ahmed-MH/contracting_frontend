@@ -1,12 +1,11 @@
 import { useState, useCallback, useRef, memo, useEffect, useMemo } from 'react';
-import { Save, Pencil, Trash2, Clock, Calendar, CreditCard, Info } from 'lucide-react';
+import { Save, Pencil, Trash2, Calendar, Clock, CreditCard, Info } from 'lucide-react';
 import { toast } from 'sonner';
 import type { ContractEarlyBooking, UpdateContractEarlyBookingPayload } from '../../../catalog/early-bookings/types/early-bookings.types';
 import type { Period } from '../../../contracts/types/contract.types';
 import { contractEarlyBookingService } from '../../services/contractEarlyBooking.service';
 import { isEqual } from 'lodash-es';
 import { useTranslation } from 'react-i18next';
-import i18next from '../../../../lib/i18n';
 
 // ── Types ─────────────────────────────────────────────────────────────
 interface Props {
@@ -40,21 +39,9 @@ function buildInitialMatrix(earlyBookings: ContractEarlyBooking[]): Matrix {
     return matrix;
 }
 
-const CALC_LABELS: Record<string, string> = {
-    FIXED: 'Fixe',
-    PERCENTAGE: '%',
-    FREE: 'Gratuit',
-};
-
-const APP_LABELS: Record<string, string> = {
-    PER_NIGHT_PER_PERSON: 'Pr pers./nuit',
-    PER_NIGHT_PER_ROOM: 'Pr ch./nuit',
-    FLAT_RATE_PER_STAY: 'Forfait séjour',
-};
-
-function formatShortDate(iso: string): string {
+function formatShortDate(iso: string, locale: string): string {
     const d = new Date(iso);
-    return d.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' });
+    return d.toLocaleDateString(locale, { day: '2-digit', month: '2-digit' });
 }
 
 // ── EarlyBookingCell ──────────────────────────────────────────────────
@@ -94,33 +81,43 @@ const EarlyBookingCell = memo(function EarlyBookingCell({
     if (!cell.active) {
         return (
             <div className="flex items-center justify-between px-3 h-[68px] group/cell transition-colors hover:bg-brand-light bg-brand-light">
-                <span className="text-[11px] text-brand-slate italic select-none">{t('auto.features.contracts.details.components.earlybookinggrid.ae2c4a84', { defaultValue: "Non appliqué" })}</span>
+                <span className="text-[11px] text-brand-slate italic select-none">
+                    {t('pages.contractDetails.grid.cell.notApplied', { defaultValue: 'Not applied' })}
+                </span>
                 <button
+                    type="button"
                     onClick={handleToggle}
-                    title={t('auto.features.contracts.details.components.earlybookinggrid.title.85db8588', { defaultValue: "Activer pour cette période" })}
+                    title={t('pages.contractDetails.grid.cell.enableHint', { defaultValue: 'Enable for this period' })}
+                    aria-label={t('pages.contractDetails.grid.cell.enableHint', { defaultValue: 'Enable for this period' })}
                     className="relative w-8 h-4 rounded-full bg-brand-slate/10 hover:bg-brand-mint/10 transition-colors cursor-pointer opacity-0 group-hover/cell:opacity-100 shrink-0"
                 >
-                    <span className="block w-3 h-3 rounded-full bg-white absolute top-0.5 left-0.5 shadow-sm transition-all" />
+                    <span className="block w-3 h-3 rounded-full bg-brand-light absolute top-0.5 left-0.5 shadow-sm transition-all" />
                 </button>
             </div>
         );
     }
 
     // ── Active state ──────────────────────────────────────────────────
-    const placeholderText = baseType === 'FREE' ? 'Gratuit'
-        : baseType === 'PERCENTAGE' ? `Base: ${baseValue}%`
-            : `Base: ${baseValue}`;
+    const baseLabel = t('pages.contractDetails.grid.cell.base', { defaultValue: 'Base' });
+    const freeLabel = t('pages.contractDetails.grid.types.free', { defaultValue: 'Free' });
+    const placeholderText = baseType === 'FREE' ? freeLabel
+        : baseType === 'PERCENTAGE' ? `${baseLabel}: ${baseValue}%`
+            : `${baseLabel}: ${baseValue}`;
 
     return (
         <div className="flex flex-col justify-center gap-1.5 px-3 h-[68px] group/cell transition-colors hover:bg-brand-mint/10">
             <div className="flex items-center justify-between">
-                <span className="text-[10px] font-bold text-brand-mint uppercase tracking-wider select-none">{t('auto.features.contracts.details.components.earlybookinggrid.40a9f1dd', { defaultValue: "Actif" })}</span>
+                <span className="text-[10px] font-bold text-brand-mint uppercase tracking-wider select-none">
+                    {t('pages.contractDetails.grid.cell.active', { defaultValue: 'Active' })}
+                </span>
                 <button
+                    type="button"
                     onClick={handleToggle}
-                    title={t('auto.features.contracts.details.components.earlybookinggrid.title.982754ad', { defaultValue: "Désactiver pour cette période" })}
+                    title={t('pages.contractDetails.grid.cell.disableHint', { defaultValue: 'Disable for this period' })}
+                    aria-label={t('pages.contractDetails.grid.cell.disableHint', { defaultValue: 'Disable for this period' })}
                     className="relative w-8 h-4 rounded-full bg-brand-mint hover:bg-brand-slate/20 transition-colors cursor-pointer opacity-0 group-hover/cell:opacity-100 shrink-0"
                 >
-                    <span className="block w-3 h-3 rounded-full bg-white absolute top-0.5 right-0.5 shadow-sm" />
+                    <span className="block w-3 h-3 rounded-full bg-brand-light absolute top-0.5 right-0.5 shadow-sm" />
                 </button>
             </div>
 
@@ -131,12 +128,12 @@ const EarlyBookingCell = memo(function EarlyBookingCell({
                     value={localValue}
                     onChange={(e) => handleValueChange(e.target.value)}
                     placeholder={placeholderText}
-                    title={t('auto.features.contracts.details.components.earlybookinggrid.title.55dc683a', { defaultValue: "Laisser vide pour hériter de la réduction de base" })}
+                    title={t('pages.contractDetails.grid.cell.overrideHint', { defaultValue: 'Leave empty to inherit base discount' })}
                     className={`block w-full px-2 py-1 text-xs rounded-xl border text-right transition-all
                         focus:outline-none focus:ring-1 focus:ring-brand-mint focus:border-brand-mint/30
                         ${localValue !== ''
                             ? 'border-brand-mint/30 text-brand-mint bg-brand-mint/10 font-semibold'
-                            : 'border-brand-slate/20 text-brand-slate bg-white'
+                            : 'border-brand-slate/20 text-brand-slate bg-brand-light'
                         }`}
                 />
                 {localValue !== '' && (
@@ -147,13 +144,13 @@ const EarlyBookingCell = memo(function EarlyBookingCell({
     );
 });
 
-
 // ── EarlyBookingGrid ───────────────────────────────────────────────────
 export default function EarlyBookingGrid({
     earlyBookings, periods, onSaved, onEdit, onDelete, isDeleting,
 }: Props) {
-    const { t } = useTranslation('common');
-    void t;
+    const { t, i18n } = useTranslation('common');
+    const locale = i18n.language.startsWith('fr') ? 'fr-FR' : 'en-US';
+
     const sortedPeriods = [...periods].sort(
         (a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime(),
     );
@@ -168,7 +165,6 @@ export default function EarlyBookingGrid({
     }, [earlyBookings]);
 
     const [isSaving, setIsSaving] = useState(false);
-
     const isDirty = useMemo(() => !isEqual(initialMatrix, editedMatrix), [initialMatrix, editedMatrix]);
 
     const handleCellChange = useCallback((ebId: number, periodId: number, patch: Partial<CellData>) => {
@@ -188,7 +184,7 @@ export default function EarlyBookingGrid({
                 .filter(ebId => !isEqual(initialMatrix[ebId], editedMatrix[ebId]));
 
             if (modifiedEbIds.length === 0) {
-                toast.info(i18next.t('auto.features.contracts.details.components.earlybookinggrid.toast.info.465088e0', { defaultValue: "Aucune modification à enregistrer." }));
+                toast.info(t('pages.contractDetails.grid.toast.noChanges', { defaultValue: 'No changes to save.' }));
                 return;
             }
 
@@ -210,48 +206,51 @@ export default function EarlyBookingGrid({
             });
 
             await Promise.all(savePromises);
-
-            setInitialMatrix(editedMatrix); // Sync initial state with last saved state
+            setInitialMatrix(editedMatrix);
             onSaved();
-            toast.success(`${modifiedEbIds.length} offre(s) Early Booking sauvegardée(s)`);
+            toast.success(t('pages.contractDetails.grid.toast.savedEb', {
+                defaultValue: '{{count}} early booking offer(s) saved',
+                count: modifiedEbIds.length,
+            }));
         } catch (err: any) {
             const msg = err?.response?.data?.message;
-            toast.error(Array.isArray(msg) ? msg.join(', ') : (msg ?? 'Erreur lors de la sauvegarde'));
+            toast.error(Array.isArray(msg) ? msg.join(', ') : (msg ?? t('pages.contractDetails.grid.toast.saveError', { defaultValue: 'Error saving changes' })));
         } finally {
             setIsSaving(false);
         }
     };
 
-
     if (earlyBookings.length === 0) return null;
 
     return (
-        <div className="bg-white shadow-sm ring-1 ring-brand-mint rounded-xl overflow-hidden">
+        <div className="contract-matrix-surface overflow-hidden">
             {/* ── Header ──────────────────────────────────────────────── */}
-            <div className="px-5 py-3 border-b border-brand-mint/30 flex items-center justify-between bg-linear-to-r from-brand-mint to-brand-mint">
+            <div className="flex flex-col gap-3 border-b border-brand-slate/10 bg-brand-light/80 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
                 <div className="flex items-center gap-3">
-                    <span className="bg-brand-mint p-1 rounded-xl text-white">
+                    <span className="rounded-lg bg-brand-mint/10 p-1.5 text-brand-mint">
                         <Calendar size={14} />
                     </span>
-                    <span className="text-xs font-bold text-brand-mint uppercase tracking-widest">
-                        Matrice de Réduction Early Booking
+                    <span className="text-xs font-bold uppercase tracking-widest text-brand-navy">
+                        {t('pages.contractDetails.grid.earlyBookingMatrix', { defaultValue: 'Early Booking Discount Matrix' })}
                     </span>
                 </div>
-                <div className='flex items-center gap-4'>
+                <div className="flex flex-wrap items-center gap-3">
                     <div className="flex items-center gap-2 group cursor-help">
                         <Info size={14} className="text-brand-mint group-hover:text-brand-mint transition-colors" />
                         <span className="text-[10px] text-brand-slate font-medium">
-                            Activez par période & surchargez la valeur si nécessaire
+                            {t('pages.contractDetails.grid.hintActivateOverride', { defaultValue: 'Enable per period & override price if needed' })}
                         </span>
                     </div>
-
                     <button
+                        type="button"
                         onClick={handleSaveAll}
                         disabled={!isDirty || isSaving}
-                        className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-bold rounded-xl bg-brand-mint text-white hover:bg-brand-mint shadow-md shadow-brand-mint/20 disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none transition-all"
+                        className="inline-flex items-center gap-1.5 rounded-lg bg-brand-mint px-4 py-2 text-xs font-bold text-brand-light transition-colors hover:bg-brand-mint/90 disabled:cursor-not-allowed disabled:opacity-50"
                     >
                         <Save size={13} />
-                        {isSaving ? 'Enregistrement...' : 'Enregistrer les modifications'}
+                        {isSaving
+                            ? t('pages.contractDetails.grid.saving', { defaultValue: 'Saving...' })
+                            : t('pages.contractDetails.grid.saveChanges', { defaultValue: 'Save changes' })}
                     </button>
                 </div>
             </div>
@@ -261,29 +260,28 @@ export default function EarlyBookingGrid({
                 <table className="w-full text-sm text-left border-collapse">
                     <thead>
                         <tr className="bg-brand-light border-b-2 border-brand-slate/20">
-                            {/* Rule info (sticky) */}
-                            <th className="px-4 py-3 text-xs font-bold text-brand-slate uppercase sticky left-0 bg-brand-light z-10 shadow-md min-w-[240px]">
-                                Offre & Conditions
+                            <th scope="col" className="px-4 py-3 text-xs font-bold text-brand-slate uppercase sticky left-0 bg-brand-light z-10 shadow-md min-w-[240px]">
+                                {t('pages.contractDetails.grid.col.offerConditions', { defaultValue: 'Offer & Conditions' })}
                             </th>
-                            {/* Base */}
-                            <th className="px-4 py-3 text-xs font-bold text-brand-slate uppercase min-w-[120px]">
-                                Base Globale
+                            <th scope="col" className="px-4 py-3 text-xs font-bold text-brand-slate uppercase min-w-[120px]">
+                                {t('pages.contractDetails.grid.col.globalBase', { defaultValue: 'Global base' })}
                             </th>
-                            {/* Dynamic periods */}
                             {sortedPeriods.map((period) => (
                                 <th
                                     key={period.id}
+                                    scope="col"
                                     className="px-4 py-3 text-xs font-semibold text-brand-slate min-w-[140px] text-center border-l border-brand-slate/20"
                                 >
                                     <div className="font-bold text-brand-navy">{period.name}</div>
                                     <div className="text-[10px] text-brand-slate font-normal mt-0.5">
-                                        {new Date(period.startDate).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short' })} – {new Date(period.endDate).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short' })}
+                                        {new Date(period.startDate).toLocaleDateString(locale, { day: '2-digit', month: 'short' })}
+                                        {' – '}
+                                        {new Date(period.endDate).toLocaleDateString(locale, { day: '2-digit', month: 'short' })}
                                     </div>
                                 </th>
                             ))}
-                            {/* Actions */}
-                            <th className="px-4 py-3 text-xs font-bold text-brand-slate uppercase min-w-[110px] text-center border-l border-brand-slate/20 sticky right-0 bg-brand-light shadow-md">
-                                Actions
+                            <th scope="col" className="px-4 py-3 text-xs font-bold text-brand-slate uppercase min-w-[110px] text-center border-l border-brand-slate/20 sticky right-0 bg-brand-light shadow-md">
+                                {t('pages.contractDetails.grid.col.actions', { defaultValue: 'Actions' })}
                             </th>
                         </tr>
                     </thead>
@@ -294,36 +292,48 @@ export default function EarlyBookingGrid({
                             return (
                                 <tr key={eb.id} className="group hover:bg-brand-light transition-colors">
                                     {/* ── Rule info (sticky) ── */}
-                                    <td className="px-4 py-4 sticky left-0 bg-white z-10 shadow-md group-hover:bg-brand-light transition-colors">
+                                    <td className="px-4 py-4 sticky left-0 bg-brand-light z-10 shadow-md group-hover:bg-brand-light transition-colors">
                                         <div className="space-y-1.5">
                                             <div className="flex items-center gap-2">
                                                 <span className="font-bold text-brand-navy text-sm tracking-tight">{eb.name}</span>
-                                                {isRowDirty && <span className='w-2 h-2 rounded-full bg-brand-slate/20' title='Modifications non enregistrées'></span>}
+                                                {isRowDirty && (
+                                                    <span
+                                                        className="w-2 h-2 rounded-full bg-brand-slate/20"
+                                                        title={t('pages.contractDetails.grid.unsavedChanges', { defaultValue: 'Unsaved changes' })}
+                                                    />
+                                                )}
                                                 <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-bold bg-brand-mint/10 text-brand-mint border border-brand-mint/30">
-                                                    <Clock size={10} /> J-{eb.releaseDays}
+                                                    <Clock size={10} />
+                                                    {t('pages.contractDetails.grid.eb.releaseDays', {
+                                                        defaultValue: 'D-{{days}}',
+                                                        days: eb.releaseDays,
+                                                    })}
                                                 </span>
                                             </div>
 
-                                            {/* Stay/Booking windows badges */}
                                             <div className="flex flex-wrap gap-1">
                                                 {eb.bookingWindowStart && (
                                                     <span className="text-[9px] px-1.5 py-0.5 bg-brand-mint/10 text-brand-mint border border-brand-mint/30 rounded font-medium">
-                                                        📅 Résa: {formatShortDate(eb.bookingWindowStart)} → {formatShortDate(eb.bookingWindowEnd || '')}
+                                                        📅 {t('pages.contractDetails.grid.eb.bookingWindow', { defaultValue: 'Booking' })}: {formatShortDate(eb.bookingWindowStart, locale)} → {formatShortDate(eb.bookingWindowEnd || '', locale)}
                                                     </span>
                                                 )}
                                                 {eb.isPrepaid && (
                                                     <span className="text-[9px] px-1.5 py-0.5 bg-brand-slate/10 text-brand-slate border border-brand-slate/30 rounded font-bold">
-                                                        <CreditCard size={9} className="inline mr-1" /> PRÉPAYÉ
+                                                        <CreditCard size={9} className="inline mr-1" />
+                                                        {t('pages.contractDetails.grid.eb.prepaid', { defaultValue: 'PREPAID' })}
                                                     </span>
                                                 )}
                                             </div>
 
                                             {eb.applicableContractRooms?.length ? (
-                                                <p className="text-[10px] text-brand-slate font-mono truncate max-w-[200px]" title={eb.applicableContractRooms?.map(r => r.contractRoom?.roomType?.code).filter(Boolean).join(', ')}>
+                                                <p className="text-[10px] text-brand-slate font-mono truncate max-w-[200px]"
+                                                    title={eb.applicableContractRooms?.map(r => r.contractRoom?.roomType?.code).filter(Boolean).join(', ')}>
                                                     🏨 {eb.applicableContractRooms?.map(r => r.contractRoom?.roomType?.code).filter(Boolean).join(' · ')}
                                                 </p>
                                             ) : (
-                                                <p className="text-[10px] text-brand-slate italic">{t('auto.features.contracts.details.components.earlybookinggrid.0ee9f45d', { defaultValue: "Toutes chambres" })}</p>
+                                                <p className="text-[10px] text-brand-slate italic">
+                                                    {t('pages.contractDetails.grid.allRooms', { defaultValue: 'All rooms' })}
+                                                </p>
                                             )}
                                         </div>
                                     </td>
@@ -332,11 +342,13 @@ export default function EarlyBookingGrid({
                                     <td className="px-4 py-4 align-middle">
                                         <div className="flex flex-col">
                                             <span className="font-mono font-bold text-brand-navy text-sm">
-                                                {eb.calculationType === 'PERCENTAGE' ? `-${eb.value}%` : `${eb.value} TND`}
+                                                {eb.calculationType === 'PERCENTAGE' ? `-${eb.value}%` : `${eb.value}`}
                                             </span>
                                             <span className="text-[10px] text-brand-slate font-medium">
-                                                {CALC_LABELS[eb.calculationType] || eb.calculationType}
-                                                {eb.calculationType === 'FIXED' && ` · ${APP_LABELS[eb.applicationType] ?? eb.applicationType}`}
+                                                {eb.calculationType === 'PERCENTAGE'
+                                                    ? t('pages.contractDetails.grid.types.percentage', { defaultValue: '%' })
+                                                    : t('pages.contractDetails.grid.types.fixed', { defaultValue: 'Fixed' })}
+                                                {eb.calculationType === 'FIXED' && ` · ${t('pages.contractDetails.grid.app.perNightPerson', { defaultValue: 'Per pers./night' })}`}
                                             </span>
                                         </div>
                                     </td>
@@ -356,10 +368,27 @@ export default function EarlyBookingGrid({
                                     ))}
 
                                     {/* ── Actions ── */}
-                                    <td className="px-3 py-4 border-l border-brand-slate/20 text-center align-middle sticky right-0 bg-white group-hover:bg-brand-light transition-colors shadow-md">
+                                    <td className="px-3 py-4 border-l border-brand-slate/20 text-center align-middle sticky right-0 bg-brand-light group-hover:bg-brand-light transition-colors shadow-md">
                                         <div className="flex items-center justify-center gap-1 opacity-60 group-hover:opacity-100 transition-opacity">
-                                            <button onClick={() => onEdit(eb)} className="p-1 px-1.5 rounded-xl text-brand-slate hover:text-brand-mint hover:bg-brand-mint/10 transition-colors cursor-pointer" title={t('auto.features.contracts.details.components.earlybookinggrid.title.1b407077', { defaultValue: "Modifier la coquille" })}><Pencil size={12} /></button>
-                                            <button onClick={() => onDelete(eb)} disabled={isDeleting} className="p-1 px-1.5 rounded-xl text-brand-slate hover:text-brand-slate hover:bg-brand-slate/10 transition-colors cursor-pointer disabled:opacity-50" title={t('auto.features.contracts.details.components.earlybookinggrid.title.03f923a9', { defaultValue: "Supprimer du contrat" })}><Trash2 size={12} /></button>
+                                            <button
+                                                type="button"
+                                                onClick={() => onEdit(eb)}
+                                                className="p-1 px-1.5 rounded-xl text-brand-slate hover:text-brand-mint hover:bg-brand-mint/10 transition-colors cursor-pointer"
+                                                title={t('pages.contractDetails.grid.editTemplate', { defaultValue: 'Edit template' })}
+                                                aria-label={t('pages.contractDetails.grid.editTemplate', { defaultValue: 'Edit template' })}
+                                            >
+                                                <Pencil size={12} />
+                                            </button>
+                                            <button
+                                                type="button"
+                                                onClick={() => onDelete(eb)}
+                                                disabled={isDeleting}
+                                                className="p-1 px-1.5 rounded-xl text-brand-slate hover:text-brand-slate hover:bg-brand-slate/10 transition-colors cursor-pointer disabled:opacity-50"
+                                                title={t('pages.contractDetails.grid.removeFromContract', { defaultValue: 'Remove from contract' })}
+                                                aria-label={t('pages.contractDetails.grid.removeFromContract', { defaultValue: 'Remove from contract' })}
+                                            >
+                                                <Trash2 size={12} />
+                                            </button>
                                         </div>
                                     </td>
                                 </tr>
@@ -373,19 +402,19 @@ export default function EarlyBookingGrid({
             <div className="px-5 py-3 bg-brand-light border-t border-brand-slate/20 flex items-center gap-6 text-[10px] text-brand-slate font-medium">
                 <span className="flex items-center gap-2">
                     <span className="w-2.5 h-2.5 rounded-full bg-brand-slate/10" />
-                    Non appliqué
+                    {t('pages.contractDetails.grid.legend.notApplied', { defaultValue: 'Not applied' })}
                 </span>
                 <span className="flex items-center gap-2">
                     <span className="w-2.5 h-2.5 rounded-full bg-brand-mint" />
-                    Valeur par défaut héritée
+                    {t('pages.contractDetails.grid.legend.defaultInherited', { defaultValue: 'Default inherited' })}
                 </span>
                 <span className="flex items-center gap-2">
                     <span className="w-2.5 h-2.5 rounded-full bg-brand-mint ring-4 ring-brand-mint" />
-                    Valeur surchargée
+                    {t('pages.contractDetails.grid.legend.overridden', { defaultValue: 'Value overridden' })}
                 </span>
-                 <span className="flex items-center gap-2 font-bold">
+                <span className="flex items-center gap-2 font-bold">
                     <span className="w-2.5 h-2.5 rounded-full bg-brand-slate/20" />
-                    Modification non enregistrée
+                    {t('pages.contractDetails.grid.legend.unsaved', { defaultValue: 'Unsaved change' })}
                 </span>
             </div>
         </div>

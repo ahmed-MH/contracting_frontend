@@ -81,10 +81,10 @@ export default function EditCancellationTemplateModal({
                 form="cancellation-template-form"
                 type="submit"
                 disabled={isPending || !isDirty}
-                className="inline-flex items-center gap-2 px-8 py-2.5 bg-brand-slate/20 text-white text-sm font-bold rounded-xl hover:bg-brand-slate/20 transition-all shadow-md active:scale-95 disabled:opacity-50 disabled:grayscale cursor-pointer"
+                className="inline-flex items-center gap-2 px-8 py-2.5 bg-brand-slate/20 text-brand-light text-sm font-bold rounded-xl hover:bg-brand-slate/20 transition-all shadow-md active:scale-95 disabled:opacity-50 disabled:grayscale cursor-pointer"
             >
                 {isPending ? (
-                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    <div className="w-4 h-4 border-2 border-brand-light border-t-transparent rounded-full animate-spin" />
                 ) : (
                     <Save size={16} />
                 )}
@@ -175,7 +175,7 @@ export default function EditCancellationTemplateModal({
                             <label className="block text-[10px] font-bold text-brand-slate uppercase tracking-wider mb-2">{t('auto.features.catalog.cancellation.components.editcancellationtemplatemodal.55ed00c5', { defaultValue: "Unité de mesure" })}</label>
                             <select
                                 {...register('penaltyType')}
-                                className="w-full px-3 py-2.5 bg-white dark:bg-brand-navy border border-brand-slate/20 rounded-xl text-sm font-bold focus:ring-2 focus:ring-brand-mint transition-all appearance-none cursor-pointer shadow-sm text-brand-navy dark:text-brand-light"
+                                className="w-full px-3 py-2.5 bg-brand-light dark:bg-brand-navy border border-brand-slate/20 rounded-xl text-sm font-bold focus:ring-2 focus:ring-brand-mint transition-all appearance-none cursor-pointer shadow-sm text-brand-navy dark:text-brand-light"
                             >
                                 <option value={CancellationPenaltyType.NIGHTS}>{t('auto.features.catalog.cancellation.components.editcancellationtemplatemodal.02792fd9', { defaultValue: "Nuits de séjour" })}</option>
                                 <option value={CancellationPenaltyType.PERCENTAGE}>{t('auto.features.catalog.cancellation.components.editcancellationtemplatemodal.8f8841c4', { defaultValue: "Pourcentage (%)" })}</option>
@@ -194,7 +194,7 @@ export default function EditCancellationTemplateModal({
                                     type="number"
                                     step={watchPenaltyType === CancellationPenaltyType.PERCENTAGE ? "0.01" : "1"}
                                     {...register('baseValue', { valueAsNumber: true, min: 0 })}
-                                    className="w-full pl-10 pr-4 py-2.5 bg-white dark:bg-brand-navy border border-brand-slate/20 rounded-xl focus:ring-2 focus:ring-brand-mint transition-all text-sm font-black text-brand-navy dark:text-brand-light"
+                                    className="w-full pl-10 pr-4 py-2.5 bg-brand-light dark:bg-brand-navy border border-brand-slate/20 rounded-xl focus:ring-2 focus:ring-brand-mint transition-all text-sm font-black text-brand-navy dark:text-brand-light"
                                 />
                                 <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-bold text-brand-slate uppercase">
                                     {watchPenaltyType === CancellationPenaltyType.NIGHTS ? 'Nuits' : watchPenaltyType === CancellationPenaltyType.PERCENTAGE ? '%' : '€'}

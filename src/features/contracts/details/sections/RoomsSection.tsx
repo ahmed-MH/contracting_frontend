@@ -30,7 +30,7 @@ export default function RoomsSection({ contract }: Props) {
     };
 
     return (
-        <div className="bg-white shadow-sm ring-1 ring-brand-mint sm:rounded-xl p-6">
+        <div id="rooms" className="scroll-mt-36 bg-brand-light shadow-sm ring-1 ring-brand-mint sm:rounded-xl p-6">
             {/* ─── Header ─────────────────────────────────────────────── */}
             <div className="flex items-center justify-between mb-6 pb-4 border-b border-brand-slate/20">
                 <div className="flex items-center gap-3">
@@ -39,7 +39,7 @@ export default function RoomsSection({ contract }: Props) {
                     <span className="text-xs text-brand-slate">({rooms.length})</span>
                 </div>
                 <button onClick={() => setShowImport(true)}
-                    className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-brand-mint rounded-xl hover:bg-brand-mint transition-colors cursor-pointer">
+                    className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-brand-light bg-brand-mint rounded-xl hover:bg-brand-mint transition-colors cursor-pointer">
                     <Plus size={16} /> Ajouter des chambres
                 </button>
             </div>

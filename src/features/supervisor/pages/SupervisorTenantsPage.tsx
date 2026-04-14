@@ -12,7 +12,7 @@ const tenantColumns: SupervisorTableColumn<(typeof tenantOrganizations)[number]>
         label: 'Organization',
         render: (tenant) => (
             <div>
-                <p className="font-semibold text-brand-navy dark:text-white">{tenant.name}</p>
+                <p className="font-semibold text-brand-navy dark:text-brand-light">{tenant.name}</p>
                 <p className="mt-1 text-xs text-brand-slate">Plan {tenant.plan}</p>
             </div>
         ),
@@ -21,7 +21,7 @@ const tenantColumns: SupervisorTableColumn<(typeof tenantOrganizations)[number]>
         key: 'footprint',
         label: 'Footprint',
         render: (tenant) => (
-            <div className="text-brand-navy dark:text-white">
+            <div className="text-brand-navy dark:text-brand-light">
                 <p>{tenant.hotels} hotels</p>
                 <p className="mt-1 text-xs text-brand-slate">{tenant.users} platform users</p>
             </div>
@@ -35,7 +35,7 @@ const tenantColumns: SupervisorTableColumn<(typeof tenantOrganizations)[number]>
     {
         key: 'mrr',
         label: 'MRR',
-        render: (tenant) => <span className="font-semibold text-brand-navy dark:text-white">{tenant.mrr}</span>,
+        render: (tenant) => <span className="font-semibold text-brand-navy dark:text-brand-light">{tenant.mrr}</span>,
     },
     {
         key: 'billingStatus',

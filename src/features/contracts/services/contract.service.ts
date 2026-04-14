@@ -1,5 +1,5 @@
 import apiClient from '../../../services/api.client';
-import type { Contract, Period, ContractRoom, ContractStatus } from '../types/contract.types';
+import type { ActivationValidationResult, Contract, Period, ContractRoom, ContractStatus } from '../types/contract.types';
 
 // Re-export types for page consumers
 export type { Contract, Period, ContractRoom, ContractStatus };
@@ -96,6 +96,9 @@ export const contractService = {
 
     getContractById: (id: number) =>
         apiClient.get<Contract>(`/contracts/${id}`).then((r) => r.data),
+
+    validateActivation: (id: number) =>
+        apiClient.get<ActivationValidationResult>(`/contracts/${id}/activation-check`).then((r) => r.data),
 
     updateContract: (id: number, data: UpdateContractPayload) =>
         apiClient.patch<Contract>(`/contracts/${id}`, data).then((r) => r.data),

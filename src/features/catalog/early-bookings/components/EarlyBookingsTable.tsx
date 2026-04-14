@@ -39,15 +39,15 @@ export default function EarlyBookingsTable({
         return (
             <table className="w-full text-sm text-left">
                 <thead>
-                    <tr className="bg-brand-light border-b border-brand-slate/20">
-                        <th className="px-5 py-3 font-semibold text-brand-slate text-xs uppercase tracking-wide">{t('auto.features.catalog.early.bookings.components.earlybookingstable.09eb62dd', { defaultValue: "Nom" })}</th>
-                        <th className="px-5 py-3 font-semibold text-brand-slate text-xs uppercase tracking-wide">{t('auto.features.catalog.early.bookings.components.earlybookingstable.772de13a', { defaultValue: "Réservation" })}</th>
-                        <th className="px-5 py-3 font-semibold text-brand-slate text-xs uppercase tracking-wide text-right">{t('auto.features.catalog.early.bookings.components.earlybookingstable.61e1442d', { defaultValue: "Action" })}</th>
+                    <tr className="border-b border-brand-slate/15 bg-brand-mint/6 dark:border-brand-light/10 dark:bg-brand-light/5">
+                        <th className="px-5 py-4 text-xs font-semibold uppercase tracking-wide text-brand-slate dark:text-brand-light/65">{t('auto.features.catalog.early.bookings.components.earlybookingstable.09eb62dd', { defaultValue: "Nom" })}</th>
+                        <th className="px-5 py-4 text-xs font-semibold uppercase tracking-wide text-brand-slate dark:text-brand-light/65">{t('auto.features.catalog.early.bookings.components.earlybookingstable.772de13a', { defaultValue: "Réservation" })}</th>
+                        <th className="px-5 py-4 text-right text-xs font-semibold uppercase tracking-wide text-brand-slate dark:text-brand-light/65">{t('auto.features.catalog.early.bookings.components.earlybookingstable.61e1442d', { defaultValue: "Action" })}</th>
                     </tr>
                 </thead>
-                <tbody className="divide-y divide-brand-slate/10">
+                <tbody className="divide-y divide-brand-slate/10 dark:divide-brand-light/10">
                     {data.map((eb) => (
-                        <tr key={eb.id} className="hover:bg-brand-light transition-colors">
+                        <tr key={eb.id} className="transition-colors hover:bg-brand-mint/5 dark:hover:bg-brand-light/5">
                             <td className="px-5 py-3 text-brand-slate">{eb.name}</td>
                             <td className="px-5 py-3">
                                 {eb.bookingWindowStart || eb.bookingWindowEnd ? (
@@ -72,26 +72,26 @@ export default function EarlyBookingsTable({
     }
 
     return (
-        <div className="bg-white rounded-xl border border-brand-slate/20 shadow-sm overflow-hidden">
+        <div className="premium-surface overflow-x-auto">
             <table className="w-full text-sm text-left">
                 <thead>
-                    <tr className="bg-brand-light border-b border-brand-slate/20">
-                        <th className="px-5 py-3 font-semibold text-brand-slate text-xs uppercase tracking-wide">{t('auto.features.catalog.early.bookings.components.earlybookingstable.4fbd11a1', { defaultValue: "Offre & Release" })}</th>
-                        <th className="px-5 py-3 font-semibold text-brand-slate text-xs uppercase tracking-wide text-center">{t('auto.features.catalog.early.bookings.components.earlybookingstable.772de13a', { defaultValue: "Réservation" })}</th>
-                        <th className="px-5 py-3 font-semibold text-brand-slate text-xs uppercase tracking-wide text-center">{t('auto.features.catalog.early.bookings.components.earlybookingstable.d04ebc7e', { defaultValue: "Séjour" })}</th>
-                        <th className="px-5 py-3 font-semibold text-brand-slate text-xs uppercase tracking-wide">{t('auto.features.catalog.early.bookings.components.earlybookingstable.311a698c', { defaultValue: "Valeur" })}</th>
-                        <th className="px-5 py-3 font-semibold text-brand-slate text-xs uppercase tracking-wide">{t('auto.features.catalog.early.bookings.components.earlybookingstable.43465562', { defaultValue: "Prépayé" })}</th>
-                        <th className="px-5 py-3 font-semibold text-brand-slate text-xs uppercase tracking-wide text-right">{t('auto.features.catalog.early.bookings.components.earlybookingstable.9af038e3', { defaultValue: "Actions" })}</th>
+                    <tr className="border-b border-brand-slate/15 bg-brand-mint/6 dark:border-brand-light/10 dark:bg-brand-light/5">
+                        <th className="px-5 py-4 text-xs font-semibold uppercase tracking-wide text-brand-slate dark:text-brand-light/65">{t('auto.features.catalog.early.bookings.components.earlybookingstable.4fbd11a1', { defaultValue: "Offre & Release" })}</th>
+                        <th className="px-5 py-4 text-center text-xs font-semibold uppercase tracking-wide text-brand-slate dark:text-brand-light/65">{t('auto.features.catalog.early.bookings.components.earlybookingstable.772de13a', { defaultValue: "Réservation" })}</th>
+                        <th className="px-5 py-4 text-center text-xs font-semibold uppercase tracking-wide text-brand-slate dark:text-brand-light/65">{t('auto.features.catalog.early.bookings.components.earlybookingstable.d04ebc7e', { defaultValue: "Séjour" })}</th>
+                        <th className="px-5 py-4 text-xs font-semibold uppercase tracking-wide text-brand-slate dark:text-brand-light/65">{t('auto.features.catalog.early.bookings.components.earlybookingstable.311a698c', { defaultValue: "Valeur" })}</th>
+                        <th className="px-5 py-4 text-xs font-semibold uppercase tracking-wide text-brand-slate dark:text-brand-light/65">{t('auto.features.catalog.early.bookings.components.earlybookingstable.43465562', { defaultValue: "Prépayé" })}</th>
+                        <th className="px-5 py-4 text-right text-xs font-semibold uppercase tracking-wide text-brand-slate dark:text-brand-light/65">{t('auto.features.catalog.early.bookings.components.earlybookingstable.9af038e3', { defaultValue: "Actions" })}</th>
                     </tr>
                 </thead>
-                <tbody className="divide-y divide-brand-slate/10">
+                <tbody className="divide-y divide-brand-slate/10 dark:divide-brand-light/10">
                     {data.map((eb) => (
-                        <tr key={eb.id} className="hover:bg-brand-light transition-colors group">
+                        <tr key={eb.id} className="group transition-colors hover:bg-brand-mint/5 dark:hover:bg-brand-light/5">
                             <td className="px-5 py-4 whitespace-nowrap">
                                 <div className="flex flex-col">
-                                    <span className="font-medium text-brand-navy leading-tight">{eb.name}</span>
+                                    <span className="font-semibold text-brand-navy leading-tight dark:text-brand-light">{eb.name}</span>
                                     <div className="flex items-center gap-1.5">
-                                        <span className="text-sm text-brand-slate font-mono">{eb.reference || 'EBO-PENDING'}</span>
+                                        <span className="text-sm text-brand-slate font-mono dark:text-brand-light/55">{eb.reference || 'EBO-PENDING'}</span>
                                         <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-bold bg-brand-mint/10 text-brand-mint border border-brand-mint/30 uppercase tracking-tighter">
                                             <Clock size={10} /> J-{eb.releaseDays}
                                         </span>
@@ -116,7 +116,7 @@ export default function EarlyBookingsTable({
                             </td>
                             <td className="px-5 py-3">
                                 <div className="flex flex-col">
-                                    <span className="text-sm font-bold text-brand-navy font-mono">
+                                    <span className="text-sm font-bold text-brand-navy font-mono dark:text-brand-light">
                                         {eb.calculationType === 'PERCENTAGE' ? `-${eb.value}%` : `${eb.value} TND`}
                                     </span>
                                     <span className="text-[10px] text-brand-slate font-medium uppercase tracking-tight">
@@ -155,7 +155,7 @@ export default function EarlyBookingsTable({
 
             {/* ─── Pagination Standard ────────────────────────────────── */}
             {meta && meta.lastPage > 0 && onPageChange && (
-                <div className="px-5 py-3 bg-brand-light border-t border-brand-slate/20 flex items-center justify-between">
+                <div className="flex items-center justify-between border-t border-brand-slate/15 bg-brand-mint/5 px-5 py-3 dark:border-brand-light/10 dark:bg-brand-light/5">
                     <p className="text-xs text-brand-slate font-medium tracking-tight">
                         {t('auto.pagination.summary', { defaultValue: 'Affichage de {{from}} ? {{to}} sur {{total}}', from: (meta.page - 1) * (meta.limit || 10) + 1, to: Math.min(meta.page * (meta.limit || 10), meta.total), total: meta.total })}
                     </p>
@@ -167,7 +167,7 @@ export default function EarlyBookingsTable({
                         >
                             <ChevronLeft size={18} />
                         </button>
-                        <div className="flex items-center px-2.5 text-xs font-bold text-brand-slate bg-white border border-brand-slate/20 rounded-xl h-9 min-w-[36px] justify-center shadow-xs">
+                        <div className="flex h-9 min-w-[52px] items-center justify-center rounded-xl border border-brand-slate/20 bg-brand-light/70 px-2.5 text-xs font-bold text-brand-slate shadow-sm dark:border-brand-light/10 dark:bg-brand-light/5 dark:text-brand-light">
                             {meta.page} / {meta.lastPage}
                         </div>
                         <button

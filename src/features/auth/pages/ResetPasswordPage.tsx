@@ -62,7 +62,7 @@ export default function ResetPasswordPage() {
                         <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                     </svg>
                 </div>
-                <h1 className="text-[1.75rem] sm:text-[2rem] font-extrabold text-brand-navy dark:text-white tracking-tight mb-2">
+                <h1 className="text-[1.75rem] sm:text-[2rem] font-extrabold text-brand-navy dark:text-brand-light tracking-tight mb-2">
                     {t('auth:resetPassword.missingToken.title')}
                 </h1>
                 <p className="text-[14px] text-brand-slate dark:text-brand-light/75 font-medium mb-8">
@@ -87,7 +87,7 @@ export default function ResetPasswordPage() {
                 <div className="mx-auto w-16 h-16 rounded-2xl bg-brand-mint/10 border border-brand-mint/20 flex items-center justify-center mb-6">
                     <CheckCircle size={32} className="text-brand-mint" />
                 </div>
-                <h1 className="text-[1.75rem] sm:text-[2rem] font-extrabold text-brand-navy dark:text-white tracking-tight mb-2">
+                <h1 className="text-[1.75rem] sm:text-[2rem] font-extrabold text-brand-navy dark:text-brand-light tracking-tight mb-2">
                     {t('auth:resetPassword.success.title')}
                 </h1>
                 <p className="text-[14px] text-brand-slate dark:text-brand-light/75 font-medium leading-relaxed mb-2 max-w-xs mx-auto">
@@ -111,7 +111,7 @@ export default function ResetPasswordPage() {
             </Link>
 
             <div className="mb-8">
-                <h1 className="text-[1.75rem] sm:text-[2rem] font-extrabold text-brand-navy dark:text-white tracking-tight leading-tight">
+                <h1 className="text-[1.75rem] sm:text-[2rem] font-extrabold text-brand-navy dark:text-brand-light tracking-tight leading-tight">
                     {t('auth:resetPassword.title')}
                 </h1>
                 <p className="text-[14px] text-brand-slate dark:text-brand-light/75 mt-2 font-medium">
@@ -134,13 +134,13 @@ export default function ResetPasswordPage() {
                             id="reset-new-password"
                             type={showPassword ? 'text' : 'password'}
                             placeholder={t('auth:shared.passwordPlaceholder')}
-                            className="h-12 bg-brand-light dark:bg-brand-navy/80 border-brand-slate/20 dark:border-brand-slate/20 focus:border-brand-mint focus:ring-2 focus:ring-brand-mint/15 rounded-xl px-4 pr-12 text-[14px] text-brand-navy dark:text-white transition-all"
+                            className="h-12 bg-brand-light dark:bg-brand-navy/80 border-brand-slate/20 dark:border-brand-slate/20 focus:border-brand-mint focus:ring-2 focus:ring-brand-mint/15 rounded-xl px-4 pr-12 text-[14px] text-brand-navy dark:text-brand-light transition-all"
                             {...register('newPassword')}
                         />
                         <button
                             type="button"
                             onClick={() => setShowPassword(!showPassword)}
-                            className="absolute right-3.5 top-1/2 -translate-y-1/2 p-1 rounded-xl text-brand-slate hover:text-brand-navy dark:hover:text-white transition-colors cursor-pointer"
+                            className="absolute right-3.5 top-1/2 -translate-y-1/2 p-1 rounded-xl text-brand-slate hover:text-brand-navy dark:hover:text-brand-light transition-colors cursor-pointer"
                             aria-label={showPassword ? t('auth:shared.hidePassword') : t('auth:shared.showPassword')}
                         >
                             {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
@@ -164,7 +164,7 @@ export default function ResetPasswordPage() {
                         id="reset-confirm-password"
                         type="password"
                         placeholder={t('auth:shared.passwordPlaceholder')}
-                        className="h-12 bg-brand-light dark:bg-brand-navy/80 border-brand-slate/20 dark:border-brand-slate/20 focus:border-brand-mint focus:ring-2 focus:ring-brand-mint/15 rounded-xl px-4 text-[14px] text-brand-navy dark:text-white transition-all"
+                        className="h-12 bg-brand-light dark:bg-brand-navy/80 border-brand-slate/20 dark:border-brand-slate/20 focus:border-brand-mint focus:ring-2 focus:ring-brand-mint/15 rounded-xl px-4 text-[14px] text-brand-navy dark:text-brand-light transition-all"
                         {...register('confirmPassword')}
                     />
                     {errors.confirmPassword && (
@@ -179,7 +179,7 @@ export default function ResetPasswordPage() {
                         type="submit"
                         variant="primary"
                         disabled={loading}
-                        className="w-full h-12 font-bold text-[14px] bg-brand-mint hover:bg-brand-mint text-white border-none shadow-md hover:shadow-md hover:-translate-y-px active:translate-y-0 disabled:opacity-50 disabled:shadow-none"
+                        className="w-full h-12 font-bold text-[14px] bg-brand-mint hover:bg-brand-mint text-brand-light border-none shadow-md hover:shadow-md hover:-translate-y-px active:translate-y-0 disabled:opacity-50 disabled:shadow-none"
                     >
                         {loading ? (
                             <span className="flex items-center gap-2">

@@ -37,7 +37,7 @@ function RoleBadge({ role }: { role: UserListItem['role'] }) {
             className={clsx(
                 'premium-pill',
                 isAdmin
-                    ? 'border-brand-navy/10 bg-brand-navy text-white dark:border-white/10 dark:bg-white/8 dark:text-white'
+                    ? 'border-brand-navy/10 bg-brand-navy text-brand-light dark:border-brand-light/10 dark:bg-brand-light/8 dark:text-brand-light'
                     : 'border-brand-mint/30 bg-brand-mint/10 text-brand-mint dark:border-brand-mint/30 dark:bg-brand-mint/20 dark:text-brand-light/75',
             )}
         >
@@ -53,11 +53,11 @@ function UserAvatar({ user }: { user: UserListItem }) {
 
     return (
         <div className="flex items-center gap-3">
-            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-brand-mint/10 text-sm font-semibold text-white shadow-md">
+            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-brand-mint/10 text-sm font-semibold text-brand-light shadow-md">
                 {initials}
             </div>
             <div className="min-w-0">
-                <p className="truncate font-semibold text-brand-navy dark:text-white">
+                <p className="truncate font-semibold text-brand-navy dark:text-brand-light">
                     {user.firstName ? `${user.firstName} ${user.lastName ?? ''}`.trim() : 'Profile pending'}
                 </p>
                 <p className="mt-1 flex items-center gap-1.5 truncate text-xs text-brand-slate dark:text-brand-light/75">
@@ -85,7 +85,7 @@ function ActionButtons({
             <button
                 type="button"
                 onClick={() => onEdit(user)}
-                className="inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-white/70 bg-white/70 text-brand-slate transition hover:text-brand-navy dark:border-white/10 dark:bg-white/5 dark:text-brand-light/75 dark:hover:text-white"
+                className="inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-brand-light/70 bg-brand-light/70 text-brand-slate transition hover:text-brand-navy dark:border-brand-light/10 dark:bg-brand-light/5 dark:text-brand-light/75 dark:hover:text-brand-light"
                 title={t('auto.features.admin.pages.userspage.title.8c6523e0', { defaultValue: "Edit user" })}
             >
                 <Pencil size={16} />
@@ -119,17 +119,17 @@ function UserTable({
 
     if (users.length === 0) {
         return (
-            <div className="rounded-2xl border border-dashed border-white/70 bg-white/40 px-6 py-10 text-center text-sm text-brand-slate dark:border-white/10 dark:bg-white/5 dark:text-brand-light/75">
+            <div className="rounded-2xl border border-dashed border-brand-light/70 bg-brand-light/40 px-6 py-10 text-center text-sm text-brand-slate dark:border-brand-light/10 dark:bg-brand-light/5 dark:text-brand-light/75">
                 {emptyLabel}
             </div>
         );
     }
 
     return (
-        <div className="overflow-hidden rounded-2xl border border-white/70 bg-white/55 shadow-sm dark:border-white/10 dark:bg-white/5">
+        <div className="overflow-hidden rounded-2xl border border-brand-light/70 bg-brand-light/55 shadow-sm dark:border-brand-light/10 dark:bg-brand-light/5">
             <div className="overflow-x-auto">
                 <table className="min-w-full text-left text-sm">
-                    <thead className="bg-white/70 text-brand-slate dark:bg-white/5">
+                    <thead className="bg-brand-light/70 text-brand-slate dark:bg-brand-light/5">
                         <tr>
                             <th className="px-5 py-4 font-semibold uppercase tracking-[0.18em]">{t('auto.features.admin.pages.userspage.a9bbbbe0', { defaultValue: "User" })}</th>
                             <th className="px-5 py-4 font-semibold uppercase tracking-[0.18em]">{t('auto.features.admin.pages.userspage.0d3e32fc', { defaultValue: "Role" })}</th>
@@ -138,9 +138,9 @@ function UserTable({
                             <th className="px-5 py-4 text-right font-semibold uppercase tracking-[0.18em]">{t('auto.features.admin.pages.userspage.77eb292a', { defaultValue: "Actions" })}</th>
                         </tr>
                     </thead>
-                    <tbody className="divide-y divide-white/60 dark:divide-white/10">
+                    <tbody className="divide-y divide-brand-light/60 dark:divide-brand-light/10">
                         {users.map((user) => (
-                            <tr key={user.id} className="bg-white/35 dark:bg-transparent">
+                            <tr key={user.id} className="bg-brand-light/35 dark:bg-transparent">
                                 <td className="px-5 py-4 align-top"><UserAvatar user={user} /></td>
                                 <td className="px-5 py-4 align-top"><RoleBadge role={user.role} /></td>
                                 {showHotels && (
@@ -148,7 +148,7 @@ function UserTable({
                                         {user.hotels && user.hotels.length > 0 ? (
                                             <div className="flex max-w-sm flex-wrap gap-2">
                                                 {user.hotels.map((hotel) => (
-                                                    <span key={hotel.id} className="inline-flex items-center rounded-full border border-brand-mint/15 bg-brand-mint/8 px-3 py-1 text-xs font-medium text-brand-navy dark:text-white">
+                                                    <span key={hotel.id} className="inline-flex items-center rounded-full border border-brand-mint/15 bg-brand-mint/8 px-3 py-1 text-xs font-medium text-brand-navy dark:text-brand-light">
                                                         {hotel.name}
                                                     </span>
                                                 ))}
@@ -209,7 +209,7 @@ export default function UsersPage() {
                     <button
                         type="button"
                         onClick={() => { setIsInviteModalOpen(true); }}
-                        className="inline-flex h-11 items-center gap-2 rounded-2xl bg-brand-mint px-4 text-sm font-semibold text-white shadow-md transition hover:-translate-y-0.5 hover:bg-brand-mint"
+                        className="inline-flex h-11 items-center gap-2 rounded-2xl bg-brand-mint px-4 text-sm font-semibold text-brand-light shadow-md transition hover:-translate-y-0.5 hover:bg-brand-mint"
                     >
                         <Plus size={16} />
                         {t('pages.users.header.inviteUser', { defaultValue: 'Invite user' })}
@@ -225,12 +225,12 @@ export default function UsersPage() {
                     ].map((metric) => {
                         const Icon = metric.icon;
                         return (
-                            <div key={metric.label} className="rounded-2xl border border-white/70 bg-white/72 p-5 shadow-sm dark:border-white/10 dark:bg-white/5">
+                            <div key={metric.label} className="rounded-2xl border border-brand-light/70 bg-brand-light/72 p-5 shadow-sm dark:border-brand-light/10 dark:bg-brand-light/5">
                                 <div className="flex items-center justify-between gap-4">
                                     <p className="text-sm font-medium text-brand-slate">{metric.label}</p>
                                     <div className="rounded-2xl bg-brand-mint/10 p-3 text-brand-mint"><Icon size={18} /></div>
                                 </div>
-                                <p className="mt-6 text-3xl font-semibold tracking-tight text-brand-navy dark:text-white">{metric.value}</p>
+                                <p className="mt-6 text-3xl font-semibold tracking-tight text-brand-navy dark:text-brand-light">{metric.value}</p>
                             </div>
                         );
                     })}
@@ -256,7 +256,7 @@ export default function UsersPage() {
                         title={t('pages.users.admins.title', { defaultValue: 'Organization admins' })}
                         description={t('pages.users.admins.description', { defaultValue: 'Admins manage billing posture, access rules, and overall workspace governance.' })}
                         actions={(
-                            <div className="inline-flex items-center gap-2 rounded-full border border-brand-navy/10 bg-brand-navy px-4 py-2 text-sm font-medium text-white dark:border-white/10 dark:bg-white/8">
+                            <div className="inline-flex items-center gap-2 rounded-full border border-brand-navy/10 bg-brand-navy px-4 py-2 text-sm font-medium text-brand-light dark:border-brand-light/10 dark:bg-brand-light/8">
                                 <Briefcase size={16} />
                                 {t('pages.users.admins.count', { defaultValue: '{{count}} admin seats', count: admins.length })}
                             </div>
@@ -282,14 +282,14 @@ export default function UsersPage() {
                     <section className="grid gap-4 lg:grid-cols-[1.2fr,0.8fr]">
                         <div className="rounded-2xl border border-brand-mint/20 bg-brand-mint/10 p-6 shadow-md dark:border-brand-mint/20 dark:bg-brand-navy/80">
                             <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-brand-slate dark:text-brand-light/75">{t('pages.users.guidance.eyebrow', { defaultValue: 'Access Hygiene' })}</p>
-                            <h3 className="mt-2 text-xl font-semibold tracking-tight text-brand-navy dark:text-white">{t('pages.users.guidance.title', { defaultValue: 'Keep assignments clean as the portfolio grows.' })}</h3>
+                            <h3 className="mt-2 text-xl font-semibold tracking-tight text-brand-navy dark:text-brand-light">{t('pages.users.guidance.title', { defaultValue: 'Keep assignments clean as the portfolio grows.' })}</h3>
                             <div className="mt-5 grid gap-3 md:grid-cols-3">
                                 {[
                                     t('pages.users.guidance.items.reviewPending', { defaultValue: 'Review pending invites before opening a new onboarding batch.' }),
                                     t('pages.users.guidance.items.auditAdmins', { defaultValue: 'Limit admin seats to users handling billing and governance decisions.' }),
                                     t('pages.users.guidance.items.alignHotels', { defaultValue: "Match hotel assignments to each commercial user's current operating scope." }),
                                 ].map((item) => (
-                                    <div key={item} className="rounded-2xl border border-white/60 bg-white/72 px-4 py-3 text-sm text-brand-navy dark:border-white/10 dark:bg-white/5 dark:text-white">
+                                    <div key={item} className="rounded-2xl border border-brand-light/60 bg-brand-light/72 px-4 py-3 text-sm text-brand-navy dark:border-brand-light/10 dark:bg-brand-light/5 dark:text-brand-light">
                                         {item}
                                     </div>
                                 ))}
@@ -298,17 +298,17 @@ export default function UsersPage() {
 
                         <div className="premium-surface p-6">
                             <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-brand-slate">{t('pages.users.summary.eyebrow', { defaultValue: 'Coverage Snapshot' })}</p>
-                            <h3 className="mt-2 text-xl font-semibold tracking-tight text-brand-navy dark:text-white">{t('pages.users.summary.title', { defaultValue: 'Seat distribution' })}</h3>
+                            <h3 className="mt-2 text-xl font-semibold tracking-tight text-brand-navy dark:text-brand-light">{t('pages.users.summary.title', { defaultValue: 'Seat distribution' })}</h3>
                             <div className="mt-5 space-y-4">
                                 {[
                                     { label: t('pages.users.summary.adminCoverage', { defaultValue: 'Admin governance' }), value: `${admins.length}/${Math.max(users.length, 1)}` },
                                     { label: t('pages.users.summary.commercialCoverage', { defaultValue: 'Commercial execution' }), value: `${commercials.length}/${Math.max(users.length, 1)}` },
                                     { label: t('pages.users.summary.hotelAssignments', { defaultValue: 'Hotel assignments' }), value: `${assignedHotels}/${Math.max(allHotels.length, 1)}` },
                                 ].map((item) => (
-                                    <div key={item.label} className="rounded-2xl border border-white/70 bg-white/72 px-4 py-4 dark:border-white/10 dark:bg-white/5">
+                                    <div key={item.label} className="rounded-2xl border border-brand-light/70 bg-brand-light/72 px-4 py-4 dark:border-brand-light/10 dark:bg-brand-light/5">
                                         <div className="flex items-center justify-between gap-3">
                                             <p className="text-sm text-brand-slate dark:text-brand-light/75">{item.label}</p>
-                                            <p className="text-lg font-semibold text-brand-navy dark:text-white">{item.value}</p>
+                                            <p className="text-lg font-semibold text-brand-navy dark:text-brand-light">{item.value}</p>
                                         </div>
                                     </div>
                                 ))}

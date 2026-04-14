@@ -86,15 +86,17 @@ const RateCell = memo(function RateCell({
     if (!cell.isContracted) {
         return (
             <div className="flex items-center justify-between px-4 min-w-[220px] h-[80px] bg-brand-light opacity-70 transition-opacity hover:opacity-100 group">
-                <span className="inline-flex items-center rounded-xl bg-white px-2.5 py-1 text-xs font-medium text-brand-slate border border-brand-slate/20 shadow-sm">
+                <span className="inline-flex items-center rounded-xl bg-brand-light px-2.5 py-1 text-xs font-medium text-brand-slate border border-brand-slate/20 shadow-sm">
                     Non contracté
                 </span>
                 <button
+                    type="button"
                     onClick={toggleContracted}
                     className="w-8 h-4 rounded-full bg-brand-slate/10 relative transition-colors hover:bg-brand-slate/10 cursor-pointer opacity-0 group-hover:opacity-100"
                     title={t('auto.features.contracts.details.components.rates.grid.ratecell.title.e6a64ab5', { defaultValue: "Activer cette cellule" })}
+                    aria-label={t('auto.features.contracts.details.components.rates.grid.ratecell.title.e6a64ab5', { defaultValue: "Enable this cell" })}
                 >
-                    <span className="block w-3 h-3 rounded-full bg-white absolute top-0.5 left-0.5 shadow-sm" />
+                    <span className="block w-3 h-3 rounded-full bg-brand-light absolute top-0.5 left-0.5 shadow-sm" />
                 </button>
             </div>
         );
@@ -107,8 +109,14 @@ const RateCell = memo(function RateCell({
             <div className="absolute top-2 right-2 flex items-center gap-1.5 opacity-0 group-hover:opacity-100 z-10 transition-opacity">
                 {/* Override toggle */}
                 <button
+                    type="button"
                     onClick={() => setShowOverride(v => !v)}
-                    title={showOverride ? 'Masquer les surcharges' : 'Surcharger Min Stay / Release'}
+                    title={showOverride
+                        ? t('auto.features.contracts.details.components.rates.grid.ratecell.hideOverrides', { defaultValue: 'Hide overrides' })
+                        : t('auto.features.contracts.details.components.rates.grid.ratecell.showOverrides', { defaultValue: 'Override min stay / release' })}
+                    aria-label={showOverride
+                        ? t('auto.features.contracts.details.components.rates.grid.ratecell.hideOverrides', { defaultValue: 'Hide overrides' })
+                        : t('auto.features.contracts.details.components.rates.grid.ratecell.showOverrides', { defaultValue: 'Override min stay / release' })}
                     className={`p-1 rounded transition-colors cursor-pointer ${hasOverride || showOverride
                         ? 'text-brand-mint bg-brand-mint/10 hover:bg-brand-mint/10'
                         : 'text-brand-slate hover:text-brand-mint hover:bg-brand-mint/10'
@@ -118,11 +126,13 @@ const RateCell = memo(function RateCell({
                 </button>
                 {/* De-contract toggle */}
                 <button
+                    type="button"
                     onClick={toggleContracted}
                     title={t('auto.features.contracts.details.components.rates.grid.ratecell.title.9467c3e9', { defaultValue: "Désactiver cette cellule" })}
+                    aria-label={t('auto.features.contracts.details.components.rates.grid.ratecell.title.9467c3e9', { defaultValue: "Disable this cell" })}
                     className="w-8 h-4 rounded-full bg-brand-mint relative transition-colors hover:bg-brand-mint cursor-pointer"
                 >
-                    <span className="block w-3 h-3 rounded-full bg-white absolute top-0.5 right-0.5 shadow-sm" />
+                    <span className="block w-3 h-3 rounded-full bg-brand-light absolute top-0.5 right-0.5 shadow-sm" />
                 </button>
             </div>
 
@@ -148,9 +158,9 @@ const RateCell = memo(function RateCell({
                         min="0"
                         value={localState.allotment}
                         onChange={(e) => handleAllotmentChange(e.target.value)}
-                        className="block w-full pl-2 pr-7 py-1.5 text-sm font-medium text-brand-mint bg-brand-mint/10 border border-brand-slate/20 rounded-xl focus:ring-1 focus:ring-brand-mint focus:border-brand-mint/30 focus:bg-white shadow-sm placeholder:text-brand-slate transition-colors text-right"
+                        className="block w-full pl-2 pr-7 py-1.5 text-sm font-medium text-brand-mint bg-brand-mint/10 border border-brand-slate/20 rounded-xl focus:ring-1 focus:ring-brand-mint focus:border-brand-mint/30 focus:bg-brand-light shadow-sm placeholder:text-brand-slate transition-colors text-right"
                         placeholder="0"
-                        title={t('auto.features.contracts.details.components.rates.grid.ratecell.title.267b30e9', { defaultValue: "Allotement" })}
+                        title={t('auto.features.contracts.details.components.rates.grid.ratecell.title.267b30e9', { defaultValue: "Allotment" })}
                     />
                     <div className="absolute inset-y-0 right-0 pr-2 flex items-center pointer-events-none">
                         <span className="text-brand-mint text-[10px] font-semibold">{t('auto.features.contracts.details.components.rates.grid.ratecell.34f9fd4a', { defaultValue: "Ch." })}</span>
@@ -170,9 +180,9 @@ const RateCell = memo(function RateCell({
                             min="0"
                             value={localState.minStay}
                             onChange={(e) => handleMinStayChange(e.target.value)}
-                            className="block w-full pl-11 pr-2 py-1 text-xs font-medium text-brand-slate bg-white border border-dashed border-brand-mint/30 rounded focus:ring-1 focus:ring-brand-mint focus:border-solid focus:border-brand-mint/30 placeholder:text-brand-slate transition-all text-right"
-                            placeholder={periodDefaultMinStay ? `Hérité : ${periodDefaultMinStay}` : '-'}
-                            title={t('auto.features.contracts.details.components.rates.grid.ratecell.title.dfcf1f0e', { defaultValue: "Surcharge Min Stay (laissez vide pour hériter de la période)" })}
+                            className="block w-full pl-11 pr-2 py-1 text-xs font-medium text-brand-slate bg-brand-light border border-dashed border-brand-mint/30 rounded focus:ring-1 focus:ring-brand-mint focus:border-solid focus:border-brand-mint/30 placeholder:text-brand-slate transition-all text-right"
+                            placeholder={periodDefaultMinStay ? t('auto.features.contracts.details.components.rates.grid.ratecell.inheritedMin', { defaultValue: 'Inherited: {{value}}', value: periodDefaultMinStay }) : '-'}
+                            title={t('auto.features.contracts.details.components.rates.grid.ratecell.title.dfcf1f0e', { defaultValue: "Override min stay (leave empty to inherit from the period)" })}
                         />
                     </div>
                     <div className="relative flex-1">
@@ -184,9 +194,9 @@ const RateCell = memo(function RateCell({
                             min="0"
                             value={localState.releaseDays}
                             onChange={(e) => handleReleaseChange(e.target.value)}
-                            className="block w-full pl-10 pr-2 py-1 text-xs font-medium text-brand-slate bg-white border border-dashed border-brand-mint/30 rounded focus:ring-1 focus:ring-brand-mint focus:border-solid focus:border-brand-mint/30 placeholder:text-brand-slate transition-all text-right"
-                            placeholder={periodDefaultRelease ? `Hérité : ${periodDefaultRelease}` : '-'}
-                            title={t('auto.features.contracts.details.components.rates.grid.ratecell.title.2483b63e', { defaultValue: "Surcharge Release Days (laissez vide pour hériter de la période)" })}
+                            className="block w-full pl-10 pr-2 py-1 text-xs font-medium text-brand-slate bg-brand-light border border-dashed border-brand-mint/30 rounded focus:ring-1 focus:ring-brand-mint focus:border-solid focus:border-brand-mint/30 placeholder:text-brand-slate transition-all text-right"
+                            placeholder={periodDefaultRelease ? t('auto.features.contracts.details.components.rates.grid.ratecell.inheritedRelease', { defaultValue: 'Inherited: {{value}}', value: periodDefaultRelease }) : '-'}
+                            title={t('auto.features.contracts.details.components.rates.grid.ratecell.title.2483b63e', { defaultValue: "Override release days (leave empty to inherit from the period)" })}
                         />
                     </div>
                 </div>

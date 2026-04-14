@@ -39,7 +39,7 @@
     @apply font-sans text-brand-navy transition-colors duration-300 dark:text-brand-light;
     background:
       radial-gradient(circle at top left, color-mix(in srgb, var(--color-brand-mint) 12%, transparent), transparent 24%),
-      linear-gradient(180deg, var(--color-brand-light) 0%, color-mix(in srgb, var(--color-brand-mint) 8%, white) 45%, var(--color-brand-light) 100%);
+      linear-gradient(180deg, var(--color-brand-light) 0%, color-mix(in srgb, var(--color-brand-mint) 8%, var(--color-brand-light)) 45%, var(--color-brand-light) 100%);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
@@ -47,7 +47,7 @@
   .dark body {
     background:
       radial-gradient(circle at top left, color-mix(in srgb, var(--color-brand-mint) 14%, transparent), transparent 18%),
-      linear-gradient(180deg, color-mix(in srgb, var(--color-brand-navy) 86%, black) 0%, var(--color-brand-navy) 100%);
+      linear-gradient(180deg, color-mix(in srgb, var(--color-brand-navy) 86%, var(--color-brand-slate)) 0%, var(--color-brand-navy) 100%);
   }
 
   #root {
@@ -56,7 +56,7 @@
 
   ::selection {
     background-color: var(--color-brand-mint);
-    color: white;
+    color: var(--color-brand-light);
   }
 
   ::-webkit-scrollbar {
@@ -105,15 +105,151 @@
   }
 
   .glass-card {
-    @apply rounded-2xl border border-white/60 bg-white/78 shadow-md backdrop-blur-xl dark:border-white/10 dark:bg-brand-navy/70;
+    @apply rounded-2xl border border-brand-light/60 bg-brand-light/78 shadow-md backdrop-blur-xl dark:border-brand-light/10 dark:bg-brand-navy/70;
   }
 
   .premium-surface {
-    @apply rounded-2xl border border-white/60 bg-white/78 shadow-md backdrop-blur-xl dark:border-white/10 dark:bg-brand-navy/80;
+    @apply rounded-2xl border border-brand-light/60 bg-brand-light/78 shadow-md backdrop-blur-xl dark:border-brand-light/10 dark:bg-brand-navy/80;
+  }
+
+  .contract-section-surface,
+  .contract-matrix-surface {
+    @apply rounded-lg border border-brand-light/60 bg-brand-light/78 shadow-md backdrop-blur-xl dark:border-brand-light/10 dark:bg-brand-navy/80;
+  }
+
+  .dark .contract-section-surface .text-brand-navy,
+  .dark .contract-matrix-surface .text-brand-navy {
+    color: var(--color-brand-light) !important;
+  }
+
+  .dark .contract-section-surface .text-brand-slate,
+  .dark .contract-matrix-surface .text-brand-slate {
+    color: color-mix(in srgb, var(--color-brand-slate) 72%, var(--color-brand-light)) !important;
+  }
+
+  .dark .contract-section-surface .bg-brand-light,
+  .dark .contract-section-surface .bg-brand-light\/60,
+  .dark .contract-section-surface .bg-brand-light\/70,
+  .dark .contract-section-surface .bg-brand-light\/80,
+  .dark .contract-section-surface .hover\:bg-brand-light:hover,
+  .dark .contract-section-surface .group-hover\:bg-brand-light,
+  .dark .contract-matrix-surface .bg-brand-light,
+  .dark .contract-matrix-surface .bg-brand-light\/60,
+  .dark .contract-matrix-surface .bg-brand-light\/70,
+  .dark .contract-matrix-surface .bg-brand-light\/80,
+  .dark .contract-matrix-surface .hover\:bg-brand-light:hover,
+  .dark .contract-matrix-surface .group-hover\:bg-brand-light {
+    background-color: color-mix(in srgb, var(--color-brand-light) 5%, transparent) !important;
+  }
+
+  .dark .contract-section-surface .hover\:text-brand-navy:hover,
+  .dark .contract-matrix-surface .hover\:text-brand-navy:hover {
+    color: var(--color-brand-light) !important;
+  }
+
+  .dark .contract-section-surface .focus\:bg-brand-light:focus,
+  .dark .contract-matrix-surface .focus\:bg-brand-light:focus {
+    background-color: color-mix(in srgb, var(--color-brand-light) 8%, transparent) !important;
+  }
+
+  .dark .contract-section-surface [class*="border-brand-slate"],
+  .dark .contract-matrix-surface [class*="border-brand-slate"] {
+    border-color: color-mix(in srgb, var(--color-brand-light) 12%, transparent) !important;
+  }
+
+  .dark .contract-section-surface input,
+  .dark .contract-section-surface select,
+  .dark .contract-section-surface textarea,
+  .dark .contract-matrix-surface input,
+  .dark .contract-matrix-surface select,
+  .dark .contract-matrix-surface textarea {
+    background-color: color-mix(in srgb, var(--color-brand-light) 6%, transparent);
+    border-color: color-mix(in srgb, var(--color-brand-light) 14%, transparent);
+    color: var(--color-brand-light);
+  }
+
+  .dark .contract-section-surface input::placeholder,
+  .dark .contract-section-surface textarea::placeholder,
+  .dark .contract-matrix-surface input::placeholder,
+  .dark .contract-matrix-surface textarea::placeholder {
+    color: color-mix(in srgb, var(--color-brand-slate) 78%, var(--color-brand-light));
+  }
+
+  .dark .contract-section-surface input:disabled,
+  .dark .contract-section-surface select:disabled,
+  .dark .contract-section-surface textarea:disabled,
+  .dark .contract-matrix-surface input:disabled,
+  .dark .contract-matrix-surface select:disabled,
+  .dark .contract-matrix-surface textarea:disabled {
+    color: color-mix(in srgb, var(--color-brand-slate) 78%, var(--color-brand-light));
+  }
+
+  .dark .contract-matrix-surface table thead tr {
+    background-color: color-mix(in srgb, var(--color-brand-light) 6%, transparent) !important;
+    border-color: color-mix(in srgb, var(--color-brand-light) 12%, transparent) !important;
+  }
+
+  .dark .contract-matrix-surface table tbody {
+    border-color: color-mix(in srgb, var(--color-brand-light) 10%, transparent) !important;
+  }
+
+  .dark .contract-matrix-surface table tbody tr:hover {
+    background-color: color-mix(in srgb, var(--color-brand-light) 5%, transparent) !important;
+  }
+
+  .dark .contract-matrix-surface table .sticky {
+    background-color: color-mix(in srgb, var(--color-brand-navy) 88%, var(--color-brand-light)) !important;
+  }
+
+  .dark .contract-matrix-surface table .bg-brand-mint\/5 {
+    background-color: color-mix(in srgb, var(--color-brand-mint) 10%, var(--color-brand-navy)) !important;
+  }
+
+  .contract-matrix-surface.overflow-x-auto,
+  .contract-matrix-surface .overflow-x-auto {
+    overscroll-behavior-x: contain;
+    scrollbar-gutter: stable;
+  }
+
+  .premium-surface.overflow-x-auto,
+  .premium-surface .overflow-x-auto {
+    overscroll-behavior-x: contain;
+    scrollbar-gutter: stable;
+  }
+
+  .dark .premium-surface table thead tr {
+    background-color: color-mix(in srgb, var(--color-brand-light) 6%, transparent) !important;
+    border-color: color-mix(in srgb, var(--color-brand-light) 12%, transparent) !important;
+  }
+
+  .dark .premium-surface table tbody {
+    border-color: color-mix(in srgb, var(--color-brand-light) 10%, transparent) !important;
+  }
+
+  .dark .premium-surface table tbody tr:hover {
+    background-color: color-mix(in srgb, var(--color-brand-light) 5%, transparent) !important;
+  }
+
+  .dark .premium-surface table .bg-brand-light,
+  .dark .premium-surface table .group-hover\:bg-brand-light {
+    background-color: color-mix(in srgb, var(--color-brand-light) 5%, transparent) !important;
+  }
+
+  .dark .premium-surface table .text-brand-navy {
+    color: var(--color-brand-light) !important;
+  }
+
+  .dark .premium-surface table + div {
+    border-color: color-mix(in srgb, var(--color-brand-light) 12%, transparent) !important;
+  }
+
+  .dark .premium-surface div[class*="bg-brand-light"][class*="border-t"] {
+    background-color: color-mix(in srgb, var(--color-brand-light) 5%, transparent) !important;
+    border-color: color-mix(in srgb, var(--color-brand-light) 12%, transparent) !important;
   }
 
   .premium-nav-glass {
-    @apply rounded-2xl border border-white/60 bg-white/65 shadow-md backdrop-blur-2xl dark:border-white/10 dark:bg-brand-navy/80;
+    @apply rounded-2xl border border-brand-light/60 bg-brand-light/65 shadow-md backdrop-blur-2xl dark:border-brand-light/10 dark:bg-brand-navy/80;
   }
 
   .premium-pill {
@@ -125,19 +261,19 @@
   }
 
   .dark .landing-page .text-brand-navy {
-    color: rgb(241 245 249) !important;
+    color: var(--color-brand-light) !important;
   }
 
   .dark .landing-page .text-brand-slate {
-    color: rgb(148 163 184) !important;
+    color: color-mix(in srgb, var(--color-brand-slate) 70%, var(--color-brand-light)) !important;
   }
 
   .dark .landing-page .premium-surface {
-    @apply border-white/10 bg-brand-navy;
+    @apply border-brand-light/10 bg-brand-navy;
   }
 
   .dark .landing-page .premium-nav-glass {
-    @apply border-white/10 bg-brand-navy;
+    @apply border-brand-light/10 bg-brand-navy;
   }
 
   .pricify-toast {
@@ -177,7 +313,7 @@
   }
 
   .pricify-toast-action {
-    @apply mt-2 inline-flex h-8 items-center justify-center rounded-xl bg-brand-mint px-3 text-[12px] font-semibold text-white transition hover:bg-brand-mint;
+    @apply mt-2 inline-flex h-8 items-center justify-center rounded-xl bg-brand-mint px-3 text-[12px] font-semibold text-brand-light transition hover:bg-brand-mint;
   }
 
   .pricify-toast-cancel {
@@ -195,7 +331,7 @@
 
   .pricify-toast-success::before,
   .pricify-toast[data-type='success']::before {
-    background: linear-gradient(180deg, var(--color-brand-mint) 0%, color-mix(in srgb, var(--color-brand-mint) 70%, white) 100%);
+    background: linear-gradient(180deg, var(--color-brand-mint) 0%, color-mix(in srgb, var(--color-brand-mint) 70%, var(--color-brand-light)) 100%);
   }
 
   .pricify-toast-success .pricify-toast-icon,
@@ -220,7 +356,7 @@
 
   .pricify-toast-warning::before,
   .pricify-toast[data-type='warning']::before {
-    background: linear-gradient(180deg, color-mix(in srgb, var(--color-brand-mint) 55%, white) 0%, var(--color-brand-mint) 100%);
+    background: linear-gradient(180deg, color-mix(in srgb, var(--color-brand-mint) 55%, var(--color-brand-light)) 0%, var(--color-brand-mint) 100%);
   }
 
   .pricify-toast-info,
@@ -230,7 +366,7 @@
 
   .pricify-toast-info::before,
   .pricify-toast[data-type='info']::before {
-    background: linear-gradient(180deg, color-mix(in srgb, var(--color-brand-slate) 35%, white) 0%, var(--color-brand-slate) 100%);
+    background: linear-gradient(180deg, color-mix(in srgb, var(--color-brand-slate) 35%, var(--color-brand-light)) 0%, var(--color-brand-slate) 100%);
   }
 
   .dark .pricify-toast {
@@ -268,7 +404,7 @@
 
   .dark .pricify-toast-success::before,
   .dark .pricify-toast[data-type='success']::before {
-    background: linear-gradient(180deg, var(--color-brand-mint) 0%, color-mix(in srgb, var(--color-brand-mint) 70%, white) 100%);
+    background: linear-gradient(180deg, var(--color-brand-mint) 0%, color-mix(in srgb, var(--color-brand-mint) 70%, var(--color-brand-light)) 100%);
   }
 
   .dark .pricify-toast-success .pricify-toast-icon,
@@ -291,4 +427,64 @@
     @apply border-brand-mint/30 bg-brand-mint/10;
   }
 
+  /* ── Dense matrix grids: keyboard accessibility ─────────────────── */
+  /* Toggle buttons are opacity-0 by default (mouse-only hover reveal).  */
+  /* Expose them for keyboard users via focus-visible.                    */
+  .contract-matrix-surface button:focus-visible {
+    opacity: 1 !important;
+    outline: 2px solid var(--color-brand-mint);
+    outline-offset: 2px;
+    border-radius: 999px;
+  }
+
+  /* Dense grid inputs / selects: enforce visible focus ring              */
+  .contract-matrix-surface input:focus-visible,
+  .contract-matrix-surface select:focus-visible {
+    outline: 2px solid var(--color-brand-mint);
+    outline-offset: 1px;
+  }
+}
+
+@media print {
+  @page {
+    size: A4;
+    margin: 0;
+  }
+
+  html,
+  body,
+  #root {
+    background: #ffffff !important;
+  }
+
+  body {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .contract-preview-shell {
+    padding: 0 !important;
+    background: #ffffff !important;
+  }
+
+  .contract-a4 {
+    width: 210mm !important;
+    max-width: none !important;
+    min-height: 297mm !important;
+    margin: 0 auto !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+  }
+
+  .contract-table-scroll {
+    overflow: visible !important;
+  }
+
+  .contract-page-section,
+  .contract-table tr,
+  .contract-table td,
+  .contract-table th {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
 }

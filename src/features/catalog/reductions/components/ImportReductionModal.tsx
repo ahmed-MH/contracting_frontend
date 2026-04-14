@@ -4,6 +4,7 @@ import { useImportReduction, useContractReductions } from '../../../contracts/ho
 import { Baby, Search, X, Plus, AlertCircle } from 'lucide-react';
 import type { PaxType } from '../../../../types';
 import { useTranslation } from 'react-i18next';
+import ModalPortal from '../../../../components/ui/ModalPortal';
 
 const PAX_LABELS: Record<PaxType, string> = {
     FIRST_CHILD: '1er Enfant',
@@ -66,11 +67,12 @@ export default function ImportReductionModal({ isOpen, onClose, contractId }: Pr
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-            <div className="bg-white dark:bg-brand-navy rounded-2xl shadow-md w-full max-w-2xl overflow-hidden flex flex-col max-h-[85vh] border border-transparent dark:border-brand-slate/20">
+        <ModalPortal isOpen={isOpen} onClose={handleClose}>
+        <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4 bg-brand-navy/55 backdrop-blur-sm">
+            <div className="bg-brand-light dark:bg-brand-navy rounded-2xl shadow-md w-full max-w-2xl overflow-hidden flex flex-col max-h-[85vh] border border-transparent dark:border-brand-slate/20">
 
                 {/* ─── Header ──────────────────────────────────────────── */}
-                <div className="px-6 py-4 border-b border-brand-slate/15 dark:border-brand-slate/20 flex items-center justify-between bg-white dark:bg-brand-navy">
+                <div className="px-6 py-4 border-b border-brand-slate/15 dark:border-brand-slate/20 flex items-center justify-between bg-brand-light dark:bg-brand-navy">
                     <div>
                         <h3 className="text-lg font-bold text-brand-navy dark:text-brand-light">{t('auto.features.catalog.reductions.components.importreductionmodal.1fc34e68', { defaultValue: "Catalogue des Réductions" })}</h3>
                         <p className="text-xs text-brand-slate font-medium tracking-wide mt-0.5 uppercase">{t('auto.features.catalog.reductions.components.importreductionmodal.53eada2f', { defaultValue: "Sélectionnez les réductions à importer dans le contrat" })}</p>
@@ -89,7 +91,7 @@ export default function ImportReductionModal({ isOpen, onClose, contractId }: Pr
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
                             placeholder={t('auto.features.catalog.reductions.components.importreductionmodal.placeholder.68b4da31', { defaultValue: "Rechercher une réduction par nom..." })}
-                            className="w-full pl-10 pr-4 py-2 bg-white dark:bg-brand-navy border border-brand-slate/20 rounded-xl text-sm focus:ring-2 focus:ring-brand-mint dark:text-brand-light outline-hidden transition-all"
+                            className="w-full pl-10 pr-4 py-2 bg-brand-light dark:bg-brand-navy border border-brand-slate/20 rounded-xl text-sm focus:ring-2 focus:ring-brand-mint dark:text-brand-light outline-hidden transition-all"
                         />
                     </div>
                     {importedTemplateIds.size > 0 && (
@@ -103,7 +105,7 @@ export default function ImportReductionModal({ isOpen, onClose, contractId }: Pr
                 <div className="overflow-y-auto flex-1 p-6">
                     {isLoading ? (
                         <div className="flex flex-col items-center justify-center py-20 gap-3 grayscale opacity-50">
-                            <div className="w-8 h-8 border-4 border-brand-mint border-t-transparent rounded-full animate-spin" />
+                            <div className="w-8 h-8 border-2 border-brand-mint border-t-transparent rounded-full animate-spin" />
                             <p className="text-xs font-bold text-brand-slate uppercase tracking-widest">{t('auto.features.catalog.reductions.components.importreductionmodal.c13e5798', { defaultValue: "Chargement du catalogue..." })}</p>
                         </div>
                     ) : availableTemplates.length === 0 ? (
@@ -124,7 +126,7 @@ export default function ImportReductionModal({ isOpen, onClose, contractId }: Pr
                                 <div
                                     key={t.id}
                                     onClick={() => toggle(t.id)}
-                                    className={`p-4 bg-white dark:bg-brand-slate/10 border rounded-2xl transition-all group flex items-center gap-4 cursor-pointer ${
+                                    className={`p-4 bg-brand-light dark:bg-brand-slate/10 border rounded-2xl transition-all group flex items-center gap-4 cursor-pointer ${
                                         selectedIds.has(t.id)
                                             ? 'border-brand-mint shadow-md ring-2 ring-brand-mint/20'
                                             : 'border-brand-slate/20 hover:border-brand-mint hover:shadow-md'
@@ -139,8 +141,8 @@ export default function ImportReductionModal({ isOpen, onClose, contractId }: Pr
                                     />
                                     <div className={`w-12 h-12 rounded-xl flex items-center justify-center shadow-sm ring-1 transition-colors shrink-0 ${
                                         selectedIds.has(t.id)
-                                            ? 'bg-brand-mint text-white ring-brand-mint/30'
-                                            : 'bg-brand-mint/10 text-brand-mint ring-brand-mint/20 group-hover:bg-brand-mint group-hover:text-white'
+                                            ? 'bg-brand-mint text-brand-light ring-brand-mint/30'
+                                            : 'bg-brand-mint/10 text-brand-mint ring-brand-mint/20 group-hover:bg-brand-mint group-hover:text-brand-light'
                                     }`}>
                                         <Baby size={20} />
                                     </div>
@@ -178,10 +180,10 @@ export default function ImportReductionModal({ isOpen, onClose, contractId }: Pr
                         <button
                             onClick={handleImport}
                             disabled={selectedIds.size === 0 || importMutation.isPending}
-                            className="inline-flex items-center gap-2 px-8 py-2.5 bg-brand-mint text-white text-sm font-bold rounded-xl hover:bg-brand-mint/90 transition-all shadow-md active:scale-95 disabled:opacity-50 disabled:grayscale cursor-pointer"
+                            className="inline-flex items-center gap-2 px-8 py-2.5 bg-brand-mint text-brand-light text-sm font-bold rounded-xl hover:bg-brand-mint/90 transition-all shadow-md active:scale-95 disabled:opacity-50 disabled:grayscale cursor-pointer"
                         >
                             {importMutation.isPending
-                                ? <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                                ? <div className="w-4 h-4 border-2 border-brand-light border-t-transparent rounded-full animate-spin" />
                                 : <Plus size={16} />}
                             Importer {selectedIds.size > 0 ? `(${selectedIds.size})` : ''}
                         </button>
@@ -190,5 +192,6 @@ export default function ImportReductionModal({ isOpen, onClose, contractId }: Pr
 
             </div>
         </div>
+        </ModalPortal>
     );
 }

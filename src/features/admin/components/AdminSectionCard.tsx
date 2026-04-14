@@ -22,7 +22,7 @@ export default function AdminSectionCard({
                     <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-brand-slate">
                         {eyebrow}
                     </p>
-                    <h2 className="mt-2 text-xl font-semibold tracking-tight text-brand-navy dark:text-white">
+                    <h2 className="mt-2 text-xl font-semibold tracking-tight text-brand-navy dark:text-brand-light">
                         {title}
                     </h2>
                     {description && (

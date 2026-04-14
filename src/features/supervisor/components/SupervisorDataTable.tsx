@@ -25,7 +25,7 @@ export function SupervisorDataTable<T>({
     return (
         <div className="overflow-x-auto">
             <table className="min-w-full text-left text-sm">
-                <thead className="bg-white/60 text-brand-slate dark:bg-white/5">
+                <thead className="bg-brand-light/60 text-brand-slate dark:bg-brand-light/5">
                     <tr>
                         {columns.map((column) => (
                             <th
@@ -37,9 +37,9 @@ export function SupervisorDataTable<T>({
                         ))}
                     </tr>
                 </thead>
-                <tbody className="divide-y divide-white/60 dark:divide-white/10">
+                <tbody className="divide-y divide-brand-light/60 dark:divide-brand-light/10">
                     {rows.map((row) => (
-                        <tr key={rowKey(row)} className="bg-white/35 dark:bg-transparent">
+                        <tr key={rowKey(row)} className="bg-brand-light/35 dark:bg-transparent">
                             {columns.map((column) => (
                                 <td key={column.key} className={`px-5 py-4 align-top ${column.className ?? ''}`}>
                                     {column.render(row)}

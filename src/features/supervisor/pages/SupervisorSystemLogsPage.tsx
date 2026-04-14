@@ -15,7 +15,7 @@ export default function SupervisorSystemLogsPage() {
             label: t('pages.supervisor.logs.cards.auditTrail.columns.actor', { defaultValue: 'Actor' }),
             render: (row) => (
                 <div>
-                    <p className="font-semibold text-brand-navy dark:text-white">
+                    <p className="font-semibold text-brand-navy dark:text-brand-light">
                         {t(`pages.supervisor.logs.cards.auditTrail.rows.${auditTrail.indexOf(row)}.actor`, { defaultValue: row.actor })}
                     </p>
                     <p className="mt-1 text-xs text-brand-slate">
@@ -28,7 +28,7 @@ export default function SupervisorSystemLogsPage() {
             key: 'action',
             label: t('pages.supervisor.logs.cards.auditTrail.columns.action', { defaultValue: 'Action' }),
             render: (row) => (
-                <span className="text-brand-navy dark:text-white">
+                <span className="text-brand-navy dark:text-brand-light">
                     {t(`pages.supervisor.logs.cards.auditTrail.rows.${auditTrail.indexOf(row)}.action`, { defaultValue: row.action })}
                 </span>
             ),
@@ -102,7 +102,7 @@ export default function SupervisorSystemLogsPage() {
                 >
                     <div className="space-y-3">
                         {systemLogEvents.map((event, index) => (
-                            <div key={`${event.timestamp}-${event.title}`} className="rounded-2xl border border-white/70 bg-white/72 p-5 dark:border-white/10 dark:bg-white/5">
+                            <div key={`${event.timestamp}-${event.title}`} className="rounded-2xl border border-brand-light/70 bg-brand-light/72 p-5 dark:border-brand-light/10 dark:bg-brand-light/5">
                                 <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
                                     <div>
                                         <div className="flex flex-wrap items-center gap-2">
@@ -114,12 +114,12 @@ export default function SupervisorSystemLogsPage() {
                                                     ? 'border-brand-slate/30 bg-brand-slate/10 text-brand-slate'
                                                     : event.severity === 'Warning'
                                                         ? 'border-brand-mint/30 bg-brand-mint/10 text-brand-mint'
-                                                        : 'border-brand-slate/20 bg-brand-light text-brand-slate dark:border-white/10 dark:bg-white/5 dark:text-brand-light/75'
+                                                        : 'border-brand-slate/20 bg-brand-light text-brand-slate dark:border-brand-light/10 dark:bg-brand-light/5 dark:text-brand-light/75'
                                             }`}>
                                                 {t(`pages.supervisor.logs.cards.liveEventStream.events.${index}.severity`, { defaultValue: event.severity })}
                                             </span>
                                         </div>
-                                        <h3 className="mt-4 text-lg font-semibold text-brand-navy dark:text-white">
+                                        <h3 className="mt-4 text-lg font-semibold text-brand-navy dark:text-brand-light">
                                             {t(`pages.supervisor.logs.cards.liveEventStream.events.${index}.title`, { defaultValue: event.title })}
                                         </h3>
                                         <p className="mt-2 text-sm leading-6 text-brand-slate dark:text-brand-light/75">

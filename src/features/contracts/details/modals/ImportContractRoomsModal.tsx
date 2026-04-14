@@ -70,7 +70,7 @@ export default function ImportContractRoomsModal({ isOpen, onClose, contractId, 
                     <div className="max-h-64 overflow-y-auto space-y-1 border border-brand-slate/20 rounded-xl p-2 bg-brand-light/50 dark:bg-brand-slate/10">
                         {available.map((rt) => (
                             <label key={rt.id}
-                                className="flex items-center gap-3 p-2.5 rounded-xl hover:bg-white dark:hover:bg-brand-slate/10 border border-transparent hover:border-brand-slate/15 cursor-pointer transition-all">
+                                className="flex items-center gap-3 p-2.5 rounded-xl hover:bg-brand-light dark:hover:bg-brand-slate/10 border border-transparent hover:border-brand-slate/15 cursor-pointer transition-all">
                                 <input
                                     type="checkbox"
                                     checked={selected.has(rt.id)}
@@ -97,7 +97,7 @@ export default function ImportContractRoomsModal({ isOpen, onClose, contractId, 
                 <button
                     onClick={handleImport}
                     disabled={selected.size === 0 || addMutation.isPending}
-                    className="px-4 py-2 text-sm font-medium text-white bg-brand-mint rounded-xl hover:bg-brand-mint/90 transition-colors disabled:opacity-50 cursor-pointer"
+                    className="px-4 py-2 text-sm font-medium text-brand-light bg-brand-mint rounded-xl hover:bg-brand-mint/90 transition-colors disabled:opacity-50 cursor-pointer"
                 >
                     {addMutation.isPending
                         ? 'Import en cours...'

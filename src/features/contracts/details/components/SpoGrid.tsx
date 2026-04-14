@@ -147,18 +147,18 @@ export default function SpoGrid({
     if (spos.length === 0) return null;
 
     return (
-        <div className="bg-white shadow-sm ring-1 ring-brand-mint rounded-xl overflow-hidden mt-6">
+        <div className="contract-matrix-surface overflow-hidden">
             {/* ── Header ──────────────────────────────────────────────── */}
-            <div className="px-5 py-3 border-b border-brand-mint/30 flex items-center justify-between bg-linear-to-r from-brand-mint to-brand-mint">
+            <div className="flex flex-col gap-3 border-b border-brand-slate/10 bg-brand-light/80 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
                 <div className="flex items-center gap-3">
-                    <span className="bg-brand-mint p-1 rounded-xl text-white">
+                    <span className="rounded-lg bg-brand-mint/10 p-1.5 text-brand-mint">
                         <Gift size={14} />
                     </span>
-                    <span className="text-xs font-bold text-brand-mint uppercase tracking-widest">
+                    <span className="text-xs font-bold uppercase tracking-widest text-brand-navy">
                         Matrice d'Offres Spéciales (SPO)
                     </span>
                 </div>
-                <div className='flex items-center gap-4'>
+                <div className='flex flex-wrap items-center gap-3'>
                     <div className="flex items-center gap-2 group cursor-help">
                         <Info size={14} className="text-brand-mint group-hover:text-brand-mint transition-colors" />
                         <span className="text-[10px] text-brand-slate font-medium">
@@ -167,9 +167,10 @@ export default function SpoGrid({
                     </div>
 
                     <button
+                        type="button"
                         onClick={handleSaveAll}
                         disabled={!isDirty || isSaving}
-                        className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-bold rounded-xl bg-brand-mint text-white hover:bg-brand-mint shadow-md shadow-brand-mint/20 disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none transition-all"
+                        className="inline-flex items-center gap-1.5 rounded-lg bg-brand-mint px-4 py-2 text-xs font-bold text-brand-light transition-colors hover:bg-brand-mint/90 disabled:cursor-not-allowed disabled:opacity-50"
                     >
                         <Save size={13} />
                         {isSaving ? 'Enregistrement...' : 'Enregistrer les modifications'}
@@ -212,7 +213,7 @@ export default function SpoGrid({
 
                             return (
                                 <tr key={spo.id} className="group hover:bg-brand-light transition-colors">
-                                    <td className="px-4 py-4 sticky left-0 bg-white z-10 shadow-md group-hover:bg-brand-light transition-colors">
+                                    <td className="px-4 py-4 sticky left-0 bg-brand-light z-10 shadow-md group-hover:bg-brand-light transition-colors">
                                         <div className="flex flex-col gap-1.5">
                                             <div className="flex items-center gap-2">
                                                 <span className="font-bold text-brand-navy text-sm leading-none">{spo.name}</span>
@@ -277,12 +278,12 @@ export default function SpoGrid({
                                         );
                                     })}
 
-                                    <td className="px-4 py-4 border-l border-brand-slate/20 text-center sticky right-0 bg-white group-hover:bg-brand-light transition-colors shadow-md">
+                                    <td className="px-4 py-4 border-l border-brand-slate/20 text-center sticky right-0 bg-brand-light group-hover:bg-brand-light transition-colors shadow-md">
                                         <div className="flex items-center justify-center gap-1 opacity-60 group-hover:opacity-100 transition-opacity">
-                                            <button onClick={() => onEdit(spo)} className="p-1 px-1.5 rounded-xl text-brand-slate hover:text-brand-mint hover:bg-brand-mint/10 transition-colors cursor-pointer" title={t('auto.features.contracts.details.components.spogrid.title.be88e85a', { defaultValue: "Modifier la coquille" })}>
+                                            <button type="button" onClick={() => onEdit(spo)} className="p-1 px-1.5 rounded-xl text-brand-slate hover:text-brand-mint hover:bg-brand-mint/10 transition-colors cursor-pointer" title={t('auto.features.contracts.details.components.spogrid.title.be88e85a', { defaultValue: "Modifier la coquille" })} aria-label={t('auto.features.contracts.details.components.spogrid.title.be88e85a', { defaultValue: "Edit template" })}>
                                                 <Pencil size={12} />
                                             </button>
-                                            <button onClick={() => onDelete(spo)} disabled={isDeleting} className="p-1 px-1.5 rounded-xl text-brand-slate hover:text-brand-slate hover:bg-brand-slate/10 transition-colors cursor-pointer disabled:opacity-50" title={t('auto.features.contracts.details.components.spogrid.title.32f0bf50', { defaultValue: "Supprimer l'offre" })}>
+                                            <button type="button" onClick={() => onDelete(spo)} disabled={isDeleting} className="p-1 px-1.5 rounded-xl text-brand-slate hover:text-brand-slate hover:bg-brand-slate/10 transition-colors cursor-pointer disabled:opacity-50" title={t('auto.features.contracts.details.components.spogrid.title.32f0bf50', { defaultValue: "Supprimer l'offre" })} aria-label={t('auto.features.contracts.details.components.spogrid.title.32f0bf50', { defaultValue: "Remove offer" })}>
                                                 <Trash2 size={12} />
                                             </button>
                                         </div>
@@ -315,4 +316,3 @@ export default function SpoGrid({
         </div>
     );
 }
-

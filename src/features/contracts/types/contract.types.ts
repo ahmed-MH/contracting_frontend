@@ -16,6 +16,10 @@ export interface Contract {
         id: number;
         reference?: string;
         companyName: string;
+        representativeName?: string | null;
+        address?: string | null;
+        phone?: string | null;
+        emails?: { label: string; address: string }[];
     }[];
     periods: Period[];
     contractRooms: ContractRoom[];
@@ -49,3 +53,37 @@ export interface Period {
     startDate: string;
     endDate: string;
 }
+
+export interface ActivationValidationIssue {
+    code: string;
+    message: string;
+    details?: unknown;
+}
+
+export interface ActivationDateRange {
+    startDate: string;
+    endDate: string;
+}
+
+export interface ActivationMissingRate {
+    periodId: number;
+    periodName: string;
+    contractRoomId: number;
+    roomName: string;
+    arrangementId: number;
+    arrangementName: string;
+}
+
+export interface ActivationValidationResult {
+    isValid: boolean;
+    errors: ActivationValidationIssue[];
+    warnings: ActivationValidationIssue[];
+    summary: {
+        missingPeriods: boolean;
+        uncoveredDateRanges: ActivationDateRange[];
+        missingRooms: boolean;
+        missingRates: ActivationMissingRate[];
+        invalidTargets: ActivationValidationIssue[];
+    };
+}
+

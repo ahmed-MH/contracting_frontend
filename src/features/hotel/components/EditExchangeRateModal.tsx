@@ -7,6 +7,7 @@ import { useHotel } from '../context/HotelContext';
 import { CURRENCIES } from '../../../constants/currencies';
 import { useTranslation } from 'react-i18next';
 import { createExchangeRateSchema, type ExchangeRateFormInput, type ExchangeRateFormValues } from '../schemas/exchange-rate.schema';
+import ModalPortal from '../../../components/ui/ModalPortal';
 
 interface EditExchangeRateModalProps {
     isOpen: boolean;
@@ -73,8 +74,9 @@ export default function EditExchangeRateModal({
     };
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-            <div className="bg-white dark:bg-brand-navy border border-transparent dark:border-brand-slate/20 rounded-2xl shadow-md w-full max-w-md overflow-hidden flex flex-col max-h-[90vh]">
+        <ModalPortal isOpen={isOpen} onClose={onClose}>
+        <div className="fixed inset-0 z-[1000] flex items-center justify-center bg-brand-navy/55 backdrop-blur-sm p-4">
+            <div className="bg-brand-light dark:bg-brand-navy border border-transparent dark:border-brand-slate/20 rounded-2xl shadow-md w-full max-w-md overflow-hidden flex flex-col max-h-[90vh]">
                 <div className="px-6 py-4 border-b border-brand-slate/15 dark:border-brand-slate/20 flex items-center justify-between">
                     <h2 className="text-xl font-bold text-brand-navy dark:text-brand-light flex items-center gap-2">
                         <Banknote className="text-brand-mint" size={22} />
@@ -158,14 +160,15 @@ export default function EditExchangeRateModal({
                         <button
                             type="submit"
                             disabled={isPending}
-                            className="inline-flex items-center gap-2 px-6 py-2.5 bg-brand-mint text-white text-sm font-bold rounded-xl hover:bg-brand-mint/90 transition-colors shadow-md shadow-brand-mint/20 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed outline-none border-none"
+                            className="inline-flex items-center gap-2 px-6 py-2.5 bg-brand-mint text-brand-light text-sm font-bold rounded-xl hover:bg-brand-mint/90 transition-colors shadow-md shadow-brand-mint/20 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed outline-none border-none"
                         >
-                            {isPending ? <div className="animate-spin rounded-full h-4 w-4 border-2 border-white/20 border-t-white" /> : <Save size={16} />}
+                        {isPending ? <div className="animate-spin rounded-full h-4 w-4 border-2 border-brand-light/20 border-t-brand-light" /> : <Save size={16} />}
                             {t('actions.save', { defaultValue: 'Save' })}
                         </button>
                     </div>
                 </form>
             </div>
         </div>
+        </ModalPortal>
     );
 }

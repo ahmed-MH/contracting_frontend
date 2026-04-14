@@ -12,6 +12,7 @@ import { Baby, Plus } from 'lucide-react';
 import ImportReductionModal from '../../../catalog/reductions/components/ImportReductionModal';
 import EditContractReductionModal from '../modals/EditContractReductionModal';
 import ReductionsGrid from '../components/ReductionsGrid';
+import { ContractSectionEmpty, ContractSectionLoading, ContractSectionShell } from '../components/ContractSection';
 
 export default function ReductionsTab() {
     const { contract } = useOutletContext<ContractOutletContext>();
@@ -38,11 +39,28 @@ export default function ReductionsTab() {
         }
     };
 
+    const importAction = (
+        <button
+            onClick={() => setShowImport(true)}
+            className="inline-flex items-center gap-2 rounded-lg bg-brand-mint px-4 py-2 text-sm font-medium text-brand-light shadow-sm transition-colors hover:bg-brand-mint/90"
+        >
+            <Plus size={16} />
+            {t('pages.contractDetails.reductions.importFromCatalog', { defaultValue: 'Import from Catalog' })}
+        </button>
+    );
+
     if (isLoading) {
         return (
-            <div className="flex items-center justify-center py-12">
-                <div className="animate-spin rounded-full h-8 w-8 border-2 border-brand-mint/30 border-t-transparent" />
-            </div>
+            <ContractSectionShell
+                icon={Baby}
+                title={t('pages.contractDetails.reductions.title', { defaultValue: 'Reductions' })}
+                description={t('pages.contractDetails.reductions.description', {
+                    defaultValue: 'Apply commercial reductions and child pricing rules to this contract.',
+                })}
+                action={importAction}
+            >
+                <ContractSectionLoading label={t('states.loading', { defaultValue: 'Loading...' })} />
+            </ContractSectionShell>
         );
     }
 
@@ -50,46 +68,33 @@ export default function ReductionsTab() {
 
     return (
         <>
-            <div className="flex items-center justify-between mb-6">
-                <div className="flex items-center gap-3">
-                    <Baby size={20} className="text-brand-mint" />
-                    <h2 className="text-base font-semibold text-brand-navy">
-                        {t('pages.contractDetails.reductions.title', { defaultValue: 'Reductions' })}
-                    </h2>
-                    <span className="text-xs text-brand-slate">({items.length})</span>
-                </div>
-                <button
-                    onClick={() => setShowImport(true)}
-                    className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-brand-mint rounded-xl hover:bg-brand-mint transition-colors cursor-pointer"
-                >
-                    <Plus size={16} />
-                    {t('pages.contractDetails.reductions.importFromCatalog', { defaultValue: 'Import from Catalog' })}
-                </button>
-            </div>
-
-            {items.length === 0 && (
-                <div className="rounded-xl bg-brand-light border border-dashed border-brand-slate/20 p-12 text-center">
-                    <Baby size={40} className="mx-auto text-brand-slate mb-3" />
-                    <p className="text-brand-slate text-sm">
-                        {t('pages.contractDetails.reductions.emptyTitle', { defaultValue: 'No reductions in this contract' })}
-                    </p>
-                    <p className="text-brand-slate text-xs mt-1">
-                        {t('pages.contractDetails.reductions.emptySubtitle', { defaultValue: 'Import from the catalog to get started' })}
-                    </p>
-                </div>
-            )}
-
-            {items.length > 0 && (
-                <ReductionsGrid
-                    contractId={contract.id}
-                    reductions={items}
-                    periods={contract.periods ?? []}
-                    onSaved={() => refetch()}
-                    onEdit={setEditingReduction}
-                    onDelete={handleDelete}
-                    isDeleting={deleteMutation.isPending}
-                />
-            )}
+            <ContractSectionShell
+                icon={Baby}
+                title={t('pages.contractDetails.reductions.title', { defaultValue: 'Reductions' })}
+                description={t('pages.contractDetails.reductions.description', {
+                    defaultValue: 'Apply commercial reductions and child pricing rules to this contract.',
+                })}
+                count={items.length}
+                action={importAction}
+            >
+                {items.length === 0 ? (
+                    <ContractSectionEmpty
+                        icon={Baby}
+                        title={t('pages.contractDetails.reductions.emptyTitle', { defaultValue: 'No reductions in this contract' })}
+                        description={t('pages.contractDetails.reductions.emptySubtitle', { defaultValue: 'Import from the catalog to get started' })}
+                    />
+                ) : (
+                    <ReductionsGrid
+                        contractId={contract.id}
+                        reductions={items}
+                        periods={contract.periods ?? []}
+                        onSaved={() => refetch()}
+                        onEdit={setEditingReduction}
+                        onDelete={handleDelete}
+                        isDeleting={deleteMutation.isPending}
+                    />
+                )}
+            </ContractSectionShell>
 
             <ImportReductionModal
                 contractId={contract.id}

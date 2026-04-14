@@ -9,6 +9,7 @@ import type { ContractCancellationRule } from '../../../catalog/cancellation/typ
 import EditContractCancellationModal from '../modals/EditContractCancellationModal';
 import ImportContractCancellationModal from '../modals/ImportContractCancellationModal';
 import CancellationGrid from '../components/CancellationGrid';
+import { ContractSectionAlert, ContractSectionEmpty, ContractSectionLoading, ContractSectionShell } from '../components/ContractSection';
 
 export default function CancellationTab() {
     const { contract } = useOutletContext<ContractOutletContext>();
@@ -35,19 +36,45 @@ export default function CancellationTab() {
         }
     };
 
+    const importAction = (
+        <button
+            onClick={() => setIsImportModalOpen(true)}
+            className="inline-flex items-center gap-2 rounded-lg bg-brand-mint px-4 py-2 text-sm font-medium text-brand-light shadow-sm transition-colors hover:bg-brand-mint/90"
+        >
+            <Plus size={16} />
+            {t('pages.contractDetails.cancellation.importFromCatalog', { defaultValue: 'Import from Catalog' })}
+        </button>
+    );
+
     if (isLoading) {
         return (
-            <div className="flex items-center justify-center py-12">
-                <div className="animate-spin rounded-full h-8 w-8 border-2 border-brand-mint/30 border-t-transparent" />
-            </div>
+            <ContractSectionShell
+                icon={ShieldAlert}
+                title={t('pages.contractDetails.cancellation.title', { defaultValue: 'Cancellation Rules' })}
+                description={t('pages.contractDetails.cancellation.description', {
+                    defaultValue: 'Define cancellation penalties and release conditions for this contract.',
+                })}
+                action={importAction}
+            >
+                <ContractSectionLoading label={t('states.loading', { defaultValue: 'Loading...' })} />
+            </ContractSectionShell>
         );
     }
 
     if (isError) {
         return (
-            <div className="rounded-xl bg-brand-slate/10 border border-brand-slate/30 p-6 text-brand-slate text-sm">
-                {t('pages.contractDetails.cancellation.loadError', { defaultValue: 'Unable to load cancellation rules.' })}
-            </div>
+            <ContractSectionShell
+                icon={ShieldAlert}
+                title={t('pages.contractDetails.cancellation.title', { defaultValue: 'Cancellation Rules' })}
+                description={t('pages.contractDetails.cancellation.description', {
+                    defaultValue: 'Define cancellation penalties and release conditions for this contract.',
+                })}
+                action={importAction}
+            >
+                <ContractSectionAlert>
+                    {t('pages.contractDetails.cancellation.loadError', { defaultValue: 'Unable to load cancellation rules.' })}
+                </ContractSectionAlert>
+            </ContractSectionShell>
         );
     }
 
@@ -55,44 +82,33 @@ export default function CancellationTab() {
 
     return (
         <>
-            <div className="flex items-center justify-between mb-6">
-                <div className="flex items-center gap-3">
-                    <ShieldAlert size={20} className="text-brand-mint" />
-                    <h2 className="text-base font-semibold text-brand-navy">
-                        {t('pages.contractDetails.cancellation.title', { defaultValue: 'Cancellation Rules' })}
-                    </h2>
-                    <span className="text-xs text-brand-slate">({items.length})</span>
-                </div>
-                <button
-                    onClick={() => setIsImportModalOpen(true)}
-                    className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-brand-mint rounded-xl hover:bg-brand-mint transition-colors cursor-pointer"
-                >
-                    <Plus size={16} />
-                    {t('pages.contractDetails.cancellation.importFromCatalog', { defaultValue: 'Import from Catalog' })}
-                </button>
-            </div>
-
-            {items.length === 0 ? (
-                <div className="rounded-xl bg-brand-light border border-dashed border-brand-slate/20 p-12 text-center">
-                    <ShieldAlert size={40} className="mx-auto text-brand-slate mb-3" />
-                    <p className="text-brand-slate text-sm">
-                        {t('pages.contractDetails.cancellation.emptyTitle', { defaultValue: 'No cancellation rules in this contract' })}
-                    </p>
-                    <p className="text-brand-slate text-xs mt-1">
-                        {t('pages.contractDetails.cancellation.emptySubtitle', { defaultValue: 'Import from the catalog to get started' })}
-                    </p>
-                </div>
-            ) : (
-                <CancellationGrid
-                    contractId={contract.id}
-                    rules={items}
-                    periods={contract.periods || []}
-                    onSaved={() => refetch()}
-                    onEdit={(rule) => { setEditingRule(rule); setIsEditModalOpen(true); }}
-                    onDelete={handleDelete}
-                    isDeleting={deleteMutation.isPending}
-                />
-            )}
+            <ContractSectionShell
+                icon={ShieldAlert}
+                title={t('pages.contractDetails.cancellation.title', { defaultValue: 'Cancellation Rules' })}
+                description={t('pages.contractDetails.cancellation.description', {
+                    defaultValue: 'Define cancellation penalties and release conditions for this contract.',
+                })}
+                count={items.length}
+                action={importAction}
+            >
+                {items.length === 0 ? (
+                    <ContractSectionEmpty
+                        icon={ShieldAlert}
+                        title={t('pages.contractDetails.cancellation.emptyTitle', { defaultValue: 'No cancellation rules in this contract' })}
+                        description={t('pages.contractDetails.cancellation.emptySubtitle', { defaultValue: 'Import from the catalog to get started' })}
+                    />
+                ) : (
+                    <CancellationGrid
+                        contractId={contract.id}
+                        rules={items}
+                        periods={contract.periods || []}
+                        onSaved={() => refetch()}
+                        onEdit={(rule) => { setEditingRule(rule); setIsEditModalOpen(true); }}
+                        onDelete={handleDelete}
+                        isDeleting={deleteMutation.isPending}
+                    />
+                )}
+            </ContractSectionShell>
 
             <EditContractCancellationModal
                 isOpen={isEditModalOpen}

@@ -118,7 +118,7 @@ export default function EditContractMonoparentalRuleModal({
     };
 
     const Stepper = ({ value, onChange, min, max }: { value: number; onChange: (v: number) => void; min: number; max?: number }) => (
-        <div className="flex items-center border border-brand-slate/20 rounded-xl overflow-hidden bg-white dark:bg-brand-navy/40 w-full h-10">
+        <div className="flex items-center border border-brand-slate/20 rounded-xl overflow-hidden bg-brand-light dark:bg-brand-navy/40 w-full h-10">
             <button
                 type="button"
                 onClick={() => onChange(Math.max(min, value - 1))}
@@ -181,11 +181,11 @@ export default function EditContractMonoparentalRuleModal({
                                     <Stepper value={childCount} onChange={(v) => setValue('childCount', v, { shouldDirty: true })} min={1} />
                                 </div>
                                 <div>
-                                    <label className="block text-xs font-bold text-brand-navy dark:text-brand-light uppercase tracking-wider mb-2">{t('auto.features.contracts.details.modals.editcontractmonoparentalrulemodal.a981a557', { defaultValue: "Âge min." })}</label>
+                            <label className="block text-xs font-bold text-brand-navy dark:text-brand-light uppercase tracking-wider mb-2">{t('auto.features.contracts.details.modals.editcontractmonoparentalrulemodal.a981a557', { defaultValue: "Age min." })}</label>
                                     <Stepper value={minAge} onChange={(v) => setValue('minAge', v, { shouldDirty: true })} min={0} />
                                 </div>
                                 <div>
-                                    <label className="block text-xs font-bold text-brand-navy dark:text-brand-light uppercase tracking-wider mb-2">{t('auto.features.contracts.details.modals.editcontractmonoparentalrulemodal.6828e695', { defaultValue: "Âge max." })}</label>
+                            <label className="block text-xs font-bold text-brand-navy dark:text-brand-light uppercase tracking-wider mb-2">{t('auto.features.contracts.details.modals.editcontractmonoparentalrulemodal.6828e695', { defaultValue: "Age max." })}</label>
                                     <Stepper value={maxAge} onChange={(v) => setValue('maxAge', v, { shouldDirty: true })} min={0} max={17} />
                                 </div>
                             </div>
@@ -197,7 +197,7 @@ export default function EditContractMonoparentalRuleModal({
                             <div className="grid grid-cols-2 gap-6">
                                 <div>
                                     <label className="block text-xs font-bold text-brand-navy dark:text-brand-light uppercase tracking-wider mb-2">{t('auto.features.contracts.details.modals.editcontractmonoparentalrulemodal.2b9ac690', { defaultValue: "Base adulte" })}</label>
-                                    <div className="flex items-center gap-2 border border-brand-slate/20 bg-white dark:bg-brand-navy/50 px-4 py-2.5 rounded-xl shadow-sm">
+                                    <div className="flex items-center gap-2 border border-brand-slate/20 bg-brand-light dark:bg-brand-navy/50 px-4 py-2.5 rounded-xl shadow-sm">
                                         <User size={16} className="text-brand-slate" />
                                         <select {...register('baseRateType')} className="w-full text-sm font-bold text-brand-navy dark:text-brand-light bg-transparent outline-none cursor-pointer">
                                             <option value="SINGLE">{t('auto.features.contracts.details.modals.editcontractmonoparentalrulemodal.d9b9596d', { defaultValue: "Single" })}</option>
@@ -209,7 +209,7 @@ export default function EditContractMonoparentalRuleModal({
                                     <label className="block text-xs font-bold text-brand-navy dark:text-brand-light uppercase tracking-wider mb-2">{t('auto.features.contracts.details.modals.editcontractmonoparentalrulemodal.67a34da0', { defaultValue: "Majoration enfant (%)" })}</label>
                                     <div className="relative">
                                         <input type="number" {...register('childSurchargePercentage', { valueAsNumber: true, min: 0 })}
-                                        className="w-full px-4 py-2.5 bg-white dark:bg-brand-navy/50 border border-brand-slate/20 rounded-xl focus:ring-2 focus:ring-brand-mint transition-all text-sm font-bold text-brand-navy dark:text-brand-light outline-none"
+                                        className="w-full px-4 py-2.5 bg-brand-light dark:bg-brand-navy/50 border border-brand-slate/20 rounded-xl focus:ring-2 focus:ring-brand-mint transition-all text-sm font-bold text-brand-navy dark:text-brand-light outline-none"
                                         placeholder="50" />
                                         <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[10px] font-bold text-brand-slate/50 uppercase">%</span>
                                     </div>
@@ -218,7 +218,7 @@ export default function EditContractMonoparentalRuleModal({
                             <div>
                                 <label className="block text-xs font-bold text-brand-navy dark:text-brand-light uppercase tracking-wider mb-2">{t('auto.features.contracts.details.modals.editcontractmonoparentalrulemodal.dd872604', { defaultValue: "Base de calcul enfant" })}</label>
                                 <select {...register('childSurchargeBase')}
-                                    className="w-full px-4 py-2.5 bg-white dark:bg-brand-navy/50 border border-brand-slate/20 rounded-xl focus:ring-2 focus:ring-brand-mint transition-all text-sm font-bold outline-none cursor-pointer text-brand-navy dark:text-brand-light">
+                                    className="w-full px-4 py-2.5 bg-brand-light dark:bg-brand-navy/50 border border-brand-slate/20 rounded-xl focus:ring-2 focus:ring-brand-mint transition-all text-sm font-bold outline-none cursor-pointer text-brand-navy dark:text-brand-light">
                                     <option value="SINGLE">{t('auto.features.contracts.details.modals.editcontractmonoparentalrulemodal.34dabcf5', { defaultValue: "Chambre Single" })}</option>
                                     <option value="DOUBLE">{t('auto.features.contracts.details.modals.editcontractmonoparentalrulemodal.e1b0ffcd', { defaultValue: "Chambre Double" })}</option>
                                     <option value="HALF_SINGLE">{t('auto.features.contracts.details.modals.editcontractmonoparentalrulemodal.665f705d', { defaultValue: "Demi-Single" })}</option>

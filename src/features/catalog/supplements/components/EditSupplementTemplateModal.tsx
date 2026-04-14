@@ -99,10 +99,10 @@ export default function EditSupplementTemplateModal({
                 form="supplement-template-form"
                 type="submit"
                 disabled={isPending || !isDirty}
-                className="inline-flex items-center gap-2 px-8 py-2.5 bg-brand-mint text-white text-sm font-bold rounded-xl hover:bg-brand-mint/90 transition-all shadow-md active:scale-95 disabled:opacity-50 disabled:grayscale cursor-pointer"
+                className="inline-flex items-center gap-2 px-8 py-2.5 bg-brand-mint text-brand-light text-sm font-bold rounded-xl hover:bg-brand-mint/90 transition-all shadow-md active:scale-95 disabled:opacity-50 disabled:grayscale cursor-pointer"
             >
                 {isPending ? (
-                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    <div className="w-4 h-4 border-2 border-brand-light border-t-transparent rounded-full animate-spin" />
                 ) : (
                     <Save size={16} />
                 )}
@@ -147,18 +147,18 @@ export default function EditSupplementTemplateModal({
                     {(watchSystemCode === 'GALA_DINNER' || watchSystemCode === 'MEAL_PLAN') && (
                         <div className="grid grid-cols-2 gap-4 bg-brand-light dark:bg-brand-slate/10 p-4 rounded-xl border border-brand-slate/15 dark:border-brand-slate/20">
                             <div>
-                                <label className="block text-xs font-bold text-brand-navy dark:text-brand-light uppercase tracking-wider mb-2">{t('auto.features.catalog.supplements.components.editsupplementtemplatemodal.72f7cd38', { defaultValue: "Âge Minimum" })}</label>
+                                <label className="block text-xs font-bold text-brand-navy dark:text-brand-light uppercase tracking-wider mb-2">{t('auto.features.catalog.supplements.components.editsupplementtemplatemodal.72f7cd38', { defaultValue: "Age Minimum" })}</label>
                                 <div className="relative">
                                     <input type="number" {...register('minAge', { valueAsNumber: true, min: 0 })}
-                                        className="w-full px-4 py-2 bg-white dark:bg-brand-navy border border-brand-slate/20 rounded-xl focus:ring-2 focus:ring-brand-mint transition-all text-sm font-bold text-brand-navy dark:text-brand-light" />
+                                        className="w-full px-4 py-2 bg-brand-light dark:bg-brand-navy border border-brand-slate/20 rounded-xl focus:ring-2 focus:ring-brand-mint transition-all text-sm font-bold text-brand-navy dark:text-brand-light" />
                                     <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-bold text-brand-slate uppercase">{t('auto.features.catalog.supplements.components.editsupplementtemplatemodal.70839f7e', { defaultValue: "ans" })}</span>
                                 </div>
                             </div>
                             <div>
-                                <label className="block text-xs font-bold text-brand-navy dark:text-brand-light uppercase tracking-wider mb-2">{t('auto.features.catalog.supplements.components.editsupplementtemplatemodal.8c96febd', { defaultValue: "Âge Maximum" })}</label>
+                                <label className="block text-xs font-bold text-brand-navy dark:text-brand-light uppercase tracking-wider mb-2">{t('auto.features.catalog.supplements.components.editsupplementtemplatemodal.8c96febd', { defaultValue: "Age Maximum" })}</label>
                                 <div className="relative">
                                     <input type="number" {...register('maxAge', { valueAsNumber: true, max: 99 })}
-                                        className="w-full px-4 py-2 bg-white dark:bg-brand-navy border border-brand-slate/20 rounded-xl focus:ring-2 focus:ring-brand-mint transition-all text-sm font-bold text-brand-navy dark:text-brand-light" />
+                                        className="w-full px-4 py-2 bg-brand-light dark:bg-brand-navy border border-brand-slate/20 rounded-xl focus:ring-2 focus:ring-brand-mint transition-all text-sm font-bold text-brand-navy dark:text-brand-light" />
                                     <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-bold text-brand-slate uppercase">{t('auto.features.catalog.supplements.components.editsupplementtemplatemodal.70839f7e', { defaultValue: "ans" })}</span>
                                 </div>
                             </div>

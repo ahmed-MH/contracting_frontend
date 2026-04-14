@@ -62,10 +62,12 @@ const SpoCell = memo(function SpoCell({
             <div className="flex items-center justify-between px-3 h-[68px] group/cell bg-brand-light hover:bg-brand-light transition-colors">
                 <span className="text-[11px] text-brand-slate italic select-none">{t('auto.features.contracts.details.components.spocell.edb8534c', { defaultValue: "Non appliqué" })}</span>
                 <button
+                    type="button"
                     onClick={handleToggle}
+                    aria-label={t('auto.features.contracts.details.components.spocell.enableForPeriod', { defaultValue: 'Enable for this period' })}
                     className="relative w-8 h-4 rounded-full bg-brand-slate/10 hover:bg-brand-mint/10 transition-colors cursor-pointer opacity-0 group-hover/cell:opacity-100 shrink-0"
                 >
-                    <span className="block w-3 h-3 rounded-full bg-white absolute top-0.5 left-0.5 shadow-sm" />
+                    <span className="block w-3 h-3 rounded-full bg-brand-light absolute top-0.5 left-0.5 shadow-sm" />
                 </button>
             </div>
         );
@@ -85,10 +87,12 @@ const SpoCell = memo(function SpoCell({
                     {cell.overrideValue !== '' && <span className="w-1 h-1 rounded-full bg-brand-mint" />}
                 </div>
                 <button
+                    type="button"
                     onClick={handleToggle}
+                    aria-label={t('auto.features.contracts.details.components.spocell.disableForPeriod', { defaultValue: 'Disable for this period' })}
                     className="relative w-8 h-4 rounded-full bg-brand-mint hover:bg-brand-slate/20 transition-colors cursor-pointer opacity-0 group-hover/cell:opacity-100 shrink-0"
                 >
-                    <span className="block w-3 h-3 rounded-full bg-white absolute top-0.5 right-0.5 shadow-sm" />
+                    <span className="block w-3 h-3 rounded-full bg-brand-light absolute top-0.5 right-0.5 shadow-sm" />
                 </button>
             </div>
 
@@ -103,7 +107,7 @@ const SpoCell = memo(function SpoCell({
                     disabled={!canOverride}
                     className={`block w-full px-2 py-1 text-xs rounded-xl border text-right transition-all outline-none
                         ${canOverride ? 'focus:ring-1 focus:ring-brand-mint focus:border-brand-mint/30' : 'cursor-default border-transparent bg-transparent text-brand-slate'}
-                        ${localValue !== '' ? 'border-brand-mint/30 text-brand-mint bg-brand-mint/10 font-semibold' : 'border-brand-slate/20 text-brand-slate bg-white'}
+                        ${localValue !== '' ? 'border-brand-mint/30 text-brand-mint bg-brand-mint/10 font-semibold' : 'border-brand-slate/20 text-brand-slate bg-brand-light'}
                     `}
                 />
                 {canOverride && benefitType === 'PERCENTAGE_DISCOUNT' && (

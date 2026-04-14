@@ -10,6 +10,7 @@ import Modal from '../../../components/ui/Modal';
 import ViewAffiliateContractsModal from '../components/ViewAffiliateContractsModal';
 import { EMAIL_LABELS } from '../../../constants/emailLabels';
 import { createAffiliateSchema, type AffiliateFormInput, type AffiliateFormValues } from '../schemas/affiliate.schema';
+import { GuidedPageHeader } from '../../../components/layout/Workspace';
 
 export default function AffiliatesPage() {
     const { t } = useTranslation('common');
@@ -119,35 +120,43 @@ export default function AffiliatesPage() {
     const isPending = createMutation.isPending || updateMutation.isPending;
 
     return (
-        <div className="p-4 md:p-8">
-            <div className="flex items-center justify-between mb-8">
-                <div>
-                    <h1 className="text-2xl font-bold text-brand-navy flex items-center gap-3">
+        <div className="space-y-6 p-4 md:p-6 animate-in fade-in duration-500">
+            <GuidedPageHeader
+                icon={Users}
+                kicker={t('pages.affiliates.header.kicker', { defaultValue: 'Partners' })}
+                title={t('pages.affiliates.header.title', { defaultValue: 'Affiliates / Tour Operators' })}
+                description={t('pages.affiliates.header.subtitle', { defaultValue: 'Manage commercial partners and tour operator details.' })}
+                actions={(
+                <>
+                <div className="hidden">
+                    <h1 className="flex items-center gap-3 text-3xl font-semibold tracking-tight text-brand-navy dark:text-brand-light">
                         <Users className="text-brand-mint" size={28} />
                         Affiliés / Tour Opérateurs
                     </h1>
-                    <p className="text-sm text-brand-slate mt-1">{t('auto.features.partners.pages.affiliatespage.5698c3e2', { defaultValue: "Gérez vos partenaires commerciaux" })}</p>
+                    <p className="mt-3 max-w-3xl text-sm leading-6 text-brand-slate dark:text-brand-light/75">{t('auto.features.partners.pages.affiliatespage.5698c3e2', { defaultValue: "Gérez vos partenaires commerciaux" })}</p>
                 </div>
                 <button onClick={openCreate}
-                    className="inline-flex items-center gap-2 px-4 py-2.5 bg-brand-mint text-white text-sm font-medium rounded-xl hover:bg-brand-mint/90 transition-colors shadow-sm cursor-pointer">
+                    className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl bg-brand-mint px-4 text-sm font-semibold text-brand-light shadow-md transition hover:-translate-y-0.5 hover:bg-brand-mint cursor-pointer border-none outline-none">
                     <Plus size={16} /> Nouveau Partenaire
                 </button>
-            </div>
+                </>
+                )}
+            />
 
             {isLoading && (
-                <div className="flex items-center justify-center h-48">
+                <div className="premium-surface flex h-48 items-center justify-center">
                     <div className="animate-spin rounded-full h-8 w-8 border-2 border-brand-mint/30 border-t-transparent" />
                 </div>
             )}
 
             {isError && (
-                <div className="rounded-xl bg-brand-slate/10 border border-brand-slate/20 p-6 text-brand-navy text-sm">
+                <div className="premium-surface border-brand-slate/20 p-6 text-sm text-brand-navy dark:text-brand-light">
                     Impossible de charger les affiliés.
                 </div>
             )}
 
             {!isLoading && !isError && affiliates?.length === 0 && (
-                <div className="rounded-xl bg-brand-slate/10 border border-dashed border-brand-slate/25 p-12 text-center">
+                <div className="premium-surface border-dashed border-brand-slate/25 p-12 text-center">
                     <Users size={40} className="mx-auto text-brand-slate/45 mb-3" />
                     <p className="text-brand-slate text-sm">{t('auto.features.partners.pages.affiliatespage.7087748d', { defaultValue: "Aucun partenaire enregistré" })}</p>
                     <p className="text-brand-slate/70 text-xs mt-1">{t('auto.features.partners.pages.affiliatespage.2965e80c', { defaultValue: "Cliquez sur « Nouveau Partenaire » pour commencer" })}</p>
@@ -156,7 +165,7 @@ export default function AffiliatesPage() {
 
             {/* Table — compact columns: Nom, Type, Représentant, Email, Actions */}
             {affiliates && affiliates.length > 0 && (
-                <div className="bg-white dark:bg-brand-navy rounded-xl border border-brand-slate/15 shadow-sm overflow-hidden">
+                <div className="premium-surface overflow-x-auto">
                     <table className="w-full text-sm text-left">
                         <thead>
                             <tr className="bg-brand-light/80 border-b border-brand-slate/15">
@@ -239,7 +248,7 @@ export default function AffiliatesPage() {
                     </button>
 
                     {showArchived && archivedAffiliates && archivedAffiliates.length > 0 && (
-                        <div className="mt-4 bg-brand-light/80 rounded-xl border border-brand-slate/15 overflow-hidden opacity-80">
+                        <div className="premium-surface mt-4 overflow-x-auto opacity-80">
                             <table className="w-full text-sm text-left">
                                 <thead>
                                     <tr className="bg-brand-slate/10 border-b border-brand-slate/15">
@@ -286,7 +295,7 @@ export default function AffiliatesPage() {
                         <div>
                             <label className="block text-sm font-medium text-brand-navy mb-1">{t('auto.features.partners.pages.affiliatespage.efdf284a', { defaultValue: "Type de partenaire" })}</label>
                             <select {...register('affiliateType')}
-                                className="w-full px-3 py-2 border border-brand-slate/25 rounded-xl text-sm focus:ring-2 focus:ring-brand-mint focus:border-brand-mint outline-none bg-white dark:bg-brand-navy">
+                                className="w-full px-3 py-2 border border-brand-slate/25 rounded-xl text-sm focus:ring-2 focus:ring-brand-mint focus:border-brand-mint outline-none bg-brand-light dark:bg-brand-navy">
                                 <option value="TOUR_OPERATOR">{t('auto.features.partners.pages.affiliatespage.109fc4fc', { defaultValue: "Tour Opérateur" })}</option>
                                 <option value="TRAVEL_AGENCY">{t('auto.features.partners.pages.affiliatespage.4b5a3f34', { defaultValue: "Agence de Voyage" })}</option>
                                 <option value="CORPORATE">{t('auto.features.partners.pages.affiliatespage.c3487a68', { defaultValue: "Corporate" })}</option>
@@ -317,7 +326,7 @@ export default function AffiliatesPage() {
                                     <div className="w-1/3">
                                         <select
                                             {...register(`emails.${index}.label` as const)}
-                                            className="w-full px-3 py-2 border border-brand-slate/25 rounded-xl text-sm focus:ring-2 focus:ring-brand-mint focus:border-brand-mint outline-none bg-white dark:bg-brand-navy"
+                                            className="w-full px-3 py-2 border border-brand-slate/25 rounded-xl text-sm focus:ring-2 focus:ring-brand-mint focus:border-brand-mint outline-none bg-brand-light dark:bg-brand-navy"
                                         >
                                             <option value="">{t('auto.features.partners.pages.affiliatespage.09feda17', { defaultValue: "— Type —" })}</option>
                                             {EMAIL_LABELS.map((opt) => (
@@ -329,7 +338,7 @@ export default function AffiliatesPage() {
                                         <input
                                             {...register(`emails.${index}.address` as const)}
                                             placeholder={t('auto.features.partners.pages.affiliatespage.placeholder.2b305725', { defaultValue: "adresse@mail.com" })}
-                                            className="w-full px-3 py-2 border border-brand-slate/25 rounded-xl text-sm focus:ring-2 focus:ring-brand-mint focus:border-brand-mint outline-none bg-white dark:bg-brand-navy"
+                                            className="w-full px-3 py-2 border border-brand-slate/25 rounded-xl text-sm focus:ring-2 focus:ring-brand-mint focus:border-brand-mint outline-none bg-brand-light dark:bg-brand-navy"
                                         />
                                     </div>
                                     <button
@@ -396,7 +405,7 @@ export default function AffiliatesPage() {
                             Annuler
                         </button>
                         <button type="submit" disabled={isPending}
-                            className="px-4 py-2 text-sm font-medium text-white bg-brand-mint rounded-xl hover:bg-brand-mint/90 transition-colors disabled:opacity-50 cursor-pointer">
+                            className="px-4 py-2 text-sm font-medium text-brand-light bg-brand-mint rounded-xl hover:bg-brand-mint/90 transition-colors disabled:opacity-50 cursor-pointer">
                             {isPending ? 'Patientez...' : (editing ? 'Enregistrer' : 'Créer')}
                         </button>
                     </div>
