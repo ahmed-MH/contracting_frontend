@@ -115,13 +115,21 @@ export const adminSections: NavigationSection[] = [
                 matchPrefixes: ['/admin'],
             },
             {
-                label: 'Hotel Portfolio',
-                labelKey: 'common:navigation.admin.overview.portfolio.label',
-                to: '/product/hotel',
+                label: 'Hotel Information',
+                labelKey: 'common:navigation.commercial.product.hotelInformation',
+                to: '/hotel-setup/hotel-information',
                 icon: Hotel,
-                description: 'Property settings and exchange rates.',
+                description: 'Property identity, contacts, and legal details.',
                 descriptionKey: 'common:navigation.admin.overview.portfolio.description',
-                matchPrefixes: ['/product/hotel'],
+                matchPrefixes: ['/hotel-setup/hotel-information'],
+            },
+            {
+                label: 'Exchange Rates',
+                labelKey: 'common:navigation.commercial.product.exchangeRates',
+                to: '/hotel-setup/exchange-rates',
+                icon: CircleDollarSign,
+                description: 'Currency pairs used by previews, exports, and simulations.',
+                matchPrefixes: ['/hotel-setup/exchange-rates'],
             },
         ],
     },
@@ -152,13 +160,13 @@ export const adminSections: NavigationSection[] = [
 
 export const commercialPrimaryTabs: NavigationItem[] = [
     {
-        label: 'Hotel',
-        labelKey: 'common:navigation.commercial.primary.hotels.label',
-        to: '/product/hotel',
+        label: 'Hotel Information',
+        labelKey: 'common:navigation.commercial.product.hotelInformation',
+        to: '/hotel-setup/hotel-information',
         icon: Hotel,
         description: 'Property setup and operating parameters.',
         descriptionKey: 'common:navigation.commercial.primary.hotels.description',
-        matchPrefixes: ['/product/hotel'],
+        matchPrefixes: ['/hotel-setup/hotel-information'],
     },
     {
         label: 'Partners',
@@ -207,7 +215,7 @@ export const commercialPrimaryTabs: NavigationItem[] = [
 ];
 
 export const commercialProductTabs: NavigationItem[] = [
-    { label: 'Hotel', labelKey: 'common:navigation.commercial.product.hotel', to: '/product/hotel', icon: Hotel },
+    { label: 'Hotel Information', labelKey: 'common:navigation.commercial.product.hotelInformation', to: '/hotel-setup/hotel-information', icon: Hotel },
     { label: 'Rooms', labelKey: 'common:navigation.commercial.product.rooms', to: '/product/rooms', icon: BedDouble },
     { label: 'Arrangements', labelKey: 'common:navigation.commercial.product.arrangements', to: '/product/arrangements', icon: UtensilsCrossed },
     { label: 'Supplements', labelKey: 'common:navigation.commercial.product.supplements', to: '/product/supplements', icon: Package },
@@ -223,6 +231,14 @@ export const commercialWorkspaceSections: NavigationSection[] = [
         title: 'Hotel Setup',
         titleKey: 'common:navigation.commercial.workspace.hotelSetup',
         items: [
+            {
+                label: 'Hotel Information',
+                labelKey: 'common:navigation.commercial.product.hotelInformation',
+                to: '/hotel-setup/hotel-information',
+                icon: Hotel,
+                description: 'Property identity, contacts, legal details, and operating metadata.',
+                matchPrefixes: ['/hotel-setup/hotel-information'],
+            },
             {
                 label: 'Rooms',
                 labelKey: 'common:navigation.commercial.product.rooms',
@@ -242,10 +258,10 @@ export const commercialWorkspaceSections: NavigationSection[] = [
             {
                 label: 'Exchange Rates',
                 labelKey: 'common:navigation.commercial.product.exchangeRates',
-                to: '/product/hotel',
+                to: '/hotel-setup/exchange-rates',
                 icon: CircleDollarSign,
-                description: 'Hotel currency and exchange settings.',
-                matchPrefixes: ['/product/hotel'],
+                description: 'Currency pairs used by previews, exports, and simulations.',
+                matchPrefixes: ['/hotel-setup/exchange-rates'],
             },
         ],
     },
@@ -436,7 +452,7 @@ export function isProductRoute(pathname: string): boolean {
 }
 
 export function isCatalogRoute(pathname: string): boolean {
-    return isProductRoute(pathname) && !pathname.startsWith('/product/hotel');
+    return isProductRoute(pathname);
 }
 
 export function isContractRoute(pathname: string): boolean {

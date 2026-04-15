@@ -1,5 +1,5 @@
-import type { ReactNode } from 'react';
-import type { Contract, ContractRoom, Period } from '../types/contract.types';
+import { useMemo, type ReactNode } from 'react';
+import type { Contract, Period } from '../types/contract.types';
 import type { ContractLineData } from '../services/contract.service';
 import type { Hotel } from '../../hotel/types/hotel.types';
 import type { ContractSupplement } from '../../catalog/supplements/types/supplements.types';
@@ -8,6 +8,13 @@ import type { ContractEarlyBooking } from '../../catalog/early-bookings/types/ea
 import type { ContractSpo } from '../../catalog/spos/types/spos.types';
 import type { ContractMonoparentalRule } from '../../catalog/monoparental/types/monoparental.types';
 import type { ContractCancellationRule } from '../../catalog/cancellation/types/cancellation.types';
+import {
+    type ContractPresentationContext,
+    conversionNote,
+    convertContractPreviewData,
+    currencyDecimals,
+    translatedName,
+} from './contractPresentation';
 
 interface AffiliateParty {
     id: number;
@@ -48,10 +55,173 @@ interface PeriodMatrixRow {
 
 const MAX_MATRIX_PERIODS = 7;
 
+const copy = {
+    en: {
+        notSpecified: 'Not specified',
+        asAgreed: 'As agreed',
+        fullStayValidity: 'Full stay validity',
+        until: 'Until',
+        from: 'From',
+        hotelContractingAgreement: 'Hotel contracting agreement',
+        commercialAgreement: 'Commercial Agreement',
+        hotelNameMissing: 'Hotel name not specified',
+        hotelAddressMissing: 'Hotel address not specified',
+        ref: 'Ref',
+        season: 'Season',
+        partner: 'Partner',
+        selectPartner: 'Select partner',
+        currency: 'Currency',
+        stayValidity: 'Stay validity',
+        rateBasis: 'Rate basis',
+        perPersonPerNight: 'Per person per night',
+        parties: 'Contracting Parties',
+        hotelRepresentative: 'Hotel representative',
+        tourOperatorRepresentative: 'Tour operator representative',
+        company: 'Company',
+        representative: 'Representative',
+        email: 'Email',
+        phone: 'Phone',
+        address: 'Address',
+        reference: 'Reference',
+        selectPartnerPreview: 'Select a tour operator partner to preview this contract.',
+        tariff: 'Contractual Tariff',
+        ratesExpressed: 'Rates expressed on',
+        basisIn: 'basis in',
+        baseBoard: 'Base board',
+        baseBoardMissing: 'Not specified',
+        roomType: 'Room type',
+        roomsPeriodsRequired: 'Rooms and periods must be configured before the rate grid can be rendered.',
+        notContracted: 'Not contracted',
+        supplements: 'Supplements',
+        reductions: 'Reductions',
+        monoparental: 'Monoparental',
+        specialOffers: 'Special Offers',
+        earlyBooking: 'Early Booking',
+        cancellation: 'Cancellation',
+        generalConditions: 'General Conditions',
+        paymentTerms: 'Payment Terms',
+        commercialRemarks: 'Commercial Remarks / Additional Conditions',
+        signatures: 'Acceptance and Signatures',
+        signatureStamp: 'Signature and company stamp',
+        forHotel: 'For the hotel',
+        forTourOperator: 'For the tour operator',
+        place: 'Place',
+        date: 'Date',
+        stamp: 'Stamp',
+        noSupplements: 'No supplement configured.',
+        noReductions: 'No reduction configured.',
+        noSpos: 'No special offer configured.',
+        noEarlyBookings: 'No early booking offer configured.',
+        noCancellations: 'No cancellation rule configured.',
+        noMonoparental: 'No monoparental rule configured.',
+        offer: 'Offer',
+        advantage: 'Advantage',
+        bookingWindow: 'Booking window',
+        conditions: 'Conditions',
+        roomScope: 'Room scope',
+        triggerScope: 'Trigger / scope',
+        supplement: 'Supplement',
+        scope: 'Scope',
+        reduction: 'Reduction',
+        pax: 'Pax',
+        rule: 'Rule',
+        occupancyScope: 'Occupancy / scope',
+        cancellationWindow: 'Cancellation window',
+        penalty: 'Penalty',
+        paymentTermsBlock: 'Payment terms',
+        commercialRemarksBlock: 'Commercial remarks',
+        generalConditionsBlock: 'General conditions',
+    },
+    fr: {
+        notSpecified: 'Non renseigné',
+        asAgreed: 'Selon accord',
+        fullStayValidity: 'Toute la période de séjour',
+        until: "Jusqu'au",
+        from: 'Depuis',
+        hotelContractingAgreement: 'Contrat hôtelier commercial',
+        commercialAgreement: 'Contrat commercial',
+        hotelNameMissing: "Nom de l'hôtel non renseigné",
+        hotelAddressMissing: "Adresse de l'hôtel non renseignée",
+        ref: 'Réf',
+        season: 'Saison',
+        partner: 'Partenaire',
+        selectPartner: 'Sélectionner un partenaire',
+        currency: 'Devise',
+        stayValidity: 'Validité séjour',
+        rateBasis: 'Base tarifaire',
+        perPersonPerNight: 'Par personne et par nuit',
+        parties: 'Parties contractantes',
+        hotelRepresentative: "Représentant de l'hôtel",
+        tourOperatorRepresentative: 'Représentant tour-opérateur',
+        company: 'Société',
+        representative: 'Représentant',
+        email: 'Email',
+        phone: 'Téléphone',
+        address: 'Adresse',
+        reference: 'Référence',
+        selectPartnerPreview: 'Sélectionnez un partenaire tour-opérateur pour prévisualiser ce contrat.',
+        tariff: 'Tarif contractuel',
+        ratesExpressed: 'Tarifs exprimés sur la base',
+        basisIn: 'en',
+        baseBoard: 'Arrangement de base',
+        baseBoardMissing: 'Non renseigné',
+        roomType: 'Type de chambre',
+        roomsPeriodsRequired: 'Les chambres et les périodes doivent être configurées avant le rendu de la grille tarifaire.',
+        notContracted: 'Non contracté',
+        supplements: 'Suppléments',
+        reductions: 'Réductions',
+        monoparental: 'Monoparental',
+        specialOffers: 'Offres spéciales',
+        earlyBooking: 'Early booking',
+        cancellation: 'Annulation',
+        generalConditions: 'Conditions générales',
+        paymentTerms: 'Conditions de paiement',
+        commercialRemarks: 'Remarques commerciales / Conditions additionnelles',
+        signatures: 'Acceptation et signatures',
+        signatureStamp: 'Signature et cachet',
+        forHotel: "Pour l'hôtel",
+        forTourOperator: 'Pour le tour-opérateur',
+        place: 'Lieu',
+        date: 'Date',
+        stamp: 'Cachet',
+        noSupplements: 'Aucun supplément configuré.',
+        noReductions: 'Aucune réduction configurée.',
+        noSpos: 'Aucune offre spéciale configurée.',
+        noEarlyBookings: 'Aucune offre early booking configurée.',
+        noCancellations: "Aucune règle d'annulation configurée.",
+        noMonoparental: 'Aucune règle monoparentale configurée.',
+        offer: 'Offre',
+        advantage: 'Avantage',
+        bookingWindow: 'Fenêtre de réservation',
+        conditions: 'Conditions',
+        roomScope: 'Chambres',
+        triggerScope: 'Déclencheur / portée',
+        supplement: 'Supplément',
+        scope: 'Portée',
+        reduction: 'Réduction',
+        pax: 'Pax',
+        rule: 'Règle',
+        occupancyScope: 'Occupation / portée',
+        cancellationWindow: "Fenêtre d'annulation",
+        penalty: 'Pénalité',
+        paymentTermsBlock: 'Conditions de paiement',
+        commercialRemarksBlock: 'Remarques commerciales',
+        generalConditionsBlock: 'Conditions générales',
+    },
+} as const;
+
+type CopyKey = keyof typeof copy.en;
+type PreviewLanguage = keyof typeof copy;
+
+function t(language: PreviewLanguage, key: CopyKey) {
+    return copy[language][key] ?? copy.en[key];
+}
+
 export interface ContractPreviewData {
     contract: Contract;
     hotel: Hotel | null;
     selectedPartner?: AffiliateParty | null;
+    presentation: ContractPresentationContext;
     prices: ContractLineData[];
     supplements: ContractSupplement[];
     reductions: ContractReduction[];
@@ -65,11 +235,11 @@ interface ContractPreviewProps {
     data: ContractPreviewData;
 }
 
-function formatDate(value?: string | Date | null) {
+function formatDate(value?: string | Date | null, language: 'fr' | 'en' = 'en') {
     if (!value) return 'Not specified';
     const date = new Date(value);
     if (Number.isNaN(date.getTime())) return 'Not specified';
-    return new Intl.DateTimeFormat('en-GB', {
+    return new Intl.DateTimeFormat(language === 'fr' ? 'fr-FR' : 'en-GB', {
         day: '2-digit',
         month: 'short',
         year: 'numeric',
@@ -100,9 +270,10 @@ function dateSortValue(value?: string | Date | null) {
 
 function formatMoney(value: number | string | null | undefined, currency: string) {
     const amount = Number(value ?? 0);
+    const decimals = currencyDecimals(currency);
     return `${new Intl.NumberFormat('fr-FR', {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
+        minimumFractionDigits: decimals,
+        maximumFractionDigits: decimals,
     }).format(Number.isFinite(amount) ? amount : 0)} ${currency}`;
 }
 
@@ -151,10 +322,10 @@ function compactScope(parts: (string | null | undefined)[]) {
     return parts.filter((part): part is string => Boolean(part && part.trim())).join(' | ');
 }
 
-function formatPaymentCondition(value?: string | null) {
-    if (!value) return 'Payment terms to be confirmed by the parties.';
-    if (value === 'PREPAYMENT_100') return '100% prepayment';
-    if (value === 'DEPOSIT') return 'Deposit payment';
+function formatPaymentCondition(value?: string | null, language: PreviewLanguage = 'en') {
+    if (!value) return language === 'fr' ? 'Conditions à confirmer par les parties.' : 'Payment terms to be confirmed by the parties.';
+    if (value === 'PREPAYMENT_100') return language === 'fr' ? '100% prépaiement' : '100% prepayment';
+    if (value === 'DEPOSIT') return language === 'fr' ? 'Paiement avec acompte' : 'Deposit payment';
     return labelize(value);
 }
 
@@ -166,7 +337,7 @@ function firstAffiliateEmail(affiliate: AffiliateParty) {
     return affiliate.emails?.[0]?.address ?? 'Not specified';
 }
 
-function buildRatesLookup(lines: ContractLineData[]) {
+function buildRatesLookup(lines: ContractLineData[], baseBoardLabel = 'BASE', language: PreviewLanguage = 'en') {
     const lookup = new Map<string, RateCell[]>();
 
     for (const line of lines) {
@@ -174,7 +345,9 @@ function buildRatesLookup(lines: ContractLineData[]) {
         lookup.set(
             `${line.period.id}_${line.contractRoom.id}`,
             (line.prices ?? []).map((price) => ({
-                arrangement: price.arrangement?.code || price.arrangement?.name || 'Base',
+                arrangement: price.arrangement
+                    ? `${translatedName(price.arrangement, baseBoardLabel, language)}`
+                    : baseBoardLabel,
                 amount: Number(price.amount) || 0,
                 minStay: price.minStay,
                 releaseDays: price.releaseDays,
@@ -183,17 +356,6 @@ function buildRatesLookup(lines: ContractLineData[]) {
     }
 
     return lookup;
-}
-
-function formatTargets(
-    rooms?: { contractRoom?: ContractRoom }[],
-    periods?: { period?: Period }[],
-) {
-    const roomNames = rooms?.map((item) => item.contractRoom?.roomType?.name).filter(Boolean) ?? [];
-    const periodNames = periods?.map((item) => item.period?.name).filter(Boolean) ?? [];
-    const roomText = roomNames.length > 0 ? roomNames.join(', ') : 'All rooms';
-    const periodText = periodNames.length > 0 ? periodNames.join(', ') : 'All periods';
-    return `${roomText} / ${periodText}`;
 }
 
 function normalizePeriodName(name?: string | null) {
@@ -371,8 +533,18 @@ function InfoGrid({ items }: { items: { label: string; value: ReactNode }[] }) {
     );
 }
 
-export function ContractHeader({ contract, hotel, selectedPartner }: { contract: Contract; hotel: Hotel | null; selectedPartner?: AffiliateParty | null }) {
-    const title = contract.name || 'Commercial Agreement';
+export function ContractHeader({
+    contract,
+    hotel,
+    selectedPartner,
+    language,
+}: {
+    contract: Contract;
+    hotel: Hotel | null;
+    selectedPartner?: AffiliateParty | null;
+    language: PreviewLanguage;
+}) {
+    const title = contract.name || t(language, 'commercialAgreement');
 
     return (
         <header className="border-b-2 border-brand-navy pb-5">
@@ -386,76 +558,76 @@ export function ContractHeader({ contract, hotel, selectedPartner }: { contract:
                         )}
                     </div>
                     <div className="min-w-0">
-                        <p className="text-[10px] font-black uppercase tracking-[0.24em] text-brand-mint">Hotel contracting agreement</p>
+                        <p className="text-[10px] font-black uppercase tracking-[0.24em] text-brand-mint">{t(language, 'hotelContractingAgreement')}</p>
                         <h1 className="mt-2 text-2xl font-black uppercase leading-tight tracking-tight text-brand-navy">
                             {title}
                         </h1>
-                        <p className="mt-1 text-[12px] font-semibold text-slate-600">{hotel?.name ?? 'Hotel name not specified'}</p>
-                        <p className="mt-1 max-w-[420px] text-[10px] leading-4 text-slate-500">{hotel?.address ?? 'Hotel address not specified'}</p>
+                        <p className="mt-1 text-[12px] font-semibold text-slate-600">{hotel?.name ?? t(language, 'hotelNameMissing')}</p>
+                        <p className="mt-1 max-w-[420px] text-[10px] leading-4 text-slate-500">{hotel?.address ?? t(language, 'hotelAddressMissing')}</p>
                     </div>
                 </div>
 
                 <div className="w-44 shrink-0 border border-slate-300 text-right">
                     <div className="bg-brand-navy px-3 py-2 text-[10px] font-black uppercase tracking-[0.2em] text-white">
-                        Commercial Agreement
+                        {t(language, 'commercialAgreement')}
                     </div>
                     <div className="space-y-2 px-3 py-3 text-[11px] text-slate-700">
-                        <p><span className="font-bold">Ref:</span> {contract.reference || `CTR-${contract.id}`}</p>
-                        <p><span className="font-bold">Season:</span> {title}</p>
-                        <p><span className="font-bold">Partner:</span> {selectedPartner?.companyName ?? 'Select partner'}</p>
-                        <p><span className="font-bold">Currency:</span> {contract.currency}</p>
+                        <p><span className="font-bold">{t(language, 'ref')}:</span> {contract.reference || `CTR-${contract.id}`}</p>
+                        <p><span className="font-bold">{t(language, 'season')}:</span> {title}</p>
+                        <p><span className="font-bold">{t(language, 'partner')}:</span> {selectedPartner?.companyName ?? t(language, 'selectPartner')}</p>
+                        <p><span className="font-bold">{t(language, 'currency')}:</span> {contract.currency}</p>
                     </div>
                 </div>
             </div>
 
             <div className="mt-5 grid grid-cols-1 border border-slate-300 sm:grid-cols-3">
                 <div className="border-b border-r border-slate-200 px-3 py-2 sm:border-b-0">
-                    <p className="text-[9px] font-black uppercase tracking-[0.16em] text-slate-500">Season</p>
+                    <p className="text-[9px] font-black uppercase tracking-[0.16em] text-slate-500">{t(language, 'season')}</p>
                     <p className="mt-1 text-[12px] font-bold text-brand-navy">{title}</p>
                 </div>
                 <div className="border-b border-r border-slate-200 px-3 py-2 sm:border-b-0">
-                    <p className="text-[9px] font-black uppercase tracking-[0.16em] text-slate-500">Stay validity</p>
+                    <p className="text-[9px] font-black uppercase tracking-[0.16em] text-slate-500">{t(language, 'stayValidity')}</p>
                     <p className="mt-1 text-[12px] font-bold text-brand-navy">{formatDateRange(contract.startDate, contract.endDate)}</p>
                 </div>
                 <div className="px-3 py-2">
-                    <p className="text-[9px] font-black uppercase tracking-[0.16em] text-slate-500">Rate basis</p>
-                    <p className="mt-1 text-[12px] font-bold text-brand-navy">Per person per night</p>
+                    <p className="text-[9px] font-black uppercase tracking-[0.16em] text-slate-500">{t(language, 'rateBasis')}</p>
+                    <p className="mt-1 text-[12px] font-bold text-brand-navy">{t(language, 'perPersonPerNight')}</p>
                 </div>
             </div>
         </header>
     );
 }
 
-export function PartiesSection({ hotel, selectedPartner }: { hotel: Hotel | null; selectedPartner?: AffiliateParty | null }) {
+export function PartiesSection({ hotel, selectedPartner, language }: { hotel: Hotel | null; selectedPartner?: AffiliateParty | null; language: PreviewLanguage }) {
     return (
-        <DocumentSection index="01" title="Contracting Parties">
+        <DocumentSection index="01" title={t(language, 'parties')}>
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <div>
-                    <SubsectionTitle>Hotel representative</SubsectionTitle>
+                    <SubsectionTitle>{t(language, 'hotelRepresentative')}</SubsectionTitle>
                     <InfoGrid
                         items={[
-                            { label: 'Company', value: hotel?.fiscalName || hotel?.name || 'Not specified' },
-                            { label: 'Representative', value: hotel?.legalRepresentative || 'Not specified' },
-                            { label: 'Email', value: firstHotelEmail(hotel) },
-                            { label: 'Phone', value: hotel?.phone || 'Not specified' },
+                            { label: t(language, 'company'), value: hotel?.fiscalName || hotel?.name || t(language, 'notSpecified') },
+                            { label: t(language, 'representative'), value: hotel?.legalRepresentative || t(language, 'notSpecified') },
+                            { label: t(language, 'email'), value: firstHotelEmail(hotel) },
+                            { label: t(language, 'phone'), value: hotel?.phone || t(language, 'notSpecified') },
                         ]}
                     />
                 </div>
                 <div>
-                    <SubsectionTitle>Tour operator representative</SubsectionTitle>
+                    <SubsectionTitle>{t(language, 'tourOperatorRepresentative')}</SubsectionTitle>
                     {selectedPartner ? (
                         <InfoGrid
                             items={[
-                                { label: 'Company', value: selectedPartner.companyName },
-                                { label: 'Address', value: selectedPartner.address || 'Not specified' },
-                                { label: 'Representative', value: selectedPartner.representativeName || 'Not specified' },
-                                { label: 'Email', value: firstAffiliateEmail(selectedPartner) },
-                                { label: 'Phone', value: selectedPartner.phone || 'Not specified' },
-                                { label: 'Reference', value: selectedPartner.reference || `TO-${selectedPartner.id}` },
+                                { label: t(language, 'company'), value: selectedPartner.companyName },
+                                { label: t(language, 'address'), value: selectedPartner.address || t(language, 'notSpecified') },
+                                { label: t(language, 'representative'), value: selectedPartner.representativeName || t(language, 'notSpecified') },
+                                { label: t(language, 'email'), value: firstAffiliateEmail(selectedPartner) },
+                                { label: t(language, 'phone'), value: selectedPartner.phone || t(language, 'notSpecified') },
+                                { label: t(language, 'reference'), value: selectedPartner.reference || `TO-${selectedPartner.id}` },
                             ]}
                         />
                     ) : (
-                        <EmptyState label="Select a tour operator partner to preview this contract." />
+                        <EmptyState label={t(language, 'selectPartnerPreview')} />
                     )}
                 </div>
             </div>
@@ -463,17 +635,17 @@ export function PartiesSection({ hotel, selectedPartner }: { hotel: Hotel | null
     );
 }
 
-export function RatesSection({ contract, prices }: { contract: Contract; prices: ContractLineData[] }) {
+export function RatesSection({ contract, prices, language }: { contract: Contract; prices: ContractLineData[]; language: PreviewLanguage }) {
     const periods = [...(contract.periods ?? [])].sort(
         (a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime(),
     );
     const rooms = contract.contractRooms ?? [];
-    const lookup = buildRatesLookup(prices);
+    const lookup = buildRatesLookup(prices, contract.baseArrangement?.code || contract.baseArrangement?.name || 'BASE', language);
     const rows: PeriodMatrixRow[] = rooms.map((room) => ({
         key: room.id,
         baseCells: [
             <span className="font-black text-brand-navy">
-                {room.roomType?.name ?? 'Room'}
+                {translatedName(room.roomType as unknown as Record<string, unknown>, 'Room', language)}
                 {room.reference && <span className="mt-1 block text-[9px] font-semibold text-slate-500">{room.reference}</span>}
             </span>,
         ],
@@ -499,24 +671,24 @@ export function RatesSection({ contract, prices }: { contract: Contract; prices:
                         ))}
                     </div>
                 ) : (
-                    <span className="font-medium text-slate-400">Not contracted</span>
+                    <span className="font-medium text-slate-400">{t(language, 'notContracted')}</span>
                 ),
             ];
         })),
     }));
 
     return (
-        <DocumentSection index="02" title="Contractual Tariff">
+        <DocumentSection index="02" title={t(language, 'tariff')}>
             <div className="mb-3 flex flex-wrap items-center justify-between gap-3 text-[11px] text-slate-600">
-                <p>Rates are expressed in <strong>{contract.currency}</strong>, per person per night, unless otherwise stated.</p>
-                <p>Base board: <strong>{contract.baseArrangement ? `${contract.baseArrangement.name} (${contract.baseArrangement.code})` : 'Not specified'}</strong></p>
+                <p>{t(language, 'ratesExpressed')} <strong>{contract.baseArrangement ? `${translatedName(contract.baseArrangement, contract.baseArrangement.name, language)} (${contract.baseArrangement.code})` : t(language, 'baseBoard').toLowerCase()}</strong> {t(language, 'basisIn')} <strong>{contract.currency}</strong>.</p>
+                <p>{t(language, 'baseBoard')}: <strong>{contract.baseArrangement ? `${translatedName(contract.baseArrangement, contract.baseArrangement.name, language)} (${contract.baseArrangement.code})` : t(language, 'baseBoardMissing')}</strong></p>
             </div>
 
             {renderPeriodMatrix({
-                baseColumns: ['Room type'],
+                baseColumns: [t(language, 'roomType')],
                 periods,
                 rows: rooms.length > 0 && periods.length > 0 ? rows : [],
-                emptyLabel: 'Rooms and periods must be configured before the rate grid can be rendered.',
+                emptyLabel: t(language, 'roomsPeriodsRequired'),
             })}
         </DocumentSection>
     );
@@ -613,9 +785,9 @@ function PeriodMatrixTable({
     );
 }
 
-function EarlyBookingRules({ contract, offers }: { contract: Contract; offers: ContractEarlyBooking[] }) {
+function EarlyBookingRules({ contract, offers, language }: { contract: Contract; offers: ContractEarlyBooking[]; language: PreviewLanguage }) {
     return renderRuleTable({
-        columns: ['Offer', 'Advantage', 'Booking window', 'Stay validity', 'Conditions', 'Room scope'],
+        columns: [t(language, 'offer'), t(language, 'advantage'), t(language, 'bookingWindow'), t(language, 'stayValidity'), t(language, 'conditions'), t(language, 'roomScope')],
         rows: sortEarlyBookings(offers).map((offer) => [
             cleanEarlyBookingName(offer, contract.currency),
             earlyBookingPeriodValue(offer, null, contract.currency),
@@ -624,11 +796,11 @@ function EarlyBookingRules({ contract, offers }: { contract: Contract; offers: C
             earlyBookingConditions(offer),
             roomScope(offer.applicableContractRooms),
         ]),
-        emptyLabel: 'No early booking offer configured.',
+        emptyLabel: t(language, 'noEarlyBookings'),
     });
 }
 
-function SpoRules({ contract, spos }: { contract: Contract; spos: ContractSpo[] }) {
+function SpoRules({ contract, spos, language }: { contract: Contract; spos: ContractSpo[]; language: PreviewLanguage }) {
     const periods = sortPeriods(contract.periods ?? []);
     const matrixRows: PeriodMatrixRow[] = spos.map((spo) => {
         const applicablePeriods = resolveRulePeriods(periods, spo.applicablePeriods);
@@ -646,19 +818,24 @@ function SpoRules({ contract, spos }: { contract: Contract; spos: ContractSpo[] 
     });
 
     return renderPeriodMatrix({
-        baseColumns: ['Offer', 'Trigger / scope'],
+        baseColumns: [t(language, 'offer'), t(language, 'triggerScope')],
         periods,
         rows: matrixRows,
-        emptyLabel: 'No special offer configured.',
+        emptyLabel: t(language, 'noSpos'),
     });
 }
 
-function SupplementRules({ contract, supplements }: { contract: Contract; supplements: ContractSupplement[] }) {
+function SupplementRules({ contract, supplements, language }: { contract: Contract; supplements: ContractSupplement[]; language: PreviewLanguage }) {
     const periods = sortPeriods(contract.periods ?? []);
     const matrixRows: PeriodMatrixRow[] = supplements.map((supplement) => {
         const applicablePeriods = resolveRulePeriods(periods, supplement.applicablePeriods);
         const name = `${supplement.name}${supplement.isMandatory ? ' (mandatory)' : ''}`;
-        const scope = compactScope([roomScope(supplement.applicableContractRooms), ageRange(supplement.minAge, supplement.maxAge), labelize(supplement.applicationType)]);
+        const scope = compactScope([
+            supplement.systemCode === 'MEAL_PLAN' ? mealPlanTarget(supplement) : null,
+            roomScope(supplement.applicableContractRooms),
+            ageRange(supplement.minAge, supplement.maxAge),
+            labelize(supplement.applicationType),
+        ]);
         return {
             key: supplement.id,
             baseCells: [name, scope],
@@ -671,14 +848,20 @@ function SupplementRules({ contract, supplements }: { contract: Contract; supple
     });
 
     return renderPeriodMatrix({
-        baseColumns: ['Supplement', 'Scope'],
+        baseColumns: [t(language, 'supplement'), t(language, 'scope')],
         periods,
         rows: matrixRows,
-        emptyLabel: 'No supplement configured.',
+        emptyLabel: t(language, 'noSupplements'),
     });
 }
 
-function ReductionRules({ contract, reductions }: { contract: Contract; reductions: ContractReduction[] }) {
+function mealPlanTarget(supplement: ContractSupplement) {
+    const arrangement = supplement.targetArrangement;
+    if (!arrangement) return 'Meal plan supplement';
+    return `Meal plan: ${arrangement.code || arrangement.name}`;
+}
+
+function ReductionRules({ contract, reductions, language }: { contract: Contract; reductions: ContractReduction[]; language: PreviewLanguage }) {
     const periods = sortPeriods(contract.periods ?? []);
     const matrixRows: PeriodMatrixRow[] = reductions.map((reduction) => {
         const applicablePeriods = resolveRulePeriods(periods, reduction.applicablePeriods);
@@ -699,14 +882,14 @@ function ReductionRules({ contract, reductions }: { contract: Contract; reductio
     });
 
     return renderPeriodMatrix({
-        baseColumns: ['Reduction', 'Pax'],
+        baseColumns: [t(language, 'reduction'), t(language, 'pax')],
         periods,
         rows: matrixRows,
-        emptyLabel: 'No reduction configured.',
+        emptyLabel: t(language, 'noReductions'),
     });
 }
 
-function MonoparentalRules({ contract, rules }: { contract: Contract; rules: ContractMonoparentalRule[] }) {
+function MonoparentalRules({ contract, rules, language }: { contract: Contract; rules: ContractMonoparentalRule[]; language: PreviewLanguage }) {
     const periods = sortPeriods(contract.periods ?? []);
     const matrixRows: PeriodMatrixRow[] = rules.map((rule) => {
         const applicablePeriods = resolveRulePeriods(periods, rule.applicablePeriods);
@@ -727,14 +910,14 @@ function MonoparentalRules({ contract, rules }: { contract: Contract; rules: Con
     });
 
     return renderPeriodMatrix({
-        baseColumns: ['Rule', 'Occupancy / scope'],
+        baseColumns: [t(language, 'rule'), t(language, 'occupancyScope')],
         periods,
         rows: matrixRows,
-        emptyLabel: 'No monoparental rule configured.',
+        emptyLabel: t(language, 'noMonoparental'),
     });
 }
 
-function CancellationRules({ contract, cancellations }: { contract: Contract; cancellations: ContractCancellationRule[] }) {
+function CancellationRules({ contract, cancellations, language }: { contract: Contract; cancellations: ContractCancellationRule[]; language: PreviewLanguage }) {
     const periods = sortPeriods(contract.periods ?? []);
     const rows = cancellations.map((rule) => {
         const applicablePeriods = resolveRulePeriods(periods, rule.applicablePeriods);
@@ -756,57 +939,72 @@ function CancellationRules({ contract, cancellations }: { contract: Contract; ca
     });
 
     return renderRuleTable({
-        columns: ['Cancellation window', 'Penalty', 'Conditions', 'Room scope'],
+        columns: [t(language, 'cancellationWindow'), t(language, 'penalty'), t(language, 'conditions'), t(language, 'roomScope')],
         rows,
-        emptyLabel: 'No cancellation rule configured.',
+        emptyLabel: t(language, 'noCancellations'),
     });
 }
 
-function paymentPolicyItems(contract: Contract, hotel: Hotel | null) {
+function paymentPolicyItems(contract: Contract, hotel: Hotel | null, language: PreviewLanguage) {
+    const isFr = language === 'fr';
     return [
-        contract.paymentCondition ? `Payment condition: ${formatPaymentCondition(contract.paymentCondition)}.` : 'Payment terms to be confirmed by the parties.',
-        contract.depositAmount ? `Deposit: ${formatMoney(contract.depositAmount, contract.currency)}.` : null,
-        contract.creditDays ? `Credit facility: ${contract.creditDays} day(s) from invoice date.` : null,
-        contract.paymentMethods?.length ? `Accepted methods: ${contract.paymentMethods.map(labelize).join(', ')}.` : null,
-        hotel?.bankName ? `Bank: ${hotel.bankName}.` : null,
+        contract.paymentCondition
+            ? `${isFr ? 'Condition de paiement' : 'Payment condition'}: ${formatPaymentCondition(contract.paymentCondition, language)}.`
+            : (isFr ? 'Conditions de paiement à confirmer par les parties.' : 'Payment terms to be confirmed by the parties.'),
+        contract.depositAmount ? `${isFr ? 'Acompte' : 'Deposit'}: ${formatMoney(contract.depositAmount, contract.currency)}.` : null,
+        contract.creditDays ? `${isFr ? 'Crédit' : 'Credit facility'}: ${contract.creditDays} ${isFr ? 'jour(s) à compter de la date de facture' : 'day(s) from invoice date'}.` : null,
+        contract.paymentMethods?.length ? `${isFr ? 'Méthodes acceptées' : 'Accepted methods'}: ${contract.paymentMethods.map(labelize).join(', ')}.` : null,
+        hotel?.bankName ? `${isFr ? 'Banque' : 'Bank'}: ${hotel.bankName}.` : null,
         hotel?.ibanCode ? `IBAN: ${hotel.ibanCode}.` : null,
     ].filter(Boolean);
 }
 
-const commercialRemarkItems = [
-    'Rates are confidential and valid only for the tour operator parties listed in this agreement.',
-    'All offers are subject to stop sales, allotment availability, and written hotel confirmation.',
-    'Taxes, city fees, and exceptional government charges may be updated if imposed by local regulation.',
-];
+const commercialRemarkItems = (language: PreviewLanguage) => language === 'fr'
+    ? [
+        'Les tarifs sont confidentiels et valables uniquement pour le partenaire tour-opérateur indiqué dans ce contrat.',
+        'Toutes les offres restent soumises aux stop sales, à la disponibilité des allotements et à la confirmation écrite de l’hôtel.',
+        'Les taxes, frais de séjour et charges gouvernementales exceptionnelles peuvent être mis à jour si la réglementation locale les impose.',
+    ]
+    : [
+        'Rates are confidential and valid only for the tour operator parties listed in this agreement.',
+        'All offers are subject to stop sales, allotment availability, and written hotel confirmation.',
+        'Taxes, city fees, and exceptional government charges may be updated if imposed by local regulation.',
+    ];
 
-const generalConditionItems = [
-    'This commercial agreement applies for the stay validity stated above and replaces previous unsigned tariff communications for the same season.',
-    'Any amendment, special operation, or exception must be confirmed in writing by both parties.',
-    'The tour operator is responsible for respecting release dates, rooming list deadlines, payment deadlines, and cancellation conditions.',
-];
+const generalConditionItems = (language: PreviewLanguage) => language === 'fr'
+    ? [
+        'Ce contrat commercial s’applique à la validité séjour indiquée ci-dessus et remplace les communications tarifaires non signées pour la même saison.',
+        'Tout avenant, opération spéciale ou exception doit être confirmé par écrit par les deux parties.',
+        'Le tour-opérateur est responsable du respect des dates de release, délais de rooming list, échéances de paiement et conditions d’annulation.',
+    ]
+    : [
+        'This commercial agreement applies for the stay validity stated above and replaces previous unsigned tariff communications for the same season.',
+        'Any amendment, special operation, or exception must be confirmed in writing by both parties.',
+        'The tour operator is responsible for respecting release dates, rooming list deadlines, payment deadlines, and cancellation conditions.',
+    ];
 
-export function CommercialRemarksSection({ index }: { index: string }) {
+export function CommercialRemarksSection({ index, language }: { index: string; language: PreviewLanguage }) {
     return (
-        <DocumentSection index={index} title="Commercial Remarks / Additional Conditions">
-            <PolicyBlock title="Commercial remarks" items={commercialRemarkItems} />
+        <DocumentSection index={index} title={t(language, 'commercialRemarks')}>
+            <PolicyBlock title={t(language, 'commercialRemarksBlock')} items={commercialRemarkItems(language)} />
         </DocumentSection>
     );
 }
 
-export function PaymentTermsSection({ index, contract, hotel }: { index: string; contract: Contract; hotel: Hotel | null }) {
-    const paymentItems = paymentPolicyItems(contract, hotel);
+export function PaymentTermsSection({ index, contract, hotel, language }: { index: string; contract: Contract; hotel: Hotel | null; language: PreviewLanguage }) {
+    const paymentItems = paymentPolicyItems(contract, hotel, language);
 
     return (
-        <DocumentSection index={index} title="Payment Terms">
-            <PolicyBlock title="Payment terms" items={paymentItems.length > 0 ? paymentItems : ['Payment terms to be confirmed by the parties.']} />
+        <DocumentSection index={index} title={t(language, 'paymentTerms')}>
+            <PolicyBlock title={t(language, 'paymentTermsBlock')} items={paymentItems.length > 0 ? paymentItems : [language === 'fr' ? 'Conditions de paiement à confirmer par les parties.' : 'Payment terms to be confirmed by the parties.']} />
         </DocumentSection>
     );
 }
 
-export function GeneralConditionsSection({ index }: { index: string }) {
+export function GeneralConditionsSection({ index, language }: { index: string; language: PreviewLanguage }) {
     return (
-        <DocumentSection index={index} title="General Conditions">
-            <PolicyBlock title="General conditions" items={generalConditionItems} />
+        <DocumentSection index={index} title={t(language, 'generalConditions')}>
+            <PolicyBlock title={t(language, 'generalConditionsBlock')} items={generalConditionItems(language)} />
         </DocumentSection>
     );
 }
@@ -822,32 +1020,32 @@ function PolicyBlock({ title, items }: { title: string; items: (string | null)[]
     );
 }
 
-export function SignatureSection({ index = '12', selectedPartner, hotel }: { index?: string; selectedPartner?: AffiliateParty | null; hotel: Hotel | null }) {
+export function SignatureSection({ index = '12', selectedPartner, hotel, language }: { index?: string; selectedPartner?: AffiliateParty | null; hotel: Hotel | null; language: PreviewLanguage }) {
     const affiliateName = selectedPartner?.companyName || 'Tour Operator';
 
     return (
-        <DocumentSection index={index} title="Acceptance and Signatures">
+        <DocumentSection index={index} title={t(language, 'signatures')}>
             <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
-                <SignatureBox title="For the hotel" company={hotel?.name ?? 'Hotel'} representative={hotel?.legalRepresentative || 'Name and title'} />
-                <SignatureBox title="For the tour operator" company={affiliateName} representative={selectedPartner?.representativeName || 'Authorized signatory'} />
+                <SignatureBox title={t(language, 'forHotel')} company={hotel?.name ?? 'Hotel'} representative={hotel?.legalRepresentative || 'Name and title'} stampLabel={t(language, 'signatureStamp')} />
+                <SignatureBox title={t(language, 'forTourOperator')} company={affiliateName} representative={selectedPartner?.representativeName || 'Authorized signatory'} stampLabel={t(language, 'signatureStamp')} />
             </div>
             <div className="mt-4 grid grid-cols-1 gap-4 text-[11px] text-slate-700 md:grid-cols-3">
-                <div className="border-b border-slate-400 pb-2">Place: ____________________</div>
-                <div className="border-b border-slate-400 pb-2">Date: ____ / ____ / ______</div>
-                <div className="border-b border-slate-400 pb-2">Stamp: ___________________</div>
+                <div className="border-b border-slate-400 pb-2">{t(language, 'place')}: ____________________</div>
+                <div className="border-b border-slate-400 pb-2">{t(language, 'date')}: ____ / ____ / ______</div>
+                <div className="border-b border-slate-400 pb-2">{t(language, 'stamp')}: ___________________</div>
             </div>
         </DocumentSection>
     );
 }
 
-function SignatureBox({ title, company, representative }: { title: string; company: string; representative: string }) {
+function SignatureBox({ title, company, representative, stampLabel }: { title: string; company: string; representative: string; stampLabel: string }) {
     return (
         <div className="min-h-36 border border-slate-300 p-4">
             <p className="text-[10px] font-black uppercase tracking-[0.18em] text-brand-navy">{title}</p>
             <p className="mt-2 text-[12px] font-bold text-slate-900">{company}</p>
             <p className="text-[11px] text-slate-600">Representative: {representative}</p>
             <div className="mt-12 border-t border-slate-400 pt-2 text-[10px] uppercase tracking-[0.14em] text-slate-500">
-                Signature and company stamp
+                {stampLabel}
             </div>
         </div>
     );
@@ -882,37 +1080,68 @@ function SimpleTable({ columns, rows }: { columns: string[]; rows: ReactNode[][]
     );
 }
 
-export function ContractPreview({ data }: ContractPreviewProps) {
-    const { contract } = data;
+function FxNote({ presentation }: { presentation: ContractPresentationContext }) {
+    const note = conversionNote(presentation);
+    if (!note) return null;
 
     return (
-        <article id="contract-document" className="contract-a4 mx-auto min-h-[297mm] w-full max-w-[210mm] bg-white px-[14mm] py-[13mm] text-slate-900 shadow-2xl ring-1 ring-slate-200 print:shadow-none print:ring-0">
-            <ContractHeader contract={data.contract} hotel={data.hotel} selectedPartner={data.selectedPartner} />
+        <div className="mt-4 border-l-4 border-brand-mint bg-brand-mint/8 px-3 py-2 text-[10px] font-semibold leading-4 text-slate-700">
+            {note}
+        </div>
+    );
+}
+
+export function ContractPreview({ data }: ContractPreviewProps) {
+    const convertedData = useMemo(() => convertContractPreviewData({
+        contract: data.contract,
+        prices: data.prices,
+        supplements: data.supplements,
+        reductions: data.reductions,
+        earlyBookings: data.earlyBookings,
+        spos: data.spos,
+        cancellations: data.cancellations,
+    }, data.presentation), [
+        data.contract,
+        data.prices,
+        data.supplements,
+        data.reductions,
+        data.earlyBookings,
+        data.spos,
+        data.cancellations,
+        data.presentation,
+    ]);
+    const { contract } = convertedData;
+    const language = data.presentation.language;
+
+    return (
+        <article id="contract-document" className="contract-a4 mx-auto min-h-[297mm] w-full max-w-[210mm] bg-white px-[14mm] py-[13mm] text-slate-900 shadow-xl ring-1 ring-slate-200 print:shadow-none print:ring-0">
+            <ContractHeader contract={contract} hotel={data.hotel} selectedPartner={data.selectedPartner} language={language} />
+            <FxNote presentation={data.presentation} />
             <div className="mt-7 space-y-7">
-                <PartiesSection hotel={data.hotel} selectedPartner={data.selectedPartner} />
-                <RatesSection contract={contract} prices={data.prices} />
-                <DocumentSection index="03" title="Supplements">
-                    <SupplementRules contract={contract} supplements={data.supplements} />
+                <PartiesSection hotel={data.hotel} selectedPartner={data.selectedPartner} language={language} />
+                <RatesSection contract={contract} prices={convertedData.prices} language={language} />
+                <DocumentSection index="03" title={t(language, 'supplements')}>
+                    <SupplementRules contract={contract} supplements={convertedData.supplements} language={language} />
                 </DocumentSection>
-                <DocumentSection index="04" title="Reductions">
-                    <ReductionRules contract={contract} reductions={data.reductions} />
+                <DocumentSection index="04" title={t(language, 'reductions')}>
+                    <ReductionRules contract={contract} reductions={convertedData.reductions} language={language} />
                 </DocumentSection>
-                <DocumentSection index="05" title="Monoparental">
-                    <MonoparentalRules contract={contract} rules={data.monoparentalRules} />
+                <DocumentSection index="05" title={t(language, 'monoparental')}>
+                    <MonoparentalRules contract={contract} rules={data.monoparentalRules} language={language} />
                 </DocumentSection>
-                <DocumentSection index="06" title="Special Offers">
-                    <SpoRules contract={contract} spos={data.spos} />
+                <DocumentSection index="06" title={t(language, 'specialOffers')}>
+                    <SpoRules contract={contract} spos={convertedData.spos} language={language} />
                 </DocumentSection>
-                <DocumentSection index="07" title="Early Booking">
-                    <EarlyBookingRules contract={contract} offers={data.earlyBookings} />
+                <DocumentSection index="07" title={t(language, 'earlyBooking')}>
+                    <EarlyBookingRules contract={contract} offers={convertedData.earlyBookings} language={language} />
                 </DocumentSection>
-                <CommercialRemarksSection index="08" />
-                <PaymentTermsSection index="09" contract={contract} hotel={data.hotel} />
-                <DocumentSection index="10" title="Cancellation">
-                    <CancellationRules contract={contract} cancellations={data.cancellations} />
+                <CommercialRemarksSection index="08" language={language} />
+                <PaymentTermsSection index="09" contract={contract} hotel={data.hotel} language={language} />
+                <DocumentSection index="10" title={t(language, 'cancellation')}>
+                    <CancellationRules contract={contract} cancellations={convertedData.cancellations} language={language} />
                 </DocumentSection>
-                <GeneralConditionsSection index="11" />
-                <SignatureSection index="12" selectedPartner={data.selectedPartner} hotel={data.hotel} />
+                <GeneralConditionsSection index="11" language={language} />
+                <SignatureSection index="12" selectedPartner={data.selectedPartner} hotel={data.hotel} language={language} />
             </div>
         </article>
     );

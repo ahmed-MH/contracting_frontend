@@ -142,13 +142,13 @@ export default function ProformaPreviewPage() {
                                 {currentHotel.address && (
                                     <p className="mt-1 flex items-center justify-end gap-1.5 text-xs text-brand-light/60">
                                         <MapPin size={12} />
-                                        {currentHotel.address}{currentHotel.city ? `, ${currentHotel.city}` : ''}
+                                        {currentHotel.address}
                                     </p>
                                 )}
-                                {currentHotel.email && (
+                                {currentHotel.emails?.[0]?.address && (
                                     <p className="mt-0.5 flex items-center justify-end gap-1.5 text-xs text-brand-light/60">
                                         <Mail size={12} />
-                                        {currentHotel.email}
+                                        {currentHotel.emails[0].address}
                                     </p>
                                 )}
                             </div>

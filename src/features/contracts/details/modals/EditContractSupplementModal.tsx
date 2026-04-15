@@ -5,6 +5,7 @@ import ModalShell from '../../../../components/ui/ModalShell';
 import { useUpdateContractSupplement } from '../../hooks/useContractSupplements';
 import type { ContractSupplement } from '../../../../types';
 import type { ContractRoom } from '../../types/contract.types';
+import type { Arrangement } from '../../../arrangements/types/arrangement.types';
 import { useTranslation } from 'react-i18next';
 import {
     createContractSupplementSchema,
@@ -18,6 +19,7 @@ interface Props {
     isOpen: boolean;
     onClose: () => void;
     contractRooms: ContractRoom[];
+    arrangements: Arrangement[];
 }
 
 export default function EditContractSupplementModal({
@@ -26,6 +28,7 @@ export default function EditContractSupplementModal({
     isOpen,
     onClose,
     contractRooms,
+    arrangements,
 }: Props) {
     const { t } = useTranslation('common');
     const schema = useMemo(() => createContractSupplementSchema(t), [t]);
@@ -46,6 +49,7 @@ export default function EditContractSupplementModal({
             specificDate: supplement.specificDate ?? '',
             minAge: supplement.minAge ?? 0,
             maxAge: supplement.maxAge ?? 99,
+            targetArrangementId: supplement.targetArrangementId ?? supplement.targetArrangement?.id ?? null,
         },
     });
 
@@ -76,6 +80,7 @@ export default function EditContractSupplementModal({
                 specificDate: supplement.specificDate ?? '',
                 minAge: supplement.minAge ?? 0,
                 maxAge: supplement.maxAge ?? 99,
+                targetArrangementId: supplement.targetArrangementId ?? supplement.targetArrangement?.id ?? null,
             });
         }
     }, [supplement, reset]);
@@ -104,6 +109,7 @@ export default function EditContractSupplementModal({
                     specificDate: data.specificDate || null,
                     minAge: data.minAge,
                     maxAge: data.maxAge,
+                    targetArrangementId: data.systemCode === 'MEAL_PLAN' ? data.targetArrangementId : null,
                 },
             },
             { onSuccess: onClose },
@@ -183,6 +189,29 @@ export default function EditContractSupplementModal({
                                             <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-bold text-brand-slate/50 uppercase">{t('auto.features.contracts.details.modals.editcontractsupplementmodal.1a8e8d3a', { defaultValue: "ans" })}</span>
                                         </div>
                                     </div>
+                                </div>
+                            )}
+
+                            {watchSystemCode === 'MEAL_PLAN' && (
+                                <div className="rounded-xl border border-brand-mint/20 bg-brand-mint/5 p-4">
+                                    <label className="block text-xs font-bold text-brand-navy dark:text-brand-light uppercase tracking-wider mb-2">
+                                        Pension cible
+                                    </label>
+                                    <select
+                                        {...register('targetArrangementId')}
+                                        className="w-full px-4 py-2.5 bg-brand-light dark:bg-brand-slate/10 border border-brand-slate/20 rounded-xl focus:ring-2 focus:ring-brand-mint transition-all text-sm font-bold text-brand-navy dark:text-brand-light outline-none"
+                                    >
+                                        <option value="">Choisir une pension</option>
+                                        {arrangements.map((arrangement) => (
+                                            <option key={arrangement.id} value={arrangement.id}>
+                                                {arrangement.code} - {arrangement.name}
+                                            </option>
+                                        ))}
+                                    </select>
+                                    {errors.targetArrangementId && <p className="mt-1.5 text-xs font-bold text-brand-slate">{errors.targetArrangementId.message}</p>}
+                                    <p className="mt-2 text-[11px] font-medium text-brand-slate/70">
+                                        Ce supplement sera applique lorsque cette pension est selectionnee dans la simulation. Les valeurs par periode restent gerees dans la grille Supplements.
+                                    </p>
                                 </div>
                             )}
 

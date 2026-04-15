@@ -8,6 +8,7 @@ import {
     useDeleteContractSupplement,
 } from '../../hooks/useContractSupplements';
 import { contractService } from '../../services/contract.service';
+import { useArrangements } from '../../../arrangements/hooks/useArrangements';
 import { useConfirm } from '../../../../context/ConfirmContext';
 import { Package, Plus } from 'lucide-react';
 import type { ContractSupplement } from '../../../../types';
@@ -29,6 +30,7 @@ export default function SupplementsTab() {
         queryKey: ['contract-lines', contract.id],
         queryFn: () => contractService.getContractPrices(contract.id),
     });
+    const { data: arrangements = [] } = useArrangements();
 
     const isLoading = isLoadingSupplements || isLoadingLines;
 
@@ -120,6 +122,7 @@ export default function SupplementsTab() {
                     isOpen={!!editingSupplement}
                     onClose={() => setEditingSupplement(null)}
                     contractRooms={contract.contractRooms ?? []}
+                    arrangements={arrangements}
                 />
             )}
         </>

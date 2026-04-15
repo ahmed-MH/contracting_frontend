@@ -43,7 +43,7 @@ function buildInitialMatrix(supplements: ContractSupplement[]): Matrix {
     return matrix;
 }
 
-function getTypeLabel(type: string, t: (k: string, o?: object) => string): string {
+function getTypeLabel(type: string, t: any): string {
     const map: Record<string, string> = {
         FIXED: t('pages.contractDetails.grid.types.fixed', { defaultValue: 'Fixed' }),
         PERCENTAGE: t('pages.contractDetails.grid.types.percentage', { defaultValue: '%' }),
@@ -53,7 +53,7 @@ function getTypeLabel(type: string, t: (k: string, o?: object) => string): strin
     return map[type] ?? type;
 }
 
-function getAppLabel(app: string, t: (k: string, o?: object) => string): string {
+function getAppLabel(app: string, t: any): string {
     const map: Record<string, string> = {
         PER_NIGHT_PER_PERSON: t('pages.contractDetails.grid.app.perNightPerson', { defaultValue: 'Per pers./night' }),
         PER_NIGHT_PER_ROOM: t('pages.contractDetails.grid.app.perNightRoom', { defaultValue: 'Per room/night' }),
@@ -419,6 +419,11 @@ export default function SupplementsGrid({
                                                     {supp.isMandatory && (
                                                         <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold bg-brand-slate/10 text-brand-slate leading-none shrink-0 border border-brand-slate/30">
                                                             {t('pages.contractDetails.grid.mandatory', { defaultValue: 'Mandatory' })}
+                                                        </span>
+                                                    )}
+                                                    {supp.systemCode === 'MEAL_PLAN' && supp.targetArrangement && (
+                                                        <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold bg-brand-mint/10 text-brand-mint leading-none shrink-0 border border-brand-mint/30">
+                                                            {supp.targetArrangement.code || supp.targetArrangement.name}
                                                         </span>
                                                     )}
                                                 </div>

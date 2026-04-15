@@ -40,7 +40,7 @@ export default function Sidebar({ collapsed, onToggle, userRole }: SidebarProps)
         {
             title: t('navigation.commercial.sections.product', { defaultValue: 'My Product' }),
             items: [
-                { label: t('navigation.commercial.product.hotel', { defaultValue: 'Hotel' }), to: '/product/hotel', icon: <Hotel size={18} /> },
+                { label: t('navigation.commercial.product.hotelInformation', { defaultValue: 'Hotel Information' }), to: '/hotel-setup/hotel-information', icon: <Hotel size={18} /> },
                 { label: t('navigation.commercial.product.rooms', { defaultValue: 'Rooms' }), to: '/product/rooms', icon: <BedDouble size={18} /> },
                 { label: t('navigation.commercial.product.arrangements', { defaultValue: 'Arrangements' }), to: '/product/arrangements', icon: <UtensilsCrossed size={18} /> },
                 { label: t('navigation.commercial.product.supplements', { defaultValue: 'Supplements' }), to: '/product/supplements', icon: <Package size={18} /> },

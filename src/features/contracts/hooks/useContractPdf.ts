@@ -7,10 +7,22 @@ import { toast } from 'sonner';
  */
 export function useDownloadContractPdf() {
     return useMutation({
-        mutationFn: async ({ contractId, partnerId, filename }: { contractId: number; partnerId: number; filename: string }) => {
+        mutationFn: async ({
+            contractId,
+            partnerId,
+            language,
+            currency,
+            filename,
+        }: {
+            contractId: number;
+            partnerId: number;
+            language: 'fr' | 'en';
+            currency: string;
+            filename: string;
+        }) => {
             const response = await apiClient.get(`/contracts/${contractId}/pdf`, {
                 responseType: 'blob',
-                params: { partnerId },
+                params: { partnerId, language, currency },
             });
             return { blob: response.data as Blob, filename };
         },

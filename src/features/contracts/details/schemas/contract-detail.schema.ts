@@ -188,6 +188,7 @@ export const createContractSupplementSchema = (t: TFunction) =>
             specificDate: optionalDate,
             minAge: nonNegativeNumber(t),
             maxAge: nonNegativeNumber(t),
+            targetArrangementId: optionalIdSchema,
         })
         .superRefine((value, ctx) => {
             if (value.type === 'FORMULA' && !value.formula) {
@@ -203,6 +204,14 @@ export const createContractSupplementSchema = (t: TFunction) =>
                     code: 'custom',
                     path: ['maxAge'],
                     message: t('validation.maxMustBeGreaterThanMin', { defaultValue: 'Maximum must be greater than minimum' }),
+                });
+            }
+
+            if (value.systemCode === 'MEAL_PLAN' && !value.targetArrangementId) {
+                ctx.addIssue({
+                    code: 'custom',
+                    path: ['targetArrangementId'],
+                    message: t('validation.required', { defaultValue: 'Required' }),
                 });
             }
         });

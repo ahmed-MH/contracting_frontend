@@ -32,7 +32,6 @@ import type { LucideIcon } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import EditHotelModal from '../components/EditHotelModal';
-import ExchangeRatesSection from '../components/ExchangeRatesSection';
 import { GuidedPageHeader } from '../../../components/layout/Workspace';
 
 function DetailCard({
@@ -184,8 +183,8 @@ export default function HotelPage() {
             <GuidedPageHeader
                 icon={HotelIcon}
                 kicker={t('pages.hotel.header.eyebrow', { defaultValue: 'Hotel Portfolio' })}
-                title={t('pages.hotel.header.title', { defaultValue: 'Property profile and financial settings.' })}
-                description={t('pages.hotel.header.subtitle', { defaultValue: 'Keep property identity, contacts, banking data, and exchange rates aligned with the commercial workspace.' })}
+                title={t('pages.hotel.header.title', { defaultValue: 'Property profile' })}
+                description={t('pages.hotel.header.subtitle', { defaultValue: 'Keep property identity, contacts, legal details, and operational metadata aligned with the commercial workspace.' })}
                 actions={(
                 <>
                     <div className="hidden">
@@ -193,10 +192,10 @@ export default function HotelPage() {
                             {t('pages.hotel.header.eyebrow', { defaultValue: 'Hotel Portfolio' })}
                         </p>
                         <h1 className="mt-3 text-3xl font-semibold tracking-tight text-brand-navy dark:text-brand-light">
-                            {t('pages.hotel.header.title', { defaultValue: 'Property profile and financial settings.' })}
+                            {t('pages.hotel.header.title', { defaultValue: 'Property profile' })}
                         </h1>
                         <p className="mt-3 max-w-3xl text-sm leading-6 text-brand-slate dark:text-brand-light/75">
-                            {t('pages.hotel.header.subtitle', { defaultValue: 'Keep property identity, contacts, banking data, and exchange rates aligned with the commercial workspace.' })}
+                            {t('pages.hotel.header.subtitle', { defaultValue: 'Keep property identity, contacts, legal details, and operational metadata aligned with the commercial workspace.' })}
                         </p>
                     </div>
 
@@ -391,8 +390,6 @@ export default function HotelPage() {
                             </div>
                         </DetailCard>
                     </section>
-
-                    <ExchangeRatesSection />
                 </div>
             )}
 

@@ -48,7 +48,7 @@ export interface CreateContractRoomPayload {
 export interface PriceEntryDto {
     periodId: number;
     contractRoomId: number;
-    arrangementId: number;
+    arrangementId?: number;
     amount: number;
     minStay: number;
     releaseDays: number;
@@ -58,7 +58,7 @@ export interface PriceEntryDto {
 export interface PriceDto {
     periodId: number;
     contractRoomId: number;
-    arrangementId: number;
+    arrangementId?: number;
     amount: number;
     minStay: number;
     releaseDays: number;
@@ -82,7 +82,7 @@ export interface ContractLineData {
     isContracted: boolean;
     period: { id: number; name: string; startDate: string; endDate: string };
     contractRoom: { id: number; roomType: { id: number; name: string } };
-    prices: { id: number; amount: number; minStay: number; releaseDays: number; arrangement: { id: number; code: string; name: string } }[];
+    prices: { id: number; amount: number; minStay: number; releaseDays: number; arrangement?: { id: number; code: string; name: string } | null }[];
 }
 
 // ─── API Methods ─────────────────────────────────────────────────────

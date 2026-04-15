@@ -2,8 +2,6 @@ import { useState, useCallback, useEffect } from 'react';
 import { Save, RefreshCw, PlusCircle, PlusSquare, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { contractService, type ContractLineData, type CellDto } from '../../../services/contract.service';
-import { arrangementService } from '../../../../arrangements/services/arrangement.service';
-import type { Arrangement } from '../../../../arrangements/types/arrangement.types';
 import type { Contract, Period, ContractRoom } from '../../../types/contract.types';
 import RateCell, { type CellState } from './RateCell';
 import CreatePeriodModal from '../../modals/CreatePeriodModal';
@@ -18,6 +16,7 @@ type GridMap = Record<number, Record<number, CellState>>;
 
 // ── Period-level defaults: periodId -> { minStay, releaseDays }
 type PeriodDefaults = Record<number, { minStay: string; releaseDays: string }>;
+const BASE_PRICE_ID = 0;
 
 function buildInitialGrid(
     rooms: ContractRoom[],
@@ -35,16 +34,13 @@ function buildInitialGrid(
             );
 
             const pricesMap: CellState['prices'] = {};
-            if (line) {
-                for (const p of line.prices) {
-                    // Guard: skip if the arrangement was deleted
-                    if (!p.arrangement?.id) continue;
-                    pricesMap[p.arrangement.id] = {
-                        amount: String(p.amount ?? ''),
-                        minStay: String(p.minStay ?? ''),
-                        releaseDays: String(p.releaseDays ?? ''),
-                    };
-                }
+            const basePrice = line?.prices?.[0];
+            if (basePrice) {
+                pricesMap[BASE_PRICE_ID] = {
+                    amount: String(basePrice.amount ?? ''),
+                    minStay: String(basePrice.minStay ?? ''),
+                    releaseDays: String(basePrice.releaseDays ?? ''),
+                };
             }
 
             grid[room.id][period.id] = {
@@ -64,8 +60,6 @@ interface Props {
 export default function SmartRatesGrid({ contract }: Props) {
     const { t } = useTranslation('common');
     void t;
-    const [arrangements, setArrangements] = useState<Arrangement[]>([]);
-    const [selectedArrangementId, setSelectedArrangementId] = useState<number | null>(null);
     const [grid, setGrid] = useState<GridMap>({});
     const [periodDefaults, setPeriodDefaults] = useState<PeriodDefaults>({});
     const [isLoading, setIsLoading] = useState(true);
@@ -112,20 +106,7 @@ export default function SmartRatesGrid({ contract }: Props) {
     const loadData = useCallback(async () => {
         setIsLoading(true);
         try {
-            const [arrs, lines] = await Promise.all([
-                arrangementService.getArrangements(),
-                contractService.getContractPrices(contract.id),
-            ]);
-
-            let filtered = arrs;
-            if (contract.baseArrangement?.id) {
-                const baseLevel = arrs.find(a => a.id === contract.baseArrangement!.id)?.level ?? 0;
-                filtered = arrs.filter(a => (a.level ?? 0) >= baseLevel);
-            }
-            filtered.sort((a, b) => (a.level ?? 0) - (b.level ?? 0));
-
-            setArrangements(filtered);
-            setSelectedArrangementId(filtered[0]?.id ?? null);
+            const lines = await contractService.getContractPrices(contract.id);
             setGrid(buildInitialGrid(contract.contractRooms, sortedPeriods, lines));
         } catch (error: any) {
             console.error('[SmartRatesGrid] loadData error:', error);
@@ -183,9 +164,10 @@ export default function SmartRatesGrid({ contract }: Props) {
                     const cell = grid[room.id]?.[period.id];
                     if (!cell) continue;
 
-                    const priceEntries = Object.entries(cell.prices)
-                        .filter(([, v]) => v.amount !== '' && !isNaN(Number(v.amount)))
-                        .map(([arrId, v]) => {
+                    const priceEntries = Object.values(cell.prices)
+                        .filter((v) => v.amount !== '' && !isNaN(Number(v.amount)))
+                        .slice(0, 1)
+                        .map((v) => {
                             // Inherit period-level defaults if cell has no explicit override
                             const periodDefault = periodDefaults[period.id] ?? {};
                             const minStayVal = v.minStay !== '' ? Number(v.minStay)
@@ -199,7 +181,7 @@ export default function SmartRatesGrid({ contract }: Props) {
                             return {
                                 periodId: period.id,
                                 contractRoomId: room.id,
-                                arrangementId: Number(arrId),
+                                arrangementId: contract.baseArrangementId ?? undefined,
                                 amount: Number(v.amount),
                                 minStay: minStayVal,
                                 releaseDays: releaseVal,
@@ -325,26 +307,15 @@ export default function SmartRatesGrid({ contract }: Props) {
                         </div>
                     </div>
                 )}
+                <div className="rounded-lg border border-brand-mint/20 bg-brand-mint/10 px-4 py-3 text-sm text-brand-navy dark:text-brand-light">
+                    <p className="font-bold">
+                        Base board: {contract.baseArrangement ? `${contract.baseArrangement.code} - ${contract.baseArrangement.name}` : 'Not specified'}
+                    </p>
+                    <p className="mt-1 text-xs font-medium text-brand-slate dark:text-brand-light/70">
+                        All rates entered here represent {contract.baseArrangement?.name ?? 'base board'} prices.
+                    </p>
+                </div>
 
-                {/* ── Arrangement Tabs ─────────────────────────────────────── */}
-                {arrangements.length > 1 && (
-                    <div className="flex w-max shrink-0 overflow-x-auto rounded-lg bg-brand-slate/10 p-1">
-                        {arrangements.map(arr => (
-                            <button
-                                key={arr.id}
-                                onClick={() => setSelectedArrangementId(arr.id)}
-                                className={`whitespace-nowrap rounded-lg px-4 py-1.5 text-sm font-medium transition-colors ${selectedArrangementId === arr.id
-                                    ? 'bg-brand-light dark:bg-brand-navy text-brand-mint shadow-sm'
-                                    : 'text-brand-slate hover:text-brand-navy'
-                                    }`}
-                            >
-                                {arr.code} - {arr.name}
-                            </button>
-                        ))}
-                    </div>
-                )}
-
-                {/* ── Table ────────────────────────────────────────────────── */}
                 <div className="contract-matrix-surface overflow-x-auto">
                     <table className="w-full text-left whitespace-nowrap border-collapse">
                         <thead className="bg-brand-light/80 border-b border-brand-slate/10">
@@ -421,19 +392,17 @@ export default function SmartRatesGrid({ contract }: Props) {
                                         };
                                         return (
                                             <td key={period.id} className={`p-0 border-r border-brand-slate/10 min-w-[220px] align-top bg-transparent ${!cell.isContracted ? 'bg-brand-light dark:bg-brand-navy' : 'hover:bg-brand-mint/10'}`}>
-                                                {selectedArrangementId && (
-                                                    <RateCell
-                                                        key={`${room.id}-${period.id}-${selectedArrangementId}`}
-                                                        roomId={room.id}
-                                                        periodId={period.id}
-                                                        arrangementId={selectedArrangementId}
-                                                        currency={contract.currency}
-                                                        cell={cell}
-                                                        periodDefaultMinStay={periodDefaults[period.id]?.minStay ?? ''}
-                                                        periodDefaultRelease={periodDefaults[period.id]?.releaseDays ?? ''}
-                                                        onCellUpdate={handleCellUpdate}
-                                                    />
-                                                )}
+                                                <RateCell
+                                                    key={`${room.id}-${period.id}-${BASE_PRICE_ID}`}
+                                                    roomId={room.id}
+                                                    periodId={period.id}
+                                                    arrangementId={BASE_PRICE_ID}
+                                                    currency={contract.currency}
+                                                    cell={cell}
+                                                    periodDefaultMinStay={periodDefaults[period.id]?.minStay ?? ''}
+                                                    periodDefaultRelease={periodDefaults[period.id]?.releaseDays ?? ''}
+                                                    onCellUpdate={handleCellUpdate}
+                                                />
                                             </td>
                                         );
                                     })}

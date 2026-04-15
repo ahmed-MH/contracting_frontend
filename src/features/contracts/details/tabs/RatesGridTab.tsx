@@ -13,7 +13,7 @@ export default function RatesGridTab() {
             icon={Calculator}
             title={t('pages.contractDetails.rates.title', { defaultValue: 'Rates Grid' })}
             description={t('pages.contractDetails.rates.description', {
-                defaultValue: 'Maintain contracted prices by period, room category, and board arrangement.',
+                defaultValue: 'Maintain base-board prices by period and room category.',
             })}
         >
             <SmartRatesGrid contract={contract} />

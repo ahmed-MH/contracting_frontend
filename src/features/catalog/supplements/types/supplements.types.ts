@@ -1,4 +1,5 @@
 import type { ContractRoom, Period } from '../../../contracts/types/contract.types';
+import type { Arrangement } from '../../../arrangements/types/arrangement.types';
 
 // ─── Supplement Enums ────────────────────────────────────────────────
 
@@ -66,6 +67,8 @@ export interface ContractSupplement {
     applicationType: PricingModifierApplicationType;
     minAge: number | null;
     maxAge: number | null;
+    targetArrangementId?: number | null;
+    targetArrangement?: Arrangement | null;
     templateId: number | null;
     /** YYYY-MM-DD: inherited from template on import, auto-assigns the matching period. */
     specificDate: string | null;
@@ -88,6 +91,7 @@ export interface UpdateContractSupplementPayload {
     applicationType?: PricingModifierApplicationType;
     minAge?: number | null;
     maxAge?: number | null;
+    targetArrangementId?: number | null;
     applicableContractRoomIds?: number[];
     /** New: full targeting with seasonal price overrides */
     applicablePeriods?: PeriodOverridePayload[];

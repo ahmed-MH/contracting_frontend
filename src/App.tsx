@@ -18,6 +18,7 @@ const AcceptInvitePage = lazy(() => import('./features/auth/pages/AcceptInvitePa
 const ForgotPasswordPage = lazy(() => import('./features/auth/pages/ForgotPasswordPage'));
 const ResetPasswordPage = lazy(() => import('./features/auth/pages/ResetPasswordPage'));
 const HotelPage = lazy(() => import('./features/hotel/pages/HotelPage'));
+const ExchangeRatesPage = lazy(() => import('./features/exchange-rates/pages/ExchangeRatesPage'));
 const RoomTypesPage = lazy(() => import('./features/rooms/pages/RoomTypesPage'));
 const ArrangementsPage = lazy(() => import('./features/arrangements/pages/ArrangementsPage'));
 const SupplementsCatalogPage = lazy(() => import('./features/catalog/supplements/pages/SupplementsCatalogPage'));
@@ -139,11 +140,21 @@ function App() {
                                 }
                             />
 
+                            <Route path="hotel-setup" element={<Navigate to="/hotel-setup/hotel-information" replace />} />
+                            <Route path="product/hotel" element={<Navigate to="/hotel-setup/hotel-information" replace />} />
                             <Route
-                                path="product/hotel"
+                                path="hotel-setup/hotel-information"
                                 element={
                                     <ProtectedRoute allowedRoles={tenantOperatorRoles}>
                                         <HotelPage />
+                                    </ProtectedRoute>
+                                }
+                            />
+                            <Route
+                                path="hotel-setup/exchange-rates"
+                                element={
+                                    <ProtectedRoute allowedRoles={tenantOperatorRoles}>
+                                        <ExchangeRatesPage />
                                     </ProtectedRoute>
                                 }
                             />

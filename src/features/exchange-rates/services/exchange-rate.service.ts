@@ -7,14 +7,14 @@ import type {
 
 export const exchangeRateService = {
     getExchangeRates: (hotelId: number) =>
-        apiClient.get<ExchangeRate[]>(`/hotel/${hotelId}/exchange-rates`).then((r) => r.data),
+        apiClient.get<ExchangeRate[]>(`/exchange-rates/hotels/${hotelId}`).then((r) => r.data),
 
     createExchangeRate: (hotelId: number, data: CreateExchangeRatePayload) =>
-        apiClient.post<ExchangeRate>(`/hotel/${hotelId}/exchange-rates`, data).then((r) => r.data),
+        apiClient.post<ExchangeRate>(`/exchange-rates/hotels/${hotelId}`, data).then((r) => r.data),
 
     updateExchangeRate: (hotelId: number, id: number, data: UpdateExchangeRatePayload) =>
-        apiClient.put<ExchangeRate>(`/hotel/${hotelId}/exchange-rates/${id}`, data).then((r) => r.data),
+        apiClient.put<ExchangeRate>(`/exchange-rates/hotels/${hotelId}/${id}`, data).then((r) => r.data),
 
     deleteExchangeRate: (hotelId: number, id: number) =>
-        apiClient.delete(`/hotel/${hotelId}/exchange-rates/${id}`).then((r) => r.data),
+        apiClient.delete(`/exchange-rates/hotels/${hotelId}/${id}`).then((r) => r.data),
 };
