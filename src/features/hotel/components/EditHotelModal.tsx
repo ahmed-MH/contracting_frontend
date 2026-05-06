@@ -1,17 +1,19 @@
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
     X, Save, Building2, MapPin, Phone, User, Coins,
     Hash, Plus, Trash2, Mail, Landmark, Star,
-    IdCard, CreditCard, Building, FileText
+    IdCard, CreditCard, Building, FileText, Image, Palette, Globe, Upload, CircleCheck
 } from 'lucide-react';
-import type { Hotel, CreateHotelPayload, HotelEmail } from '../types/hotel.types';
+import type { Hotel, CreateHotelPayload, HotelEmail, HotelBankAccountPayload } from '../types/hotel.types';
 import { EMAIL_LABELS } from '../../../constants/emailLabels';
 import { CURRENCIES } from '../../../constants/currencies';
 import { useTranslation } from 'react-i18next';
 import { createHotelSchema, type HotelFormInput, type HotelFormValues } from '../schemas/hotel.schema';
 import ModalPortal from '../../../components/ui/ModalPortal';
+import HotelLogoPreview from './HotelLogoPreview';
+import HotelLogoUploadModal from './HotelLogoUploadModal';
 
 interface EditHotelModalProps {
     isOpen: boolean;
@@ -27,7 +29,53 @@ const EMPTY_DEFAULTS: FormValues = {
     name: '', address: '', phone: '', fax: '', legalRepresentative: '',
     fiscalName: '', vatNumber: '', bankName: '', accountNumber: '',
     swiftCode: '', ibanCode: '', defaultCurrency: 'TND', logoUrl: '',
-    stars: undefined, emails: [],
+    preferredThemeColor: '',
+    stars: undefined, emails: [], bankAccounts: [],
+};
+
+const legacyPrincipalAccount = (hotel: Hotel): HotelBankAccountPayload[] => {
+    const hasLegacyBankDetails = Boolean(hotel.bankName || hotel.accountNumber || hotel.swiftCode || hotel.ibanCode);
+    if (!hasLegacyBankDetails) return [];
+
+    return [{
+        label: 'Principal account',
+        bankName: hotel.bankName || '',
+        accountNumber: hotel.accountNumber || '',
+        rib: hotel.accountNumber || '',
+        iban: hotel.ibanCode || '',
+        swiftCode: hotel.swiftCode || '',
+        currency: hotel.defaultCurrency || 'TND',
+        country: 'TN',
+        isDefault: true,
+        active: true,
+    }];
+};
+
+const editableBankAccounts = (hotel: Hotel | null): HotelBankAccountPayload[] => {
+    if (!hotel) return [];
+
+    const accounts = hotel.bankAccounts && hotel.bankAccounts.length > 0
+        ? hotel.bankAccounts.map((account) => ({
+            id: account.id,
+            label: account.label,
+            bankName: account.bankName || '',
+            accountNumber: account.accountNumber || '',
+            rib: account.rib || account.accountNumber || '',
+            iban: account.iban || '',
+            swiftCode: account.swiftCode || '',
+            currency: account.currency || hotel.defaultCurrency || 'TND',
+            country: account.country || 'TN',
+            isDefault: account.isDefault,
+            active: account.active,
+        }))
+        : legacyPrincipalAccount(hotel);
+
+    if (accounts.some((account) => account.active !== false && account.isDefault)) {
+        return accounts;
+    }
+
+    const firstActiveIndex = accounts.findIndex((account) => account.active !== false);
+    return accounts.map((account, index) => ({ ...account, isDefault: index === firstActiveIndex }));
 };
 
 function SectionDivider({ label }: { label: string }) {
@@ -58,12 +106,18 @@ const inputCls = (hasIcon = true) =>
 
 export default function EditHotelModal({ isOpen, onClose, editing, onSubmit, isPending }: EditHotelModalProps) {
     const { t } = useTranslation('common');
+    const [isLogoModalOpen, setIsLogoModalOpen] = useState(false);
     const schema = useMemo(() => createHotelSchema(t), [t]);
     const { register, handleSubmit, reset, control, setValue, watch, formState: { errors, isDirty } } = useForm<HotelFormInput, unknown, HotelFormValues>({
         resolver: zodResolver(schema),
         defaultValues: EMPTY_DEFAULTS,
     });
     const { fields: emailFields, append: addEmail, remove: removeEmail } = useFieldArray({ control, name: 'emails' });
+    const {
+        fields: bankAccountFields,
+        append: addBankAccount,
+        remove: removeBankAccount,
+    } = useFieldArray({ control, name: 'bankAccounts', keyName: 'fieldKey' });
 
     useEffect(() => {
         if (editing) {
@@ -74,7 +128,8 @@ export default function EditHotelModal({ isOpen, onClose, editing, onSubmit, isP
                 bankName: editing.bankName || '', accountNumber: editing.accountNumber || '',
                 swiftCode: editing.swiftCode || '', ibanCode: editing.ibanCode || '',
                 defaultCurrency: editing.defaultCurrency, logoUrl: editing.logoUrl || '',
-                stars: editing.stars, emails: editing.emails || [],
+                preferredThemeColor: editing.preferredThemeColor || '',
+                stars: editing.stars, emails: editing.emails || [], bankAccounts: editableBankAccounts(editing),
             });
         } else {
             reset(EMPTY_DEFAULTS);
@@ -84,10 +139,46 @@ export default function EditHotelModal({ isOpen, onClose, editing, onSubmit, isP
     if (!isOpen) return null;
 
     const starsValue = watch('stars');
-    const handleSwiftChange = (e: React.ChangeEvent<HTMLInputElement>) => setValue('swiftCode', e.target.value.toUpperCase().replace(/\s/g, '').slice(0, 11));
+    const logoUrlValue = watch('logoUrl');
+    const bankAccountsValue = watch('bankAccounts') || [];
     const handleVatChange = (e: React.ChangeEvent<HTMLInputElement>) => setValue('vatNumber', e.target.value.toUpperCase().replace(/\s/g, ''));
+    const setPrincipalBankAccount = (index: number) => {
+        bankAccountsValue.forEach((_, accountIndex) => {
+            setValue(`bankAccounts.${accountIndex}.isDefault`, accountIndex === index, { shouldDirty: true, shouldValidate: true });
+            if (accountIndex === index) {
+                setValue(`bankAccounts.${accountIndex}.active`, true, { shouldDirty: true, shouldValidate: true });
+            }
+        });
+    };
+    const appendBlankBankAccount = () => {
+        addBankAccount({
+            label: '',
+            bankName: '',
+            accountNumber: '',
+            rib: '',
+            iban: '',
+            swiftCode: '',
+            currency: watch('defaultCurrency') || 'TND',
+            country: 'TN',
+            isDefault: bankAccountsValue.filter((account) => account.active !== false).length === 0,
+            active: true,
+        });
+    };
+    const submitHotel = (data: HotelFormValues) => {
+        const activeAccounts = (data.bankAccounts || []).filter((account) => account.active !== false);
+        const principal = activeAccounts.find((account) => account.isDefault) ?? activeAccounts[0];
+        onSubmit({
+            ...data,
+            bankName: principal?.bankName,
+            accountNumber: principal?.rib || principal?.accountNumber,
+            swiftCode: principal?.swiftCode,
+            ibanCode: principal?.iban,
+            bankAccounts: data.bankAccounts,
+        });
+    };
 
     return (
+        <>
         <ModalPortal isOpen={isOpen} onClose={onClose}>
         <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4 bg-brand-navy/55 backdrop-blur-sm">
             <div className="bg-brand-light dark:bg-brand-navy border border-transparent dark:border-brand-slate/20 rounded-2xl shadow-md w-full max-w-2xl overflow-hidden flex flex-col max-h-[92vh]">
@@ -112,7 +203,7 @@ export default function EditHotelModal({ isOpen, onClose, editing, onSubmit, isP
                 </div>
 
                 {/* Form */}
-                <form onSubmit={handleSubmit((data) => onSubmit(data))} className="flex flex-col flex-1 min-h-0">
+                <form onSubmit={handleSubmit(submitHotel)} className="flex flex-col flex-1 min-h-0">
                     <div className="overflow-y-auto flex-1 px-6 py-5 space-y-6">
 
                         <SectionDivider label="Informations Générales" />
@@ -168,6 +259,86 @@ export default function EditHotelModal({ isOpen, onClose, editing, onSubmit, isP
                                         ))}
                                     </div>
                                 </div>
+                            </div>
+                        </div>
+
+                        <SectionDivider label="Branding documents" />
+                        <div className="grid grid-cols-2 gap-4">
+                            <div className="space-y-3">
+                                <FieldLabel>{t('pages.hotel.logoUpload.fieldLabel', { defaultValue: 'Document logo' })}</FieldLabel>
+                                <div className="rounded-2xl border border-brand-light/70 bg-brand-light/72 p-4 shadow-sm dark:border-brand-light/10 dark:bg-brand-light/5">
+                                    <div className="flex items-start gap-4">
+                                        <HotelLogoPreview
+                                            logoUrl={logoUrlValue}
+                                            hotelName={watch('name') || editing?.name}
+                                            className="h-24 w-24 shrink-0 rounded-[22px]"
+                                            imageClassName="p-3"
+                                            fallbackMode="icon"
+                                        />
+                                        <div className="min-w-0 flex-1">
+                                            <p className="text-sm font-semibold text-brand-navy dark:text-brand-light">
+                                                {logoUrlValue
+                                                    ? t('pages.hotel.logoUpload.status.ready', { defaultValue: 'Logo configured' })
+                                                    : t('pages.hotel.logoUpload.status.empty', { defaultValue: 'No logo uploaded yet' })}
+                                            </p>
+                                            <p className="mt-1 text-xs text-brand-slate dark:text-brand-light/75">
+                                                {editing
+                                                    ? t('pages.hotel.logoUpload.status.description', { defaultValue: 'Upload a polished logo for hotel-facing previews, contracts, and proformas.' })
+                                                    : t('pages.hotel.logoUpload.status.createFirst', { defaultValue: 'Create the hotel first to unlock local logo uploads. You can still keep a manual URL below.' })}
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <div className="mt-4 flex flex-wrap items-center gap-3">
+                                        <button
+                                            type="button"
+                                            onClick={() => setIsLogoModalOpen(true)}
+                                            disabled={!editing}
+                                            className="inline-flex items-center gap-2 rounded-xl bg-brand-mint px-4 py-2.5 text-sm font-semibold text-brand-light shadow-md transition hover:bg-brand-mint/90 disabled:cursor-not-allowed disabled:opacity-50"
+                                        >
+                                            <Upload size={15} />
+                                            {logoUrlValue
+                                                ? t('pages.hotel.logoUpload.actions.change', { defaultValue: 'Change logo' })
+                                                : t('pages.hotel.logoUpload.actions.upload', { defaultValue: 'Upload logo' })}
+                                        </button>
+                                        <span className="text-xs text-brand-slate dark:text-brand-light/75">
+                                            {t('pages.hotel.logoUpload.actions.helper', { defaultValue: 'PNG and JPG upload natively. WebP is converted automatically to keep PDFs compatible.' })}
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <details className="group rounded-2xl border border-brand-slate/15 bg-brand-light/40 px-4 py-3 dark:border-brand-light/10 dark:bg-brand-light/5">
+                                    <summary className="flex cursor-pointer list-none items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-brand-slate">
+                                        <Globe size={14} />
+                                        {t('pages.hotel.logoUpload.manual.title', { defaultValue: 'Advanced URL fallback' })}
+                                    </summary>
+                                    <div className="mt-3 space-y-2">
+                                        <InputWrapper icon={<Image size={15} />}>
+                                            <input {...register('logoUrl')} className={inputCls()} placeholder="https://.../logo.png" />
+                                        </InputWrapper>
+                                        <p className="text-xs text-brand-slate dark:text-brand-light/75">
+                                            {t('pages.hotel.logoUpload.manual.description', { defaultValue: 'Remote URLs remain supported for existing records and edge cases.' })}
+                                        </p>
+                                    </div>
+                                </details>
+
+                                {errors.logoUrl && <p className="mt-1 text-xs font-bold text-brand-slate">{errors.logoUrl.message}</p>}
+                            </div>
+                            <div>
+                                <FieldLabel>Couleur documents</FieldLabel>
+                                <div className="grid grid-cols-[1fr_44px] gap-2">
+                                    <InputWrapper icon={<Palette size={15} />}>
+                                        <input {...register('preferredThemeColor')} className={`${inputCls()} font-mono uppercase`} placeholder="#0D9488" />
+                                    </InputWrapper>
+                                    <input
+                                        type="color"
+                                        value={watch('preferredThemeColor') || '#0D9488'}
+                                        onChange={(event) => setValue('preferredThemeColor', event.target.value.toUpperCase(), { shouldDirty: true, shouldValidate: true })}
+                                        className="h-[42px] w-11 rounded-xl border border-brand-slate/20 bg-brand-light p-1"
+                                        aria-label="Couleur documents"
+                                    />
+                                </div>
+                                {errors.preferredThemeColor && <p className="mt-1 text-xs font-bold text-brand-slate">{errors.preferredThemeColor.message}</p>}
                             </div>
                         </div>
 
@@ -256,36 +427,121 @@ export default function EditHotelModal({ isOpen, onClose, editing, onSubmit, isP
                                 </div>
                             </div>
 
-                            <div className="grid grid-cols-2 gap-4">
-                                <div>
-                                    <FieldLabel>{t('auto.features.hotel.components.edithotelmodal.43648523', { defaultValue: "Nom de la Banque" })}</FieldLabel>
-                                    <InputWrapper icon={<Building size={15} />}>
-                                        <input {...register('bankName')} className={inputCls()} placeholder={t('auto.features.hotel.components.edithotelmodal.placeholder.a712cdab', { defaultValue: "BIAT, STB, Attijari…" })} />
-                                    </InputWrapper>
+                            <div>
+                                <div className="mb-3 flex items-center justify-between gap-3">
+                                    <div>
+                                        <FieldLabel>{t('pages.hotel.bankAccounts.title', { defaultValue: 'Bank accounts' })}</FieldLabel>
+                                        <p className="text-xs text-brand-slate dark:text-brand-light/70">
+                                            {t('pages.hotel.bankAccounts.helper', { defaultValue: 'Add all usable bank accounts. Exactly one active account must be marked as principal.' })}
+                                        </p>
+                                    </div>
+                                    <button type="button" onClick={appendBlankBankAccount}
+                                        className="inline-flex items-center gap-1.5 rounded-xl border border-brand-mint/25 bg-brand-mint/10 px-3 py-2 text-[11px] font-bold text-brand-mint transition hover:bg-brand-mint hover:text-brand-light">
+                                        <Plus size={13} />
+                                        {t('pages.hotel.bankAccounts.add', { defaultValue: 'Add account' })}
+                                    </button>
                                 </div>
-                                <div>
-                                    <FieldLabel>{t('auto.features.hotel.components.edithotelmodal.55810cf8', { defaultValue: "Numéro de Compte (RIB)" })}</FieldLabel>
-                                    <InputWrapper icon={<Hash size={15} />}>
-                                        <input {...register('accountNumber')} className={`${inputCls()} font-mono`} placeholder="00 000 0000000000000 00" />
-                                    </InputWrapper>
-                                </div>
-                            </div>
 
-                            <div className="grid grid-cols-2 gap-4">
-                                <div>
-                                    <FieldLabel>{t('auto.features.hotel.components.edithotelmodal.5a2b4f15', { defaultValue: "Code SWIFT / BIC" })}</FieldLabel>
-                                    <InputWrapper icon={<CreditCard size={15} />}>
-                                        <input {...register('swiftCode')} onChange={handleSwiftChange}
-                                            className={`${inputCls()} font-mono uppercase tracking-widest`}
-                                            placeholder={t('auto.features.hotel.components.edithotelmodal.placeholder.5bc4d990', { defaultValue: "BIATTNTT" })} maxLength={11} />
-                                    </InputWrapper>
-                                </div>
-                                <div>
-                                    <FieldLabel>{t('auto.features.hotel.components.edithotelmodal.f56c06a7', { defaultValue: "Code IBAN" })}</FieldLabel>
-                                    <InputWrapper icon={<Landmark size={15} />}>
-                                        <input {...register('ibanCode')} className={`${inputCls()} font-mono uppercase`} placeholder={t('auto.features.hotel.components.edithotelmodal.placeholder.150788b3', { defaultValue: "TN59 …" })} />
-                                    </InputWrapper>
-                                </div>
+                                {bankAccountFields.length === 0 ? (
+                                    <button type="button" onClick={appendBlankBankAccount}
+                                        className="flex w-full items-center justify-center gap-2 rounded-2xl border border-dashed border-brand-slate/25 bg-brand-light/45 px-4 py-6 text-sm font-semibold text-brand-slate transition hover:border-brand-mint hover:bg-brand-mint/5 hover:text-brand-mint dark:border-brand-light/10 dark:bg-brand-light/5 dark:text-brand-light/70">
+                                        <Landmark size={17} />
+                                        {t('pages.hotel.bankAccounts.empty', { defaultValue: 'Add the first hotel bank account' })}
+                                    </button>
+                                ) : (
+                                    <div className="space-y-3">
+                                        {bankAccountFields.map((field, index) => {
+                                            const account = bankAccountsValue[index];
+                                            const isPrincipal = Boolean(account?.active !== false && account?.isDefault);
+
+                                            return (
+                                                <div key={field.fieldKey} className="rounded-2xl border border-brand-slate/15 bg-brand-light/55 p-4 dark:border-brand-light/10 dark:bg-brand-light/5">
+                                                    <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
+                                                        <button type="button" onClick={() => setPrincipalBankAccount(index)}
+                                                            className={`inline-flex items-center gap-2 rounded-xl px-3 py-2 text-xs font-bold transition ${isPrincipal
+                                                                ? 'bg-brand-mint text-brand-light'
+                                                                : 'border border-brand-slate/20 bg-brand-light text-brand-slate hover:border-brand-mint hover:text-brand-mint dark:border-brand-light/10 dark:bg-brand-navy/40 dark:text-brand-light/70'}`}>
+                                                            <CircleCheck size={14} />
+                                                            {isPrincipal
+                                                                ? t('pages.hotel.bankAccounts.principal', { defaultValue: 'Principal' })
+                                                                : t('pages.hotel.bankAccounts.makePrincipal', { defaultValue: 'Make principal' })}
+                                                        </button>
+
+                                                        <div className="flex items-center gap-3">
+                                                            <label className="inline-flex items-center gap-2 text-xs font-bold text-brand-slate dark:text-brand-light/70">
+                                                                <input type="checkbox" {...register(`bankAccounts.${index}.active`)}
+                                                                    className="h-4 w-4 rounded border-brand-slate/30 text-brand-mint focus:ring-brand-mint" />
+                                                                {t('pages.hotel.bankAccounts.active', { defaultValue: 'Active' })}
+                                                            </label>
+                                                            <button type="button" onClick={() => removeBankAccount(index)}
+                                                                className="inline-flex h-9 w-9 items-center justify-center rounded-xl text-brand-slate transition hover:bg-brand-slate/10 hover:text-brand-navy dark:hover:bg-brand-light/10 dark:hover:text-brand-light"
+                                                                aria-label={t('pages.hotel.bankAccounts.remove', { defaultValue: 'Remove account' })}>
+                                                                <Trash2 size={15} />
+                                                            </button>
+                                                        </div>
+                                                    </div>
+
+                                                    <div className="grid gap-3 md:grid-cols-2">
+                                                        <div>
+                                                            <FieldLabel>{t('pages.hotel.bankAccounts.label', { defaultValue: 'Account label' })}</FieldLabel>
+                                                            <InputWrapper icon={<Landmark size={15} />}>
+                                                                <input {...register(`bankAccounts.${index}.label`)} className={inputCls()} placeholder={t('pages.hotel.bankAccounts.labelPlaceholder', { defaultValue: 'Main TND account' })} />
+                                                            </InputWrapper>
+                                                        </div>
+                                                        <div>
+                                                            <FieldLabel>{t('auto.features.hotel.components.edithotelmodal.43648523', { defaultValue: 'Bank name' })}</FieldLabel>
+                                                            <InputWrapper icon={<Building size={15} />}>
+                                                                <input {...register(`bankAccounts.${index}.bankName`)} className={inputCls()} placeholder={t('auto.features.hotel.components.edithotelmodal.placeholder.a712cdab', { defaultValue: 'BIAT, STB, Attijari...' })} />
+                                                            </InputWrapper>
+                                                        </div>
+                                                        <div>
+                                                            <FieldLabel>{t('pages.hotel.bankAccounts.rib', { defaultValue: 'RIB / account number' })}</FieldLabel>
+                                                            <InputWrapper icon={<Hash size={15} />}>
+                                                                <input {...register(`bankAccounts.${index}.rib`)} className={`${inputCls()} font-mono`} placeholder="00 000 0000000000000 00" />
+                                                            </InputWrapper>
+                                                        </div>
+                                                        <div>
+                                                            <FieldLabel>{t('pages.hotel.bankAccounts.accountNumber', { defaultValue: 'Account number' })}</FieldLabel>
+                                                            <InputWrapper icon={<Hash size={15} />}>
+                                                                <input {...register(`bankAccounts.${index}.accountNumber`)} className={`${inputCls()} font-mono`} placeholder={t('pages.hotel.bankAccounts.accountPlaceholder', { defaultValue: 'Optional internal number' })} />
+                                                            </InputWrapper>
+                                                        </div>
+                                                        <div>
+                                                            <FieldLabel>{t('auto.features.hotel.components.edithotelmodal.5a2b4f15', { defaultValue: 'SWIFT / BIC' })}</FieldLabel>
+                                                            <InputWrapper icon={<CreditCard size={15} />}>
+                                                                <input {...register(`bankAccounts.${index}.swiftCode`)} className={`${inputCls()} font-mono uppercase tracking-widest`} placeholder={t('auto.features.hotel.components.edithotelmodal.placeholder.5bc4d990', { defaultValue: 'BIATTNTT' })} maxLength={11} />
+                                                            </InputWrapper>
+                                                        </div>
+                                                        <div>
+                                                            <FieldLabel>{t('auto.features.hotel.components.edithotelmodal.f56c06a7', { defaultValue: 'IBAN' })}</FieldLabel>
+                                                            <InputWrapper icon={<Landmark size={15} />}>
+                                                                <input {...register(`bankAccounts.${index}.iban`)} className={`${inputCls()} font-mono uppercase`} placeholder={t('auto.features.hotel.components.edithotelmodal.placeholder.150788b3', { defaultValue: 'TN59 ...' })} />
+                                                            </InputWrapper>
+                                                        </div>
+                                                        <div>
+                                                            <FieldLabel>{t('pages.hotel.bankAccounts.currency', { defaultValue: 'Currency' })}</FieldLabel>
+                                                            <InputWrapper icon={<Coins size={15} />}>
+                                                                <select {...register(`bankAccounts.${index}.currency`)} className={`${inputCls()} font-bold font-mono tracking-widest cursor-pointer appearance-none`}>
+                                                                    <option value="">{t('pages.hotel.bankAccounts.currencyPlaceholder', { defaultValue: 'Currency' })}</option>
+                                                                    {CURRENCIES.map((currency) => (
+                                                                        <option key={currency.code} value={currency.code}>{currency.code} - {currency.name}</option>
+                                                                    ))}
+                                                                </select>
+                                                            </InputWrapper>
+                                                        </div>
+                                                        <div>
+                                                            <FieldLabel>{t('pages.hotel.bankAccounts.country', { defaultValue: 'Country' })}</FieldLabel>
+                                                            <InputWrapper icon={<Globe size={15} />}>
+                                                                <input {...register(`bankAccounts.${index}.country`)} className={`${inputCls()} font-mono uppercase tracking-widest`} placeholder="TN" maxLength={2} />
+                                                            </InputWrapper>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                )}
+                                {errors.bankAccounts && <p className="mt-2 text-xs font-bold text-brand-slate">{errors.bankAccounts.message}</p>}
                             </div>
                         </div>
                     </div>
@@ -309,5 +565,17 @@ export default function EditHotelModal({ isOpen, onClose, editing, onSubmit, isP
             </div>
         </div>
         </ModalPortal>
+        <HotelLogoUploadModal
+            isOpen={isLogoModalOpen}
+            onClose={() => setIsLogoModalOpen(false)}
+            hotelId={editing?.id}
+            hotelName={watch('name') || editing?.name}
+            currentLogoUrl={logoUrlValue}
+            onUploaded={(hotel) => {
+                setValue('logoUrl', hotel.logoUrl || '', { shouldDirty: true, shouldValidate: true });
+                setIsLogoModalOpen(false);
+            }}
+        />
+        </>
     );
 }

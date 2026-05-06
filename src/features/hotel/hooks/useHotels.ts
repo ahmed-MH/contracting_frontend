@@ -52,6 +52,25 @@ export function useUpdateHotel(onSuccess?: () => void) {
     });
 }
 
+/** Upload and persist a hotel logo */
+export function useUploadHotelLogo(onSuccess?: (hotel: Hotel) => void) {
+    const qc = useQueryClient();
+    return useMutation({
+        mutationFn: ({ id, file }: { id: number; file: File }) =>
+            hotelService.uploadHotelLogo(id, file),
+        onSuccess: (hotel) => {
+            const mergeHotel = (existingHotels: Hotel[] | undefined) =>
+                existingHotels?.map((entry) => (entry.id === hotel.id ? hotel : entry));
+
+            qc.setQueriesData<Hotel[]>({ queryKey: [...HOTELS_QUERY_KEY] }, mergeHotel);
+            qc.setQueriesData<Hotel[]>({ queryKey: [...ARCHIVED_KEY] }, mergeHotel);
+            qc.invalidateQueries({ queryKey: [...HOTELS_QUERY_KEY] });
+            toast.success(i18next.t('pages.hotel.logoUpload.toast.success', { defaultValue: 'Hotel logo updated' }));
+            onSuccess?.(hotel);
+        },
+    });
+}
+
 /** Soft-delete (archive) a hotel */
 export function useDeleteHotel() {
     const qc = useQueryClient();

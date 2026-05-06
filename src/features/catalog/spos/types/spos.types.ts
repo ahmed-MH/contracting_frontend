@@ -1,10 +1,12 @@
 import { PricingModifierApplicationType } from '../../supplements/types/supplements.types';
+import type { AuditMetadata } from '../../../../types/audit';
 
 export type SpoConditionType =
     | 'MIN_NIGHTS'
     | 'HONEYMOONER'
     | 'EARLY_BIRD'
     | 'LONG_STAY'
+    | 'AGE'
     | 'NONE';
 
 export type SpoBenefitType =
@@ -15,7 +17,7 @@ export type SpoBenefitType =
     | 'FREE_BOARD_UPGRADE'
     | 'KIDS_GO_FREE';
 
-export interface TemplateSpo {
+export interface TemplateSpo extends AuditMetadata {
     id: number;
     reference?: string;
     name: string;

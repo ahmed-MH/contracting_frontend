@@ -8,7 +8,8 @@
     "logOut": "Log out",
     "confirm": "Confirm",
     "cancel": "Cancel",
-    "save": "Save"
+    "save": "Save",
+    "copy": "Copy"
   },
   "entities": {
     "hotel": "Hotel"
@@ -60,6 +61,27 @@
         "newHotel": "New Hotel",
         "emptyTitle": "No hotel selected",
         "emptySubtitle": "Please choose a property to continue."
+      },
+      "bankAccounts": {
+        "title": "Bank accounts",
+        "helper": "Add all usable bank accounts. Exactly one active account must be marked as principal.",
+        "add": "Add account",
+        "empty": "Add the first hotel bank account",
+        "principal": "Principal",
+        "makePrincipal": "Make principal",
+        "active": "Active",
+        "remove": "Remove account",
+        "label": "Account label",
+        "labelPlaceholder": "Main TND account",
+        "rib": "RIB / account number",
+        "accountNumber": "Account number",
+        "accountPlaceholder": "Optional internal number",
+        "currency": "Currency",
+        "currencyPlaceholder": "Currency",
+        "country": "Country"
+      },
+      "validation": {
+        "onePrincipalBankAccount": "Choose exactly one principal bank account."
       },
       "exchangeRates": {
         "deleteTitle": "Delete this exchange rate?",
@@ -127,6 +149,486 @@
             "emailRequired": "Email is required",
             "hotelRequired": "At least one hotel is required"
           }
+        }
+      }
+    },
+    "integrations": {
+      "common": {
+        "emptyValue": "N/A",
+        "updatedBy": "Updated by"
+      },
+      "tabs": {
+        "overview": "Overview",
+        "users": "API Users",
+        "keys": "API Keys",
+        "endpoints": "Endpoints",
+        "playground": "API Playground",
+        "logs": "Usage Logs",
+        "docs": "Developer Docs"
+      },
+      "status": {
+        "active": "Active",
+        "inactive": "Inactive"
+      },
+      "permissions": {
+        "reservationsQuote": "Reservations quote"
+      },
+      "users": {
+        "header": {
+          "eyebrow": "Integration Access",
+          "title": "Control which external systems can request pricing.",
+          "subtitle": "Create scoped API users, keep hotel access tight, and grant only the permissions needed for reservation quoting.",
+          "badge": "{{count}} API users configured",
+          "cta": "Create API user"
+        },
+        "section": {
+          "eyebrow": "Scoped Identities",
+          "title": "API users and hotel access",
+          "description": "Every integration user stays tied to approved hotels and explicit endpoint permissions."
+        },
+        "table": {
+          "name": "API user",
+          "permissions": "Permissions",
+          "hotels": "Allowed hotels",
+          "status": "Status",
+          "actions": "Actions",
+          "empty": "No integration API users have been configured yet.",
+          "noDescription": "No description provided"
+        },
+        "actions": {
+          "edit": "Edit API user",
+          "activate": "Activate API user",
+          "deactivate": "Deactivate API user"
+        },
+        "details": {
+          "title": "API user details"
+        },
+        "modal": {
+          "createTitle": "Create API user",
+          "editTitle": "Edit API user",
+          "name": "Name",
+          "description": "Description",
+          "status": "Status",
+          "permissions": "Permissions",
+          "allowedHotels": "Allowed hotels"
+        },
+        "toasts": {
+          "created": "API user created successfully",
+          "updated": "API user updated successfully"
+        }
+      },
+      "keys": {
+        "header": {
+          "eyebrow": "Credential Vault",
+          "title": "Issue and revoke one-time API keys.",
+          "subtitle": "Keys are shown once, stored hashed in the backend, and linked to a scoped integration user.",
+          "badge": "{{count}} API keys registered",
+          "cta": "Create API key"
+        },
+        "section": {
+          "eyebrow": "Managed Secrets",
+          "title": "Key inventory",
+          "description": "Track each key prefix, revoke stale access, and monitor last usage without ever exposing the secret again."
+        },
+        "table": {
+          "prefix": "Prefix",
+          "apiUser": "API user",
+          "environment": "Environment",
+          "status": "Status",
+          "expiresAt": "Expires at",
+          "lastUsedAt": "Last used",
+          "allowedIps": "Allowed IPs",
+          "rotation": "Rotation",
+          "actions": "Actions",
+          "empty": "No API keys have been created yet.",
+          "unrestricted": "Unrestricted",
+          "rotatedFrom": "From {{prefix}}",
+          "rotatedTo": "To {{prefix}}"
+        },
+        "environment": {
+          "test": "Test",
+          "production": "Production"
+        },
+        "status": {
+          "active": "Active",
+          "revoked": "Revoked",
+          "expired": "Expired"
+        },
+        "actions": {
+          "revoke": "Revoke API key",
+          "edit": "Edit API key",
+          "rotate": "Rotate API key"
+        },
+        "details": {
+          "title": "API key details"
+        },
+        "confirmRevoke": {
+          "title": "Revoke this API key?",
+          "description": "The connected reservation system will stop authenticating immediately.",
+          "confirmLabel": "Revoke key"
+        },
+        "confirmRotate": {
+          "title": "Rotate this API key?",
+          "description": "A replacement key will be shown once. The current key remains active until you revoke it.",
+          "confirmLabel": "Create replacement"
+        },
+        "modal": {
+          "createTitle": "Create API key",
+          "editTitle": "Edit API key",
+          "apiUser": "API user",
+          "environment": "Environment",
+          "name": "Key name",
+          "expiresAt": "Expiration date",
+          "allowedIps": "IP allowlist",
+          "allowedIpsPlaceholder": "One IP or CIDR per line",
+          "allowedIpsHint": "Leave empty to allow requests from any IP address. IPv4, IPv6, and IPv4 CIDR entries are accepted."
+        },
+        "rawKey": {
+          "title": "Raw API key",
+          "description": "This secret is displayed only once. Store it in the external reservation system before closing this dialog.",
+          "hint": "After this step, only the key prefix remains visible in Pricify.",
+          "copyNow": "Copy now, shown once"
+        },
+        "toasts": {
+          "created": "API key created successfully",
+          "updated": "API key updated successfully",
+          "rotated": "Replacement API key created",
+          "revoked": "API key revoked successfully"
+        }
+      },
+      "endpoints": {
+        "header": {
+          "eyebrow": "Endpoint Registry",
+          "title": "Manage the approved integration surface.",
+          "subtitle": "Only predefined endpoints can be activated. V1 starts with reservation quote access and configurable rate limits.",
+          "badge": "{{count}} registered endpoints"
+        },
+        "section": {
+          "eyebrow": "Predefined Endpoints",
+          "title": "Registry controls",
+          "description": "Endpoint definitions stay fixed while admins can safely enable, disable, and tune usage settings.",
+          "predefinedOnly": "Admins manage the approved endpoint settings only. New public routes are not created from this registry."
+        },
+        "table": {
+          "code": "Code",
+          "method": "Method",
+          "path": "Path",
+          "version": "Version",
+          "status": "Status",
+          "rateLimit": "Rate / min",
+          "rateLimitValue": "{{value}} requests/min",
+          "requiresApiKey": "Requires API key",
+          "requiresApiKeyYes": "Required",
+          "requiresApiKeyNo": "Not required",
+          "predefined": "Predefined route",
+          "updated": "Updated",
+          "actions": "Actions",
+          "empty": "No integration endpoints are available."
+        },
+        "actions": {
+          "edit": "Edit endpoint"
+        },
+        "details": {
+          "title": "Endpoint details"
+        },
+        "modal": {
+          "title": "Edit endpoint settings",
+          "status": "Status",
+          "rateLimit": "Rate limit per minute",
+          "requiresApiKey": "Require API key authentication",
+          "requiresApiKeyLocked": "Reservation quotes always require API key authentication in V1."
+        },
+        "toasts": {
+          "updated": "Endpoint settings updated successfully"
+        }
+      },
+      "logs": {
+        "header": {
+          "eyebrow": "Operational Trace",
+          "title": "Review every quote request sent through the hub.",
+          "subtitle": "Filter by endpoint, API user, hotel, or result to troubleshoot failures and understand usage patterns.",
+          "badge": "{{count}} log rows loaded"
+        },
+        "filters": {
+          "eyebrow": "Filter Set",
+          "title": "Narrow the request stream",
+          "description": "Use lightweight filters to inspect specific consumers, hotels, or failure windows.",
+          "allEndpoints": "All endpoints",
+          "allUsers": "All API users",
+          "allHotels": "All hotels",
+          "allResults": "All results",
+          "successOnly": "Success only",
+          "failureOnly": "Failure only"
+        },
+        "table": {
+          "eyebrow": "Execution Log",
+          "title": "Recent requests",
+          "description": "The latest reservation quote calls, including status, duration, and external request identifiers.",
+          "date": "Date",
+          "endpoint": "Endpoint",
+          "apiUser": "API user",
+          "hotel": "Hotel",
+          "requestId": "Request ID",
+          "reservationCode": "Reservation code",
+          "result": "Result",
+          "success": "Success",
+          "rateLimited": "Rate limited",
+          "failure": "Failure",
+          "statusCode": "HTTP",
+          "duration": "Duration",
+          "errorCode": "Error code",
+          "empty": "No usage logs match the current filters.",
+          "durationValue": "{{value}} ms"
+        },
+        "drawer": {
+          "title": "Usage log details",
+          "sections": {
+            "requestMetadata": "Request metadata",
+            "securityContext": "Security context",
+            "timing": "Timing"
+          },
+          "endpointCode": "Endpoint code",
+          "apiUser": "API user",
+          "apiKeyPrefix": "API key prefix",
+          "environment": "Environment",
+          "hotel": "Hotel",
+          "requestId": "Request ID",
+          "reservationCode": "Reservation code",
+          "statusCode": "Status code",
+          "result": "Result",
+          "errorCode": "Error code",
+          "durationMs": "Duration",
+          "ipAddress": "IP address",
+          "source": "Source",
+          "createdAt": "Created at",
+          "requestJson": "Sanitized request JSON",
+          "responseJson": "Sanitized response JSON",
+          "openInPlayground": "Open in Playground"
+        }
+      },
+      "overview": {
+        "header": {
+          "eyebrow": "Integration Hub",
+          "title": "Operational overview for reservation quotes.",
+          "subtitle": "Monitor V1 quote traffic, endpoint health, alerts, and recent usage without exposing secrets."
+        },
+        "metrics": {
+          "requestsToday": "Requests today",
+          "successRate": "Success rate",
+          "averageDuration": "Average duration",
+          "failedQuotes": "Failed quotes",
+          "rateLimited": "Rate limited",
+          "activeUsers": "Active API users",
+          "activeKeys": "Active API keys",
+          "endpointStatus": "Endpoint status"
+        },
+        "alerts": {
+          "eyebrow": "Alerts",
+          "title": "Integration alerts",
+          "description": "Lightweight operational signals computed from key status, endpoint state, and today's logs.",
+          "empty": "No integration alerts right now."
+        },
+        "health": {
+          "eyebrow": "Endpoint Health",
+          "title": "reservations.quote",
+          "description": "Status, success rate, duration, rate-limit hits, and last call timestamps.",
+          "endpoint": "Endpoint",
+          "status": "Status",
+          "successRate": "Success rate",
+          "averageDuration": "Average duration",
+          "rateLimitHits": "Rate-limit hits",
+          "rateLimit": "Rate limit / min",
+          "lastSuccess": "Last success",
+          "lastFailure": "Last failure"
+        },
+        "errors": {
+          "eyebrow": "Top Errors",
+          "title": "Top error codes today",
+          "description": "Most frequent stable error codes observed today.",
+          "empty": "No errors recorded today."
+        },
+        "lastSuccess": "Last successful quote",
+        "lastFailure": "Last failed quote",
+        "quote": {
+          "eyebrow": "Quote",
+          "requestId": "Request ID",
+          "http": "HTTP",
+          "created": "Created",
+          "error": "Error"
+        },
+        "recent": {
+          "eyebrow": "Recent Usage",
+          "title": "Last 10 usage logs",
+          "description": "The latest quote activity across public API and playground sources."
+        }
+      },
+      "docs": {
+        "copied": "Copied",
+        "header": {
+          "eyebrow": "Developer Docs",
+          "title": "V1 reservation quote API.",
+          "subtitle": "The only public business endpoint currently supported by the Integration Hub."
+        },
+        "endpoint": {
+          "eyebrow": "Endpoint",
+          "title": "POST /api/v1/reservations/quote"
+        },
+        "purpose": {
+          "eyebrow": "Contract",
+          "title": "What this endpoint does"
+        },
+        "notes": {
+          "purpose": "POST /api/v1/reservations/quote returns a contract-aware price quote for a single room-stay request.",
+          "noReservation": "/quote does not create reservations, inventory holds, proformas, or bookings.",
+          "oneRoomStay": "Each request represents one room-stay reservation. Send separate requests for multiple rooms.",
+          "reservationDate": "reservationDate is the booking date used by early-booking and release-day rules.",
+          "currency": "If the contract currency differs from the requested currency, Pricify uses configured exchange rates and returns a warning.",
+          "zeroTax": "Taxes are not configured in V1 quote calculations; taxAmount is 0 and pricing.taxes is empty.",
+          "traceability": "requestId is echoed in success and failure responses and appears in admin usage logs.",
+          "versioning": "/api/v1 is stable. Breaking public contract changes require a future API version.",
+          "rateLimit": "Rate-limit excess returns RATE_LIMIT_EXCEEDED with HTTP 429 and is recorded in usage logs."
+        },
+        "blocks": {
+          "endpoint": "Endpoint URL",
+          "headers": "Required headers",
+          "curl": "curl example",
+          "request": "Request JSON",
+          "success": "Success response JSON",
+          "failure": "Failure response JSON",
+          "versionEyebrow": "V1"
+        },
+        "errors": {
+          "eyebrow": "Stable Errors",
+          "title": "Error code table",
+          "code": "Code",
+          "meaning": "Meaning"
+        },
+        "errorMeanings": {
+          "INVALID_API_KEY": "Missing, malformed, invalid, revoked, or expired API key.",
+          "API_USER_INACTIVE": "The API user linked to the key is inactive.",
+          "PERMISSION_DENIED": "The API user lacks reservation quote permission.",
+          "IP_NOT_ALLOWED": "The request IP does not match the key allowlist.",
+          "RATE_LIMIT_EXCEEDED": "The key exceeded the endpoint rate limit.",
+          "ENDPOINT_DISABLED": "The predefined quote endpoint is inactive.",
+          "INVALID_PAYLOAD": "The request body failed validation.",
+          "HOTEL_NOT_ALLOWED": "The API user or admin context cannot access the hotel.",
+          "HOTEL_NOT_FOUND": "No hotel matched hotelCode.",
+          "PARTNER_NOT_FOUND": "No partner matched partnerCode for the hotel.",
+          "ROOM_TYPE_NOT_FOUND": "No room type matched roomTypeCode.",
+          "BOARD_NOT_FOUND": "No board or arrangement matched boardCode.",
+          "NO_ACTIVE_CONTRACT": "No active contract covers the request.",
+          "MISSING_RATE": "A required rate or availability row is missing.",
+          "MIN_STAY_NOT_SATISFIED": "The stay violates minimum-stay rules.",
+          "RELEASE_DAYS_NOT_SATISFIED": "reservationDate violates release-day lead time.",
+          "CURRENCY_CONVERSION_MISSING": "No exchange rate is configured for the requested currency.",
+          "INTERNAL_ERROR": "Unexpected server error."
+        }
+      },
+      "playground": {
+        "header": {
+          "eyebrow": "Safe Test Console",
+          "title": "Run reservation quote payloads without exposing API keys.",
+          "subtitle": "Use the same V1 request shape in form or JSON mode, inspect the public response body, and review lightweight execution trace details.",
+          "badge": "POST /api/v1/reservations/quote"
+        },
+        "modes": {
+          "form": "Form Mode",
+          "json": "JSON Mode"
+        },
+        "editor": {
+          "eyebrow": "Request Builder",
+          "title": "Compose a reservation quote request",
+          "description": "Choose a hotel context, fill the guest stay data, or paste a raw JSON payload for the existing endpoint.",
+          "helper": "The admin playground reuses the existing quote calculation path and never sends raw integration API keys from the browser."
+        },
+        "fields": {
+          "hotel": "Hotel",
+          "hotelCode": "Hotel code",
+          "requestId": "Request ID",
+          "partner": "Partner",
+          "reservationDate": "Reservation date",
+          "checkIn": "Check-in",
+          "checkOut": "Check-out",
+          "currency": "Currency",
+          "roomType": "Room type",
+          "board": "Board / arrangement",
+          "adults": "Adults",
+          "childrenAges": "Children ages"
+        },
+        "placeholders": {
+          "selectHotel": "Select a hotel",
+          "selectPartner": "Select a partner",
+          "selectRoomType": "Select a room type",
+          "selectBoard": "Select an arrangement"
+        },
+        "children": {
+          "description": "Add ages only when the stay includes children. Leave the list empty for adult-only reservations.",
+          "empty": "No child ages added for this reservation."
+        },
+        "actions": {
+          "runQuote": "Run Quote",
+          "runningQuote": "Running quote...",
+          "addChildAge": "Add child age",
+          "removeChildAge": "Remove child age",
+          "copyRequest": "Copy request JSON",
+          "copyResponse": "Copy response JSON"
+        },
+        "json": {
+          "invalid": "The JSON payload is invalid. Fix the syntax before sending the request.",
+          "editorLabel": "Reservation quote request JSON"
+        },
+        "response": {
+          "eyebrow": "Response",
+          "title": "Quote output",
+          "description": "Review the exact response payload returned by the shared quote execution path.",
+          "empty": "Run a quote to inspect the response body.",
+          "loading": "Running the shared quote flow...",
+          "success": "Success",
+          "failure": "Failure",
+          "httpStatus": "HTTP {{value}}",
+          "summaryGrandTotal": "Grand total",
+          "summaryBeforeTax": "Total before tax",
+          "summaryNights": "Nights",
+          "warnings": "Warnings",
+          "noWarnings": "No warnings were returned."
+        },
+        "trace": {
+          "eyebrow": "Trace / Logs",
+          "title": "Execution metadata",
+          "description": "Lightweight request trace data captured alongside the quote response.",
+          "empty": "Execution metadata will appear here after a quote run.",
+          "requestId": "Request ID",
+          "durationMs": "Duration (ms)",
+          "endpointCode": "Endpoint code",
+          "source": "Log source",
+          "apiContext": "API user / key context",
+          "apiContextValue": "Admin playground (no API key)",
+          "errorCode": "Error code",
+          "notApplicable": "Not applicable"
+        },
+        "validation": {
+          "hotelRequired": "Select a hotel before running the quote.",
+          "requestIdRequired": "Request ID is required.",
+          "hotelCodeRequired": "Hotel code is required.",
+          "partnerRequired": "Partner is required.",
+          "reservationDateRequired": "Reservation date is required.",
+          "reservationDateInvalid": "Reservation date must be a valid ISO date.",
+          "checkInRequired": "Check-in is required.",
+          "checkInInvalid": "Check-in must be a valid ISO date.",
+          "checkOutRequired": "Check-out is required.",
+          "checkOutInvalid": "Check-out must be a valid ISO date.",
+          "checkOutAfterCheckIn": "Check-out must be after check-in.",
+          "currencyRequired": "Currency is required.",
+          "currencyInvalid": "Currency must be a 3-letter ISO code.",
+          "roomTypeRequired": "Room type is required.",
+          "boardRequired": "Board / arrangement is required.",
+          "adultsInvalid": "Adults must be at least 1.",
+          "childrenAgesInvalid": "Child ages must be zero or greater."
+        },
+        "toasts": {
+          "requestCopied": "Request JSON copied",
+          "responseCopied": "Response JSON copied",
+          "copyFailed": "Copy failed. Try selecting the JSON manually."
         }
       }
     },
@@ -641,18 +1143,66 @@
           "noArrangement": "None (multi-board allowed in rates)"
         },
         "payment": {
-          "title": "Billing & Payment",
-          "subtitle": "Release conditions and payment methods.",
+          "title": "Payment Policy",
+          "subtitle": "Separate how the partner pays from when the partner pays.",
           "methods": "Allowed payment methods",
           "bankTransfer": "Bank Transfer",
           "bankCheck": "Bank Check",
+          "methodsList": {
+            "bankTransfer": "Bank transfer",
+            "swiftTransfer": "SWIFT transfer",
+            "bankCheck": "Bank check",
+            "bankDraft": "Bank draft / banker",
+            "cash": "Cash",
+            "creditCard": "Credit card",
+            "paymentGateway": "Payment gateway",
+            "other": "Other"
+          },
+          "conditionCards": {
+            "fullPrepayment": "Full prepayment",
+            "partialDeposit": "Partial deposit",
+            "creditDays": "Credit days",
+            "paymentOnArrival": "Payment on arrival",
+            "paymentOnDeparture": "Payment on departure",
+            "custom": "Custom condition"
+          },
+          "marketScope": "Market scope",
+          "market": {
+            "international": "International",
+            "national": "National / local",
+            "mixed": "Mixed"
+          },
+          "helperNational": "Recommended for Tunisian agencies: TND, local bank transfer, RIB, bank check, or cash.",
+          "helperInternational": "Recommended for international operators: SWIFT transfer with IBAN/SWIFT and EUR or USD.",
+          "howPartnerPays": "How the partner pays",
+          "whenPartnerPays": "When the partner pays",
+          "primary": "Primary",
+          "makePrimary": "Make primary",
+          "bankAccount": "Selected hotel bank account",
+          "noBankAccount": "Use legacy hotel bank details / none",
+          "swiftWarning": "SWIFT transfer is selected, but this bank account is missing IBAN or SWIFT/BIC.",
           "releaseCondition": "Release condition",
           "conditions": {
             "prepayment": "100% Prepayment",
             "deposit": "Deposit Contract (Credit)"
           },
           "depositAmount": "Deposit Amount",
+          "depositType": "Deposit type",
+          "depositAmountType": "Amount",
+          "depositPercentageType": "Percentage",
+          "depositValue": "Deposit value",
+          "dueTrigger": "Due trigger",
+          "bookingConfirmation": "Booking confirmation",
+          "beforeCheckIn": "Before check-in",
+          "invoiceIssue": "Invoice issue",
+          "invoiceReceipt": "Invoice receipt",
+          "checkOut": "Check-out",
+          "custom": "Custom",
+          "refundable": "Refundable",
           "creditDelay": "Credit Delay",
+          "creditDays": "Credit days",
+          "creditBasis": "Basis",
+          "customNotes": "Custom condition notes",
           "days": "Days"
         }
       },
@@ -703,6 +1253,10 @@
         "team": {
           "label": "Team",
           "description": "Invitations, roles, and access hygiene."
+        },
+        "integrations": {
+          "label": "Integrations",
+          "description": "API users, keys, endpoint controls, and request logs."
         },
         "portfolio": {
           "label": "Hotel Portfolio",

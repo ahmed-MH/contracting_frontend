@@ -26,6 +26,7 @@ import {
     Users,
 } from 'lucide-react';
 import EditReductionTemplateModal from '../components/EditReductionTemplateModal';
+import UpdatedByCell from '../../../../components/audit/UpdatedByCell';
 
 const PAX_TYPE_LABELS: Record<string, string> = {
     FIRST_CHILD: '1er Enfant',
@@ -175,6 +176,7 @@ export default function ReductionsCatalogPage() {
                                 <th className="px-5 py-4 text-xs font-semibold uppercase tracking-wide text-brand-slate dark:text-brand-light/65">{t('auto.features.catalog.reductions.pages.reductionscatalogpage.cdd158c5', { defaultValue: "Cible" })}</th>
                                     <th className="px-5 py-4 text-xs font-semibold uppercase tracking-wide text-brand-slate dark:text-brand-light/65">{t('auto.features.catalog.reductions.pages.reductionscatalogpage.fca2f684', { defaultValue: "Ages" })}</th>
                                 <th className="px-5 py-4 text-right text-xs font-semibold uppercase tracking-wide text-brand-slate dark:text-brand-light/65">{t('auto.features.catalog.reductions.pages.reductionscatalogpage.11ea1d0e', { defaultValue: "Valeur" })}</th>
+                                <th className="px-5 py-4 text-xs font-semibold uppercase tracking-wide text-brand-slate dark:text-brand-light/65">{t('pages.catalog.reductions.table.updatedBy', { defaultValue: 'Updated by' })}</th>
                                 <th className="px-5 py-4 text-right text-xs font-semibold uppercase tracking-wide text-brand-slate dark:text-brand-light/65">
                                     {t('pages.catalog.reductions.table.actions', { defaultValue: 'Actions' })}
                                 </th>
@@ -202,6 +204,9 @@ export default function ReductionsCatalogPage() {
                                         <span className={`inline-flex items-center px-2 py-0.5 rounded-xl text-xs font-bold border ${CALC_TYPE_COLORS[r.calculationType]}`}>
                                             {r.calculationType === 'FREE' ? 'Gratuit' : r.calculationType === 'PERCENTAGE' ? `-${r.value}%` : `-${r.value} €`}
                                         </span>
+                                    </td>
+                                    <td className="px-5 py-4 align-top">
+                                        <UpdatedByCell updatedByName={r.updatedByName} updatedAt={r.updatedAt} />
                                     </td>
                                     <td className="px-5 py-4 text-right">
                                         <div className="flex items-center justify-end gap-1">
@@ -262,10 +267,20 @@ export default function ReductionsCatalogPage() {
                     {showArchived && archivedReductions && archivedReductions.length > 0 && (
                         <div className="premium-surface mt-4 overflow-x-auto opacity-80">
                             <table className="w-full text-sm text-left">
+                                <thead>
+                                    <tr className="border-b border-brand-slate/15 bg-brand-mint/6 dark:border-brand-light/10 dark:bg-brand-light/5">
+                                        <th className="px-5 py-4 text-xs font-semibold uppercase tracking-wide text-brand-slate dark:text-brand-light/65">{t('auto.features.catalog.reductions.pages.reductionscatalogpage.5a5ca319', { defaultValue: "Nom" })}</th>
+                                        <th className="px-5 py-4 text-xs font-semibold uppercase tracking-wide text-brand-slate dark:text-brand-light/65">{t('pages.catalog.reductions.table.updatedBy', { defaultValue: 'Updated by' })}</th>
+                                        <th className="px-5 py-4 text-right text-xs font-semibold uppercase tracking-wide text-brand-slate dark:text-brand-light/65">{t('pages.catalog.reductions.table.actions', { defaultValue: 'Actions' })}</th>
+                                    </tr>
+                                </thead>
                                 <tbody className="divide-y divide-brand-slate/10 dark:divide-brand-light/10">
                                     {archivedReductions.map((r: any) => (
                                         <tr key={r.id} className="transition-colors hover:bg-brand-mint/5 dark:hover:bg-brand-light/5">
                                             <td className="px-5 py-3 text-brand-slate font-bold dark:text-brand-light/75">{r.name}</td>
+                                            <td className="px-5 py-3 align-top">
+                                                <UpdatedByCell updatedByName={r.updatedByName} updatedAt={r.updatedAt} />
+                                            </td>
                                             <td className="px-5 py-3 text-right">
                                                 <button onClick={() => handleRestore(r)}
                                                     className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-brand-mint/10 text-brand-mint text-xs font-bold rounded-xl hover:bg-brand-mint/10 transition-colors cursor-pointer border-none shadow-sm">

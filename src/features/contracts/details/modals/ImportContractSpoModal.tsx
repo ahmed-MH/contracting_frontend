@@ -17,6 +17,7 @@ function formatCondition(spo: TemplateSpo): string {
         case 'MIN_NIGHTS': return `Min. ${spo.conditionValue} nuits`;
         case 'EARLY_BIRD': return `Réservé ${spo.conditionValue} j. avance`;
         case 'LONG_STAY': return `> ${spo.conditionValue} nuits`;
+        case 'AGE': return `Age min. ${spo.conditionValue} ans`;
         case 'HONEYMOONER': return 'Voyage de noces';
         case 'NONE': return 'Aucune condition';
         default: return spo.conditionType;

@@ -10,7 +10,7 @@ import type { Contract } from '../../types/contract.types';
 import { useCreateContractSpo, useUpdateContractSpo } from '../../hooks/useContractSpos';
 import { useArrangements } from '../../../arrangements/hooks/useArrangements';
 import type { Arrangement } from '../../../arrangements/types/arrangement.types';
-import { FileText, Percent, Moon, Calendar, Wallet, Target } from 'lucide-react';
+import { FileText, Percent, Moon, Calendar, Wallet, Target, UserRound } from 'lucide-react';
 import ModalShell from '../../../../components/ui/ModalShell';
 import { useTranslation } from 'react-i18next';
 import {
@@ -119,7 +119,7 @@ export default function EditContractSpoModal({ isOpen, onClose, contract, editIt
         }
     };
 
-    const conditionNeedsValue = ['MIN_NIGHTS', 'EARLY_BIRD', 'LONG_STAY'].includes(watchConditionType);
+    const conditionNeedsValue = ['MIN_NIGHTS', 'EARLY_BIRD', 'LONG_STAY', 'AGE'].includes(watchConditionType);
 
     if (!isOpen) return null;
 
@@ -174,16 +174,17 @@ export default function EditContractSpoModal({ isOpen, onClose, contract, editIt
                                         <option value="MIN_NIGHTS">{t('auto.features.contracts.details.modals.editcontractspomodal.88f6c5ea', { defaultValue: "Nuits minimales" })}</option>
                                         <option value="EARLY_BIRD">{t('auto.features.contracts.details.modals.editcontractspomodal.693c92ed', { defaultValue: "Early Bird (Advance booking)" })}</option>
                                         <option value="LONG_STAY">{t('auto.features.contracts.details.modals.editcontractspomodal.8f25afab', { defaultValue: "Long Stay" })}</option>
+                                        <option value="AGE">Age minimum (Senior)</option>
                                         <option value="HONEYMOONER">{t('auto.features.contracts.details.modals.editcontractspomodal.e86d88a5', { defaultValue: "Honeymooner" })}</option>
                                     </select>
                                     {conditionNeedsValue && (
                                         <div className="relative animate-in fade-in">
                                             <input type="number" min="0"
-                                                placeholder={watchConditionType === 'EARLY_BIRD' ? 'Jours d\'avance' : 'Nuits'}
+                                                placeholder={watchConditionType === 'EARLY_BIRD' ? 'Jours d\'avance' : watchConditionType === 'AGE' ? 'Age minimum' : 'Nuits'}
                                                 {...register('conditionValue', { valueAsNumber: true })}
                                                 className="w-full pl-9 pr-3 py-2 bg-brand-light border border-brand-slate/30 rounded-xl text-sm focus:ring-2 focus:ring-brand-mint outline-none" />
                                             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-brand-slate">
-                                                {watchConditionType === 'EARLY_BIRD' ? <Calendar size={16} /> : <Moon size={16} />}
+                                                {watchConditionType === 'EARLY_BIRD' ? <Calendar size={16} /> : watchConditionType === 'AGE' ? <UserRound size={16} /> : <Moon size={16} />}
                                             </div>
                                         </div>
                                     )}

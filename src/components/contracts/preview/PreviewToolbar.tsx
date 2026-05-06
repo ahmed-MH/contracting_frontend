@@ -25,9 +25,9 @@ interface PreviewToolbarProps {
     onDownload: () => void;
 }
 
-const toolbarSectionClass = 'rounded-lg border border-white/10 bg-white/5 p-4';
-const labelClass = 'text-[10px] font-black uppercase tracking-[0.16em] text-brand-light/50';
-const selectClass = 'mt-1.5 h-10 w-full cursor-pointer rounded-lg border border-white/10 bg-brand-navy/70 px-3 text-sm font-semibold text-brand-light outline-none transition hover:border-brand-mint/60 focus:border-brand-mint focus:ring-2 focus:ring-brand-mint/25';
+const toolbarSectionClass = 'rounded-lg border border-brand-light/70 bg-white/80 p-4 dark:border-white/10 dark:bg-white/5';
+const labelClass = 'text-[10px] font-black uppercase tracking-[0.16em] text-brand-slate dark:text-brand-light/50';
+const selectClass = 'mt-1.5 h-10 w-full cursor-pointer rounded-lg border border-brand-light/70 bg-white px-3 text-sm font-semibold text-brand-navy outline-none transition hover:border-brand-mint/60 focus:border-brand-mint focus:ring-2 focus:ring-brand-mint/25 dark:border-white/10 dark:bg-brand-navy/70 dark:text-brand-light';
 
 function formatDate(value?: string | Date | null, language: ContractPreviewLanguage = 'en') {
     if (!value) return 'Not specified';
@@ -42,9 +42,9 @@ function formatDate(value?: string | Date | null, language: ContractPreviewLangu
 
 function MetadataRow({ label, value }: { label: string; value: string }) {
     return (
-        <div className="border-b border-white/10 py-2 last:border-b-0">
-            <dt className="text-[10px] font-black uppercase tracking-[0.14em] text-brand-light/40">{label}</dt>
-            <dd className="mt-1 text-sm font-semibold leading-5 text-brand-light">{value}</dd>
+        <div className="border-b border-brand-light/70 py-2 last:border-b-0 dark:border-white/10">
+            <dt className="text-[10px] font-black uppercase tracking-[0.14em] text-brand-slate/70 dark:text-brand-light/40">{label}</dt>
+            <dd className="mt-1 text-sm font-semibold leading-5 text-brand-navy dark:text-brand-light">{value}</dd>
         </div>
     );
 }
@@ -78,11 +78,11 @@ export function PreviewToolbar({
 
     return (
         <aside className="order-first w-full shrink-0 print:hidden xl:sticky xl:top-6 xl:order-none xl:w-[320px]">
-            <div className="rounded-lg border border-white/10 bg-brand-navy p-4 text-brand-light shadow-xl shadow-black/25">
+            <div className="rounded-lg border border-brand-light/70 bg-brand-light/90 p-4 text-brand-navy shadow-xl shadow-brand-slate/10 dark:border-white/10 dark:bg-brand-navy dark:text-brand-light dark:shadow-black/25">
                 <div className="mb-4">
                     <p className="text-[10px] font-black uppercase tracking-[0.22em] text-brand-mint">Preview tools</p>
                     <h2 className="mt-1 text-lg font-black">Generate document</h2>
-                    <p className="mt-1 text-xs font-semibold leading-5 text-brand-light/50">
+                    <p className="mt-1 text-xs font-semibold leading-5 text-brand-slate dark:text-brand-light/50">
                         Select the exact output before printing or exporting.
                     </p>
                 </div>
@@ -142,7 +142,7 @@ export function PreviewToolbar({
                         </div>
 
                         {!hasPartner && (
-                            <div className="mt-3 flex gap-2 rounded-lg border border-amber-400/30 bg-amber-400/10 px-3 py-2 text-xs font-semibold leading-5 text-amber-200">
+                            <div className="mt-3 flex gap-2 rounded-lg border border-amber-400/30 bg-amber-400/10 px-3 py-2 text-xs font-semibold leading-5 text-amber-800 dark:text-amber-200">
                                 <AlertCircle size={15} className="mt-0.5 shrink-0" />
                                 Select a partner to generate the contract
                             </div>
@@ -154,7 +154,7 @@ export function PreviewToolbar({
                             Document actions
                         </h3>
 
-                        <div className="mb-3 flex items-start gap-2 rounded-lg border border-white/10 bg-brand-navy/50 px-3 py-2">
+                        <div className="mb-3 flex items-start gap-2 rounded-lg border border-brand-light/70 bg-brand-light/70 px-3 py-2 dark:border-white/10 dark:bg-brand-navy/50">
                             {canExport ? (
                                 <CheckCircle2 size={16} className="mt-0.5 shrink-0 text-brand-mint" />
                             ) : (
@@ -162,7 +162,7 @@ export function PreviewToolbar({
                             )}
                             <div>
                                 <p className="text-sm font-black">{canExport ? 'Ready to export' : 'Incomplete selection'}</p>
-                                <p className="mt-0.5 text-xs font-semibold leading-5 text-brand-light/50">
+                                <p className="mt-0.5 text-xs font-semibold leading-5 text-brand-slate dark:text-brand-light/50">
                                     {canExport ? `${selectedLanguage.toUpperCase()} | ${outputCurrency}` : 'Complete the required selections first.'}
                                 </p>
                             </div>
@@ -173,7 +173,7 @@ export function PreviewToolbar({
                                 id="contract-print-btn"
                                 disabled={!canExport}
                                 onClick={onPrint}
-                                className="inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-white/10 bg-white/10 px-4 text-sm font-bold text-brand-light transition hover:border-brand-mint/50 hover:bg-white/20 disabled:cursor-not-allowed disabled:opacity-50"
+                                className="inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-brand-light/70 bg-white px-4 text-sm font-bold text-brand-navy transition hover:border-brand-mint/50 hover:bg-brand-light/80 disabled:cursor-not-allowed disabled:opacity-50 dark:border-white/10 dark:bg-white/10 dark:text-brand-light dark:hover:bg-white/20"
                             >
                                 <Printer size={16} />
                                 Print
@@ -183,7 +183,7 @@ export function PreviewToolbar({
                                 id="contract-download-pdf-btn"
                                 disabled={isDownloading || !canExport}
                                 onClick={onDownload}
-                                className="inline-flex h-10 items-center justify-center gap-2 rounded-lg bg-brand-mint px-4 text-sm font-black text-brand-navy shadow-sm transition hover:bg-brand-mint/90 disabled:cursor-not-allowed disabled:bg-white/10 disabled:text-brand-light/40 disabled:shadow-none"
+                                className="inline-flex h-10 items-center justify-center gap-2 rounded-lg bg-brand-mint px-4 text-sm font-black text-brand-navy shadow-sm transition hover:bg-brand-mint/90 disabled:cursor-not-allowed disabled:bg-brand-light/70 disabled:text-brand-slate/50 disabled:shadow-none dark:disabled:bg-white/10 dark:disabled:text-brand-light/40"
                             >
                                 {isDownloading ? (
                                     <Loader2 size={16} className="animate-spin" />
@@ -207,7 +207,7 @@ export function PreviewToolbar({
                             <MetadataRow label="FX rate date" value={rateDate} />
                         </dl>
 
-                        <p className="mt-3 rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-xs font-semibold leading-5 text-brand-light/60">
+                        <p className="mt-3 rounded-lg border border-brand-light/70 bg-brand-light/70 px-3 py-2 text-xs font-semibold leading-5 text-brand-slate dark:border-white/10 dark:bg-white/5 dark:text-brand-light/60">
                             {conversionNote ?? `Stored commercial rates remain in ${baseCurrency}.`}
                         </p>
                     </section>

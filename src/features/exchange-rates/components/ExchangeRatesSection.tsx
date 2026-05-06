@@ -7,6 +7,7 @@ import { useHotel } from '../../hotel/context/HotelContext';
 import { useExchangeRates, useCreateExchangeRate, useUpdateExchangeRate, useDeleteExchangeRate } from '../hooks/useExchangeRates';
 import type { ExchangeRate, CreateExchangeRatePayload, UpdateExchangeRatePayload } from '../types/exchange-rate.types';
 import EditExchangeRateModal from './EditExchangeRateModal';
+import UpdatedByCell from '../../../components/audit/UpdatedByCell';
 
 function formatRate(rate: number) {
     return new Intl.NumberFormat('en-US', {
@@ -256,8 +257,12 @@ export default function ExchangeRatesSection() {
                                                         {rate.source ?? 'manual'}
                                                     </span>
                                                 </td>
-                                                <td className="px-5 py-4 align-top text-xs font-semibold text-brand-slate dark:text-brand-light/75">
-                                                    {rate.updatedBy || t('common.notAvailable', { defaultValue: 'N/A' })}
+                                                <td className="px-5 py-4 align-top">
+                                                    <UpdatedByCell
+                                                        updatedByName={rate.updatedByName}
+                                                        updatedAt={rate.updatedAt}
+                                                        className="min-w-[170px]"
+                                                    />
                                                 </td>
                                                 {isAdminOrCommercial && (
                                                     <td className="px-5 py-4 align-top text-right">

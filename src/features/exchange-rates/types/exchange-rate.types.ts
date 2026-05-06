@@ -1,4 +1,6 @@
-export interface ExchangeRate {
+import type { AuditMetadata } from '../../../types/audit';
+
+export interface ExchangeRate extends AuditMetadata {
     id: number;
     hotelId: number;
     fromCurrency: string;
@@ -7,8 +9,6 @@ export interface ExchangeRate {
     effectiveDate: string;
     source: ExchangeRateSource;
     updatedBy?: string | null;
-    createdAt?: string;
-    updatedAt?: string;
 }
 
 export type ExchangeRateSource = 'manual' | 'system' | 'imported';

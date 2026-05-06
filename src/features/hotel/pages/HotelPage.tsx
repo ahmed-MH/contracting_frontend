@@ -18,9 +18,11 @@ import {
     ChevronDown,
     Coins,
     Hotel as HotelIcon,
+    Image,
     Landmark,
     Mail,
     MapPin,
+    Palette,
     Pencil,
     Plus,
     RotateCcw,
@@ -32,7 +34,11 @@ import type { LucideIcon } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import EditHotelModal from '../components/EditHotelModal';
+import HotelLogoPreview from '../components/HotelLogoPreview';
+import HotelLogoUploadModal from '../components/HotelLogoUploadModal';
 import { GuidedPageHeader } from '../../../components/layout/Workspace';
+import UpdatedByCell from '../../../components/audit/UpdatedByCell';
+import UpdatedMeta from '../../../components/audit/UpdatedMeta';
 
 function DetailCard({
     icon: Icon,
@@ -99,6 +105,7 @@ function Stars({ value }: { value?: number }) {
 export default function HotelPage() {
     const { t } = useTranslation('common');
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isLogoModalOpen, setIsLogoModalOpen] = useState(false);
     const [editing, setEditing] = useState<Hotel | null>(null);
     const [showArchived, setShowArchived] = useState(false);
 
@@ -265,6 +272,12 @@ export default function HotelPage() {
                                         Ref {currentHotel.reference || 'HTL-PENDING'}
                                     </span>
                                 </div>
+                                <UpdatedMeta
+                                    updatedByName={currentHotel.updatedByName}
+                                    updatedAt={currentHotel.updatedAt}
+                                    tone="dark"
+                                    className="mt-5 max-w-xs"
+                                />
                             </div>
 
                             {isAdmin && (
@@ -296,7 +309,7 @@ export default function HotelPage() {
                             { label: t('pages.hotel.metrics.activeProperties', { defaultValue: 'Active properties' }), value: availableHotels.length, icon: HotelIcon },
                             { label: t('pages.hotel.metrics.contactEmails', { defaultValue: 'Contact emails' }), value: currentHotel.emails?.length ?? 0, icon: Mail },
                             { label: t('pages.hotel.metrics.defaultCurrency', { defaultValue: 'Default currency' }), value: currentHotel.defaultCurrency, icon: Coins },
-                            { label: t('pages.hotel.metrics.rating', { defaultValue: 'Rating' }), value: currentHotel.stars ? `${currentHotel.stars} stars` : 'Unrated', icon: Star },
+                            { label: t('pages.hotel.metrics.branding', { defaultValue: 'PDF branding' }), value: currentHotel.preferredThemeColor || (currentHotel.logoUrl ? 'Logo' : 'Default'), icon: Palette },
                         ].map((metric) => {
                             const Icon = metric.icon;
                             return (
@@ -315,7 +328,153 @@ export default function HotelPage() {
                         })}
                     </section>
 
-                    <section className="grid gap-6 xl:grid-cols-3">
+                    <section className="premium-surface overflow-hidden">
+                        <div className="flex flex-col gap-2 border-b border-brand-light/70 px-6 py-5 dark:border-brand-light/10">
+                            <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-brand-slate">
+                                {t('pages.hotel.portfolio.eyebrow', { defaultValue: 'Roster' })}
+                            </p>
+                            <h3 className="text-xl font-semibold tracking-tight text-brand-navy dark:text-brand-light">
+                                {t('pages.hotel.portfolio.title', { defaultValue: 'Active hotel portfolio' })}
+                            </h3>
+                        </div>
+                        <div className="overflow-x-auto">
+                            <table className="min-w-[720px] w-full text-left text-sm">
+                                <thead>
+                                    <tr className="border-b border-brand-light/70 bg-brand-light/60 dark:border-brand-light/10 dark:bg-brand-light/5">
+                                        <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wide text-brand-slate dark:text-brand-light/65">
+                                            {t('pages.hotel.portfolio.columns.hotel', { defaultValue: 'Hotel' })}
+                                        </th>
+                                        <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wide text-brand-slate dark:text-brand-light/65">
+                                            {t('pages.hotel.portfolio.columns.currency', { defaultValue: 'Currency' })}
+                                        </th>
+                                        <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wide text-brand-slate dark:text-brand-light/65">
+                                            {t('pages.hotel.portfolio.columns.updatedBy', { defaultValue: 'Updated by' })}
+                                        </th>
+                                        <th className="px-6 py-4 text-right text-xs font-semibold uppercase tracking-wide text-brand-slate dark:text-brand-light/65">
+                                            {t('pages.hotel.portfolio.columns.actions', { defaultValue: 'Actions' })}
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-brand-light/70 dark:divide-brand-light/10">
+                                    {availableHotels.map((hotel) => {
+                                        const isCurrent = hotel.id === currentHotel.id;
+
+                                        return (
+                                            <tr key={hotel.id} className="transition-colors hover:bg-brand-light/60 dark:hover:bg-brand-light/5">
+                                                <td className="px-6 py-4">
+                                                    <div className="flex flex-col gap-1">
+                                                        <div className="flex items-center gap-2">
+                                                            <span className="font-semibold text-brand-navy dark:text-brand-light">{hotel.name}</span>
+                                                            {isCurrent && (
+                                                                <span className="inline-flex items-center rounded-full border border-brand-mint/30 bg-brand-mint/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-brand-mint">
+                                                                    {t('pages.hotel.portfolio.current', { defaultValue: 'Current' })}
+                                                                </span>
+                                                            )}
+                                                        </div>
+                                                        <span className="text-xs text-brand-slate dark:text-brand-light/55">
+                                                            {hotel.reference || 'HTL-PENDING'}
+                                                        </span>
+                                                    </div>
+                                                </td>
+                                                <td className="px-6 py-4">
+                                                    <span className="inline-flex items-center rounded-full border border-brand-light/70 bg-brand-light/70 px-3 py-1 text-xs font-semibold text-brand-slate dark:border-brand-light/10 dark:bg-brand-light/5 dark:text-brand-light/75">
+                                                        {hotel.defaultCurrency}
+                                                    </span>
+                                                </td>
+                                                <td className="px-6 py-4 align-top">
+                                                    <UpdatedByCell updatedByName={hotel.updatedByName} updatedAt={hotel.updatedAt} />
+                                                </td>
+                                                <td className="px-6 py-4 text-right">
+                                                    {isCurrent ? (
+                                                        <span className="text-xs font-medium text-brand-slate dark:text-brand-light/55">
+                                                            {t('pages.hotel.portfolio.currentHelper', { defaultValue: 'Open in workspace' })}
+                                                        </span>
+                                                    ) : (
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => switchHotel(hotel.id)}
+                                                            className="inline-flex h-10 items-center rounded-2xl border border-brand-mint/25 bg-brand-mint/8 px-4 text-sm font-semibold text-brand-mint transition hover:bg-brand-mint hover:text-brand-light"
+                                                        >
+                                                            {t('pages.hotel.portfolio.open', { defaultValue: 'Open hotel' })}
+                                                        </button>
+                                                    )}
+                                                </td>
+                                            </tr>
+                                        );
+                                    })}
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+
+                    <section className="grid gap-6 xl:grid-cols-4">
+                        <DetailCard
+                            icon={Image}
+                            eyebrow={t('pages.hotel.cards.branding.eyebrow', { defaultValue: 'Documents' })}
+                            title={t('pages.hotel.cards.branding.title', { defaultValue: 'PDF branding' })}
+                        >
+                            <div className="space-y-3">
+                                <div className="rounded-2xl border border-brand-light/70 bg-brand-light/72 p-4 shadow-sm dark:border-brand-light/10 dark:bg-brand-light/5">
+                                    <div className="flex flex-col gap-4 sm:flex-row sm:items-start">
+                                        <HotelLogoPreview
+                                            logoUrl={currentHotel.logoUrl}
+                                            hotelName={currentHotel.name}
+                                            className="h-28 w-28 shrink-0 rounded-[24px]"
+                                            imageClassName="p-3"
+                                            fallbackMode="icon"
+                                        />
+                                        <div className="min-w-0 flex-1">
+                                            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-brand-slate">
+                                                {t('pages.hotel.fields.logoStatus', { defaultValue: 'Logo status' })}
+                                            </p>
+                                            <p className="mt-2 text-sm font-semibold text-brand-navy dark:text-brand-light">
+                                                {currentHotel.logoUrl
+                                                    ? t('pages.hotel.logoUpload.status.ready', { defaultValue: 'Logo configured' })
+                                                    : t('pages.hotel.logoUpload.status.empty', { defaultValue: 'No logo uploaded yet' })}
+                                            </p>
+                                            <p className="mt-2 text-xs text-brand-slate dark:text-brand-light/75">
+                                                {currentHotel.logoUrl
+                                                    ? t('pages.hotel.logoUpload.status.description', { defaultValue: 'This logo is used across hotel-facing previews, contracts, and proformas.' })
+                                                    : t('pages.hotel.logoUpload.source.empty', { defaultValue: 'Upload a logo to brand previews and PDF exports.' })}
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    {isAdmin && (
+                                        <div className="mt-4 flex flex-wrap items-center gap-3">
+                                            <button
+                                                type="button"
+                                                onClick={() => setIsLogoModalOpen(true)}
+                                                className="inline-flex h-11 items-center gap-2 rounded-2xl bg-brand-mint px-4 text-sm font-semibold text-brand-light shadow-md transition hover:-translate-y-0.5 hover:bg-brand-mint"
+                                            >
+                                                <Image size={15} />
+                                                {currentHotel.logoUrl
+                                                    ? t('pages.hotel.logoUpload.actions.change', { defaultValue: 'Change logo' })
+                                                    : t('pages.hotel.logoUpload.actions.upload', { defaultValue: 'Upload logo' })}
+                                            </button>
+                                            <span className="text-xs text-brand-slate dark:text-brand-light/75">
+                                                {t('pages.hotel.logoUpload.actions.helper', { defaultValue: 'PNG and JPG upload natively. WebP is converted automatically to keep PDFs compatible.' })}
+                                            </span>
+                                        </div>
+                                    )}
+                                </div>
+                                <div className="rounded-2xl border border-brand-light/70 bg-brand-light/72 px-4 py-3 dark:border-brand-light/10 dark:bg-brand-light/5">
+                                    <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-brand-slate">
+                                        {t('pages.hotel.fields.themeColor', { defaultValue: 'Theme color' })}
+                                    </p>
+                                    <div className="mt-2 flex items-center gap-3">
+                                        <span
+                                            className="h-7 w-7 rounded-lg border border-brand-slate/20"
+                                            style={{ backgroundColor: currentHotel.preferredThemeColor || '#0D9488' }}
+                                        />
+                                        <span className="font-mono text-sm font-semibold text-brand-navy dark:text-brand-light">
+                                            {currentHotel.preferredThemeColor || 'Default'}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </DetailCard>
+
                         <DetailCard
                             icon={MapPin}
                             eyebrow={t('pages.hotel.cards.location.eyebrow', { defaultValue: 'Location' })}
@@ -377,16 +536,42 @@ export default function HotelPage() {
                             title={t('pages.hotel.cards.banking.title', { defaultValue: 'Fiscal and banking profile' })}
                         >
                             <div className="space-y-3">
-                                <InfoRow label={t('pages.hotel.fields.bank', { defaultValue: 'Bank' })} value={currentHotel.bankName} />
                                 <InfoRow label={t('pages.hotel.fields.vatNumber', { defaultValue: 'VAT number' })} value={currentHotel.vatNumber} />
-                                <InfoRow label={t('pages.hotel.fields.accountNumber', { defaultValue: 'Account number' })} value={currentHotel.accountNumber} />
-                                <div className="rounded-2xl bg-brand-navy px-4 py-4 text-brand-light">
-                                    <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-brand-slate">
-                                        {t('pages.hotel.fields.ibanSwift', { defaultValue: 'IBAN / SWIFT' })}
-                                    </p>
-                                    <p className="mt-2 break-all font-mono text-sm">{currentHotel.ibanCode || 'Not provided'}</p>
-                                    <p className="mt-2 font-mono text-sm text-brand-mint">{currentHotel.swiftCode || 'Not provided'}</p>
-                                </div>
+                                {(currentHotel.bankAccounts?.filter((account) => account.active) ?? []).length > 0 ? (
+                                    currentHotel.bankAccounts
+                                        ?.filter((account) => account.active)
+                                        .map((account) => (
+                                            <div key={account.id} className="rounded-2xl border border-brand-light/70 bg-brand-light/72 px-4 py-4 dark:border-brand-light/10 dark:bg-brand-light/5">
+                                                <div className="flex items-start justify-between gap-3">
+                                                    <div className="min-w-0">
+                                                        <p className="text-sm font-semibold text-brand-navy dark:text-brand-light">{account.label}</p>
+                                                        <p className="mt-1 text-xs text-brand-slate dark:text-brand-light/65">{account.bankName || t('common.notAvailable', { defaultValue: 'Not provided' })}</p>
+                                                    </div>
+                                                    {account.isDefault && (
+                                                        <span className="rounded-full bg-brand-mint/10 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-brand-mint">
+                                                            {t('pages.hotel.bankAccounts.principal', { defaultValue: 'Principal' })}
+                                                        </span>
+                                                    )}
+                                                </div>
+                                                <div className="mt-3 space-y-1 font-mono text-xs text-brand-slate dark:text-brand-light/70">
+                                                    <p>{account.rib || account.accountNumber || t('common.notAvailable', { defaultValue: 'Not provided' })}</p>
+                                                    <p className="break-all">{account.iban || t('common.notAvailable', { defaultValue: 'Not provided' })}</p>
+                                                    <p className="text-brand-mint">{account.swiftCode || t('common.notAvailable', { defaultValue: 'Not provided' })}</p>
+                                                </div>
+                                                <p className="mt-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-brand-slate">
+                                                    {[account.currency, account.country].filter(Boolean).join(' / ') || t('common.notAvailable', { defaultValue: 'Not provided' })}
+                                                </p>
+                                            </div>
+                                        ))
+                                ) : (
+                                    <div className="rounded-2xl bg-brand-navy px-4 py-4 text-brand-light">
+                                        <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-brand-slate">
+                                            {t('pages.hotel.fields.ibanSwift', { defaultValue: 'IBAN / SWIFT' })}
+                                        </p>
+                                        <p className="mt-2 break-all font-mono text-sm">{currentHotel.ibanCode || 'Not provided'}</p>
+                                        <p className="mt-2 font-mono text-sm text-brand-mint">{currentHotel.swiftCode || 'Not provided'}</p>
+                                    </div>
+                                )}
                             </div>
                         </DetailCard>
                     </section>
@@ -435,6 +620,16 @@ export default function HotelPage() {
                                             <RotateCcw size={16} />
                                         </button>
                                     </div>
+                                    <div className="mt-4 border-t border-brand-light/70 pt-4 dark:border-brand-light/10">
+                                        <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-brand-slate">
+                                            {t('pages.hotel.portfolio.columns.updatedBy', { defaultValue: 'Updated by' })}
+                                        </p>
+                                        <UpdatedByCell
+                                            updatedByName={hotel.updatedByName}
+                                            updatedAt={hotel.updatedAt}
+                                            className="mt-2 min-w-0"
+                                        />
+                                    </div>
                                 </div>
                             ))}
                         </div>
@@ -448,6 +643,14 @@ export default function HotelPage() {
                 editing={editing}
                 onSubmit={onSubmit}
                 isPending={createMutation.isPending || updateMutation.isPending}
+            />
+            <HotelLogoUploadModal
+                isOpen={isLogoModalOpen}
+                onClose={() => setIsLogoModalOpen(false)}
+                hotelId={currentHotel?.id}
+                hotelName={currentHotel?.name}
+                currentLogoUrl={currentHotel?.logoUrl}
+                onUploaded={() => setIsLogoModalOpen(false)}
             />
         </div>
     );

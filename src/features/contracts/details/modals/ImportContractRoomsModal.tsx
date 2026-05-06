@@ -16,7 +16,7 @@ export default function ImportContractRoomsModal({ isOpen, onClose, contractId, 
     const { t } = useTranslation('common');
     void t;
     const { data: allRoomTypes, isLoading } = useRoomTypes();
-    const addMutation = useAddContractRoom(contractId, onClose);
+    const addMutation = useAddContractRoom(contractId);
     const [selected, setSelected] = useState<Set<number>>(new Set());
 
     // Filter out already-added room types
@@ -40,6 +40,7 @@ export default function ImportContractRoomsModal({ isOpen, onClose, contractId, 
             });
         }
         setSelected(new Set());
+        onClose();
     };
 
     const handleClose = () => {

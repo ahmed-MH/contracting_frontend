@@ -27,6 +27,7 @@ import {
 } from 'lucide-react';
 import type { SupplementCalculationType, PricingModifierApplicationType } from '../../../../types';
 import EditSupplementTemplateModal from '../components/EditSupplementTemplateModal';
+import UpdatedByCell from '../../../../components/audit/UpdatedByCell';
 
 const TYPE_LABELS: Record<SupplementCalculationType, string> = {
     FIXED: 'Fixe',
@@ -229,6 +230,7 @@ export default function SupplementsCatalogPage() {
                                 <th className="px-5 py-4 text-xs font-semibold uppercase tracking-wide text-brand-slate dark:text-brand-light/65">{t('auto.features.catalog.supplements.pages.supplementscatalogpage.6c0c1e73', { defaultValue: "Valeur" })}</th>
                                 <th className="px-5 py-4 text-xs font-semibold uppercase tracking-wide text-brand-slate dark:text-brand-light/65">{t('auto.features.catalog.supplements.pages.supplementscatalogpage.048aa5d3', { defaultValue: "Application" })}</th>
                                 <th className="px-5 py-4 text-center text-xs font-semibold uppercase tracking-wide text-brand-slate dark:text-brand-light/65">{t('auto.features.catalog.supplements.pages.supplementscatalogpage.e79fe39b', { defaultValue: "Obligatoire" })}</th>
+                                <th className="px-5 py-4 text-xs font-semibold uppercase tracking-wide text-brand-slate dark:text-brand-light/65">{t('pages.catalog.supplements.table.updatedBy', { defaultValue: 'Updated by' })}</th>
                                 <th className="px-5 py-4 text-right text-xs font-semibold uppercase tracking-wide text-brand-slate dark:text-brand-light/65">
                                     {t('pages.catalog.supplements.table.actions', { defaultValue: 'Actions' })}
                                 </th>
@@ -266,6 +268,9 @@ export default function SupplementsCatalogPage() {
                                         ) : (
                                             <span className="text-brand-slate text-xs">{t('auto.features.catalog.supplements.pages.supplementscatalogpage.05fe84b1', { defaultValue: "Non" })}</span>
                                         )}
+                                    </td>
+                                    <td className="px-5 py-3 align-top">
+                                        <UpdatedByCell updatedByName={s.updatedByName} updatedAt={s.updatedAt} />
                                     </td>
                                     <td className="px-5 py-3 text-right">
                                         <div className="inline-flex items-center gap-1">
@@ -331,6 +336,7 @@ export default function SupplementsCatalogPage() {
                                     <tr className="border-b border-brand-slate/15 bg-brand-mint/6 dark:border-brand-light/10 dark:bg-brand-light/5">
                                         <th className="px-5 py-4 text-xs font-semibold uppercase tracking-wide text-brand-slate dark:text-brand-light/65">{t('auto.features.catalog.supplements.pages.supplementscatalogpage.51293b71', { defaultValue: "Nom" })}</th>
                                         <th className="px-5 py-4 text-xs font-semibold uppercase tracking-wide text-brand-slate dark:text-brand-light/65">{t('auto.features.catalog.supplements.pages.supplementscatalogpage.7663304e', { defaultValue: "Type" })}</th>
+                                        <th className="px-5 py-4 text-xs font-semibold uppercase tracking-wide text-brand-slate dark:text-brand-light/65">{t('pages.catalog.supplements.table.updatedBy', { defaultValue: 'Updated by' })}</th>
                                         <th className="px-5 py-4 text-right text-xs font-semibold uppercase tracking-wide text-brand-slate dark:text-brand-light/65">{t('auto.features.catalog.supplements.pages.supplementscatalogpage.9cdaf222', { defaultValue: "Action" })}</th>
                                     </tr>
                                 </thead>
@@ -342,6 +348,9 @@ export default function SupplementsCatalogPage() {
                                                 <span className={`inline-flex items-center px-2.5 py-0.5 rounded-xl text-xs font-bold tracking-wide ${TYPE_COLORS[s.type]}`}>
                                                     {TYPE_LABELS[s.type]}
                                                 </span>
+                                            </td>
+                                            <td className="px-5 py-3 align-top">
+                                                <UpdatedByCell updatedByName={s.updatedByName} updatedAt={s.updatedAt} />
                                             </td>
                                             <td className="px-5 py-3 text-right">
                                                 <button onClick={() => handleRestore(s)} disabled={restoreMutation.isPending}

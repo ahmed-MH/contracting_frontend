@@ -1,4 +1,6 @@
-export interface Arrangement {
+import type { AuditMetadata } from '../../../types/audit';
+
+export interface Arrangement extends AuditMetadata {
     id: number;
     reference?: string;
     code: string;

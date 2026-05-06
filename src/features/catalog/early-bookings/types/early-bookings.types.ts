@@ -1,11 +1,12 @@
 import { ContractRoom, Period } from '../../../contracts/types/contract.types';
 import { ReductionCalculationType } from '../../reductions/types/reductions.types';
 import type { PricingModifierApplicationType } from '../../supplements/types/supplements.types';
+import type { AuditMetadata } from '../../../../types/audit';
 export type { PricingModifierApplicationType };
 
 // ─── Template Early Bookings (Catalogue) ─────────────────────────────
 
-export interface TemplateEarlyBooking {
+export interface TemplateEarlyBooking extends AuditMetadata {
     id: number;
     reference?: string;
     name: string;

@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import type { Contract } from '../../types/contract.types';
 import { useContractActivationCheck } from '../../hooks/useContracts';
 import StatusDropdown from '../../components/StatusDropdown';
+import UpdatedMeta from '../../../../components/audit/UpdatedMeta';
 
 interface Props {
     contract: Contract;
@@ -196,6 +197,12 @@ export default function ContractHeader({ contract, onBack }: Props) {
                                 {contract.currency}
                             </span>
                         </div>
+                        <UpdatedMeta
+                            updatedByName={contract.updatedByName}
+                            updatedAt={contract.updatedAt}
+                            tone="plain"
+                            className="mt-4"
+                        />
                     </div>
                     <ContractReadiness contract={contract} />
                 </div>

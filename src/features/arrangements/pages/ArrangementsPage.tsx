@@ -6,6 +6,7 @@ import { useConfirm } from '../../../context/ConfirmContext';
 import { UtensilsCrossed, Plus, Pencil, Trash2, RotateCcw, Archive, ChevronDown, ChevronRight, Search } from 'lucide-react';
 import EditArrangementModal from '../components/EditArrangementModal';
 import { GuidedPageHeader } from '../../../components/layout/Workspace';
+import UpdatedByCell from '../../../components/audit/UpdatedByCell';
 
 export default function ArrangementsPage() {
     const { t } = useTranslation('common');
@@ -147,6 +148,7 @@ export default function ArrangementsPage() {
                                 <th className="px-5 py-3 font-semibold text-brand-slate text-xs uppercase tracking-wide">{t('auto.features.arrangements.pages.arrangementspage.96ce3732', { defaultValue: "Libellé" })}</th>
                                 <th className="px-5 py-3 font-semibold text-brand-slate text-xs uppercase tracking-wide text-center">{t('auto.features.arrangements.pages.arrangementspage.60d9e35d', { defaultValue: "Niveau" })}</th>
                                 <th className="px-5 py-3 font-semibold text-brand-slate text-xs uppercase tracking-wide">{t('auto.features.arrangements.pages.arrangementspage.b6c233f6', { defaultValue: "Description" })}</th>
+                                <th className="px-5 py-3 font-semibold text-brand-slate text-xs uppercase tracking-wide">{t('pages.arrangements.table.updatedBy', { defaultValue: 'Updated by' })}</th>
                                 <th className="px-5 py-3 font-semibold text-brand-slate text-xs uppercase tracking-wide text-right">{t('auto.features.arrangements.pages.arrangementspage.3463121d', { defaultValue: "Actions" })}</th>
                             </tr>
                         </thead>
@@ -173,6 +175,9 @@ export default function ArrangementsPage() {
                                         <span className="text-xs text-brand-slate italic max-w-[280px] truncate block" title={arr.description || ''}>
                                             {arr.description || <span className="text-brand-slate/45">{t('auto.features.arrangements.pages.arrangementspage.b64ea579', { defaultValue: "Aucune description" })}</span>}
                                         </span>
+                                    </td>
+                                    <td className="px-5 py-3 align-top">
+                                        <UpdatedByCell updatedByName={arr.updatedByName} updatedAt={arr.updatedAt} />
                                     </td>
                                     <td className="px-5 py-3 text-right">
                                         <div className="inline-flex items-center gap-1">
@@ -213,6 +218,7 @@ export default function ArrangementsPage() {
                                     <tr className="bg-brand-slate/10 border-b border-brand-slate/15">
                                         <th className="px-5 py-3 font-semibold text-brand-slate text-xs uppercase tracking-wide">{t('auto.features.arrangements.pages.arrangementspage.b33b394f', { defaultValue: "Code" })}</th>
                                         <th className="px-5 py-3 font-semibold text-brand-slate text-xs uppercase tracking-wide">{t('auto.features.arrangements.pages.arrangementspage.cbf4e9cf', { defaultValue: "Nom" })}</th>
+                                        <th className="px-5 py-3 font-semibold text-brand-slate text-xs uppercase tracking-wide">{t('pages.arrangements.table.updatedBy', { defaultValue: 'Updated by' })}</th>
                                         <th className="px-5 py-3 font-semibold text-brand-slate text-xs uppercase tracking-wide text-right">{t('auto.features.arrangements.pages.arrangementspage.7d74144c', { defaultValue: "Action" })}</th>
                                     </tr>
                                 </thead>
@@ -225,6 +231,9 @@ export default function ArrangementsPage() {
                                                 </span>
                                             </td>
                                             <td className="px-5 py-3 text-brand-slate italic">{arr.name}</td>
+                                            <td className="px-5 py-3 align-top">
+                                                <UpdatedByCell updatedByName={arr.updatedByName} updatedAt={arr.updatedAt} />
+                                            </td>
                                             <td className="px-5 py-3 text-right">
                                                 <button onClick={() => handleRestore(arr)} disabled={restoreMutation.isPending}
                                                     className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-brand-mint/10 text-brand-mint text-xs font-medium rounded-xl hover:bg-brand-mint/15 transition-colors cursor-pointer border-none outline-none">

@@ -6,6 +6,7 @@ import { useConfirm } from '../../../context/ConfirmContext';
 import { BedDouble, Plus, Pencil, Trash2, RotateCcw, Archive, ChevronDown, ChevronRight, Search } from 'lucide-react';
 import EditRoomTypeModal from '../components/EditRoomTypeModal';
 import { GuidedPageHeader } from '../../../components/layout/Workspace';
+import UpdatedByCell from '../../../components/audit/UpdatedByCell';
 
 export default function RoomTypesPage() {
     const { t } = useTranslation('common');
@@ -167,6 +168,7 @@ export default function RoomTypesPage() {
                                 <th className="px-5 py-3 font-semibold text-brand-slate text-xs uppercase tracking-wide text-center">{t('auto.features.rooms.pages.roomtypespage.3033d562', { defaultValue: "Adultes" })}</th>
                                 <th className="px-5 py-3 font-semibold text-brand-slate text-xs uppercase tracking-wide text-center">{t('auto.features.rooms.pages.roomtypespage.8ebed994', { defaultValue: "Enfants" })}</th>
                                 <th className="px-5 py-3 font-semibold text-brand-slate text-xs uppercase tracking-wide text-center">{t('auto.features.rooms.pages.roomtypespage.b3557035', { defaultValue: "Lit bébé" })}</th>
+                                <th className="px-5 py-3 font-semibold text-brand-slate text-xs uppercase tracking-wide">{t('pages.roomTypes.table.updatedBy', { defaultValue: 'Updated by' })}</th>
                                 <th className="px-5 py-3 font-semibold text-brand-slate text-xs uppercase tracking-wide text-right">
                                     {t('pages.roomTypes.table.actions', { defaultValue: 'Actions' })}
                                 </th>
@@ -203,6 +205,9 @@ export default function RoomTypesPage() {
                                         ) : (
                                             <span className="text-[10px] bg-brand-light/80 text-brand-slate/70 border border-brand-slate/10 px-2 py-0.5 rounded-full font-bold uppercase">{t('auto.features.rooms.pages.roomtypespage.dfd69bda', { defaultValue: "Non" })}</span>
                                         )}
+                                    </td>
+                                    <td className="px-5 py-3 align-top">
+                                        <UpdatedByCell updatedByName={rt.updatedByName} updatedAt={rt.updatedAt} />
                                     </td>
                                     <td className="px-5 py-3 text-right">
                                         <div className="inline-flex items-center gap-1">
@@ -250,6 +255,7 @@ export default function RoomTypesPage() {
                                     <tr className="bg-brand-slate/10 border-b border-brand-slate/15">
                                         <th className="px-5 py-3 font-semibold text-brand-slate text-xs uppercase tracking-wide">{t('auto.features.rooms.pages.roomtypespage.60a25d6c', { defaultValue: "Code" })}</th>
                                         <th className="px-5 py-3 font-semibold text-brand-slate text-xs uppercase tracking-wide">{t('auto.features.rooms.pages.roomtypespage.f530c0be', { defaultValue: "Libellé" })}</th>
+                                        <th className="px-5 py-3 font-semibold text-brand-slate text-xs uppercase tracking-wide">{t('pages.roomTypes.table.updatedBy', { defaultValue: 'Updated by' })}</th>
                                         <th className="px-5 py-3 font-semibold text-brand-slate text-xs uppercase tracking-wide text-right">{t('auto.features.rooms.pages.roomtypespage.ef856737', { defaultValue: "Action" })}</th>
                                     </tr>
                                 </thead>
@@ -262,6 +268,9 @@ export default function RoomTypesPage() {
                                                 </span>
                                             </td>
                                             <td className="px-5 py-3 text-brand-slate italic font-medium">{rt.name}</td>
+                                            <td className="px-5 py-3 align-top">
+                                                <UpdatedByCell updatedByName={rt.updatedByName} updatedAt={rt.updatedAt} />
+                                            </td>
                                             <td className="px-5 py-3 text-right">
                                                 <button onClick={() => handleRestore(rt)} disabled={restoreMutation.isPending}
                                                     className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-brand-mint/10 text-brand-mint text-xs font-medium rounded-xl hover:bg-brand-mint/15 transition-colors cursor-pointer disabled:opacity-50 border-none outline-none">

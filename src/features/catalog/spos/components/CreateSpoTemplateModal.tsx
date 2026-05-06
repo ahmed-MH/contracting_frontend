@@ -7,7 +7,7 @@ import {
     type CreateTemplateSpoPayload
 } from '../types/spos.types';
 import { useCreateSpoTemplate, useUpdateSpoTemplate } from '../hooks/useSpoTemplates';
-import { FileText, Percent, Moon, Calendar, Wallet } from 'lucide-react';
+import { FileText, Percent, Moon, Calendar, Wallet, UserRound } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { createSpoTemplateSchema, type SpoTemplateFormValues } from '../../schemas/catalog.schema';
 
@@ -81,7 +81,7 @@ export default function CreateSpoTemplateModal({ isOpen, onClose, editItem }: Cr
         }
     };
 
-    const conditionNeedsValue = ['MIN_NIGHTS', 'EARLY_BIRD', 'LONG_STAY'].includes(watchConditionType);
+    const conditionNeedsValue = ['MIN_NIGHTS', 'EARLY_BIRD', 'LONG_STAY', 'AGE'].includes(watchConditionType);
     const benefitNeedsValue = ['PERCENTAGE_DISCOUNT', 'FIXED_DISCOUNT', 'FREE_NIGHTS'].includes(watchBenefitType);
 
     return (
@@ -128,6 +128,7 @@ export default function CreateSpoTemplateModal({ isOpen, onClose, editItem }: Cr
                                     <option value="MIN_NIGHTS">{t('auto.features.catalog.spos.components.createspotemplatemodal.514d470e', { defaultValue: "Nuits minimales (Min. Nights)" })}</option>
                                     <option value="EARLY_BIRD">{t('auto.features.catalog.spos.components.createspotemplatemodal.31741767', { defaultValue: "Réservation anticipée (Early Bird)" })}</option>
                                     <option value="LONG_STAY">{t('auto.features.catalog.spos.components.createspotemplatemodal.eca20be2', { defaultValue: "Long séjour (Long Stay)" })}</option>
+                                    <option value="AGE">Age minimum (Senior)</option>
                                     <option value="HONEYMOONER">{t('auto.features.catalog.spos.components.createspotemplatemodal.06ada156', { defaultValue: "Voyage de noces (Honeymooner)" })}</option>
                                 </select>
                             </div>
@@ -135,7 +136,7 @@ export default function CreateSpoTemplateModal({ isOpen, onClose, editItem }: Cr
                             {conditionNeedsValue && (
                                 <div className="animate-in fade-in slide-in-from-top-2 duration-300">
                                     <label className="block text-sm font-medium text-brand-slate mb-1">
-                                        {watchConditionType === 'EARLY_BIRD' ? 'Jours à l\'avance' : 'Nombre de nuits'}
+                                            {watchConditionType === 'EARLY_BIRD' ? 'Jours à l\'avance' : watchConditionType === 'AGE' ? 'Age minimum' : 'Nombre de nuits'}
                                     </label>
                                     <div className="relative">
                                         <input
@@ -145,7 +146,7 @@ export default function CreateSpoTemplateModal({ isOpen, onClose, editItem }: Cr
                                             placeholder={t('auto.features.catalog.spos.components.createspotemplatemodal.placeholder.abd39585', { defaultValue: "Ex: 3" })}
                                         />
                                         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-brand-slate">
-                                            {watchConditionType === 'EARLY_BIRD' ? <Calendar size={16} /> : <Moon size={16} />}
+                                                {watchConditionType === 'EARLY_BIRD' ? <Calendar size={16} /> : watchConditionType === 'AGE' ? <UserRound size={16} /> : <Moon size={16} />}
                                         </div>
                                     </div>
                                     {errors.conditionValue && <p className="text-brand-slate text-xs mt-1">{errors.conditionValue.message}</p>}

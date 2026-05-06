@@ -126,13 +126,9 @@ export default function StatusDropdown({ contractId, currentStatus, size = 'sm' 
                 <div
                     role="listbox"
                     aria-label={t('pages.contractDetails.status.changeTo', { defaultValue: 'Change status to' })}
-                    className="absolute left-0 top-full mt-2 z-50 min-w-[200px] rounded-xl shadow-md border py-1.5 animate-in fade-in slide-in-from-top-1 duration-150
-                        bg-brand-light border-brand-slate/20
-                        dark:bg-brand-navy dark:border-brand-light/12"
+                    className="pricify-dropdown-surface absolute left-0 top-full z-50 mt-2 min-w-[200px] py-1.5 animate-in fade-in slide-in-from-top-1 duration-150"
                 >
-                    <p className="px-3.5 py-2 text-[10px] font-bold uppercase tracking-widest border-b
-                        text-brand-slate border-brand-slate/20
-                        dark:text-brand-light/50 dark:border-brand-light/10">
+                    <p className="pricify-dropdown-label border-b border-brand-slate/20 dark:border-brand-light/10">
                         {t('pages.contractDetails.status.changeTo', { defaultValue: 'Change status to' })}
                     </p>
                     {canActivate && (activationCheck.isFetching || activationErrors.length > 0 || activationCheck.data?.isValid === false) && (
@@ -164,9 +160,7 @@ export default function StatusDropdown({ contractId, currentStatus, size = 'sm' 
                                 role="option"
                                 onClick={() => handleTransition(target)}
                                 disabled={target === 'ACTIVE' && activationCheck.isFetching}
-                                className="w-full flex items-center gap-3 px-3.5 py-2.5 text-sm text-left transition-colors group
-                                    hover:bg-brand-slate/5 dark:hover:bg-brand-light/6
-                                    disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="pricify-dropdown-item group gap-3 px-3.5 py-2.5"
                             >
                                 <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold ${targetConfig.color} group-hover:shadow-sm transition-shadow`}>
                                     {targetConfig.icon}

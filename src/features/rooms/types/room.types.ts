@@ -1,4 +1,6 @@
-export interface RoomType {
+import type { AuditMetadata } from '../../../types/audit';
+
+export interface RoomType extends AuditMetadata {
     id: number;
     reference?: string;
     code: string;

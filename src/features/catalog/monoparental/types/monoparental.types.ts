@@ -1,4 +1,5 @@
 import { ContractRoom, Period } from '../../../contracts/types/contract.types';
+import type { AuditMetadata } from '../../../../types/audit';
 
 // ─── Monoparental Rules Enums ────────────────────────────────────────
 
@@ -7,7 +8,7 @@ export type ChildSurchargeBase = 'SINGLE' | 'DOUBLE' | 'HALF_SINGLE' | 'HALF_DOU
 
 // ─── Template Monoparental Rules (Catalogue) ─────────────────────────
 
-export interface TemplateMonoparentalRule {
+export interface TemplateMonoparentalRule extends AuditMetadata {
     id: number;
     reference?: string;
     name: string;

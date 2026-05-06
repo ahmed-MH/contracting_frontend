@@ -12,6 +12,7 @@ import Modal from '../../../components/ui/Modal';
 import type { ContractStatus } from '../types/contract.types';
 import { createContractSchema, type CreateContractFormInput, type CreateContractFormValues } from '../schemas/contract.schema';
 import { GuidedPageHeader, SectionCard, WorkspaceContainer } from '../../../components/layout/Workspace';
+import UpdatedByCell from '../../../components/audit/UpdatedByCell';
 
 function formatDate(iso: string, locale: string): string {
     return new Date(iso).toLocaleDateString(locale, { day: '2-digit', month: 'short', year: 'numeric' });
@@ -160,6 +161,7 @@ export default function ContractsList() {
                                         <th scope="col" className="px-5 py-4 font-semibold uppercase tracking-[0.18em]">{t('pages.contracts.table.partner', { defaultValue: 'Partners' })}</th>
                                         <th scope="col" className="px-5 py-4 text-center font-semibold uppercase tracking-[0.18em]">{t('pages.contracts.table.window', { defaultValue: 'Window' })}</th>
                                         <th scope="col" className="px-5 py-4 text-center font-semibold uppercase tracking-[0.18em]">{t('pages.contracts.table.status', { defaultValue: 'Status' })}</th>
+                                        <th scope="col" className="px-5 py-4 font-semibold uppercase tracking-[0.18em]">{t('pages.contracts.table.updatedBy', { defaultValue: 'Updated by' })}</th>
                                         <th scope="col" className="px-5 py-4 text-right font-semibold uppercase tracking-[0.18em]">{t('pages.contracts.table.actions', { defaultValue: 'Actions' })}</th>
                                     </tr>
                                 </thead>
@@ -201,6 +203,12 @@ export default function ContractsList() {
                                                 </td>
                                                 <td className="px-5 py-4 align-top text-center">
                                                     <span className={clsx('premium-pill', status.className)}>{status.label}</span>
+                                                </td>
+                                                <td className="px-5 py-4 align-top">
+                                                    <UpdatedByCell
+                                                        updatedByName={contract.updatedByName}
+                                                        updatedAt={contract.updatedAt}
+                                                    />
                                                 </td>
                                                 <td className="px-5 py-4 align-top text-right">
                                                     <button

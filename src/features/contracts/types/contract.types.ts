@@ -1,10 +1,63 @@
 import { RoomType } from '../../rooms/types/room.types';
+import type { AuditMetadata } from '../../../types/audit';
 
 export type ContractStatus = 'DRAFT' | 'ACTIVE' | 'EXPIRED' | 'TERMINATED';
-export type PaymentConditionType = 'DEPOSIT' | 'PREPAYMENT_100';
-export type PaymentMethodType = 'BANK_TRANSFER' | 'BANK_CHECK';
+export type PaymentConditionType =
+    | 'FULL_PREPAYMENT'
+    | 'PARTIAL_DEPOSIT'
+    | 'CREDIT_DAYS_FROM_INVOICE'
+    | 'PAYMENT_ON_ARRIVAL'
+    | 'PAYMENT_ON_DEPARTURE'
+    | 'CUSTOM'
+    | 'DEPOSIT'
+    | 'PREPAYMENT_100';
+export type PaymentMethodType =
+    | 'BANK_TRANSFER'
+    | 'SWIFT_TRANSFER'
+    | 'BANK_CHECK'
+    | 'BANK_DRAFT'
+    | 'CASH'
+    | 'CREDIT_CARD'
+    | 'PAYMENT_GATEWAY'
+    | 'OTHER';
+export type ContractMarketScope = 'INTERNATIONAL' | 'NATIONAL' | 'MIXED';
+export type PaymentDepositType = 'AMOUNT' | 'PERCENTAGE';
+export type PaymentDueTrigger = 'BOOKING_CONFIRMATION' | 'BEFORE_CHECK_IN' | 'INVOICE_ISSUE' | 'CUSTOM';
+export type PaymentConditionBasis = 'INVOICE_ISSUE' | 'INVOICE_RECEIPT' | 'CHECK_OUT';
 
-export interface Contract {
+export interface ContractPaymentMethodPolicy {
+    type: PaymentMethodType;
+    isPrimary?: boolean;
+}
+
+export interface ContractPaymentConditionPolicy {
+    type: PaymentConditionType;
+    percentage?: number;
+    days?: number;
+    basis?: PaymentConditionBasis;
+    label?: string;
+    notes?: string;
+}
+
+export interface ContractPaymentDepositPolicy {
+    type: PaymentDepositType;
+    value: number;
+    currency?: string;
+    dueTrigger?: PaymentDueTrigger;
+    dueDays?: number;
+    refundable?: boolean;
+}
+
+export interface ContractPaymentPolicy {
+    marketScope: ContractMarketScope;
+    methods: ContractPaymentMethodPolicy[];
+    conditions: ContractPaymentConditionPolicy[];
+    deposit?: ContractPaymentDepositPolicy | null;
+    selectedHotelBankAccountId?: number | null;
+    notes?: string | null;
+}
+
+export interface Contract extends AuditMetadata {
     id: number;
     reference?: string;
     name: string;
@@ -29,6 +82,8 @@ export interface Contract {
     depositAmount?: number;
     creditDays?: number;
     paymentMethods?: PaymentMethodType[];
+    paymentPolicy?: ContractPaymentPolicy | null;
+    selectedHotelBankAccountId?: number | null;
 
     baseArrangement?: {
         id: number;
@@ -37,7 +92,6 @@ export interface Contract {
         level?: number;
     } | null;
     baseArrangementId?: number | null;
-    createdAt: string;
 }
 
 export interface ContractRoom {

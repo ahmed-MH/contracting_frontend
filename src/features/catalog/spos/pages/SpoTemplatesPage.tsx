@@ -14,6 +14,7 @@ import {
     ChevronLeft, ChevronRight, Archive, RotateCcw, ChevronDown
 } from 'lucide-react';
 import EditSpoTemplateModal from '../components/EditSpoTemplateModal';
+import UpdatedByCell from '../../../../components/audit/UpdatedByCell';
 
 export default function SpoTemplatesPage() {
     const { t } = useTranslation('common');
@@ -71,6 +72,7 @@ export default function SpoTemplatesPage() {
             case 'MIN_NIGHTS': return `Min. ${spo.conditionValue} nuits`;
             case 'EARLY_BIRD': return `Réservé ${spo.conditionValue} j. avance`;
             case 'LONG_STAY': return `Long séjour (> ${spo.conditionValue} nuits)`;
+            case 'AGE': return `Age min. ${spo.conditionValue} ans`;
             case 'HONEYMOONER': return 'Voyage de noces';
             case 'NONE': return 'Automatique';
             default: return spo.conditionType;
@@ -161,6 +163,7 @@ export default function SpoTemplatesPage() {
                                     <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wide text-brand-slate dark:text-brand-light/65">{t('auto.features.catalog.spos.pages.spotemplatespage.3bbd1cbc', { defaultValue: "SI / Condition" })}</th>
                                     <th className="px-4 py-4 text-center text-brand-slate dark:text-brand-light/55"><GitMerge size={14} className="mx-auto rotate-90" /></th>
                                     <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wide text-brand-slate dark:text-brand-light/65">{t('auto.features.catalog.spos.pages.spotemplatespage.4420b633', { defaultValue: "ALORS / Avantage" })}</th>
+                                    <th className="px-5 py-4 text-xs font-semibold uppercase tracking-wide text-brand-slate dark:text-brand-light/65">{t('pages.catalog.spo.table.updatedBy', { defaultValue: 'Updated by' })}</th>
                                     <th className="px-5 py-4 text-right text-xs font-semibold uppercase tracking-wide text-brand-slate dark:text-brand-light/65">{t('auto.features.catalog.spos.pages.spotemplatespage.a6e99000', { defaultValue: "Actions" })}</th>
                                 </tr>
                             </thead>
@@ -187,6 +190,9 @@ export default function SpoTemplatesPage() {
                                             <div className="w-1.5 h-1.5 rounded-full bg-brand-mint" />
                                             <span className="text-brand-mint font-black whitespace-nowrap">{formatBenefit(spo)}</span>
                                         </div>
+                                    </td>
+                                    <td className="px-5 py-4 align-top">
+                                        <UpdatedByCell updatedByName={spo.updatedByName} updatedAt={spo.updatedAt} />
                                     </td>
                                     <td className="px-5 py-4 text-right">
                                         <div className="flex items-center justify-end gap-1">
@@ -249,10 +255,20 @@ export default function SpoTemplatesPage() {
                         <div className="premium-surface mt-4 overflow-hidden opacity-80">
                             <div className="overflow-x-auto">
                                 <table className="w-full min-w-[520px] text-left text-sm">
+                                    <thead>
+                                        <tr className="border-b border-brand-slate/15 bg-brand-mint/6 dark:border-brand-light/10 dark:bg-brand-light/5">
+                                            <th className="px-5 py-4 text-xs font-semibold uppercase tracking-wide text-brand-slate dark:text-brand-light/65">{t('auto.features.catalog.spos.pages.spotemplatespage.994aa2d8', { defaultValue: "Modèle" })}</th>
+                                            <th className="px-5 py-4 text-xs font-semibold uppercase tracking-wide text-brand-slate dark:text-brand-light/65">{t('pages.catalog.spo.table.updatedBy', { defaultValue: 'Updated by' })}</th>
+                                            <th className="px-5 py-4 text-right text-xs font-semibold uppercase tracking-wide text-brand-slate dark:text-brand-light/65">{t('pages.catalog.spo.table.actions', { defaultValue: 'Actions' })}</th>
+                                        </tr>
+                                    </thead>
                                     <tbody className="divide-y divide-brand-slate/10 dark:divide-brand-light/10">
                                         {archivedSpos.map((spo: TemplateSpo) => (
                                             <tr key={spo.id} className="transition-colors hover:bg-brand-mint/5 dark:hover:bg-brand-light/5">
                                                 <td className="px-5 py-3 text-brand-slate font-bold dark:text-brand-light/75">{spo.name}</td>
+                                                <td className="px-5 py-3 align-top">
+                                                    <UpdatedByCell updatedByName={spo.updatedByName} updatedAt={spo.updatedAt} />
+                                                </td>
                                                 <td className="px-5 py-3 text-right">
                                                     <button onClick={() => handleRestore(spo)}
                                                         className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-brand-mint/10 text-brand-mint text-xs font-bold rounded-xl hover:bg-brand-mint/10 transition-colors cursor-pointer border-none shadow-xs">

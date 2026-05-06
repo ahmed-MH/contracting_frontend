@@ -79,7 +79,7 @@ export const createSpoTemplateSchema = (t: TFunction) =>
     z
         .object({
             name: requiredName(t),
-            conditionType: z.enum(['MIN_NIGHTS', 'HONEYMOONER', 'EARLY_BIRD', 'LONG_STAY', 'NONE']),
+            conditionType: z.enum(['MIN_NIGHTS', 'HONEYMOONER', 'EARLY_BIRD', 'LONG_STAY', 'AGE', 'NONE']),
             conditionValue: nonNegativeNumber(t).optional(),
             benefitType: z.enum(['PERCENTAGE_DISCOUNT', 'FIXED_DISCOUNT', 'FREE_NIGHTS', 'FREE_ROOM_UPGRADE', 'FREE_BOARD_UPGRADE', 'KIDS_GO_FREE']),
             benefitValue: nonNegativeNumber(t).optional(),
@@ -89,7 +89,7 @@ export const createSpoTemplateSchema = (t: TFunction) =>
             payNights: nonNegativeNumber(t).optional(),
         })
         .superRefine((value, ctx) => {
-            if (['MIN_NIGHTS', 'EARLY_BIRD', 'LONG_STAY'].includes(value.conditionType) && value.conditionValue === undefined) {
+            if (['MIN_NIGHTS', 'EARLY_BIRD', 'LONG_STAY', 'AGE'].includes(value.conditionType) && value.conditionValue === undefined) {
                 ctx.addIssue({
                     code: 'custom',
                     path: ['conditionValue'],

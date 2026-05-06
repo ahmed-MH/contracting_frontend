@@ -31,6 +31,7 @@ import type {
     ChildSurchargeBase
 } from '../../../../types';
 import EditMonoparentalTemplateModal from '../components/EditMonoparentalTemplateModal';
+import UpdatedByCell from '../../../../components/audit/UpdatedByCell';
 
 const BASE_RATE_LABELS: Record<BaseRateType, string> = {
     SINGLE: 'Single',
@@ -178,6 +179,7 @@ export default function MonoparentalCatalogPage() {
                                 <th className="px-5 py-4 text-xs font-semibold uppercase tracking-wide text-brand-slate dark:text-brand-light/65">{t('auto.features.catalog.monoparental.pages.monoparentalcatalogpage.f130a297', { defaultValue: "Configuration" })}</th>
                                 <th className="px-5 py-4 text-xs font-semibold uppercase tracking-wide text-brand-slate dark:text-brand-light/65">{t('auto.features.catalog.monoparental.pages.monoparentalcatalogpage.f23226d9', { defaultValue: "Déclencheur (Pax)" })}</th>
                                 <th className="px-5 py-4 text-xs font-semibold uppercase tracking-wide text-brand-slate dark:text-brand-light/65">{t('auto.features.catalog.monoparental.pages.monoparentalcatalogpage.f4984b1a', { defaultValue: "Formule Tarifaire" })}</th>
+                                <th className="px-5 py-4 text-xs font-semibold uppercase tracking-wide text-brand-slate dark:text-brand-light/65">{t('pages.catalog.monoparental.table.updatedBy', { defaultValue: 'Updated by' })}</th>
                                 <th className="px-5 py-4 text-right text-xs font-semibold uppercase tracking-wide text-brand-slate dark:text-brand-light/65">{t('auto.features.catalog.monoparental.pages.monoparentalcatalogpage.0bba5166', { defaultValue: "Actions" })}</th>
                             </tr>
                         </thead>
@@ -212,6 +214,9 @@ export default function MonoparentalCatalogPage() {
                                                 {CHILD_SURCHARGE_BASE_LABELS[r.childSurchargeBase as ChildSurchargeBase]}
                                             </span>
                                         </div>
+                                    </td>
+                                    <td className="px-5 py-4 align-top">
+                                        <UpdatedByCell updatedByName={r.updatedByName} updatedAt={r.updatedAt} />
                                     </td>
                                     <td className="px-5 py-4 text-right">
                                         <div className="flex items-center justify-end gap-1">
@@ -272,10 +277,20 @@ export default function MonoparentalCatalogPage() {
                     {showArchived && archivedRules && archivedRules.length > 0 && (
                         <div className="premium-surface mt-4 overflow-x-auto opacity-80">
                             <table className="w-full text-sm text-left">
+                                <thead>
+                                    <tr className="border-b border-brand-slate/15 bg-brand-mint/6 dark:border-brand-light/10 dark:bg-brand-light/5">
+                                        <th className="px-5 py-4 text-xs font-semibold uppercase tracking-wide text-brand-slate dark:text-brand-light/65">{t('auto.features.catalog.monoparental.pages.monoparentalcatalogpage.f130a297', { defaultValue: "Configuration" })}</th>
+                                        <th className="px-5 py-4 text-xs font-semibold uppercase tracking-wide text-brand-slate dark:text-brand-light/65">{t('pages.catalog.monoparental.table.updatedBy', { defaultValue: 'Updated by' })}</th>
+                                        <th className="px-5 py-4 text-right text-xs font-semibold uppercase tracking-wide text-brand-slate dark:text-brand-light/65">{t('pages.catalog.monoparental.table.actions', { defaultValue: 'Actions' })}</th>
+                                    </tr>
+                                </thead>
                                 <tbody className="divide-y divide-brand-slate/10 dark:divide-brand-light/10">
                                     {archivedRules.map((r: any) => (
                                         <tr key={r.id} className="transition-colors hover:bg-brand-mint/5 dark:hover:bg-brand-light/5">
                                             <td className="px-5 py-3 text-brand-slate font-bold dark:text-brand-light/75">{r.name}</td>
+                                            <td className="px-5 py-3 align-top">
+                                                <UpdatedByCell updatedByName={r.updatedByName} updatedAt={r.updatedAt} />
+                                            </td>
                                             <td className="px-5 py-3 text-right">
                                                 <button onClick={() => handleRestore(r)}
                                                     className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-brand-mint/10 text-brand-mint text-xs font-bold rounded-xl hover:bg-brand-mint/10 transition-colors cursor-pointer border-none shadow-sm">

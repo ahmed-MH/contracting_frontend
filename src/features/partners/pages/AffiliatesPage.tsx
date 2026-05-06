@@ -5,12 +5,15 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useAffiliates, useArchivedAffiliates, useCreateAffiliate, useUpdateAffiliate, useDeleteAffiliate, useRestoreAffiliate, type Affiliate } from '../hooks/useAffiliates';
 import { useAuth } from '../../auth/context/AuthContext';
 import { useConfirm } from '../../../context/ConfirmContext';
-import { Users, Plus, Pencil, Trash2, RotateCcw, Archive, ChevronDown, ChevronRight, FileText } from 'lucide-react';
+import { Users, Plus, Pencil, Trash2, RotateCcw, Archive, ChevronDown, ChevronRight, FileText, Mail } from 'lucide-react';
 import Modal from '../../../components/ui/Modal';
 import ViewAffiliateContractsModal from '../components/ViewAffiliateContractsModal';
+import AffiliateEmailSpoManagerModal from '../components/AffiliateEmailSpoManagerModal';
 import { EMAIL_LABELS } from '../../../constants/emailLabels';
 import { createAffiliateSchema, type AffiliateFormInput, type AffiliateFormValues } from '../schemas/affiliate.schema';
 import { GuidedPageHeader } from '../../../components/layout/Workspace';
+import UpdatedByCell from '../../../components/audit/UpdatedByCell';
+import UpdatedMeta from '../../../components/audit/UpdatedMeta';
 
 export default function AffiliatesPage() {
     const { t } = useTranslation('common');
@@ -19,6 +22,7 @@ export default function AffiliatesPage() {
     const [editing, setEditing] = useState<Affiliate | null>(null);
     const [showArchived, setShowArchived] = useState(false);
     const [contractsViewAff, setContractsViewAff] = useState<Affiliate | null>(null);
+    const [emailSpoAffiliate, setEmailSpoAffiliate] = useState<Affiliate | null>(null);
     const { user } = useAuth();
     const { confirm } = useConfirm();
     const isAdmin = user?.role === 'ADMIN';
@@ -173,6 +177,7 @@ export default function AffiliatesPage() {
                                 <th className="px-5 py-3 font-semibold text-brand-slate text-xs uppercase tracking-wide">{t('auto.features.partners.pages.affiliatespage.55c3ff30', { defaultValue: "Type" })}</th>
                                 <th className="px-5 py-3 font-semibold text-brand-slate text-xs uppercase tracking-wide">{t('auto.features.partners.pages.affiliatespage.0219ccde', { defaultValue: "Représentant" })}</th>
                                 <th className="px-5 py-3 font-semibold text-brand-slate text-xs uppercase tracking-wide">{t('auto.features.partners.pages.affiliatespage.958306b2', { defaultValue: "Email" })}</th>
+                                <th className="px-5 py-3 font-semibold text-brand-slate text-xs uppercase tracking-wide">{t('pages.affiliates.table.updatedBy', { defaultValue: 'Updated by' })}</th>
                                 <th className="px-5 py-3 font-semibold text-brand-slate text-xs uppercase tracking-wide text-right">
                                     {t('pages.affiliates.table.actions', { defaultValue: 'Actions' })}
                                 </th>
@@ -211,11 +216,21 @@ export default function AffiliatesPage() {
                                             '—'
                                         )}
                                     </td>
+                                    <td className="px-5 py-3 align-top">
+                                        <UpdatedByCell updatedByName={aff.updatedByName} updatedAt={aff.updatedAt} />
+                                    </td>
                                     <td className="px-5 py-3 text-right">
                                         <div className="inline-flex items-center gap-1">
                                             <button onClick={() => setContractsViewAff(aff)}
                                                 className="p-1.5 rounded-xl text-brand-slate/70 hover:text-brand-mint hover:bg-brand-mint/10 transition-colors cursor-pointer" title={t('auto.features.partners.pages.affiliatespage.title.6389cd97', { defaultValue: "Voir les contrats" })}>
                                                 <FileText size={15} />
+                                            </button>
+                                            <button
+                                                onClick={() => setEmailSpoAffiliate(aff)}
+                                                className="p-1.5 rounded-xl text-brand-slate/70 hover:text-brand-mint hover:bg-brand-mint/10 transition-colors cursor-pointer"
+                                                title="Email SPO"
+                                            >
+                                                <Mail size={15} />
                                             </button>
                                             <button onClick={() => openEdit(aff)}
                                                 className="p-1.5 rounded-xl text-brand-slate/70 hover:text-brand-mint hover:bg-brand-mint/10 transition-colors cursor-pointer" title={t('auto.features.partners.pages.affiliatespage.title.0b2ca4dc', { defaultValue: "Modifier" })}>
@@ -254,6 +269,7 @@ export default function AffiliatesPage() {
                                     <tr className="bg-brand-slate/10 border-b border-brand-slate/15">
                                         <th className="px-5 py-3 font-semibold text-brand-slate text-xs uppercase tracking-wide">{t('auto.features.partners.pages.affiliatespage.8827467a', { defaultValue: "Société" })}</th>
                                         <th className="px-5 py-3 font-semibold text-brand-slate text-xs uppercase tracking-wide">{t('auto.features.partners.pages.affiliatespage.0219ccde', { defaultValue: "Représentant" })}</th>
+                                        <th className="px-5 py-3 font-semibold text-brand-slate text-xs uppercase tracking-wide">{t('pages.affiliates.table.updatedBy', { defaultValue: 'Updated by' })}</th>
                                         <th className="px-5 py-3 font-semibold text-brand-slate text-xs uppercase tracking-wide text-right">{t('auto.features.partners.pages.affiliatespage.21d528b7', { defaultValue: "Action" })}</th>
                                     </tr>
                                 </thead>
@@ -262,6 +278,9 @@ export default function AffiliatesPage() {
                                         <tr key={aff.id} className="hover:bg-brand-slate/10 transition-colors">
                                             <td className="px-5 py-3 text-brand-slate font-medium">{aff.companyName}</td>
                                             <td className="px-5 py-3 text-brand-slate/70">{aff.representativeName || '—'}</td>
+                                            <td className="px-5 py-3 align-top">
+                                                <UpdatedByCell updatedByName={aff.updatedByName} updatedAt={aff.updatedAt} />
+                                            </td>
                                             <td className="px-5 py-3 text-right">
                                                 <button onClick={() => handleRestore(aff)} disabled={restoreMutation.isPending}
                                                     className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-brand-mint/10 text-brand-mint text-xs font-medium rounded-xl hover:bg-brand-mint/15 transition-colors cursor-pointer disabled:opacity-50">
@@ -399,6 +418,16 @@ export default function AffiliatesPage() {
                         </div>
                     </div>
 
+                    {editing && (
+                        <div className="pt-4 border-t border-brand-slate/10">
+                            <UpdatedMeta
+                                updatedByName={editing.updatedByName}
+                                updatedAt={editing.updatedAt}
+                                tone="plain"
+                            />
+                        </div>
+                    )}
+
                     <div className="flex justify-end gap-3 pt-4 border-t border-brand-slate/10">
                         <button type="button" onClick={closeModal}
                             className="px-4 py-2 text-sm font-medium text-brand-navy bg-brand-slate/10 rounded-xl hover:bg-brand-slate/15 transition-colors cursor-pointer">
@@ -418,6 +447,12 @@ export default function AffiliatesPage() {
                 onClose={() => setContractsViewAff(null)}
                 affiliateId={contractsViewAff?.id ?? null}
                 affiliateName={contractsViewAff?.companyName ?? ''}
+            />
+
+            <AffiliateEmailSpoManagerModal
+                affiliate={emailSpoAffiliate}
+                isOpen={!!emailSpoAffiliate}
+                onClose={() => setEmailSpoAffiliate(null)}
             />
         </div>
     );

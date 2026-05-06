@@ -2,6 +2,7 @@ import { Pencil, Trash2, RotateCcw, ChevronLeft, ChevronRight, Clock } from 'luc
 import type { TemplateEarlyBooking } from '../types/early-bookings.types';
 import type { PageMeta } from '../../../../types';
 import { useTranslation } from 'react-i18next';
+import UpdatedByCell from '../../../../components/audit/UpdatedByCell';
 
 interface EarlyBookingsTableProps {
     data: TemplateEarlyBooking[];
@@ -42,6 +43,7 @@ export default function EarlyBookingsTable({
                     <tr className="border-b border-brand-slate/15 bg-brand-mint/6 dark:border-brand-light/10 dark:bg-brand-light/5">
                         <th className="px-5 py-4 text-xs font-semibold uppercase tracking-wide text-brand-slate dark:text-brand-light/65">{t('auto.features.catalog.early.bookings.components.earlybookingstable.09eb62dd', { defaultValue: "Nom" })}</th>
                         <th className="px-5 py-4 text-xs font-semibold uppercase tracking-wide text-brand-slate dark:text-brand-light/65">{t('auto.features.catalog.early.bookings.components.earlybookingstable.772de13a', { defaultValue: "Réservation" })}</th>
+                        <th className="px-5 py-4 text-xs font-semibold uppercase tracking-wide text-brand-slate dark:text-brand-light/65">{t('pages.catalog.earlyBookings.table.updatedBy', { defaultValue: 'Updated by' })}</th>
                         <th className="px-5 py-4 text-right text-xs font-semibold uppercase tracking-wide text-brand-slate dark:text-brand-light/65">{t('auto.features.catalog.early.bookings.components.earlybookingstable.61e1442d', { defaultValue: "Action" })}</th>
                     </tr>
                 </thead>
@@ -55,6 +57,9 @@ export default function EarlyBookingsTable({
                                 ) : (
                                     <span className="text-xs text-brand-slate">—</span>
                                 )}
+                            </td>
+                            <td className="px-5 py-3 align-top">
+                                <UpdatedByCell updatedByName={eb.updatedByName} updatedAt={eb.updatedAt} />
                             </td>
                             <td className="px-5 py-3 text-right">
                                 {onRestore && (
@@ -81,6 +86,7 @@ export default function EarlyBookingsTable({
                         <th className="px-5 py-4 text-center text-xs font-semibold uppercase tracking-wide text-brand-slate dark:text-brand-light/65">{t('auto.features.catalog.early.bookings.components.earlybookingstable.d04ebc7e', { defaultValue: "Séjour" })}</th>
                         <th className="px-5 py-4 text-xs font-semibold uppercase tracking-wide text-brand-slate dark:text-brand-light/65">{t('auto.features.catalog.early.bookings.components.earlybookingstable.311a698c', { defaultValue: "Valeur" })}</th>
                         <th className="px-5 py-4 text-xs font-semibold uppercase tracking-wide text-brand-slate dark:text-brand-light/65">{t('auto.features.catalog.early.bookings.components.earlybookingstable.43465562', { defaultValue: "Prépayé" })}</th>
+                        <th className="px-5 py-4 text-xs font-semibold uppercase tracking-wide text-brand-slate dark:text-brand-light/65">{t('pages.catalog.earlyBookings.table.updatedBy', { defaultValue: 'Updated by' })}</th>
                         <th className="px-5 py-4 text-right text-xs font-semibold uppercase tracking-wide text-brand-slate dark:text-brand-light/65">{t('auto.features.catalog.early.bookings.components.earlybookingstable.9af038e3', { defaultValue: "Actions" })}</th>
                     </tr>
                 </thead>
@@ -131,6 +137,9 @@ export default function EarlyBookingsTable({
                                         <span className="text-[10px] text-brand-slate font-mono">({eb.prepaymentPercentage}%)</span>
                                     </div>
                                 ) : <span className="text-xs text-brand-slate">{t('auto.features.catalog.early.bookings.components.earlybookingstable.74474d60', { defaultValue: "Non" })}</span>}
+                            </td>
+                            <td className="px-5 py-3 align-top">
+                                <UpdatedByCell updatedByName={eb.updatedByName} updatedAt={eb.updatedAt} />
                             </td>
                             <td className="px-5 py-3 text-right">
                                 <div className="inline-flex items-center gap-1">

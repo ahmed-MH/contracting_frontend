@@ -1,5 +1,5 @@
 import apiClient from '../../../services/api.client';
-import type { ActivationValidationResult, Contract, Period, ContractRoom, ContractStatus } from '../types/contract.types';
+import type { ActivationValidationResult, Contract, Period, ContractRoom, ContractStatus, ContractPaymentPolicy } from '../types/contract.types';
 
 // Re-export types for page consumers
 export type { Contract, Period, ContractRoom, ContractStatus };
@@ -14,6 +14,8 @@ export interface CreateContractPayload {
     depositAmount?: number;
     creditDays?: number;
     paymentMethods?: string[];
+    paymentPolicy?: ContractPaymentPolicy | null;
+    selectedHotelBankAccountId?: number | null;
     baseArrangementId?: number | null;
 }
 
@@ -28,6 +30,8 @@ export interface UpdateContractPayload {
     depositAmount?: number;
     creditDays?: number;
     paymentMethods?: string[];
+    paymentPolicy?: ContractPaymentPolicy | null;
+    selectedHotelBankAccountId?: number | null;
     baseArrangementId?: number | null;
 }
 

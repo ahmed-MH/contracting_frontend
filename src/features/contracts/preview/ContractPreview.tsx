@@ -1,4 +1,4 @@
-import { useMemo, type ReactNode } from 'react';
+import { useEffect, useMemo, useState, type CSSProperties, type ReactNode } from 'react';
 import type { Contract, Period } from '../types/contract.types';
 import type { ContractLineData } from '../services/contract.service';
 import type { Hotel } from '../../hotel/types/hotel.types';
@@ -11,10 +11,12 @@ import type { ContractCancellationRule } from '../../catalog/cancellation/types/
 import {
     type ContractPresentationContext,
     conversionNote,
+    buildPaymentPolicyItems,
     convertContractPreviewData,
     currencyDecimals,
     translatedName,
 } from './contractPresentation';
+import { resolveAssetUrl } from '../../../lib/asset-url';
 
 interface AffiliateParty {
     id: number;
@@ -212,9 +214,16 @@ const copy = {
 
 type CopyKey = keyof typeof copy.en;
 type PreviewLanguage = keyof typeof copy;
+const DEFAULT_CONTRACT_THEME = '#10B981';
 
 function t(language: PreviewLanguage, key: CopyKey) {
     return copy[language][key] ?? copy.en[key];
+}
+
+function validThemeColor(value?: string | null) {
+    return typeof value === 'string' && /^#[0-9A-Fa-f]{6}$/.test(value)
+        ? value.toUpperCase()
+        : DEFAULT_CONTRACT_THEME;
 }
 
 export interface ContractPreviewData {
@@ -322,7 +331,7 @@ function compactScope(parts: (string | null | undefined)[]) {
     return parts.filter((part): part is string => Boolean(part && part.trim())).join(' | ');
 }
 
-function formatPaymentCondition(value?: string | null, language: PreviewLanguage = 'en') {
+export function formatPaymentCondition(value?: string | null, language: PreviewLanguage = 'en') {
     if (!value) return language === 'fr' ? 'Conditions à confirmer par les parties.' : 'Payment terms to be confirmed by the parties.';
     if (value === 'PREPAYMENT_100') return language === 'fr' ? '100% prépaiement' : '100% prepayment';
     if (value === 'DEPOSIT') return language === 'fr' ? 'Paiement avec acompte' : 'Deposit payment';
@@ -492,7 +501,13 @@ function DocumentSection({ index, title, children }: { index: string; title: str
     return (
         <section className="contract-page-section border-t border-slate-300 pt-5 first:border-t-0 first:pt-0">
             <div className="mb-3 flex items-center gap-3">
-                <span className="flex h-7 w-7 items-center justify-center rounded-full border border-brand-mint/50 bg-brand-mint/10 text-[11px] font-black text-brand-navy">
+                <span
+                    className="flex h-7 w-7 items-center justify-center rounded-full border text-[11px] font-black text-brand-navy"
+                    style={{
+                        borderColor: 'var(--contract-theme-border-soft)',
+                        backgroundColor: 'var(--contract-theme-soft)',
+                    }}
+                >
                     {index}
                 </span>
                 <h2 className="text-[13px] font-black uppercase tracking-[0.22em] text-brand-navy">
@@ -506,7 +521,7 @@ function DocumentSection({ index, title, children }: { index: string; title: str
 
 function SubsectionTitle({ children }: { children: ReactNode }) {
     return (
-        <h3 className="mb-2 border-l-4 border-brand-mint pl-3 text-[11px] font-black uppercase tracking-[0.18em] text-slate-700">
+        <h3 className="mb-2 border-l-4 pl-3 text-[11px] font-black uppercase tracking-[0.18em] text-slate-700" style={{ borderColor: 'var(--contract-theme-color)' }}>
             {children}
         </h3>
     );
@@ -545,20 +560,26 @@ export function ContractHeader({
     language: PreviewLanguage;
 }) {
     const title = contract.name || t(language, 'commercialAgreement');
+    const hotelLogoUrl = resolveAssetUrl(hotel?.logoUrl);
+    const [logoFailed, setLogoFailed] = useState(false);
+
+    useEffect(() => {
+        setLogoFailed(false);
+    }, [hotelLogoUrl]);
 
     return (
-        <header className="border-b-2 border-brand-navy pb-5">
+        <header className="border-b-2 pb-5" style={{ borderColor: 'var(--contract-theme-color)' }}>
             <div className="flex items-start justify-between gap-8">
                 <div className="flex min-w-0 items-start gap-4">
                     <div className="flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden border border-slate-300 bg-white">
-                        {hotel?.logoUrl ? (
-                            <img src={hotel.logoUrl} alt={`${hotel.name} logo`} className="h-full w-full object-contain p-2" />
+                        {hotelLogoUrl && !logoFailed ? (
+                            <img src={hotelLogoUrl} alt={`${hotel?.name ?? 'Hotel'} logo`} className="h-full w-full object-contain p-2" onError={() => setLogoFailed(true)} />
                         ) : (
-                            <span className="text-2xl font-black text-brand-navy">{(hotel?.name ?? 'P').slice(0, 1)}</span>
+                            <span className="text-2xl font-black" style={{ color: 'var(--contract-theme-color)' }}>{(hotel?.name ?? 'P').slice(0, 1)}</span>
                         )}
                     </div>
                     <div className="min-w-0">
-                        <p className="text-[10px] font-black uppercase tracking-[0.24em] text-brand-mint">{t(language, 'hotelContractingAgreement')}</p>
+                        <p className="text-[10px] font-black uppercase tracking-[0.24em]" style={{ color: 'var(--contract-theme-color)' }}>{t(language, 'hotelContractingAgreement')}</p>
                         <h1 className="mt-2 text-2xl font-black uppercase leading-tight tracking-tight text-brand-navy">
                             {title}
                         </h1>
@@ -804,7 +825,11 @@ function SpoRules({ contract, spos, language }: { contract: Contract; spos: Cont
     const periods = sortPeriods(contract.periods ?? []);
     const matrixRows: PeriodMatrixRow[] = spos.map((spo) => {
         const applicablePeriods = resolveRulePeriods(periods, spo.applicablePeriods);
-        const condition = spo.conditionType === 'MIN_NIGHTS' ? `Minimum ${spo.conditionValue ?? spo.stayNights} nights` : labelize(spo.conditionType);
+        const condition = spo.conditionType === 'MIN_NIGHTS'
+            ? `Minimum ${spo.conditionValue ?? spo.stayNights} nights`
+            : spo.conditionType === 'AGE'
+                ? `Minimum age ${spo.conditionValue} years`
+                : labelize(spo.conditionType);
         const scope = compactScope([condition, labelize(spo.applicationType), roomScope(spo.applicableContractRooms)]);
         return {
             key: spo.id,
@@ -945,7 +970,7 @@ function CancellationRules({ contract, cancellations, language }: { contract: Co
     });
 }
 
-function paymentPolicyItems(contract: Contract, hotel: Hotel | null, language: PreviewLanguage) {
+export function paymentPolicyItems(contract: Contract, hotel: Hotel | null, language: PreviewLanguage) {
     const isFr = language === 'fr';
     return [
         contract.paymentCondition
@@ -992,7 +1017,7 @@ export function CommercialRemarksSection({ index, language }: { index: string; l
 }
 
 export function PaymentTermsSection({ index, contract, hotel, language }: { index: string; contract: Contract; hotel: Hotel | null; language: PreviewLanguage }) {
-    const paymentItems = paymentPolicyItems(contract, hotel, language);
+    const paymentItems = buildPaymentPolicyItems(contract, hotel, language);
 
     return (
         <DocumentSection index={index} title={t(language, 'paymentTerms')}>
@@ -1085,7 +1110,13 @@ function FxNote({ presentation }: { presentation: ContractPresentationContext })
     if (!note) return null;
 
     return (
-        <div className="mt-4 border-l-4 border-brand-mint bg-brand-mint/8 px-3 py-2 text-[10px] font-semibold leading-4 text-slate-700">
+        <div
+            className="mt-4 border-l-4 px-3 py-2 text-[10px] font-semibold leading-4 text-slate-700"
+            style={{
+                borderLeftColor: 'var(--contract-theme-color)',
+                backgroundColor: 'var(--contract-theme-soft)',
+            }}
+        >
             {note}
         </div>
     );
@@ -1112,9 +1143,15 @@ export function ContractPreview({ data }: ContractPreviewProps) {
     ]);
     const { contract } = convertedData;
     const language = data.presentation.language;
+    const themeColor = validThemeColor(data.hotel?.preferredThemeColor);
+    const articleStyle = useMemo(() => ({
+        ['--contract-theme-color' as string]: themeColor,
+        ['--contract-theme-soft' as string]: `${themeColor}14`,
+        ['--contract-theme-border-soft' as string]: `${themeColor}66`,
+    }) as CSSProperties, [themeColor]);
 
     return (
-        <article id="contract-document" className="contract-a4 mx-auto min-h-[297mm] w-full max-w-[210mm] bg-white px-[14mm] py-[13mm] text-slate-900 shadow-xl ring-1 ring-slate-200 print:shadow-none print:ring-0">
+        <article id="contract-document" className="contract-a4 mx-auto min-h-[297mm] w-full max-w-[210mm] bg-white px-[14mm] py-[13mm] text-slate-900 shadow-xl ring-1 ring-slate-200 print:shadow-none print:ring-0" style={articleStyle}>
             <ContractHeader contract={contract} hotel={data.hotel} selectedPartner={data.selectedPartner} language={language} />
             <FxNote presentation={data.presentation} />
             <div className="mt-7 space-y-7">

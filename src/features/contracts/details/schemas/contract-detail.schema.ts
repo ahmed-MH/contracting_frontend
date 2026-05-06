@@ -35,6 +35,33 @@ const nonNegativeInteger = (t: TFunction) =>
 const applicationTypeSchema = z.enum(['PER_NIGHT_PER_PERSON', 'PER_NIGHT_PER_ROOM', 'FLAT_RATE_PER_STAY']);
 
 const optionalDate = z.string().optional();
+const paymentMethodSchema = z.enum(['BANK_TRANSFER', 'SWIFT_TRANSFER', 'BANK_CHECK', 'BANK_DRAFT', 'CASH', 'CREDIT_CARD', 'PAYMENT_GATEWAY', 'OTHER']);
+const paymentConditionSchema = z.enum(['FULL_PREPAYMENT', 'PARTIAL_DEPOSIT', 'CREDIT_DAYS_FROM_INVOICE', 'PAYMENT_ON_ARRIVAL', 'PAYMENT_ON_DEPARTURE', 'CUSTOM', 'DEPOSIT', 'PREPAYMENT_100']);
+const paymentPolicySchema = z.object({
+    marketScope: z.enum(['INTERNATIONAL', 'NATIONAL', 'MIXED']),
+    methods: z.array(z.object({
+        type: paymentMethodSchema,
+        isPrimary: z.boolean().optional(),
+    })),
+    conditions: z.array(z.object({
+        type: paymentConditionSchema,
+        percentage: z.number().optional(),
+        days: z.number().optional(),
+        basis: z.enum(['INVOICE_ISSUE', 'INVOICE_RECEIPT', 'CHECK_OUT']).optional(),
+        label: z.string().optional(),
+        notes: z.string().optional(),
+    })),
+    deposit: z.object({
+        type: z.enum(['AMOUNT', 'PERCENTAGE']),
+        value: z.number(),
+        currency: z.string().optional(),
+        dueTrigger: z.enum(['BOOKING_CONFIRMATION', 'BEFORE_CHECK_IN', 'INVOICE_ISSUE', 'CUSTOM']).optional(),
+        dueDays: z.number().optional(),
+        refundable: z.boolean().optional(),
+    }).nullable().optional(),
+    selectedHotelBankAccountId: z.number().nullable().optional(),
+    notes: z.string().nullable().optional(),
+});
 
 const validateDateOrder = (
     ctx: z.RefinementCtx,
@@ -133,10 +160,12 @@ export const createContractGeneralSchema = (t: TFunction) =>
             currency: z.string().trim().min(1, t('validation.required', { defaultValue: 'Required' })).length(3).transform((value) => value.toUpperCase()),
             affiliateIds: idArraySchema,
             baseArrangementId: optionalIdSchema,
-            paymentCondition: z.enum(['DEPOSIT', 'PREPAYMENT_100']),
+            paymentCondition: paymentConditionSchema,
             depositAmount: nonNegativeNumber(t),
             creditDays: nonNegativeInteger(t),
-            paymentMethods: z.array(z.enum(['BANK_TRANSFER', 'BANK_CHECK'])),
+            paymentMethods: z.array(paymentMethodSchema),
+            paymentPolicy: paymentPolicySchema.optional(),
+            selectedHotelBankAccountId: optionalIdSchema,
         })
         .superRefine((value, ctx) => {
             if (value.affiliateIds.length === 0) {
@@ -154,6 +183,7 @@ export const createContractGeneralSchema = (t: TFunction) =>
                     message: t('validation.endAfterStart', { defaultValue: 'End date must be after start date' }),
                 });
             }
+
         });
 
 export type ContractGeneralFormInput = z.input<ReturnType<typeof createContractGeneralSchema>>;
@@ -313,7 +343,7 @@ export const createContractSpoSchema = (t: TFunction) =>
     z
         .object({
             name: requiredText(t),
-            conditionType: z.enum(['MIN_NIGHTS', 'HONEYMOONER', 'EARLY_BIRD', 'LONG_STAY', 'NONE']),
+            conditionType: z.enum(['MIN_NIGHTS', 'HONEYMOONER', 'EARLY_BIRD', 'LONG_STAY', 'AGE', 'NONE']),
             conditionValue: emptyToNullNumber(t),
             benefitType: z.enum(['PERCENTAGE_DISCOUNT', 'FIXED_DISCOUNT', 'FREE_NIGHTS', 'FREE_ROOM_UPGRADE', 'FREE_BOARD_UPGRADE', 'KIDS_GO_FREE']),
             benefitValue: emptyToNullNumber(t).optional(),
@@ -326,7 +356,7 @@ export const createContractSpoSchema = (t: TFunction) =>
             arrangementIds: idArraySchema,
         })
         .superRefine((value, ctx) => {
-            if (['MIN_NIGHTS', 'EARLY_BIRD', 'LONG_STAY'].includes(value.conditionType) && value.conditionValue === null) {
+            if (['MIN_NIGHTS', 'EARLY_BIRD', 'LONG_STAY', 'AGE'].includes(value.conditionType) && value.conditionValue === null) {
                 ctx.addIssue({
                     code: 'custom',
                     path: ['conditionValue'],

@@ -1,11 +1,11 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
     contractService,
-    type CreateContractPayload,
-    type UpdateContractPayload,
-    type CreatePeriodPayload,
-    type CreateContractRoomPayload,
     type Contract,
+    type CreateContractPayload,
+    type CreateContractRoomPayload,
+    type CreatePeriodPayload,
+    type UpdateContractPayload,
 } from '../services/contract.service';
 import { toast } from 'sonner';
 import { useHotel } from '../../hotel/context/HotelContext';
@@ -23,10 +23,9 @@ function getErrorMessage(error: any, defaultMessage: string): string {
     return defaultMessage;
 }
 
-// Query key factory — hotelId scopes contract list to the active hotel
 export const contractKeys = {
     all: (hotelId: number | undefined) => ['contracts', hotelId] as const,
-    detail: (contractId: number | undefined) => ['contract', contractId] as const,
+    detail: (hotelId: number | undefined, contractId: number | undefined) => ['contract', hotelId, contractId] as const,
 };
 
 export function useContracts() {
@@ -40,18 +39,22 @@ export function useContracts() {
 }
 
 export function useContract(id: number | undefined) {
+    const { currentHotel } = useHotel();
+    const hotelId = currentHotel?.id;
     return useQuery<Contract>({
-        queryKey: contractKeys.detail(id),
+        queryKey: contractKeys.detail(hotelId, id),
         queryFn: () => contractService.getContractById(id!),
-        enabled: !!id,
+        enabled: !!hotelId && !!id,
     });
 }
 
 export function useContractActivationCheck(contractId: number | undefined, enabled = false) {
+    const { currentHotel } = useHotel();
+    const hotelId = currentHotel?.id;
     return useQuery({
-        queryKey: [...contractKeys.detail(contractId), 'activation-check'],
+        queryKey: [...contractKeys.detail(hotelId, contractId), 'activation-check'],
         queryFn: () => contractService.validateActivation(contractId!),
-        enabled: !!contractId && enabled,
+        enabled: !!hotelId && !!contractId && enabled,
     });
 }
 
@@ -63,67 +66,95 @@ export function useCreateContract() {
         mutationFn: (payload: CreateContractPayload) => contractService.createContract(payload),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: contractKeys.all(currentHotel?.id) });
-            toast.success(i18next.t('auto.features.contracts.hooks.usecontracts.toast.success.b9325d34', { defaultValue: "Contrat créé avec succès" }));
+            toast.success(i18next.t('auto.features.contracts.hooks.usecontracts.toast.success.b9325d34', { defaultValue: 'Contrat cree avec succes' }));
         },
         onError: (error: any) => {
-            toast.error(getErrorMessage(error, 'Erreur lors de la création du contrat'));
-        }
+            toast.error(getErrorMessage(error, 'Erreur lors de la creation du contrat'));
+        },
     });
 }
 
-// ─── Update Contract ──────────────────────────────────────────────────
-
 export function useUpdateContract(contractId: number, onSuccess?: () => void) {
     const { currentHotel } = useHotel();
+    const hotelId = currentHotel?.id;
     const qc = useQueryClient();
     return useMutation({
         mutationFn: (data: UpdateContractPayload) => contractService.updateContract(contractId, data),
         onSuccess: () => {
-            qc.invalidateQueries({ queryKey: contractKeys.detail(contractId) });
-            qc.invalidateQueries({ queryKey: contractKeys.all(currentHotel?.id) });
-            toast.success(i18next.t('auto.features.contracts.hooks.usecontracts.toast.success.5bfb7f2b', { defaultValue: "Contrat mis à jour" }));
+            qc.invalidateQueries({ queryKey: contractKeys.detail(hotelId, contractId) });
+            qc.invalidateQueries({ queryKey: contractKeys.all(hotelId) });
+            toast.success(i18next.t('auto.features.contracts.hooks.usecontracts.toast.success.5bfb7f2b', { defaultValue: 'Contrat mis a jour' }));
             onSuccess?.();
         },
-        onError: (error: any) => toast.error(getErrorMessage(error, 'Erreur lors de la mise à jour du contrat')),
+        onError: (error: any) => toast.error(getErrorMessage(error, 'Erreur lors de la mise a jour du contrat')),
     });
 }
 
-// ─── Periods ──────────────────────────────────────────────────────────
-
 export function useAddPeriod(contractId: number, onSuccess?: () => void) {
+    const { currentHotel } = useHotel();
+    const hotelId = currentHotel?.id;
     const qc = useQueryClient();
     return useMutation({
         mutationFn: (data: CreatePeriodPayload) => contractService.addPeriod(contractId, data),
-        onSuccess: () => {
-            qc.invalidateQueries({ queryKey: contractKeys.detail(contractId) });
-            toast.success(i18next.t('auto.features.contracts.hooks.usecontracts.toast.success.2cc43dfd', { defaultValue: "Période ajoutée" }));
+        onSuccess: (period) => {
+            const detailKey = contractKeys.detail(hotelId, contractId);
+            qc.setQueryData<Contract>(detailKey, (current) => current
+                ? {
+                    ...current,
+                    periods: [
+                        ...(current.periods ?? []).filter((item) => item.id !== period.id),
+                        period,
+                    ],
+                }
+                : current);
+            qc.invalidateQueries({ queryKey: detailKey });
+            toast.success(i18next.t('auto.features.contracts.hooks.usecontracts.toast.success.2cc43dfd', { defaultValue: 'Periode ajoutee' }));
             onSuccess?.();
         },
-        onError: (error: any) => toast.error(getErrorMessage(error, "Erreur lors de l'ajout de la période")),
+        onError: (error: any) => toast.error(getErrorMessage(error, "Erreur lors de l'ajout de la periode")),
     });
 }
 
 export function useDeletePeriod(contractId: number) {
+    const { currentHotel } = useHotel();
+    const hotelId = currentHotel?.id;
     const qc = useQueryClient();
     return useMutation({
         mutationFn: (periodId: number) => contractService.deletePeriod(contractId, periodId),
-        onSuccess: () => {
-            qc.invalidateQueries({ queryKey: contractKeys.detail(contractId) });
-            toast.success(i18next.t('auto.features.contracts.hooks.usecontracts.toast.success.0d13dae8', { defaultValue: "Période supprimée" }));
+        onSuccess: (_result, periodId) => {
+            const detailKey = contractKeys.detail(hotelId, contractId);
+            qc.setQueryData<Contract>(detailKey, (current) => current
+                ? {
+                    ...current,
+                    periods: (current.periods ?? []).filter((period) => period.id !== periodId),
+                }
+                : current);
+            qc.invalidateQueries({ queryKey: detailKey });
+            toast.success(i18next.t('auto.features.contracts.hooks.usecontracts.toast.success.0d13dae8', { defaultValue: 'Periode supprimee' }));
         },
-        onError: (error: any) => toast.error(getErrorMessage(error, 'Impossible de supprimer cette période. Elle est probablement ciblée par un supplément, réduction ou autre règle active.')),
+        onError: (error: any) => toast.error(getErrorMessage(error, 'Impossible de supprimer cette periode. Elle est probablement ciblee par une regle active.')),
     });
 }
 
-// ─── Contract Rooms ───────────────────────────────────────────────────
-
 export function useAddContractRoom(contractId: number, onSuccess?: () => void) {
+    const { currentHotel } = useHotel();
+    const hotelId = currentHotel?.id;
     const qc = useQueryClient();
     return useMutation({
         mutationFn: (data: CreateContractRoomPayload) => contractService.addContractRoom(contractId, data),
-        onSuccess: () => {
-            qc.invalidateQueries({ queryKey: contractKeys.detail(contractId) });
-            toast.success(i18next.t('auto.features.contracts.hooks.usecontracts.toast.success.7ddb5960', { defaultValue: "Chambre ajoutée au contrat" }));
+        onSuccess: (contractRoom) => {
+            const detailKey = contractKeys.detail(hotelId, contractId);
+            qc.setQueryData<Contract>(detailKey, (current) => current
+                ? {
+                    ...current,
+                    contractRooms: [
+                        ...(current.contractRooms ?? []).filter((item) => item.id !== contractRoom.id),
+                        contractRoom,
+                    ],
+                }
+                : current);
+            qc.invalidateQueries({ queryKey: detailKey });
+            toast.success(i18next.t('auto.features.contracts.hooks.usecontracts.toast.success.7ddb5960', { defaultValue: 'Chambre ajoutee au contrat' }));
             onSuccess?.();
         },
         onError: (error: any) => toast.error(getErrorMessage(error, "Erreur lors de l'ajout de la chambre")),
@@ -131,14 +162,22 @@ export function useAddContractRoom(contractId: number, onSuccess?: () => void) {
 }
 
 export function useDeleteContractRoom(contractId: number) {
+    const { currentHotel } = useHotel();
+    const hotelId = currentHotel?.id;
     const qc = useQueryClient();
     return useMutation({
         mutationFn: (roomId: number) => contractService.deleteContractRoom(contractId, roomId),
-        onSuccess: () => {
-            qc.invalidateQueries({ queryKey: contractKeys.detail(contractId) });
-            toast.success(i18next.t('auto.features.contracts.hooks.usecontracts.toast.success.ea857a1e', { defaultValue: "Chambre retirée du contrat" }));
+        onSuccess: (_result, roomId) => {
+            const detailKey = contractKeys.detail(hotelId, contractId);
+            qc.setQueryData<Contract>(detailKey, (current) => current
+                ? {
+                    ...current,
+                    contractRooms: (current.contractRooms ?? []).filter((room) => room.id !== roomId),
+                }
+                : current);
+            qc.invalidateQueries({ queryKey: detailKey });
+            toast.success(i18next.t('auto.features.contracts.hooks.usecontracts.toast.success.ea857a1e', { defaultValue: 'Chambre retiree du contrat' }));
         },
-        onError: (error: any) => toast.error(getErrorMessage(error, 'Impossible de supprimer cette chambre. Elle est probablement attachée à des règles.')),
+        onError: (error: any) => toast.error(getErrorMessage(error, 'Impossible de supprimer cette chambre. Elle est probablement attachee a des regles.')),
     });
 }
-

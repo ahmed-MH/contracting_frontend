@@ -24,6 +24,13 @@ export const hotelService = {
     updateHotel: (id: number, data: UpdateHotelPayload) =>
         apiClient.patch<Hotel>(`/hotel/${id}`, data).then((r) => r.data),
 
+    uploadHotelLogo: (id: number, file: File) => {
+        const formData = new FormData();
+        formData.append('file', file);
+
+        return apiClient.post<Hotel>(`/hotel/${id}/logo`, formData).then((r) => r.data);
+    },
+
     deleteHotel: (id: number) =>
         apiClient.delete(`/hotel/${id}`).then((r) => r.data),
 

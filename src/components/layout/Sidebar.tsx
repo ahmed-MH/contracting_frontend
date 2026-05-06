@@ -62,6 +62,7 @@ export default function Sidebar({ collapsed, onToggle, userRole }: SidebarProps)
             items: [
                 { label: t('navigation.commercial.primary.contracts.label', { defaultValue: 'Contracts List' }), to: '/contracts', icon: <FileText size={18} /> },
                 { label: t('navigation.commercial.primary.simulator.label', { defaultValue: 'Price Simulator' }), to: '/simulator', icon: <Calculator size={18} /> },
+                { label: 'Saved Invoices', to: '/proforma/invoices', icon: <FileText size={18} /> },
             ],
         },
     ];

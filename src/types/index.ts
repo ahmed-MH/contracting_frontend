@@ -9,4 +9,5 @@ export * from '../features/catalog/early-bookings/types/early-bookings.types';
 export * from '../features/catalog/spos/types/spos.types';
 export * from '../features/rooms/types/room.types';
 export * from '../features/arrangements/types/arrangement.types';
+export * from './audit';
 export * from './pagination.types';

@@ -1,10 +1,12 @@
+import type { AuditMetadata } from '../../../../types/audit';
+
 export enum CancellationPenaltyType {
     NIGHTS = 'NIGHTS',
     PERCENTAGE = 'PERCENTAGE',
     FIXED_AMOUNT = 'FIXED_AMOUNT',
 }
 
-export interface TemplateCancellationRule {
+export interface TemplateCancellationRule extends AuditMetadata {
     id: number;
     reference: string;
     name: string;

@@ -40,9 +40,17 @@ const ContractSposTab = lazy(() => import('./features/contracts/details/tabs/Con
 const CancellationTab = lazy(() => import('./features/contracts/details/tabs/CancellationTab'));
 const SimulatorPage = lazy(() => import('./features/simulator/pages/SimulatorPage'));
 const ProformaPreviewPage = lazy(() => import('./features/simulator/pages/ProformaPreviewPage'));
+const SavedProformaInvoicesPage = lazy(() => import('./features/simulator/pages/SavedProformaInvoicesPage'));
 const ContractPreviewPage = lazy(() => import('./features/contracts/pages/ContractPreviewPage'));
 const UsersPage = lazy(() => import('./features/admin/pages/UsersPage'));
 const AdminOverviewPage = lazy(() => import('./features/admin/pages/AdminOverviewPage'));
+const IntegrationOverviewPage = lazy(() => import('./features/integrations/pages/IntegrationOverviewPage'));
+const IntegrationApiUsersPage = lazy(() => import('./features/integrations/pages/IntegrationApiUsersPage'));
+const IntegrationApiKeysPage = lazy(() => import('./features/integrations/pages/IntegrationApiKeysPage'));
+const IntegrationEndpointsPage = lazy(() => import('./features/integrations/pages/IntegrationEndpointsPage'));
+const IntegrationPlaygroundPage = lazy(() => import('./features/integrations/pages/IntegrationPlaygroundPage'));
+const IntegrationUsageLogsPage = lazy(() => import('./features/integrations/pages/IntegrationUsageLogsPage'));
+const IntegrationDeveloperDocsPage = lazy(() => import('./features/integrations/pages/IntegrationDeveloperDocsPage'));
 const SupervisorOverviewPage = lazy(() => import('./features/supervisor/pages/SupervisorOverviewPage'));
 const SupervisorPlatformSettingsPage = lazy(() => import('./features/supervisor/pages/SupervisorPlatformSettingsPage'));
 const SupervisorSystemLogsPage = lazy(() => import('./features/supervisor/pages/SupervisorSystemLogsPage'));
@@ -247,6 +255,14 @@ function App() {
                                 }
                             />
                             <Route
+                                path="proforma/invoices"
+                                element={
+                                    <ProtectedRoute allowedRoles={simulatorAccessRoles}>
+                                        <SavedProformaInvoicesPage />
+                                    </ProtectedRoute>
+                                }
+                            />
+                            <Route
                                 path="proforma/:id"
                                 element={
                                     <ProtectedRoute allowedRoles={simulatorAccessRoles}>
@@ -288,6 +304,70 @@ function App() {
                                 element={
                                     <ProtectedRoute allowedRoles={adminOnlyRoles}>
                                         <UsersPage />
+                                    </ProtectedRoute>
+                                }
+                            />
+                            <Route
+                                path="admin/integrations"
+                                element={
+                                    <ProtectedRoute allowedRoles={adminOnlyRoles}>
+                                        <Navigate to="/admin/integrations/overview" replace />
+                                    </ProtectedRoute>
+                                }
+                            />
+                            <Route
+                                path="admin/integrations/overview"
+                                element={
+                                    <ProtectedRoute allowedRoles={adminOnlyRoles}>
+                                        <IntegrationOverviewPage />
+                                    </ProtectedRoute>
+                                }
+                            />
+                            <Route
+                                path="admin/integrations/users"
+                                element={
+                                    <ProtectedRoute allowedRoles={adminOnlyRoles}>
+                                        <IntegrationApiUsersPage />
+                                    </ProtectedRoute>
+                                }
+                            />
+                            <Route
+                                path="admin/integrations/keys"
+                                element={
+                                    <ProtectedRoute allowedRoles={adminOnlyRoles}>
+                                        <IntegrationApiKeysPage />
+                                    </ProtectedRoute>
+                                }
+                            />
+                            <Route
+                                path="admin/integrations/endpoints"
+                                element={
+                                    <ProtectedRoute allowedRoles={adminOnlyRoles}>
+                                        <IntegrationEndpointsPage />
+                                    </ProtectedRoute>
+                                }
+                            />
+                            <Route
+                                path="admin/integrations/playground"
+                                element={
+                                    <ProtectedRoute allowedRoles={adminOnlyRoles}>
+                                        <IntegrationPlaygroundPage />
+                                    </ProtectedRoute>
+                                }
+                            />
+                            <Route
+                                path="admin/integrations/logs"
+                                element={
+                                    <ProtectedRoute allowedRoles={adminOnlyRoles}>
+                                        <IntegrationUsageLogsPage />
+                                    </ProtectedRoute>
+                                }
+                            />
+                            <Route
+                                path="admin/integrations/docs"
+                                element={
+                                    <ProtectedRoute allowedRoles={adminOnlyRoles}>
+                                        <IntegrationDeveloperDocsPage />
                                     </ProtectedRoute>
                                 }
                             />

@@ -205,6 +205,7 @@ export default function AdminLayout() {
 
                                 <HeaderActions
                                     roleLabel={roleNavigation.labelKey ? t(roleNavigation.labelKey, { defaultValue: roleNavigation.label }) : roleNavigation.label}
+                                    useProfileDropdown
                                 />
                             </div>
 
@@ -233,8 +234,8 @@ export default function AdminLayout() {
                         </div>
                     </header>
 
-                    <main className="flex-1 overflow-y-auto px-2 pb-6 pt-4 md:px-4 lg:px-6">
-                        <div className="mx-auto max-w-[1520px]">
+                    <main className="min-w-0 flex-1 overflow-x-hidden overflow-y-auto px-2 pb-6 pt-4 md:px-4 lg:px-6">
+                        <div className="mx-auto w-full min-w-0 max-w-[1520px]">
                             <Outlet />
                         </div>
                     </main>

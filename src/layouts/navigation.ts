@@ -112,7 +112,16 @@ export const adminSections: NavigationSection[] = [
                 icon: Users,
                 description: 'Invitations, roles, and access hygiene.',
                 descriptionKey: 'common:navigation.admin.overview.team.description',
-                matchPrefixes: ['/admin'],
+                matchPrefixes: ['/admin/users'],
+            },
+            {
+                label: 'Integrations',
+                labelKey: 'common:navigation.admin.overview.integrations.label',
+                to: '/admin/integrations/overview',
+                icon: Shield,
+                description: 'API users, keys, endpoint controls, and request logs.',
+                descriptionKey: 'common:navigation.admin.overview.integrations.description',
+                matchPrefixes: ['/admin/integrations'],
             },
             {
                 label: 'Hotel Information',
@@ -153,6 +162,13 @@ export const adminSections: NavigationSection[] = [
                 icon: Calculator,
                 description: 'Spot-check contracted selling prices.',
                 descriptionKey: 'common:navigation.admin.commercialOps.simulator.description',
+            },
+            {
+                label: 'Saved Invoices',
+                to: '/proforma/invoices',
+                icon: FileText,
+                description: 'Issued proforma invoice history and re-downloads.',
+                matchPrefixes: ['/proforma/invoices'],
             },
         ],
     },
@@ -325,6 +341,13 @@ export const commercialWorkspaceSections: NavigationSection[] = [
                 description: 'Calculate contracted prices for a stay.',
                 matchPrefixes: ['/simulator'],
             },
+            {
+                label: 'Saved invoices',
+                to: '/proforma/invoices',
+                icon: FileText,
+                description: 'Issued proforma archive and re-download workspace.',
+                matchPrefixes: ['/proforma/invoices'],
+            },
         ],
     },
 ];
@@ -349,6 +372,13 @@ export const commercialTopNavItems: NavigationItem[] = [
         icon: Calculator,
         description: 'Calculate contracted prices for a stay.',
         matchPrefixes: ['/simulator'],
+    },
+    {
+        label: 'Saved Invoices',
+        to: '/proforma/invoices',
+        icon: FileText,
+        description: 'Issued proforma archive and re-download workspace.',
+        matchPrefixes: ['/proforma/invoices'],
     },
 ];
 

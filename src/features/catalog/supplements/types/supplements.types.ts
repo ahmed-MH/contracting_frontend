@@ -1,5 +1,6 @@
 import type { ContractRoom, Period } from '../../../contracts/types/contract.types';
 import type { Arrangement } from '../../../arrangements/types/arrangement.types';
+import type { AuditMetadata } from '../../../../types/audit';
 
 // ─── Supplement Enums ────────────────────────────────────────────────
 
@@ -9,7 +10,7 @@ export type SupplementSystemCode = 'SINGLE_OCCUPANCY' | 'GALA_DINNER' | 'MEAL_PL
 
 // ─── Template Supplements (Catalogue) ────────────────────────────────
 
-export interface TemplateSupplement {
+export interface TemplateSupplement extends AuditMetadata {
     id: number;
     reference?: string;
     name: string;

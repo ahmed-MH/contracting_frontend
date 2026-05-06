@@ -1,3 +1,5 @@
+import type { AuditMetadata } from '../../../types/audit';
+
 export type AffiliateType = 'TOUR_OPERATOR' | 'TRAVEL_AGENCY' | 'CORPORATE';
 
 export interface AffiliateEmail {
@@ -5,7 +7,7 @@ export interface AffiliateEmail {
     address: string;
 }
 
-export interface Affiliate {
+export interface Affiliate extends AuditMetadata {
     id: number;
     reference?: string;
     companyName: string;

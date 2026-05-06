@@ -1,5 +1,6 @@
 import { ContractRoom, Period } from '../../../contracts/types/contract.types';
 import { PricingModifierApplicationType } from '../../supplements/types/supplements.types';
+import type { AuditMetadata } from '../../../../types/audit';
 
 // ─── Reduction Enums ─────────────────────────────────────────────────
 
@@ -9,7 +10,7 @@ export type ReductionSystemCode = 'EXTRA_ADULT' | 'CHILD' | 'CUSTOM';
 
 // ─── Template Reductions (Catalogue) ─────────────────────────────────
 
-export interface TemplateReduction {
+export interface TemplateReduction extends AuditMetadata {
     id: number;
     reference?: string;
     name: string;

@@ -8,7 +8,8 @@
     "logOut": "Se deconnecter",
     "confirm": "Confirmer",
     "cancel": "Annuler",
-    "save": "Enregistrer"
+    "save": "Enregistrer",
+    "copy": "Copier"
   },
   "entities": {
     "hotel": "Hotel"
@@ -60,6 +61,27 @@
         "newHotel": "Nouvel hotel",
         "emptyTitle": "Aucun hotel selectionne",
         "emptySubtitle": "Veuillez choisir un etablissement pour continuer."
+      },
+      "bankAccounts": {
+        "title": "Comptes bancaires",
+        "helper": "Ajoutez tous les comptes utilisables. Un seul compte actif doit etre marque comme principal.",
+        "add": "Ajouter un compte",
+        "empty": "Ajouter le premier compte bancaire",
+        "principal": "Principal",
+        "makePrincipal": "Definir principal",
+        "active": "Actif",
+        "remove": "Supprimer le compte",
+        "label": "Libelle du compte",
+        "labelPlaceholder": "Compte TND principal",
+        "rib": "RIB / numero de compte",
+        "accountNumber": "Numero de compte",
+        "accountPlaceholder": "Numero interne optionnel",
+        "currency": "Devise",
+        "currencyPlaceholder": "Devise",
+        "country": "Pays"
+      },
+      "validation": {
+        "onePrincipalBankAccount": "Choisissez exactement un compte bancaire principal."
       },
       "exchangeRates": {
         "deleteTitle": "Supprimer ce taux de change ?",
@@ -127,6 +149,486 @@
             "emailRequired": "Email requis",
             "hotelRequired": "Au moins un hotel est requis"
           }
+        }
+      }
+    },
+    "integrations": {
+      "common": {
+        "emptyValue": "N/A",
+        "updatedBy": "Mis a jour par"
+      },
+      "tabs": {
+        "overview": "Overview",
+        "users": "Utilisateurs API",
+        "keys": "Cles API",
+        "endpoints": "Endpoints",
+        "playground": "API Playground",
+        "logs": "Logs d'utilisation",
+        "docs": "Docs developpeur"
+      },
+      "status": {
+        "active": "Actif",
+        "inactive": "Inactif"
+      },
+      "permissions": {
+        "reservationsQuote": "Reservation quote"
+      },
+      "users": {
+        "header": {
+          "eyebrow": "Acces integration",
+          "title": "Controlez quels systemes externes peuvent demander un pricing.",
+          "subtitle": "Creez des utilisateurs API scopes, gardez l'acces hotel strict et n'accordez que les permissions utiles au quote reservation.",
+          "badge": "{{count}} utilisateurs API configures",
+          "cta": "Creer un utilisateur API"
+        },
+        "section": {
+          "eyebrow": "Identites scopees",
+          "title": "Utilisateurs API et acces hotel",
+          "description": "Chaque utilisateur integration reste lie aux hotels autorises et a des permissions explicites."
+        },
+        "table": {
+          "name": "Utilisateur API",
+          "permissions": "Permissions",
+          "hotels": "Hotels autorises",
+          "status": "Statut",
+          "actions": "Actions",
+          "empty": "Aucun utilisateur API integration n'a encore ete configure.",
+          "noDescription": "Aucune description"
+        },
+        "actions": {
+          "edit": "Modifier l'utilisateur API",
+          "activate": "Activer l'utilisateur API",
+          "deactivate": "Desactiver l'utilisateur API"
+        },
+        "details": {
+          "title": "Details de l'utilisateur API"
+        },
+        "modal": {
+          "createTitle": "Creer un utilisateur API",
+          "editTitle": "Modifier l'utilisateur API",
+          "name": "Nom",
+          "description": "Description",
+          "status": "Statut",
+          "permissions": "Permissions",
+          "allowedHotels": "Hotels autorises"
+        },
+        "toasts": {
+          "created": "Utilisateur API cree avec succes",
+          "updated": "Utilisateur API mis a jour avec succes"
+        }
+      },
+      "keys": {
+        "header": {
+          "eyebrow": "Coffre credentials",
+          "title": "Emettez et revoquez des cles API a usage controle.",
+          "subtitle": "Les cles sont affichees une seule fois, stockees hachees dans le backend et reliees a un utilisateur integration scope.",
+          "badge": "{{count}} cles API enregistrees",
+          "cta": "Creer une cle API"
+        },
+        "section": {
+          "eyebrow": "Secrets geres",
+          "title": "Inventaire des cles",
+          "description": "Suivez chaque prefixe, revoquez les acces obsoletes et controlez la derniere utilisation sans reexposer le secret."
+        },
+        "table": {
+          "prefix": "Prefixe",
+          "apiUser": "Utilisateur API",
+          "environment": "Environnement",
+          "status": "Statut",
+          "expiresAt": "Expire le",
+          "lastUsedAt": "Derniere utilisation",
+          "allowedIps": "IPs autorisees",
+          "rotation": "Rotation",
+          "actions": "Actions",
+          "empty": "Aucune cle API n'a encore ete creee.",
+          "unrestricted": "Sans restriction",
+          "rotatedFrom": "Depuis {{prefix}}",
+          "rotatedTo": "Vers {{prefix}}"
+        },
+        "environment": {
+          "test": "Test",
+          "production": "Production"
+        },
+        "status": {
+          "active": "Active",
+          "revoked": "Revoquee",
+          "expired": "Expiree"
+        },
+        "actions": {
+          "revoke": "Revoquer la cle API",
+          "edit": "Modifier la cle API",
+          "rotate": "Rotation de cle API"
+        },
+        "details": {
+          "title": "Details de la cle API"
+        },
+        "confirmRevoke": {
+          "title": "Revoquer cette cle API ?",
+          "description": "Le systeme de reservation connecte ne pourra plus s'authentifier immediatement.",
+          "confirmLabel": "Revoquer la cle"
+        },
+        "confirmRotate": {
+          "title": "Creer une cle de remplacement ?",
+          "description": "La nouvelle cle sera affichee une seule fois. La cle actuelle reste active jusqu'a revocation.",
+          "confirmLabel": "Creer le remplacement"
+        },
+        "modal": {
+          "createTitle": "Creer une cle API",
+          "editTitle": "Modifier la cle API",
+          "apiUser": "Utilisateur API",
+          "environment": "Environnement",
+          "name": "Nom de la cle",
+          "expiresAt": "Date d'expiration",
+          "allowedIps": "Allowlist IP",
+          "allowedIpsPlaceholder": "Une IP ou un CIDR par ligne",
+          "allowedIpsHint": "Laissez vide pour autoriser toutes les IPs. IPv4, IPv6 et CIDR IPv4 sont acceptes."
+        },
+        "rawKey": {
+          "title": "Cle API brute",
+          "description": "Ce secret n'est affiche qu'une seule fois. Stockez-le dans le systeme de reservation externe avant de fermer cette fenetre.",
+          "hint": "Apres cette etape, seul le prefixe de la cle restera visible dans Pricify.",
+          "copyNow": "Copiez maintenant, affiche une seule fois"
+        },
+        "toasts": {
+          "created": "Cle API creee avec succes",
+          "updated": "Cle API mise a jour avec succes",
+          "rotated": "Cle API de remplacement creee",
+          "revoked": "Cle API revoquee avec succes"
+        }
+      },
+      "endpoints": {
+        "header": {
+          "eyebrow": "Registry endpoints",
+          "title": "Gerez la surface d'integration approuvee.",
+          "subtitle": "Seuls les endpoints predefinis peuvent etre actives. La V1 demarre avec le reservation quote et un rate limit configurable.",
+          "badge": "{{count}} endpoints enregistres"
+        },
+        "section": {
+          "eyebrow": "Endpoints predefinis",
+          "title": "Controles du registry",
+          "description": "Les definitions restent fixes tandis que les admins peuvent activer, desactiver et regler les parametres d'usage.",
+          "predefinedOnly": "Les admins gerent uniquement les parametres des endpoints approuves. Ce registry ne cree pas de nouvelles routes publiques."
+        },
+        "table": {
+          "code": "Code",
+          "method": "Methode",
+          "path": "Path",
+          "version": "Version",
+          "status": "Statut",
+          "rateLimit": "Debit / min",
+          "rateLimitValue": "{{value}} requetes/min",
+          "requiresApiKey": "Cle API requise",
+          "requiresApiKeyYes": "Requise",
+          "requiresApiKeyNo": "Non requise",
+          "predefined": "Route predefinie",
+          "updated": "Mis a jour",
+          "actions": "Actions",
+          "empty": "Aucun endpoint integration n'est disponible."
+        },
+        "actions": {
+          "edit": "Modifier l'endpoint"
+        },
+        "details": {
+          "title": "Details de l'endpoint"
+        },
+        "modal": {
+          "title": "Modifier les parametres endpoint",
+          "status": "Statut",
+          "rateLimit": "Rate limit par minute",
+          "requiresApiKey": "Exiger une authentification par cle API",
+          "requiresApiKeyLocked": "Les reservation quotes exigent toujours une authentification par cle API en V1."
+        },
+        "toasts": {
+          "updated": "Parametres endpoint mis a jour avec succes"
+        }
+      },
+      "logs": {
+        "header": {
+          "eyebrow": "Trace operationnelle",
+          "title": "Revoyez chaque requete quote passee par le hub.",
+          "subtitle": "Filtrez par endpoint, utilisateur API, hotel ou resultat pour diagnostiquer les echecs et comprendre l'usage.",
+          "badge": "{{count}} lignes chargees"
+        },
+        "filters": {
+          "eyebrow": "Jeu de filtres",
+          "title": "Restreindre le flux de requetes",
+          "description": "Utilisez des filtres legers pour inspecter des consommateurs, hotels ou fenetres d'echec specifiques.",
+          "allEndpoints": "Tous les endpoints",
+          "allUsers": "Tous les utilisateurs API",
+          "allHotels": "Tous les hotels",
+          "allResults": "Tous les resultats",
+          "successOnly": "Succes uniquement",
+          "failureOnly": "Echecs uniquement"
+        },
+        "table": {
+          "eyebrow": "Log d'execution",
+          "title": "Requetes recentes",
+          "description": "Les derniers appels reservation quote, avec statut, duree et identifiants externes.",
+          "date": "Date",
+          "endpoint": "Endpoint",
+          "apiUser": "Utilisateur API",
+          "hotel": "Hotel",
+          "requestId": "Request ID",
+          "reservationCode": "Code reservation",
+          "result": "Resultat",
+          "success": "Succes",
+          "rateLimited": "Rate limite",
+          "failure": "Echec",
+          "statusCode": "HTTP",
+          "duration": "Duree",
+          "errorCode": "Code erreur",
+          "empty": "Aucun log d'utilisation ne correspond aux filtres.",
+          "durationValue": "{{value}} ms"
+        },
+        "drawer": {
+          "title": "Details du log d'utilisation",
+          "sections": {
+            "requestMetadata": "Metadonnees requete",
+            "securityContext": "Contexte securite",
+            "timing": "Timing"
+          },
+          "endpointCode": "Code endpoint",
+          "apiUser": "Utilisateur API",
+          "apiKeyPrefix": "Prefixe cle API",
+          "environment": "Environnement",
+          "hotel": "Hotel",
+          "requestId": "Request ID",
+          "reservationCode": "Code reservation",
+          "statusCode": "Code statut",
+          "result": "Resultat",
+          "errorCode": "Code erreur",
+          "durationMs": "Duree",
+          "ipAddress": "Adresse IP",
+          "source": "Source",
+          "createdAt": "Cree le",
+          "requestJson": "JSON requete sanitise",
+          "responseJson": "JSON reponse sanitise",
+          "openInPlayground": "Ouvrir dans le Playground"
+        }
+      },
+      "overview": {
+        "header": {
+          "eyebrow": "Integration Hub",
+          "title": "Vue operationnelle des reservation quotes.",
+          "subtitle": "Suivez le trafic quote V1, la sante endpoint, les alertes et l'usage recent sans exposer les secrets."
+        },
+        "metrics": {
+          "requestsToday": "Requetes aujourd'hui",
+          "successRate": "Taux de succes",
+          "averageDuration": "Duree moyenne",
+          "failedQuotes": "Quotes echoues",
+          "rateLimited": "Rate limits",
+          "activeUsers": "Utilisateurs API actifs",
+          "activeKeys": "Cles API actives",
+          "endpointStatus": "Statut endpoint"
+        },
+        "alerts": {
+          "eyebrow": "Alertes",
+          "title": "Alertes integration",
+          "description": "Signaux operationnels calcules depuis les cles, l'etat endpoint et les logs du jour.",
+          "empty": "Aucune alerte integration pour le moment."
+        },
+        "health": {
+          "eyebrow": "Sante endpoint",
+          "title": "reservations.quote",
+          "description": "Statut, taux de succes, duree, rate limits et derniers appels.",
+          "endpoint": "Endpoint",
+          "status": "Statut",
+          "successRate": "Taux de succes",
+          "averageDuration": "Duree moyenne",
+          "rateLimitHits": "Rate limits",
+          "rateLimit": "Limite / min",
+          "lastSuccess": "Dernier succes",
+          "lastFailure": "Dernier echec"
+        },
+        "errors": {
+          "eyebrow": "Top erreurs",
+          "title": "Codes erreur du jour",
+          "description": "Codes erreur stables les plus frequents aujourd'hui.",
+          "empty": "Aucune erreur enregistree aujourd'hui."
+        },
+        "lastSuccess": "Dernier quote reussi",
+        "lastFailure": "Dernier quote echoue",
+        "quote": {
+          "eyebrow": "Quote",
+          "requestId": "Request ID",
+          "http": "HTTP",
+          "created": "Cree le",
+          "error": "Erreur"
+        },
+        "recent": {
+          "eyebrow": "Usage recent",
+          "title": "10 derniers logs",
+          "description": "Derniere activite quote depuis l'API publique et le playground."
+        }
+      },
+      "docs": {
+        "copied": "Copie",
+        "header": {
+          "eyebrow": "Docs developpeur",
+          "title": "API reservation quote V1.",
+          "subtitle": "Le seul endpoint public business actuellement supporte par l'Integration Hub."
+        },
+        "endpoint": {
+          "eyebrow": "Endpoint",
+          "title": "POST /api/v1/reservations/quote"
+        },
+        "purpose": {
+          "eyebrow": "Contrat",
+          "title": "Role de cet endpoint"
+        },
+        "notes": {
+          "purpose": "POST /api/v1/reservations/quote retourne un devis base sur les contrats pour une seule demande room-stay.",
+          "noReservation": "/quote ne cree ni reservation, ni blocage inventaire, ni proforma, ni booking.",
+          "oneRoomStay": "Chaque requete represente une reservation room-stay. Envoyez des requetes separees pour plusieurs chambres.",
+          "reservationDate": "reservationDate est la date de booking utilisee par les regles early booking et release days.",
+          "currency": "Si la devise contrat differe de la devise demandee, Pricify utilise les taux configures et retourne un warning.",
+          "zeroTax": "Les taxes ne sont pas configurees en V1; taxAmount vaut 0 et pricing.taxes est vide.",
+          "traceability": "requestId est renvoye dans les reponses succes/echec et visible dans les logs admin.",
+          "versioning": "/api/v1 est stable. Tout changement incompatible passera par une future version API.",
+          "rateLimit": "Un depassement de limite retourne RATE_LIMIT_EXCEEDED avec HTTP 429 et est logge."
+        },
+        "blocks": {
+          "endpoint": "URL endpoint",
+          "headers": "Headers requis",
+          "curl": "Exemple curl",
+          "request": "JSON requete",
+          "success": "JSON succes",
+          "failure": "JSON echec",
+          "versionEyebrow": "V1"
+        },
+        "errors": {
+          "eyebrow": "Erreurs stables",
+          "title": "Table des codes erreur",
+          "code": "Code",
+          "meaning": "Signification"
+        },
+        "errorMeanings": {
+          "INVALID_API_KEY": "Cle API absente, mal formee, invalide, revoquee ou expiree.",
+          "API_USER_INACTIVE": "L'utilisateur API lie a la cle est inactif.",
+          "PERMISSION_DENIED": "L'utilisateur API n'a pas la permission reservation quote.",
+          "IP_NOT_ALLOWED": "L'IP source ne correspond pas a l'allowlist de la cle.",
+          "RATE_LIMIT_EXCEEDED": "La cle a depasse le rate limit endpoint.",
+          "ENDPOINT_DISABLED": "L'endpoint quote predefini est inactif.",
+          "INVALID_PAYLOAD": "Le body de requete est invalide.",
+          "HOTEL_NOT_ALLOWED": "L'utilisateur API ou le contexte admin n'a pas acces a l'hotel.",
+          "HOTEL_NOT_FOUND": "Aucun hotel ne correspond a hotelCode.",
+          "PARTNER_NOT_FOUND": "Aucun partenaire ne correspond a partnerCode pour l'hotel.",
+          "ROOM_TYPE_NOT_FOUND": "Aucun type de chambre ne correspond a roomTypeCode.",
+          "BOARD_NOT_FOUND": "Aucune pension ou arrangement ne correspond a boardCode.",
+          "NO_ACTIVE_CONTRACT": "Aucun contrat actif ne couvre la demande.",
+          "MISSING_RATE": "Une ligne de tarif ou disponibilite requise est absente.",
+          "MIN_STAY_NOT_SATISFIED": "Le sejour viole les regles minimum stay.",
+          "RELEASE_DAYS_NOT_SATISFIED": "reservationDate viole le lead time release days.",
+          "CURRENCY_CONVERSION_MISSING": "Aucun taux de change n'est configure pour la devise demandee.",
+          "INTERNAL_ERROR": "Erreur serveur inattendue."
+        }
+      },
+      "playground": {
+        "header": {
+          "eyebrow": "Console de test",
+          "title": "Lancez des reservation quotes sans exposer de cles API.",
+          "subtitle": "Utilisez la meme forme de requete V1 en mode formulaire ou JSON, inspectez la reponse publique et consultez une trace d'execution legere.",
+          "badge": "POST /api/v1/reservations/quote"
+        },
+        "modes": {
+          "form": "Mode formulaire",
+          "json": "Mode JSON"
+        },
+        "editor": {
+          "eyebrow": "Construction de requete",
+          "title": "Composer une requete reservation quote",
+          "description": "Choisissez un contexte hotel, renseignez les donnees de sejour, ou collez un payload JSON brut pour l'endpoint existant.",
+          "helper": "Le playground admin reutilise le chemin de calcul existant et n'envoie jamais de cle API brute depuis le navigateur."
+        },
+        "fields": {
+          "hotel": "Hotel",
+          "hotelCode": "Code hotel",
+          "requestId": "Request ID",
+          "partner": "Partenaire",
+          "reservationDate": "Date de reservation",
+          "checkIn": "Check-in",
+          "checkOut": "Check-out",
+          "currency": "Devise",
+          "roomType": "Type de chambre",
+          "board": "Pension / arrangement",
+          "adults": "Adultes",
+          "childrenAges": "Ages enfants"
+        },
+        "placeholders": {
+          "selectHotel": "Selectionner un hotel",
+          "selectPartner": "Selectionner un partenaire",
+          "selectRoomType": "Selectionner un type de chambre",
+          "selectBoard": "Selectionner un arrangement"
+        },
+        "children": {
+          "description": "Ajoutez des ages uniquement si le sejour comprend des enfants. Laissez la liste vide pour une reservation adultes uniquement.",
+          "empty": "Aucun age enfant ajoute pour cette reservation."
+        },
+        "actions": {
+          "runQuote": "Lancer le quote",
+          "runningQuote": "Execution du quote...",
+          "addChildAge": "Ajouter un age enfant",
+          "removeChildAge": "Retirer l'age enfant",
+          "copyRequest": "Copier le JSON requete",
+          "copyResponse": "Copier le JSON reponse"
+        },
+        "json": {
+          "invalid": "Le payload JSON est invalide. Corrigez la syntaxe avant d'envoyer la requete.",
+          "editorLabel": "JSON de requete du reservation quote"
+        },
+        "response": {
+          "eyebrow": "Reponse",
+          "title": "Sortie du quote",
+          "description": "Consultez le payload de reponse exact renvoye par le chemin partage de calcul du quote.",
+          "empty": "Lancez un quote pour inspecter le corps de reponse.",
+          "loading": "Execution du chemin partage du quote...",
+          "success": "Succes",
+          "failure": "Echec",
+          "httpStatus": "HTTP {{value}}",
+          "summaryGrandTotal": "Total general",
+          "summaryBeforeTax": "Total avant taxe",
+          "summaryNights": "Nuits",
+          "warnings": "Warnings",
+          "noWarnings": "Aucun warning n'a ete renvoye."
+        },
+        "trace": {
+          "eyebrow": "Trace / Logs",
+          "title": "Metadonnees d'execution",
+          "description": "Donnees de trace legeres capturees avec la reponse du quote.",
+          "empty": "Les metadonnees d'execution apparaitront ici apres un lancement.",
+          "requestId": "Request ID",
+          "durationMs": "Duree (ms)",
+          "endpointCode": "Code endpoint",
+          "source": "Source du log",
+          "apiContext": "Contexte utilisateur / cle API",
+          "apiContextValue": "Playground admin (sans cle API)",
+          "errorCode": "Code erreur",
+          "notApplicable": "Non applicable"
+        },
+        "validation": {
+          "hotelRequired": "Selectionnez un hotel avant de lancer le quote.",
+          "requestIdRequired": "Le Request ID est requis.",
+          "hotelCodeRequired": "Le code hotel est requis.",
+          "partnerRequired": "Le partenaire est requis.",
+          "reservationDateRequired": "La date de reservation est requise.",
+          "reservationDateInvalid": "La date de reservation doit etre une date ISO valide.",
+          "checkInRequired": "Le check-in est requis.",
+          "checkInInvalid": "Le check-in doit etre une date ISO valide.",
+          "checkOutRequired": "Le check-out est requis.",
+          "checkOutInvalid": "Le check-out doit etre une date ISO valide.",
+          "checkOutAfterCheckIn": "Le check-out doit etre apres le check-in.",
+          "currencyRequired": "La devise est requise.",
+          "currencyInvalid": "La devise doit etre un code ISO a 3 lettres.",
+          "roomTypeRequired": "Le type de chambre est requis.",
+          "boardRequired": "La pension / arrangement est requise.",
+          "adultsInvalid": "Le nombre d'adultes doit etre au moins 1.",
+          "childrenAgesInvalid": "Les ages enfants doivent etre superieurs ou egaux a zero."
+        },
+        "toasts": {
+          "requestCopied": "JSON requete copie",
+          "responseCopied": "JSON reponse copie",
+          "copyFailed": "La copie a echoue. Selectionnez le JSON manuellement."
         }
       }
     },
@@ -641,18 +1143,66 @@
           "noArrangement": "Aucun (multi-pension autorisee dans les tarifs)"
         },
         "payment": {
-          "title": "Facturation & Paiement",
-          "subtitle": "Conditions de liberation et methodes de reglement.",
+          "title": "Politique de paiement",
+          "subtitle": "Separez la methode de paiement des conditions de paiement.",
           "methods": "Moyens de paiement autorises",
           "bankTransfer": "Virement bancaire",
           "bankCheck": "Cheque bancaire",
+          "methodsList": {
+            "bankTransfer": "Virement bancaire local",
+            "swiftTransfer": "Virement SWIFT",
+            "bankCheck": "Cheque bancaire",
+            "bankDraft": "Cheque de banque / banker",
+            "cash": "Especes",
+            "creditCard": "Carte bancaire",
+            "paymentGateway": "Plateforme de paiement",
+            "other": "Autre"
+          },
+          "conditionCards": {
+            "fullPrepayment": "Prepaiement total",
+            "partialDeposit": "Acompte partiel",
+            "creditDays": "Jours de credit",
+            "paymentOnArrival": "Paiement a l'arrivee",
+            "paymentOnDeparture": "Paiement au depart",
+            "custom": "Condition personnalisee"
+          },
+          "marketScope": "Portee marche",
+          "market": {
+            "international": "International",
+            "national": "National / local",
+            "mixed": "Mixte"
+          },
+          "helperNational": "Recommande pour les agences tunisiennes : TND, virement local, RIB, cheque bancaire ou especes.",
+          "helperInternational": "Recommande pour les tour-operateurs internationaux : virement SWIFT avec IBAN/SWIFT et EUR ou USD.",
+          "howPartnerPays": "Comment le partenaire paie",
+          "whenPartnerPays": "Quand le partenaire paie",
+          "primary": "Principal",
+          "makePrimary": "Definir principal",
+          "bankAccount": "Compte bancaire hotel selectionne",
+          "noBankAccount": "Utiliser les donnees bancaires historiques / aucun",
+          "swiftWarning": "Le virement SWIFT est selectionne, mais ce compte n'a pas d'IBAN ou de SWIFT/BIC.",
           "releaseCondition": "Condition de liberation",
           "conditions": {
             "prepayment": "100% Pre-paiement",
             "deposit": "Contrat a depot (credit)"
           },
           "depositAmount": "Montant du depot",
+          "depositType": "Type d'acompte",
+          "depositAmountType": "Montant",
+          "depositPercentageType": "Pourcentage",
+          "depositValue": "Valeur de l'acompte",
+          "dueTrigger": "Declencheur d'echeance",
+          "bookingConfirmation": "Confirmation de reservation",
+          "beforeCheckIn": "Avant check-in",
+          "invoiceIssue": "Emission de facture",
+          "invoiceReceipt": "Reception de facture",
+          "checkOut": "Check-out",
+          "custom": "Personnalise",
+          "refundable": "Remboursable",
           "creditDelay": "Delai de credit",
+          "creditDays": "Jours de credit",
+          "creditBasis": "Base",
+          "customNotes": "Notes de condition personnalisee",
           "days": "Jours"
         }
       },
@@ -703,6 +1253,10 @@
         "team": {
           "label": "Equipe",
           "description": "Invitations, roles et hygiene des acces."
+        },
+        "integrations": {
+          "label": "Integrations",
+          "description": "Utilisateurs API, cles, controles endpoint et logs de requetes."
         },
         "portfolio": {
           "label": "Parc hotelier",

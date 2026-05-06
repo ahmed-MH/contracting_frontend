@@ -176,14 +176,14 @@ export default function ContractPreviewPage() {
     };
 
     return (
-        <main className="contract-preview-shell min-h-screen bg-brand-navy px-4 py-8 print:bg-white print:p-0">
+        <main className="contract-preview-shell min-h-screen bg-brand-light px-4 py-8 dark:bg-brand-navy print:bg-white print:p-0">
             <div className="mx-auto flex w-full max-w-[1360px] flex-col gap-6 xl:grid xl:grid-cols-[minmax(0,1fr)_320px] xl:items-start">
                 <section className="min-w-0">
                     <div className="mb-5 flex items-center print:hidden">
                         <button
                             id="contract-preview-back-btn"
                             onClick={() => navigate(`/contracts/${contract.id}`)}
-                            className="group inline-flex h-10 items-center gap-2 rounded-lg border border-white/10 bg-white/10 px-3 text-sm font-semibold text-brand-light/75 transition hover:border-brand-mint/50 hover:text-brand-light hover:shadow-sm"
+                            className="group inline-flex h-10 items-center gap-2 rounded-lg border border-brand-light/70 bg-white/90 px-3 text-sm font-semibold text-brand-slate transition hover:border-brand-mint/50 hover:text-brand-navy hover:shadow-sm dark:border-white/10 dark:bg-white/10 dark:text-brand-light/75 dark:hover:text-brand-light"
                         >
                             <ArrowLeft size={16} className="transition group-hover:-translate-x-0.5" />
                             Back to contract

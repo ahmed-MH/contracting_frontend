@@ -1,4 +1,5 @@
 import type { Contract } from '../types/contract.types';
+import type { Hotel } from '../../hotel/types/hotel.types';
 import type { ContractLineData } from '../services/contract.service';
 import type { ExchangeRate } from '../../exchange-rates/types/exchange-rate.types';
 import type { ContractSupplement } from '../../catalog/supplements/types/supplements.types';
@@ -265,6 +266,18 @@ export function convertContractPreviewData(
         depositAmount: data.contract.depositAmount != null
             ? convertMoneyValue(data.contract.depositAmount, presentation)
             : data.contract.depositAmount,
+        paymentPolicy: data.contract.paymentPolicy
+            ? {
+                ...data.contract.paymentPolicy,
+                deposit: data.contract.paymentPolicy.deposit?.type === 'AMOUNT'
+                    ? {
+                        ...data.contract.paymentPolicy.deposit,
+                        value: convertMoneyValue(data.contract.paymentPolicy.deposit.value, presentation),
+                        currency: presentation.outputCurrency,
+                    }
+                    : data.contract.paymentPolicy.deposit,
+            }
+            : data.contract.paymentPolicy,
     };
 
     return {
@@ -341,4 +354,113 @@ export function translatedName<T extends Record<string, unknown>>(value: T | nul
     if (typeof value.name === 'string' && value.name.trim()) return value.name;
     if (typeof value.code === 'string' && value.code.trim()) return value.code;
     return fallback;
+}
+
+export function paymentMethodLabel(value?: string | null, language: ContractPreviewLanguage = 'en') {
+    const labels = {
+        en: {
+            BANK_TRANSFER: 'Bank transfer',
+            SWIFT_TRANSFER: 'SWIFT transfer',
+            BANK_CHECK: 'Bank check',
+            BANK_DRAFT: 'Banker / bank draft',
+            CASH: 'Cash',
+            CREDIT_CARD: 'Credit card',
+            PAYMENT_GATEWAY: 'Payment gateway',
+            OTHER: 'Other',
+        },
+        fr: {
+            BANK_TRANSFER: 'Virement bancaire local',
+            SWIFT_TRANSFER: 'Virement SWIFT',
+            BANK_CHECK: 'Cheque bancaire',
+            BANK_DRAFT: 'Cheque de banque / banker',
+            CASH: 'Especes',
+            CREDIT_CARD: 'Carte bancaire',
+            PAYMENT_GATEWAY: 'Plateforme de paiement',
+            OTHER: 'Autre',
+        },
+    } as const;
+    if (!value) return language === 'fr' ? 'Selon accord' : 'As agreed';
+    return labels[language][value as keyof typeof labels.en] ?? value.toLowerCase().replace(/_/g, ' ');
+}
+
+export function paymentConditionLabel(value?: string | null, language: ContractPreviewLanguage = 'en') {
+    if (!value) return language === 'fr' ? 'Conditions de paiement a confirmer par les parties.' : 'Payment terms to be confirmed by the parties.';
+    if (value === 'PREPAYMENT_100' || value === 'FULL_PREPAYMENT') return language === 'fr' ? '100% prepaiement' : '100% prepayment';
+    if (value === 'DEPOSIT' || value === 'PARTIAL_DEPOSIT') return language === 'fr' ? 'Acompte partiel' : 'Partial deposit';
+    if (value === 'CREDIT_DAYS_FROM_INVOICE') return language === 'fr' ? 'Credit depuis emission de facture' : 'Credit from invoice issue';
+    if (value === 'PAYMENT_ON_ARRIVAL') return language === 'fr' ? "Paiement a l'arrivee" : 'Payment on arrival';
+    if (value === 'PAYMENT_ON_DEPARTURE') return language === 'fr' ? 'Paiement au depart' : 'Payment on departure';
+    if (value === 'CUSTOM') return language === 'fr' ? 'Condition specifique' : 'Custom condition';
+    return value.toLowerCase().replace(/_/g, ' ');
+}
+
+function paymentBasisLabel(value?: string, language: ContractPreviewLanguage = 'en') {
+    const labels = {
+        INVOICE_ISSUE: language === 'fr' ? 'emission de facture' : 'invoice issue',
+        INVOICE_RECEIPT: language === 'fr' ? 'reception de facture' : 'invoice receipt',
+        CHECK_OUT: language === 'fr' ? 'depart client' : 'check-out',
+    };
+    return value ? labels[value as keyof typeof labels] ?? value.toLowerCase().replace(/_/g, ' ') : labels.INVOICE_ISSUE;
+}
+
+function dueTriggerLabel(value?: string, language: ContractPreviewLanguage = 'en') {
+    const labels = {
+        BOOKING_CONFIRMATION: language === 'fr' ? 'a la confirmation de reservation' : 'at booking confirmation',
+        BEFORE_CHECK_IN: language === 'fr' ? 'avant check-in' : 'before check-in',
+        INVOICE_ISSUE: language === 'fr' ? 'a emission de facture' : 'at invoice issue',
+        CUSTOM: language === 'fr' ? 'selon condition specifique' : 'by custom condition',
+    };
+    return value ? labels[value as keyof typeof labels] ?? value.toLowerCase().replace(/_/g, ' ') : '';
+}
+
+export function buildPaymentPolicyItems(contract: Contract, hotel: Hotel | null, language: ContractPreviewLanguage) {
+    const isFr = language === 'fr';
+    const policy = contract.paymentPolicy;
+    const methods = policy?.methods?.map((method) => method.type) ?? contract.paymentMethods ?? [];
+    const conditions = policy?.conditions ?? [];
+    const bankAccount = hotel?.bankAccounts?.find((account) => account.id === (policy?.selectedHotelBankAccountId ?? contract.selectedHotelBankAccountId));
+    const bankName = bankAccount?.bankName ?? hotel?.bankName;
+    const accountNumber = bankAccount?.accountNumber ?? hotel?.accountNumber;
+    const rib = bankAccount?.rib ?? accountNumber;
+    const iban = bankAccount?.iban ?? hotel?.ibanCode;
+    const swiftCode = bankAccount?.swiftCode ?? hotel?.swiftCode;
+
+    const conditionLines = conditions.length > 0
+        ? conditions.map((condition) => {
+            if (condition.type === 'FULL_PREPAYMENT' || condition.type === 'PREPAYMENT_100') return paymentConditionLabel(condition.type, language);
+            if (condition.type === 'PARTIAL_DEPOSIT' || condition.type === 'DEPOSIT') {
+                const deposit = policy?.deposit;
+                if (!deposit) return paymentConditionLabel(condition.type, language);
+                const value = deposit.type === 'PERCENTAGE'
+                    ? `${deposit.value}%`
+                    : `${new Intl.NumberFormat('fr-FR').format(Number(deposit.value ?? 0))} ${deposit.currency ?? contract.currency}`;
+                return [
+                    isFr ? `Acompte: ${value}` : `Deposit: ${value}`,
+                    deposit.refundable ? (isFr ? 'remboursable' : 'refundable') : (isFr ? 'non remboursable' : 'non-refundable'),
+                    deposit.dueTrigger ? `${isFr ? 'du' : 'due'} ${dueTriggerLabel(deposit.dueTrigger, language)}` : null,
+                ].filter(Boolean).join(', ');
+            }
+            if (condition.type === 'CREDIT_DAYS_FROM_INVOICE') {
+                return isFr
+                    ? `${condition.days ?? 0} jours de credit depuis ${paymentBasisLabel(condition.basis, language)}`
+                    : `${condition.days ?? 0} days credit from ${paymentBasisLabel(condition.basis, language)}`;
+            }
+            if (condition.type === 'CUSTOM') return condition.label || condition.notes || paymentConditionLabel(condition.type, language);
+            return paymentConditionLabel(condition.type, language);
+        })
+        : [
+            contract.paymentCondition
+                ? paymentConditionLabel(contract.paymentCondition, language)
+                : (isFr ? 'Conditions de paiement a confirmer par les parties.' : 'Payment terms to be confirmed by the parties.'),
+        ];
+
+    return [
+        methods.length ? `${isFr ? 'Methodes de paiement' : 'Payment methods'}: ${methods.map((method) => paymentMethodLabel(method, language)).join(', ')}.` : null,
+        `${isFr ? 'Conditions de paiement' : 'Payment conditions'}: ${conditionLines.join(' / ')}.`,
+        bankName ? `${isFr ? 'Banque' : 'Bank'}: ${bankName}.` : null,
+        rib ? `${isFr ? 'Compte / RIB' : 'Account / RIB'}: ${rib}.` : null,
+        iban ? `IBAN: ${iban}.` : null,
+        swiftCode ? `SWIFT/BIC: ${swiftCode}.` : null,
+        bankAccount?.currency ? `${isFr ? 'Devise bancaire' : 'Bank currency'}: ${bankAccount.currency}.` : null,
+    ].filter(Boolean);
 }

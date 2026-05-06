@@ -1,7 +1,7 @@
 import { useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Save, Gift, Percent, Moon, Calendar, Wallet, Zap, FileText } from 'lucide-react';
+import { Save, Gift, Percent, Moon, Calendar, Wallet, Zap, FileText, UserRound } from 'lucide-react';
 import {
     type TemplateSpo,
     type CreateTemplateSpoPayload
@@ -80,7 +80,7 @@ export default function EditSpoTemplateModal({ isOpen, onClose, editItem }: Edit
         }
     };
 
-    const conditionNeedsValue = ['MIN_NIGHTS', 'EARLY_BIRD', 'LONG_STAY'].includes(watchConditionType);
+    const conditionNeedsValue = ['MIN_NIGHTS', 'EARLY_BIRD', 'LONG_STAY', 'AGE'].includes(watchConditionType);
     const benefitNeedsValue = ['PERCENTAGE_DISCOUNT', 'FIXED_DISCOUNT', 'FREE_NIGHTS'].includes(watchBenefitType);
     const isPending = createMutation.isPending || updateMutation.isPending;
 
@@ -135,17 +135,18 @@ export default function EditSpoTemplateModal({ isOpen, onClose, editItem }: Edit
                                     <option value="MIN_NIGHTS">{t('auto.features.catalog.spos.components.editspotemplatemodal.8560aa42', { defaultValue: "Nuits minimales" })}</option>
                                     <option value="EARLY_BIRD">{t('auto.features.catalog.spos.components.editspotemplatemodal.9424a69a', { defaultValue: "Réservation anticipée" })}</option>
                                     <option value="LONG_STAY">{t('auto.features.catalog.spos.components.editspotemplatemodal.626606f9', { defaultValue: "Long séjour" })}</option>
+                                    <option value="AGE">Age minimum (Senior)</option>
                                     <option value="HONEYMOONER">{t('auto.features.catalog.spos.components.editspotemplatemodal.3cfeeb72', { defaultValue: "Voyage de noces" })}</option>
                                 </select>
                             </div>
                             {conditionNeedsValue && (
                                 <div className="animate-in fade-in slide-in-from-top-1 duration-300">
                                     <label className="block text-[10px] font-bold text-brand-slate dark:text-brand-light/75 uppercase tracking-wider mb-1.5">
-                                        {watchConditionType === 'EARLY_BIRD' ? "Jours d'avance" : 'Seuil (nuits)'}
+                                        {watchConditionType === 'EARLY_BIRD' ? "Jours d'avance" : watchConditionType === 'AGE' ? 'Age minimum' : 'Seuil (nuits)'}
                                     </label>
                                     <div className="relative group">
                                         <div className="absolute left-3 top-1/2 -translate-y-1/2 text-brand-slate group-focus-within:text-brand-slate transition-colors">
-                                            {watchConditionType === 'EARLY_BIRD' ? <Calendar size={16} /> : <Moon size={16} />}
+                                            {watchConditionType === 'EARLY_BIRD' ? <Calendar size={16} /> : watchConditionType === 'AGE' ? <UserRound size={16} /> : <Moon size={16} />}
                                         </div>
                                         <input type="number" {...register('conditionValue', { valueAsNumber: true })}
                                             className="w-full pl-10 pr-4 py-2 bg-brand-light dark:bg-brand-navy border border-brand-slate/30 dark:border-brand-slate/30 rounded-xl text-sm font-bold focus:ring-2 focus:ring-brand-mint outline-none text-brand-navy dark:text-brand-light"
