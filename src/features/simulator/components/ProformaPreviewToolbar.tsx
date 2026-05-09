@@ -134,7 +134,6 @@ export function ProformaPreviewToolbar({
                                     id="proforma-preview-language-select"
                                     value={selectedLanguage}
                                     onChange={(event) => onLanguageChange(event.target.value as ProformaPreviewLanguage)}
-                                    disabled={isIssued}
                                     className={selectClass}
                                 >
                                     <option value="fr">French</option>
@@ -148,7 +147,6 @@ export function ProformaPreviewToolbar({
                                     id="proforma-preview-currency-select"
                                     value={selectedCurrency}
                                     onChange={(event) => onCurrencyChange(event.target.value)}
-                                    disabled={isIssued}
                                     className={selectClass}
                                 >
                                     {currencyOptions.map((currency) => (
@@ -183,7 +181,6 @@ export function ProformaPreviewToolbar({
                                 type="checkbox"
                                 checked={taxEnabled}
                                 onChange={(event) => onTaxEnabledChange(event.target.checked)}
-                                disabled={isIssued}
                                 className="h-4 w-4 rounded border-brand-light/30 text-brand-mint focus:ring-brand-mint"
                             />
                             <Receipt size={14} className="text-brand-mint" />
@@ -200,7 +197,6 @@ export function ProformaPreviewToolbar({
                                         value={taxName}
                                         maxLength={80}
                                         onChange={(event) => onTaxNameChange(event.target.value)}
-                                        disabled={isIssued}
                                         className={inputClass}
                                     />
                                 </label>
@@ -216,7 +212,6 @@ export function ProformaPreviewToolbar({
                                         step="0.01"
                                         value={taxAmount}
                                         onChange={(event) => onTaxAmountChange(event.target.value)}
-                                        disabled={isIssued}
                                         className={inputClass}
                                     />
                                     {taxInvalid && (
@@ -236,7 +231,6 @@ export function ProformaPreviewToolbar({
                                 value={voucherNumber}
                                 maxLength={100}
                                 onChange={(event) => onVoucherNumberChange(event.target.value)}
-                                disabled={isIssued}
                                 placeholder="External reservation number"
                                 className={inputClass}
                             />
@@ -248,7 +242,6 @@ export function ProformaPreviewToolbar({
                                 value={notes}
                                 onChange={(event) => onNotesChange(event.target.value)}
                                 rows={3}
-                                disabled={isIssued}
                                 placeholder="Optional notes"
                                 className={textareaClass}
                             />
@@ -256,7 +249,7 @@ export function ProformaPreviewToolbar({
 
                         <p className="mt-3 rounded-lg border border-brand-light/70 bg-brand-light/70 px-3 py-2 text-xs font-semibold leading-5 text-brand-slate dark:border-white/10 dark:bg-white/5 dark:text-brand-light/60">
                             {isIssued
-                                ? 'This invoice is issued and locked. Re-download keeps the frozen commercial document.'
+                                ? 'Saved invoice settings can be adjusted here; download again exports the updated document.'
                                 : 'Preview totals are recalculated for the draft and only become an official invoice on download.'}
                         </p>
                     </section>

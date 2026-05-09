@@ -52,7 +52,7 @@ export default function ReductionsCatalogPage() {
     const limit = 10;
     const { user } = useAuth();
     const { confirm } = useConfirm();
-    const isAdmin = user?.role === 'ADMIN';
+    const canManageArchive = user?.role === 'ADMIN' || user?.role === 'COMMERCIAL';
 
     useEffect(() => {
         const timer = setTimeout(() => {
@@ -65,7 +65,7 @@ export default function ReductionsCatalogPage() {
     const { data: paginatedResult, isLoading, isError } = useTemplateReductions(page, limit, debouncedSearch);
     const reductions = paginatedResult?.data ?? [];
     const meta = paginatedResult?.meta;
-    const { data: archivedReductions } = useArchivedTemplateReductions({ enabled: isAdmin });
+    const { data: archivedReductions } = useArchivedTemplateReductions({ enabled: canManageArchive });
     
     const createMutation = useCreateTemplateReduction();
     const updateMutation = useUpdateTemplateReduction();
@@ -255,7 +255,7 @@ export default function ReductionsCatalogPage() {
                 </div>
             )}
 
-            {isAdmin && (
+            {canManageArchive && (
                 <div className="mt-10">
                     <button onClick={() => setShowArchived(!showArchived)}
                         className="inline-flex items-center gap-2 text-sm font-bold text-brand-slate hover:text-brand-navy transition-colors cursor-pointer border-none bg-transparent outline-none dark:hover:text-brand-light">

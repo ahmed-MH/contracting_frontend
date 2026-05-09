@@ -18,6 +18,14 @@ type GridMap = Record<number, Record<number, CellState>>;
 type PeriodDefaults = Record<number, { minStay: string; releaseDays: string }>;
 const BASE_PRICE_ID = 0;
 
+function roomDisplayCode(room: ContractRoom) {
+    return room.roomType?.code?.trim() || room.roomType?.name?.trim() || 'Room';
+}
+
+function roomMatrixName(room: ContractRoom) {
+    return room.roomType?.name?.trim() || roomDisplayCode(room);
+}
+
 function buildInitialGrid(
     rooms: ContractRoom[],
     periods: Period[],
@@ -361,21 +369,16 @@ export default function SmartRatesGrid({ contract }: Props) {
                                 <tr key={room.id} className={idx % 2 === 0 ? 'bg-brand-light dark:bg-brand-navy group/row' : 'bg-brand-light/60 dark:bg-brand-navy/80 group/row'}>
                                     <td className="px-6 py-4 border-r border-brand-slate/10 sticky left-0 z-10 shadow-sm align-middle" >
                                         <div className="flex justify-between items-start gap-2">
-                                            <div>
-                                                <div className="font-bold text-brand-navy text-[15px]">{room.roomType?.name}</div>
-                                                <div className="flex flex-wrap items-center gap-2 mt-1.5">
-                                                    {room.roomType?.code && (
-                                                        <span className="inline-flex px-1.5 py-0.5 bg-brand-slate/10 rounded text-[11px] font-bold text-brand-slate uppercase tracking-wider shrink-0 shadow-sm border border-brand-slate/15">
-                                                            {room.roomType.code}
-                                                        </span>
-                                                    )}
-                                                    {room.reference && (
-                                                        <span className="text-sm font-medium text-brand-slate/70">{room.reference}</span>
-                                                    )}
-                                                </div>
+                                            <div title={room.roomType?.name ?? undefined}>
+                                                <div className="font-bold text-brand-navy text-[15px]">{roomMatrixName(room)}</div>
+                                                {room.roomType?.code && (
+                                                    <div className="mt-1.5 inline-flex px-1.5 py-0.5 bg-brand-slate/10 rounded text-[11px] font-bold text-brand-slate uppercase tracking-wider shrink-0 shadow-sm border border-brand-slate/15">
+                                                        {room.roomType.code}
+                                                    </div>
+                                                )}
                                             </div>
                                             <button
-                                                onClick={() => handleDeleteRoom(room.id, room.roomType?.name || t('auto.features.contracts.details.components.rates.grid.smartratesgrid.thisRoom', { defaultValue: 'This room' }))}
+                                                onClick={() => handleDeleteRoom(room.id, roomDisplayCode(room))}
                                                 className="p-1.5 text-brand-slate/45 hover:text-brand-navy hover:bg-brand-slate/10 rounded transition-colors opacity-0 group-hover/row:opacity-100 cursor-pointer shrink-0"
                                                 title={t('auto.features.contracts.details.components.rates.grid.smartratesgrid.title.a45947a0', { defaultValue: "Remove room" })}
                                                 aria-label={t('auto.features.contracts.details.components.rates.grid.smartratesgrid.title.a45947a0', { defaultValue: "Remove room" })}

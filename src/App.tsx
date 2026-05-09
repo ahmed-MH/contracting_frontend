@@ -42,6 +42,7 @@ const SimulatorPage = lazy(() => import('./features/simulator/pages/SimulatorPag
 const ProformaPreviewPage = lazy(() => import('./features/simulator/pages/ProformaPreviewPage'));
 const SavedProformaInvoicesPage = lazy(() => import('./features/simulator/pages/SavedProformaInvoicesPage'));
 const ContractPreviewPage = lazy(() => import('./features/contracts/pages/ContractPreviewPage'));
+const CommercialOverviewPage = lazy(() => import('./features/commercial/pages/CommercialOverviewPage'));
 const UsersPage = lazy(() => import('./features/admin/pages/UsersPage'));
 const AdminOverviewPage = lazy(() => import('./features/admin/pages/AdminOverviewPage'));
 const IntegrationOverviewPage = lazy(() => import('./features/integrations/pages/IntegrationOverviewPage'));
@@ -130,6 +131,15 @@ function App() {
                             }
                         >
                             <Route path="app" element={<RoleHomeRedirect />} />
+                            <Route
+                                path="overview"
+                                element={
+                                    <ProtectedRoute allowedRoles={['COMMERCIAL']}>
+                                        <CommercialOverviewPage />
+                                    </ProtectedRoute>
+                                }
+                            />
+                            <Route path="commercial" element={<Navigate to="/overview" replace />} />
 
                             <Route
                                 path="platform"

@@ -44,6 +44,10 @@
     -moz-osx-font-smoothing: grayscale;
   }
 
+  body:not(:has([data-pricify-modal-root="true"])) {
+    overflow-y: auto !important;
+  }
+
   .dark body {
     background:
       radial-gradient(circle at top left, color-mix(in srgb, var(--color-brand-mint) 14%, transparent), transparent 18%),

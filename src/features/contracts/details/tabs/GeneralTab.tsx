@@ -120,6 +120,8 @@ const paymentConditionLabel = (type: PaymentConditionType, t: TFunction<'common'
     PREPAYMENT_100: t('pages.contractDetails.general.payment.conditionCards.fullPrepayment', { defaultValue: 'Full prepayment' }),
 }[type]);
 
+const hasText = (value?: string | null) => Boolean(value?.trim());
+
 export default function GeneralTab() {
     const { contract } = useOutletContext<ContractOutletContext>();
     const { currentHotel } = useHotel();
@@ -170,7 +172,29 @@ export default function GeneralTab() {
     const marketScope = paymentPolicy.marketScope;
     const paymentMethods = paymentPolicy.methods ?? [];
     const selectedBankAccountId = paymentPolicy.selectedHotelBankAccountId ?? null;
-    const selectedBankAccount = currentHotel?.bankAccounts?.find((account) => account.id === selectedBankAccountId) ?? null;
+    const hotelBankAccounts = useMemo(
+        () => (currentHotel?.bankAccounts ?? []).filter((account) => account.active !== false),
+        [currentHotel?.bankAccounts],
+    );
+    const hasLegacyHotelBankDetails = Boolean(currentHotel && [
+        currentHotel.bankName,
+        currentHotel.accountNumber,
+        currentHotel.ibanCode,
+        currentHotel.swiftCode,
+    ].some(hasText));
+    const legacyBankOptionLabel = useMemo(() => {
+        if (!currentHotel || !hasLegacyHotelBankDetails) {
+            return t('pages.contractDetails.general.payment.noBankAccount', { defaultValue: 'Use legacy hotel bank details / none' });
+        }
+
+        const reference = currentHotel.bankName || currentHotel.accountNumber || currentHotel.ibanCode || currentHotel.swiftCode;
+        return [
+            t('pages.contractDetails.general.payment.legacyBankAccount', { defaultValue: 'Legacy hotel bank details' }),
+            reference,
+            currentHotel.defaultCurrency,
+        ].filter(hasText).join(' - ');
+    }, [currentHotel, hasLegacyHotelBankDetails, t]);
+    const selectedBankAccount = hotelBankAccounts.find((account) => account.id === selectedBankAccountId) ?? null;
 
     const toggleAffiliate = (id: number) => {
         setValue('affiliateIds', selectedIds.includes(id) ? selectedIds.filter((x) => x !== id) : [...selectedIds, id], { shouldDirty: true });
@@ -515,13 +539,22 @@ export default function GeneralTab() {
                                         onChange={(event) => setPaymentPolicy({ ...paymentPolicy, selectedHotelBankAccountId: event.target.value ? Number(event.target.value) : null })}
                                         className="w-full px-4 py-2 bg-brand-light border border-brand-slate/20 rounded-xl text-sm text-brand-navy focus:ring-2 focus:ring-brand-mint focus:border-brand-mint/30 outline-none transition-shadow shadow-sm cursor-pointer dark:bg-brand-light/5 dark:border-brand-light/10 dark:text-brand-light"
                                     >
-                                        <option value="">{t('pages.contractDetails.general.payment.noBankAccount', { defaultValue: 'Use legacy hotel bank details / none' })}</option>
-                                        {currentHotel?.bankAccounts?.filter((account) => account.active).map((account) => (
+                                        <option value="">
+                                            {hotelBankAccounts.length === 0 && hasLegacyHotelBankDetails
+                                                ? legacyBankOptionLabel
+                                                : t('pages.contractDetails.general.payment.noBankAccount', { defaultValue: 'Use legacy hotel bank details / none' })}
+                                        </option>
+                                        {hotelBankAccounts.map((account) => (
                                             <option key={account.id} value={account.id}>
-                                                {account.label} - {account.currency ?? currentHotel.defaultCurrency}
+                                                {[account.label, account.bankName, account.currency ?? currentHotel?.defaultCurrency].filter(hasText).join(' - ')}
                                             </option>
                                         ))}
                                     </select>
+                                    {hotelBankAccounts.length === 0 && !hasLegacyHotelBankDetails && (
+                                        <p className="mt-2 text-xs leading-5 text-brand-slate dark:text-brand-light/70">
+                                            {t('pages.contractDetails.general.payment.noActiveBankAccounts', { defaultValue: 'No active hotel bank account found. Add one in Hotel settings.' })}
+                                        </p>
+                                    )}
                                 </div>
                                 {paymentMethods.some((method) => method.type === 'SWIFT_TRANSFER') && selectedBankAccount && (!selectedBankAccount.iban || !selectedBankAccount.swiftCode) && (
                                     <div className="rounded-xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-900 dark:border-amber-400/40 dark:bg-amber-400/10 dark:text-amber-100">

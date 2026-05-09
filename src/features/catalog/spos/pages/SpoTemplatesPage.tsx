@@ -26,7 +26,7 @@ export default function SpoTemplatesPage() {
     const [showArchived, setShowArchived] = useState(false);
     
     const { user } = useAuth();
-    const isAdmin = user?.role === 'ADMIN';
+    const canManageArchive = user?.role === 'ADMIN' || user?.role === 'COMMERCIAL';
     const limit = 10;
 
     // Debounce
@@ -39,7 +39,7 @@ export default function SpoTemplatesPage() {
     }, [search]);
 
     const { data: pageData, isLoading, isError } = useSpoTemplates({ page, limit, search: debouncedSearch });
-    const { data: archivedSpos } = useArchivedSpoTemplates({ enabled: isAdmin });
+    const { data: archivedSpos } = useArchivedSpoTemplates({ enabled: canManageArchive });
     
     const deleteMutation = useDeleteSpoTemplate();
     const restoreMutation = useRestoreSpoTemplate();
@@ -242,7 +242,7 @@ export default function SpoTemplatesPage() {
                 </div>
             )}
 
-            {isAdmin && (
+            {canManageArchive && (
                 <div className="mt-10">
                     <button onClick={() => setShowArchived(!showArchived)}
                         className="inline-flex items-center gap-2 text-sm font-bold text-brand-slate hover:text-brand-navy transition-colors cursor-pointer border-none bg-transparent outline-none dark:hover:text-brand-light">

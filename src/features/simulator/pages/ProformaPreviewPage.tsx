@@ -120,7 +120,7 @@ export default function ProformaPreviewPage() {
     const taxInvalid = taxEnabled && parsedTaxAmount === undefined;
 
     useEffect(() => {
-        if (!proforma || isIssued || !taxEnabled || taxInvalid || selectedCurrency.toUpperCase() !== proforma.currency.toUpperCase()) return;
+        if (!proforma || !taxEnabled || taxInvalid || selectedCurrency.toUpperCase() !== proforma.currency.toUpperCase()) return;
 
         const currentTaxAmount = proforma.taxAmount ?? proforma.totalsSnapshot?.taxAmount ?? 0;
         if (Math.abs((parsedTaxAmount ?? 0) - currentTaxAmount) < 0.005) return;
@@ -137,10 +137,10 @@ export default function ProformaPreviewPage() {
         }, 450);
 
         return () => window.clearTimeout(timer);
-    }, [isIssued, notes, parsedTaxAmount, proforma, selectedCurrency, taxEnabled, taxInvalid, taxName, updatePreviewSettings, voucherNumber]);
+    }, [notes, parsedTaxAmount, proforma, selectedCurrency, taxEnabled, taxInvalid, taxName, updatePreviewSettings, voucherNumber]);
 
     useEffect(() => {
-        if (!proforma || isIssued || !taxEnabled || taxInvalid || selectedCurrency.toUpperCase() !== proforma.currency.toUpperCase()) return;
+        if (!proforma || !taxEnabled || taxInvalid || selectedCurrency.toUpperCase() !== proforma.currency.toUpperCase()) return;
 
         const normalizedTaxName = taxName.trim() || 'VAT / tax';
         const currentTaxName = proforma.totalsSnapshot?.taxName ?? 'VAT / tax';
@@ -158,10 +158,10 @@ export default function ProformaPreviewPage() {
         }, 450);
 
         return () => window.clearTimeout(timer);
-    }, [isIssued, notes, parsedTaxAmount, proforma, selectedCurrency, taxEnabled, taxInvalid, taxName, updatePreviewSettings, voucherNumber]);
+    }, [notes, parsedTaxAmount, proforma, selectedCurrency, taxEnabled, taxInvalid, taxName, updatePreviewSettings, voucherNumber]);
 
     useEffect(() => {
-        if (!proforma || isIssued || notes === (proforma.notes ?? '')) return;
+        if (!proforma || notes === (proforma.notes ?? '')) return;
 
         const timer = window.setTimeout(() => {
             updatePreviewSettings({
@@ -175,10 +175,10 @@ export default function ProformaPreviewPage() {
         }, 650);
 
         return () => window.clearTimeout(timer);
-    }, [isIssued, notes, parsedTaxAmount, proforma, selectedCurrency, taxEnabled, taxName, updatePreviewSettings, voucherNumber]);
+    }, [notes, parsedTaxAmount, proforma, selectedCurrency, taxEnabled, taxName, updatePreviewSettings, voucherNumber]);
 
     useEffect(() => {
-        if (!proforma || isIssued || voucherNumber === (proforma.voucherNumber ?? '')) return;
+        if (!proforma || voucherNumber === (proforma.voucherNumber ?? '')) return;
 
         const timer = window.setTimeout(() => {
             updatePreviewSettings({
@@ -192,7 +192,7 @@ export default function ProformaPreviewPage() {
         }, 450);
 
         return () => window.clearTimeout(timer);
-    }, [isIssued, notes, parsedTaxAmount, proforma, selectedCurrency, taxEnabled, taxName, updatePreviewSettings, voucherNumber]);
+    }, [notes, parsedTaxAmount, proforma, selectedCurrency, taxEnabled, taxName, updatePreviewSettings, voucherNumber]);
 
     if (isLoading) {
         return (
@@ -228,7 +228,6 @@ export default function ProformaPreviewPage() {
     const handleCurrencyChange = (currency: string) => {
         const normalizedCurrency = currency.toUpperCase();
         setSelectedCurrency(normalizedCurrency);
-        if (isIssued) return;
         if (!proforma || normalizedCurrency === proforma.currency.toUpperCase()) return;
         updatePreviewSettings({
             currency: normalizedCurrency,
@@ -242,7 +241,6 @@ export default function ProformaPreviewPage() {
 
     const handleTaxEnabledChange = (enabled: boolean) => {
         setTaxEnabled(enabled);
-        if (isIssued) return;
         updatePreviewSettings({
             currency: selectedCurrency || proforma.currency,
             taxEnabled: enabled,

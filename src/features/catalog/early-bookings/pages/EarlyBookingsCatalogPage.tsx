@@ -27,7 +27,7 @@ export default function EarlyBookingsCatalogPage() {
 
     const { user } = useAuth();
     const { confirm } = useConfirm();
-    const isAdmin = user?.role === 'ADMIN';
+    const canManageArchive = user?.role === 'ADMIN' || user?.role === 'COMMERCIAL';
 
     // Debounce search input (300ms)
     useEffect(() => {
@@ -41,7 +41,7 @@ export default function EarlyBookingsCatalogPage() {
     const { data: paginatedResult, isLoading, isError } = useTemplateEarlyBookings(page, limit, debouncedSearch);
     const earlyBookings = paginatedResult?.data ?? [];
     const meta = paginatedResult?.meta;
-    const { data: archivedEarlyBookings } = useArchivedTemplateEarlyBookings({ enabled: isAdmin });
+    const { data: archivedEarlyBookings } = useArchivedTemplateEarlyBookings({ enabled: canManageArchive });
 
     const createMutation = useCreateTemplateEarlyBooking();
     const updateMutation = useUpdateTemplateEarlyBooking();
@@ -166,7 +166,7 @@ export default function EarlyBookingsCatalogPage() {
                 />
             )}
 
-            {isAdmin && (
+            {canManageArchive && (
                 <div className="mt-10">
                     <button onClick={() => setShowArchived(!showArchived)}
                         className="inline-flex items-center gap-2 text-sm font-bold text-brand-slate hover:text-brand-navy transition-colors cursor-pointer border-none bg-transparent outline-none dark:hover:text-brand-light">

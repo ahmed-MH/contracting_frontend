@@ -1,10 +1,12 @@
-import { useDeferredValue, useMemo, useState } from 'react';
+import { useDeferredValue, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Download, ExternalLink, FileText, Search } from 'lucide-react';
+import { Archive, ChevronDown, ChevronLeft, ChevronRight, Download, ExternalLink, FileText, RotateCcw, Search } from 'lucide-react';
 import { GuidedPageHeader, SectionCard, WorkspaceContainer } from '../../../components/layout/Workspace';
 import UpdatedByCell from '../../../components/audit/UpdatedByCell';
 import { useAffiliates } from '../../partners/hooks/useAffiliates';
-import { useDownloadProformaPdf, useGetIssuedProformas } from '../hooks/useProforma';
+import { useArchiveProforma, useDownloadProformaPdf, useGetArchivedIssuedProformas, useGetIssuedProformas, useRestoreProforma } from '../hooks/useProforma';
+import { useConfirm } from '../../../context/ConfirmContext';
+import type { PageMeta } from '../../../types/pagination.types';
 
 function formatDate(iso?: string | null) {
     if (!iso) return '—';
@@ -17,27 +19,115 @@ function formatAmount(amount?: number | null, currency?: string | null) {
     return `${new Intl.NumberFormat('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(numeric)} ${code}`;
 }
 
+const filterLabelClass = 'mb-1.5 block text-[10px] font-black uppercase tracking-[0.16em] text-brand-slate dark:text-brand-light/50';
+const filterControlClass = 'h-11 w-full rounded-lg border border-brand-light/70 bg-brand-light/80 px-4 text-sm text-brand-navy shadow-sm outline-none transition focus:border-brand-mint focus:ring-2 focus:ring-brand-mint/20 dark:border-brand-light/10 dark:bg-brand-light/5 dark:text-brand-light';
+const pageSize = 10;
+
+function PaginationControls({
+    meta,
+    onPageChange,
+}: {
+    meta?: PageMeta;
+    onPageChange: (page: number) => void;
+}) {
+    if (!meta || meta.lastPage <= 1) return null;
+
+    return (
+        <div className="flex items-center justify-between gap-3 border-t border-brand-light/70 px-5 py-4 text-sm text-brand-slate dark:border-brand-light/10 dark:text-brand-light/70">
+            <span>
+                Page {meta.page} of {meta.lastPage} - {meta.total} total
+            </span>
+            <div className="flex items-center gap-2">
+                <button
+                    type="button"
+                    disabled={meta.page <= 1}
+                    onClick={() => onPageChange(meta.page - 1)}
+                    className="inline-flex h-9 items-center gap-1 rounded-lg border border-brand-light/70 bg-brand-light/70 px-3 font-semibold text-brand-navy transition hover:border-brand-mint hover:text-brand-mint disabled:cursor-not-allowed disabled:opacity-50 dark:border-brand-light/10 dark:bg-brand-light/5 dark:text-brand-light"
+                >
+                    <ChevronLeft size={14} />
+                    Previous
+                </button>
+                <button
+                    type="button"
+                    disabled={meta.page >= meta.lastPage}
+                    onClick={() => onPageChange(meta.page + 1)}
+                    className="inline-flex h-9 items-center gap-1 rounded-lg border border-brand-light/70 bg-brand-light/70 px-3 font-semibold text-brand-navy transition hover:border-brand-mint hover:text-brand-mint disabled:cursor-not-allowed disabled:opacity-50 dark:border-brand-light/10 dark:bg-brand-light/5 dark:text-brand-light"
+                >
+                    Next
+                    <ChevronRight size={14} />
+                </button>
+            </div>
+        </div>
+    );
+}
+
 export default function SavedProformaInvoicesPage() {
     const navigate = useNavigate();
+    const { confirm } = useConfirm();
     const { data: affiliates = [] } = useAffiliates();
     const [search, setSearch] = useState('');
     const [affiliateId, setAffiliateId] = useState('');
     const [issuedFrom, setIssuedFrom] = useState('');
     const [issuedTo, setIssuedTo] = useState('');
+    const [showArchived, setShowArchived] = useState(false);
+    const [page, setPage] = useState(1);
+    const [archivedPage, setArchivedPage] = useState(1);
     const deferredSearch = useDeferredValue(search.trim());
     const filters = useMemo(() => ({
         search: deferredSearch || undefined,
         affiliateId: affiliateId ? Number(affiliateId) : undefined,
         issuedFrom: issuedFrom || undefined,
         issuedTo: issuedTo || undefined,
-    }), [affiliateId, deferredSearch, issuedFrom, issuedTo]);
+        page,
+        limit: pageSize,
+    }), [affiliateId, deferredSearch, issuedFrom, issuedTo, page]);
+    const archivedFilters = useMemo(() => ({
+        search: deferredSearch || undefined,
+        affiliateId: affiliateId ? Number(affiliateId) : undefined,
+        issuedFrom: issuedFrom || undefined,
+        issuedTo: issuedTo || undefined,
+        page: archivedPage,
+        limit: pageSize,
+    }), [affiliateId, archivedPage, deferredSearch, issuedFrom, issuedTo]);
 
     const {
-        data: invoices = [],
+        data: invoicesPage,
         isLoading,
         isError,
     } = useGetIssuedProformas(filters);
+    const { data: archivedInvoicesPage } = useGetArchivedIssuedProformas(archivedFilters, showArchived);
+    const invoices = invoicesPage?.data ?? [];
+    const archivedInvoices = archivedInvoicesPage?.data ?? [];
     const { mutate: downloadPdf, isPending: isDownloading } = useDownloadProformaPdf();
+    const archiveMutation = useArchiveProforma();
+    const restoreMutation = useRestoreProforma();
+
+    useEffect(() => {
+        setPage(1);
+        setArchivedPage(1);
+    }, [affiliateId, deferredSearch, issuedFrom, issuedTo]);
+
+    const handleArchive = async (invoice: typeof invoices[number]) => {
+        if (await confirm({
+            title: `Archive proforma "${invoice.reference}"?`,
+            description: 'This invoice will move out of the active commercial archive until it is restored.',
+            confirmLabel: 'Archive',
+            variant: 'danger',
+        })) {
+            archiveMutation.mutate(invoice.id);
+        }
+    };
+
+    const handleRestore = async (invoice: typeof invoices[number]) => {
+        if (await confirm({
+            title: `Restore proforma "${invoice.reference}"?`,
+            description: 'This invoice will return to the active issued invoice archive.',
+            confirmLabel: 'Restore',
+            variant: 'info',
+        })) {
+            restoreMutation.mutate(invoice.id);
+        }
+    };
 
     return (
         <WorkspaceContainer className="space-y-6">
@@ -54,42 +144,54 @@ export default function SavedProformaInvoicesPage() {
                 bodyClassName="space-y-4"
             >
                 <div className="grid gap-3 lg:grid-cols-[minmax(0,1.4fr)_220px_180px_180px]">
-                    <label className="relative block">
-                        <Search size={15} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-brand-slate" />
+                    <label className="block">
+                        <span className={filterLabelClass}>Search</span>
+                        <span className="relative block">
+                            <Search size={15} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-brand-slate" />
+                            <input
+                                value={search}
+                                onChange={(event) => setSearch(event.target.value)}
+                                placeholder="Invoice no or partner"
+                                className={`${filterControlClass} pl-10 pr-4`}
+                            />
+                        </span>
+                    </label>
+
+                    <label className="block">
+                        <span className={filterLabelClass}>Partner</span>
+                        <select
+                            value={affiliateId}
+                            onChange={(event) => setAffiliateId(event.target.value)}
+                            className={filterControlClass}
+                        >
+                            <option value="">All partners</option>
+                            {affiliates.map((affiliate) => (
+                                <option key={affiliate.id} value={affiliate.id}>
+                                    {affiliate.companyName}
+                                </option>
+                            ))}
+                        </select>
+                    </label>
+
+                    <label className="block">
+                        <span className={filterLabelClass}>Issued from</span>
                         <input
-                            value={search}
-                            onChange={(event) => setSearch(event.target.value)}
-                            placeholder="Search invoice no or partner"
-                            className="h-11 w-full rounded-lg border border-brand-light/70 bg-brand-light/80 pl-10 pr-4 text-sm text-brand-navy shadow-sm outline-none transition focus:border-brand-mint focus:ring-2 focus:ring-brand-mint/20 dark:border-brand-light/10 dark:bg-brand-light/5 dark:text-brand-light"
+                            type="date"
+                            value={issuedFrom}
+                            onChange={(event) => setIssuedFrom(event.target.value)}
+                            className={filterControlClass}
                         />
                     </label>
 
-                    <select
-                        value={affiliateId}
-                        onChange={(event) => setAffiliateId(event.target.value)}
-                        className="h-11 rounded-lg border border-brand-light/70 bg-brand-light/80 px-4 text-sm text-brand-navy shadow-sm outline-none transition focus:border-brand-mint focus:ring-2 focus:ring-brand-mint/20 dark:border-brand-light/10 dark:bg-brand-light/5 dark:text-brand-light"
-                    >
-                        <option value="">All partners</option>
-                        {affiliates.map((affiliate) => (
-                            <option key={affiliate.id} value={affiliate.id}>
-                                {affiliate.companyName}
-                            </option>
-                        ))}
-                    </select>
-
-                    <input
-                        type="date"
-                        value={issuedFrom}
-                        onChange={(event) => setIssuedFrom(event.target.value)}
-                        className="h-11 rounded-lg border border-brand-light/70 bg-brand-light/80 px-4 text-sm text-brand-navy shadow-sm outline-none transition focus:border-brand-mint focus:ring-2 focus:ring-brand-mint/20 dark:border-brand-light/10 dark:bg-brand-light/5 dark:text-brand-light"
-                    />
-
-                    <input
-                        type="date"
-                        value={issuedTo}
-                        onChange={(event) => setIssuedTo(event.target.value)}
-                        className="h-11 rounded-lg border border-brand-light/70 bg-brand-light/80 px-4 text-sm text-brand-navy shadow-sm outline-none transition focus:border-brand-mint focus:ring-2 focus:ring-brand-mint/20 dark:border-brand-light/10 dark:bg-brand-light/5 dark:text-brand-light"
-                    />
+                    <label className="block">
+                        <span className={filterLabelClass}>Issued to</span>
+                        <input
+                            type="date"
+                            value={issuedTo}
+                            onChange={(event) => setIssuedTo(event.target.value)}
+                            className={filterControlClass}
+                        />
+                    </label>
                 </div>
 
                 {isLoading && (
@@ -192,6 +294,15 @@ export default function SavedProformaInvoicesPage() {
                                                         <Download size={14} />
                                                         Download
                                                     </button>
+                                                    <button
+                                                        type="button"
+                                                        disabled={archiveMutation.isPending}
+                                                        onClick={() => handleArchive(invoice)}
+                                                        className="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-brand-light/70 bg-brand-light/70 text-brand-slate transition hover:border-brand-mint hover:text-brand-mint disabled:cursor-not-allowed disabled:opacity-60 dark:border-brand-light/10 dark:bg-brand-light/5 dark:text-brand-light"
+                                                        aria-label="Archive proforma"
+                                                    >
+                                                        <Archive size={14} />
+                                                    </button>
                                                 </div>
                                             </td>
                                         </tr>
@@ -199,6 +310,90 @@ export default function SavedProformaInvoicesPage() {
                                 </tbody>
                             </table>
                         </div>
+                        <PaginationControls meta={invoicesPage?.meta} onPageChange={setPage} />
+                    </div>
+                )}
+
+                <div className="pt-2">
+                    <button
+                        type="button"
+                        onClick={() => setShowArchived((value) => !value)}
+                        className="inline-flex items-center gap-2 rounded-lg border border-brand-light/70 bg-brand-light/70 px-4 py-2 text-sm font-semibold text-brand-navy transition hover:border-brand-mint hover:text-brand-mint dark:border-brand-light/10 dark:bg-brand-light/5 dark:text-brand-light"
+                    >
+                        {showArchived ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+                        <Archive size={16} />
+                        Archived proformas {showArchived ? `(${archivedInvoicesPage?.meta.total ?? archivedInvoices.length})` : ''}
+                    </button>
+                </div>
+
+                {showArchived && archivedInvoices.length === 0 && (
+                    <div className="rounded-lg border border-dashed border-brand-slate/20 px-6 py-10 text-center text-sm text-brand-slate dark:border-brand-light/10 dark:text-brand-light/70">
+                        No archived proforma invoices match these filters.
+                    </div>
+                )}
+
+                {showArchived && archivedInvoices.length > 0 && (
+                    <div className="overflow-hidden rounded-lg border border-brand-light/70 dark:border-brand-light/10">
+                        <div className="overflow-x-auto">
+                            <table className="min-w-full text-left text-sm">
+                                <thead className="bg-brand-light/70 text-brand-slate dark:bg-brand-light/5">
+                                    <tr>
+                                        <th className="px-5 py-4 font-semibold uppercase tracking-[0.18em]">Invoice</th>
+                                        <th className="px-5 py-4 font-semibold uppercase tracking-[0.18em]">Partner</th>
+                                        <th className="px-5 py-4 font-semibold uppercase tracking-[0.18em]">Stay</th>
+                                        <th className="px-5 py-4 font-semibold uppercase tracking-[0.18em]">Amount</th>
+                                        <th className="px-5 py-4 font-semibold uppercase tracking-[0.18em]">Archived</th>
+                                        <th className="px-5 py-4 text-right font-semibold uppercase tracking-[0.18em]">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-brand-light/60 dark:divide-brand-light/10">
+                                    {archivedInvoices.map((invoice) => (
+                                        <tr key={invoice.id} className="bg-brand-light/20 dark:bg-transparent">
+                                            <td className="px-5 py-4 align-top">
+                                                <p className="font-semibold text-brand-navy dark:text-brand-light">{invoice.reference}</p>
+                                                <p className="mt-1 text-xs font-medium text-brand-slate dark:text-brand-light/65">
+                                                    {invoice.status}
+                                                </p>
+                                            </td>
+                                            <td className="px-5 py-4 align-top">
+                                                <p className="font-semibold text-brand-navy dark:text-brand-light">{invoice.customerName}</p>
+                                                <p className="mt-1 text-xs text-brand-slate dark:text-brand-light/65">
+                                                    {invoice.customerEmail || 'No email provided'}
+                                                </p>
+                                            </td>
+                                            <td className="px-5 py-4 align-top text-brand-slate dark:text-brand-light/70">
+                                                <p>{formatDate(invoice.checkIn)}{' -> '}{formatDate(invoice.checkOut)}</p>
+                                                <p className="mt-1 text-xs">
+                                                    Booking: {formatDate(invoice.bookingDate)}
+                                                </p>
+                                            </td>
+                                            <td className="px-5 py-4 align-top">
+                                                <p className="font-semibold text-brand-navy dark:text-brand-light">
+                                                    {formatAmount(invoice.totalsSnapshot?.totalAmount ?? invoice.totalsSnapshot?.grandTotal, invoice.currency)}
+                                                </p>
+                                            </td>
+                                            <td className="px-5 py-4 align-top text-brand-slate dark:text-brand-light/70">
+                                                {formatDate(invoice.deletedAt)}
+                                            </td>
+                                            <td className="px-5 py-4 align-top">
+                                                <div className="flex justify-end gap-2">
+                                                    <button
+                                                        type="button"
+                                                        disabled={restoreMutation.isPending}
+                                                        onClick={() => handleRestore(invoice)}
+                                                        className="inline-flex h-10 items-center gap-2 rounded-lg bg-brand-mint/10 px-4 text-sm font-semibold text-brand-mint transition hover:bg-brand-mint hover:text-brand-light disabled:cursor-not-allowed disabled:opacity-60"
+                                                    >
+                                                        <RotateCcw size={14} />
+                                                        Restore
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                        <PaginationControls meta={archivedInvoicesPage?.meta} onPageChange={setArchivedPage} />
                     </div>
                 )}
             </SectionCard>

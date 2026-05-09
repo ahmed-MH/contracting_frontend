@@ -16,12 +16,12 @@ export default function ArrangementsPage() {
     const [search, setSearch] = useState('');
     const { user } = useAuth();
     const { confirm } = useConfirm();
-    const isAdmin = user?.role === 'ADMIN';
+    const canManageArchive = user?.role === 'ADMIN' || user?.role === 'COMMERCIAL';
 
     const closeModal = () => { setIsModalOpen(false); setEditing(null); };
 
     const { data: arrangements, isLoading, isError } = useArrangements();
-    const { data: archivedArrangements } = useArchivedArrangements(isAdmin && showArchived);
+    const { data: archivedArrangements } = useArchivedArrangements(canManageArchive && showArchived);
 
     const displayedArrangements = arrangements?.filter(arr =>
         arr.name.toLowerCase().includes(search.toLowerCase()) ||
@@ -201,8 +201,8 @@ export default function ArrangementsPage() {
                 </div>
             )}
 
-            {/* ─── Archived Section (ADMIN only) ───────────────────────── */}
-            {isAdmin && (
+            {/* ─── Archived Section ───────────────────────── */}
+            {canManageArchive && (
                 <div className="mt-10">
                     <button onClick={() => setShowArchived(!showArchived)}
                         className="inline-flex items-center gap-2 text-sm font-medium text-brand-slate hover:text-brand-navy transition-colors cursor-pointer border-none outline-none bg-transparent">

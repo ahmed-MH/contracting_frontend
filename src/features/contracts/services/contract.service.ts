@@ -1,5 +1,6 @@
 import apiClient from '../../../services/api.client';
 import type { ActivationValidationResult, Contract, Period, ContractRoom, ContractStatus, ContractPaymentPolicy } from '../types/contract.types';
+import type { PaginatedResult } from '../../../types/pagination.types';
 
 // Re-export types for page consumers
 export type { Contract, Period, ContractRoom, ContractStatus };
@@ -33,6 +34,12 @@ export interface UpdateContractPayload {
     paymentPolicy?: ContractPaymentPolicy | null;
     selectedHotelBankAccountId?: number | null;
     baseArrangementId?: number | null;
+}
+
+export interface ContractListParams {
+    page?: number;
+    limit?: number;
+    search?: string;
 }
 
 export interface CreatePeriodPayload {
@@ -92,8 +99,11 @@ export interface ContractLineData {
 // ─── API Methods ─────────────────────────────────────────────────────
 
 export const contractService = {
-    getContracts: () =>
-        apiClient.get<Contract[]>('/contracts').then((r) => r.data),
+    getContracts: (params?: ContractListParams) =>
+        apiClient.get<PaginatedResult<Contract>>('/contracts', { params }).then((r) => r.data),
+
+    getArchivedContracts: (params?: ContractListParams) =>
+        apiClient.get<PaginatedResult<Contract>>('/contracts/archived', { params }).then((r) => r.data),
 
     createContract: (data: CreateContractPayload) =>
         apiClient.post<Contract>('/contracts', data).then((r) => r.data),
@@ -106,6 +116,12 @@ export const contractService = {
 
     updateContract: (id: number, data: UpdateContractPayload) =>
         apiClient.patch<Contract>(`/contracts/${id}`, data).then((r) => r.data),
+
+    archiveContract: (id: number) =>
+        apiClient.delete(`/contracts/${id}`).then((r) => r.data),
+
+    restoreContract: (id: number) =>
+        apiClient.patch(`/contracts/${id}/restore`).then((r) => r.data),
 
     // ─── Periods ──────────────────────────────────────────────────────
     addPeriod: (contractId: number, data: CreatePeriodPayload) =>

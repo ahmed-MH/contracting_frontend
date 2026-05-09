@@ -65,7 +65,7 @@ export default function SupplementsCatalogPage() {
     const limit = 10;
     const { user } = useAuth();
     const { confirm } = useConfirm();
-    const isAdmin = user?.role === 'ADMIN';
+    const canManageArchive = user?.role === 'ADMIN' || user?.role === 'COMMERCIAL';
 
     // Debounce search input (300ms)
     useEffect(() => {
@@ -81,7 +81,7 @@ export default function SupplementsCatalogPage() {
     const { data: paginatedResult, isLoading, isError } = useTemplateSupplements(page, limit, debouncedSearch);
     const supplements = paginatedResult?.data ?? [];
     const meta = paginatedResult?.meta;
-    const { data: archivedSupplements } = useArchivedTemplateSupplements({ enabled: isAdmin });
+    const { data: archivedSupplements } = useArchivedTemplateSupplements({ enabled: canManageArchive });
     const createMutation = useCreateTemplateSupplement();
     const updateMutation = useUpdateTemplateSupplement();
     const deleteMutation = useDeleteTemplateSupplement();
@@ -319,8 +319,8 @@ export default function SupplementsCatalogPage() {
                 </div>
             )}
 
-            {/* ─── Archived Section (ADMIN only) ───────────────────────── */}
-            {isAdmin && (
+            {/* ─── Archived Section ───────────────────────── */}
+            {canManageArchive && (
                 <div className="mt-10">
                     <button onClick={() => setShowArchived(!showArchived)}
                         className="inline-flex items-center gap-2 text-sm font-bold text-brand-slate hover:text-brand-navy transition-colors cursor-pointer border-none bg-transparent outline-none dark:hover:text-brand-light">

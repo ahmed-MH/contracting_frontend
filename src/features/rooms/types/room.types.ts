@@ -1,10 +1,13 @@
 import type { AuditMetadata } from '../../../types/audit';
 
+export type RoomInventoryType = 'STANDARD' | 'PROMO';
+
 export interface RoomType extends AuditMetadata {
     id: number;
     reference?: string;
     code: string;
     name: string;
+    inventoryType: RoomInventoryType;
     minOccupancy: number;
     maxOccupancy: number;
     minAdults: number;
@@ -17,6 +20,7 @@ export interface RoomType extends AuditMetadata {
 export interface CreateRoomTypePayload {
     code: string;
     name: string;
+    inventoryType?: RoomInventoryType;
     minOccupancy: number;
     maxOccupancy: number;
     minAdults: number;

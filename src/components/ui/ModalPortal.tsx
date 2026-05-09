@@ -13,6 +13,28 @@ const FOCUSABLE_SELECTOR = [
 let openModalCount = 0;
 let previousBodyOverflow = '';
 
+function lockBodyScroll() {
+    if (typeof document === 'undefined') return;
+
+    if (openModalCount === 0) {
+        previousBodyOverflow = document.body.style.overflow;
+        document.body.style.overflow = 'hidden';
+    }
+
+    openModalCount += 1;
+}
+
+function unlockBodyScroll() {
+    if (typeof document === 'undefined') return;
+
+    openModalCount = Math.max(0, openModalCount - 1);
+
+    if (openModalCount === 0) {
+        document.body.style.overflow = previousBodyOverflow;
+        previousBodyOverflow = '';
+    }
+}
+
 interface ModalPortalProps {
     isOpen: boolean;
     onClose: () => void;
@@ -36,11 +58,7 @@ export default function ModalPortal({
 
         previouslyFocusedRef.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
 
-        if (openModalCount === 0) {
-            previousBodyOverflow = document.body.style.overflow;
-            document.body.style.overflow = 'hidden';
-        }
-        openModalCount += 1;
+        lockBodyScroll();
 
         const focusTimer = window.setTimeout(() => {
             const root = rootRef.current;
@@ -87,10 +105,7 @@ export default function ModalPortal({
         return () => {
             window.clearTimeout(focusTimer);
             document.removeEventListener('keydown', handleKeyDown);
-            openModalCount = Math.max(0, openModalCount - 1);
-            if (openModalCount === 0) {
-                document.body.style.overflow = previousBodyOverflow;
-            }
+            unlockBodyScroll();
             previouslyFocusedRef.current?.focus?.({ preventScroll: true });
         };
     }, [closeOnEscape, initialFocusRef, isOpen, onClose]);
@@ -98,7 +113,7 @@ export default function ModalPortal({
     if (!isOpen || typeof document === 'undefined') return null;
 
     return createPortal(
-        <div ref={rootRef} tabIndex={-1}>
+        <div ref={rootRef} tabIndex={-1} data-pricify-modal-root="true">
             {children}
         </div>,
         document.body,

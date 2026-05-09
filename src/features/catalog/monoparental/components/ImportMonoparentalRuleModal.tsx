@@ -39,11 +39,17 @@ export default function ImportMonoparentalRuleModal({ isOpen, onClose, contractI
 
     const templates = result?.data ?? [];
 
-    // Already-imported
-    const importedTemplateIds = new Set(
-        (contractRules ?? []).map((r) => r.templateId).filter((id): id is number => id !== null)
-    );
-    const availableTemplates = templates.filter((t) => !importedTemplateIds.has(t.id));
+    const importCountsByTemplateId = new Map<number, number>();
+    for (const rule of contractRules ?? []) {
+        if (rule.templateId == null) continue;
+        importCountsByTemplateId.set(
+            rule.templateId,
+            (importCountsByTemplateId.get(rule.templateId) ?? 0) + 1,
+        );
+    }
+
+    const importedTemplateCount = [...importCountsByTemplateId.values()].reduce((sum, count) => sum + count, 0);
+    const availableTemplates = templates;
     const isLoading = isLoadingTemplates || isLoadingContract;
 
     const toggle = (id: number) => {
@@ -99,9 +105,9 @@ export default function ImportMonoparentalRuleModal({ isOpen, onClose, contractI
                             className="w-full pl-10 pr-4 py-2 bg-brand-light dark:bg-brand-navy border border-brand-slate/20 rounded-xl text-sm focus:ring-2 focus:ring-brand-mint dark:text-brand-light outline-hidden transition-all"
                         />
                     </div>
-                    {importedTemplateIds.size > 0 && (
+                    {importedTemplateCount > 0 && (
                         <p className="text-[10px] text-brand-mint font-bold mt-2 flex items-center gap-1">
-                            ✓ {importedTemplateIds.size} règle(s) déjà importée(s) dans ce contrat sont masquées.
+                            {importedTemplateCount} regle(s) deja importee(s) restent disponibles pour une nouvelle affectation.
                         </p>
                     )}
                 </div>
@@ -117,17 +123,20 @@ export default function ImportMonoparentalRuleModal({ isOpen, onClose, contractI
                         <div className="text-center py-16">
                             <AlertCircle className="mx-auto text-brand-slate mb-4" size={48} />
                             <p className="text-brand-slate font-bold tracking-tight">
-                                {templates.length > 0 ? 'Toutes les règles ont déjà été importées' : 'Le catalogue est vide'}
+                                {templates.length > 0 ? 'Aucune regle disponible' : 'Le catalogue est vide'}
                             </p>
                             <p className="text-xs text-brand-slate mt-1 max-w-[260px] mx-auto">
                                 {templates.length > 0
-                                    ? 'Toutes les règles disponibles sont déjà présentes dans ce contrat.'
+                                    ? 'Aucune regle ne correspond a votre recherche.'
                                     : 'Veuillez d\'abord configurer vos règles dans les paramètres de l\'hôtel.'}
                             </p>
                         </div>
                     ) : (
                         <div className="grid gap-4">
-                            {availableTemplates.map((t) => (
+                            {availableTemplates.map((t) => {
+                                const importCount = importCountsByTemplateId.get(t.id) ?? 0;
+
+                                return (
                                 <div
                                     key={t.id}
                                     onClick={() => toggle(t.id)}
@@ -169,10 +178,16 @@ export default function ImportMonoparentalRuleModal({ isOpen, onClose, contractI
                                             <span className="font-bold text-brand-mint bg-brand-mint/10 px-1.5 py-0.5 rounded border border-brand-mint/20">
                                                 {t.childSurchargePercentage === 0 ? 'Gratuit' : `+${t.childSurchargePercentage}%`}
                                             </span>
+                                            {importCount > 0 && (
+                                                <span className="font-bold text-brand-mint bg-brand-mint/10 px-1.5 py-0.5 rounded border border-brand-mint/30">
+                                                    Deja importe {importCount}x
+                                                </span>
+                                            )}
                                         </p>
                                     </div>
                                 </div>
-                            ))}
+                                );
+                            })}
                         </div>
                     )}
                 </div>

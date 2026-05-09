@@ -28,6 +28,15 @@ export default function CommercialLayout() {
     }, [location.pathname]);
 
     useEffect(() => {
+        if (typeof document === 'undefined') return;
+
+        const hasMountedModal = !!document.querySelector('[data-pricify-modal-root="true"]');
+        if (!hasMountedModal && document.body.style.overflow === 'hidden') {
+            document.body.style.overflow = '';
+        }
+    }, [location.pathname]);
+
+    useEffect(() => {
         if (!openGroupTitle) return;
 
         const handlePointerDown = (event: PointerEvent) => {
@@ -236,7 +245,7 @@ export default function CommercialLayout() {
                 )}
             </header>
 
-            <main className="min-w-0 bg-brand-light/80 dark:bg-brand-navy">
+            <main className="min-w-0 overflow-x-hidden bg-brand-light/80 dark:bg-brand-navy">
                 <Outlet />
             </main>
         </div>

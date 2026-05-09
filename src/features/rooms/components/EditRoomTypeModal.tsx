@@ -1,7 +1,7 @@
 import { useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Save, BedDouble, Users, Baby, Hash, Settings2, User } from 'lucide-react';
+import { Save, BedDouble, Users, Baby, Hash, Settings2, User, Tags } from 'lucide-react';
 import type { RoomType, CreateRoomTypePayload } from '../types/room.types';
 import ModalShell from '../../../components/ui/ModalShell';
 import { useTranslation } from 'react-i18next';
@@ -36,6 +36,7 @@ export default function EditRoomTypeModal({
         defaultValues: {
             code: '',
             name: '',
+            inventoryType: 'STANDARD',
             minOccupancy: 1,
             maxOccupancy: 3,
             minAdults: 1,
@@ -51,6 +52,7 @@ export default function EditRoomTypeModal({
             reset({
                 code: editing.code,
                 name: editing.name,
+                inventoryType: editing.inventoryType ?? 'STANDARD',
                 minOccupancy: editing.minOccupancy,
                 maxOccupancy: editing.maxOccupancy,
                 minAdults: editing.minAdults,
@@ -63,6 +65,7 @@ export default function EditRoomTypeModal({
             reset({
                 code: '',
                 name: '',
+                inventoryType: 'STANDARD',
                 minOccupancy: 1,
                 maxOccupancy: 3,
                 minAdults: 1,
@@ -117,7 +120,7 @@ export default function EditRoomTypeModal({
             maxWidth="max-w-2xl"
         >
             <form id="room-type-form" onSubmit={handleSubmit(onFormSubmit)} className="p-6 space-y-8">
-                <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+                <div className="grid grid-cols-1 gap-6 md:grid-cols-4">
                     <div className="md:col-span-1">
                         <label className="block text-xs font-bold text-brand-navy dark:text-brand-light uppercase tracking-wider mb-2">
                             {t('fields.pmsCode', { defaultValue: 'PMS code' })}
@@ -146,6 +149,22 @@ export default function EditRoomTypeModal({
                             placeholder={t('pages.roomTypes.modal.namePlaceholder', { defaultValue: 'ex: Standard double room' })}
                         />
                         {errors.name && <p className="mt-1.5 text-xs font-bold text-brand-slate">{errors.name.message}</p>}
+                    </div>
+
+                    <div className="md:col-span-1">
+                        <label className="block text-xs font-bold text-brand-navy dark:text-brand-light uppercase tracking-wider mb-2">
+                            {t('pages.roomTypes.modal.inventoryType', { defaultValue: 'Inventory type' })}
+                        </label>
+                        <div className="relative">
+                            <Tags className="absolute left-3 top-1/2 -translate-y-1/2 text-brand-slate" size={14} />
+                            <select
+                                {...register('inventoryType')}
+                                className="w-full appearance-none pl-9 pr-4 py-2.5 bg-brand-light dark:bg-brand-slate/10 border border-brand-slate/20 rounded-xl focus:ring-2 focus:ring-brand-mint transition-all text-sm font-bold text-brand-navy dark:text-brand-light"
+                            >
+                                <option value="STANDARD">{t('pages.roomTypes.inventory.standard', { defaultValue: 'Standard' })}</option>
+                                <option value="PROMO">{t('pages.roomTypes.inventory.promo', { defaultValue: 'Promo' })}</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
 

@@ -5,12 +5,14 @@ import { useHotel } from '../../hotel/context/HotelContext';
 import { affiliateEmailSpoService } from '../services/affiliate-email-spo.service';
 import type {
     AffiliateEmailSpo,
+    BulkCreateAffiliateEmailSpoPayload,
     CreateAffiliateEmailSpoPayload,
     UpdateAffiliateEmailSpoPayload,
 } from '../types/affiliate-email-spo.types';
 
 export type {
     AffiliateEmailSpo,
+    BulkCreateAffiliateEmailSpoPayload,
     CreateAffiliateEmailSpoPayload,
     UpdateAffiliateEmailSpoPayload,
 };
@@ -39,6 +41,34 @@ export function useCreateAffiliateEmailSpo(affiliateId: number | null, onSuccess
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: affiliateEmailSpoKeys.all(currentHotel?.id, affiliateId) });
             toast.success(i18next.t('pages.affiliates.emailSpo.toast.create', { defaultValue: 'Email SPO created' }));
+            onSuccess?.();
+        },
+    });
+}
+
+export function useBulkCreateAffiliateEmailSpo(onSuccess?: () => void) {
+    const { currentHotel } = useHotel();
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: (data: BulkCreateAffiliateEmailSpoPayload) => affiliateEmailSpoService.createBulk(data),
+        onSuccess: (result) => {
+            queryClient.invalidateQueries({ queryKey: ['affiliate-email-spos', currentHotel?.id] });
+
+            if (result.created.length > 0) {
+                toast.success(i18next.t('pages.affiliates.emailSpo.toast.bulkCreate', {
+                    defaultValue: '{{count}} Email SPO created',
+                    count: result.created.length,
+                }));
+            }
+
+            if (result.skipped.length > 0) {
+                toast.warning(i18next.t('pages.affiliates.emailSpo.toast.bulkSkipped', {
+                    defaultValue: '{{count}} partner(s) skipped because they already have an overlapping active Email SPO.',
+                    count: result.skipped.length,
+                }));
+            }
+
             onSuccess?.();
         },
     });

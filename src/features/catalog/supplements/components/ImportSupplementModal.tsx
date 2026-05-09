@@ -58,11 +58,16 @@ export default function ImportSupplementModal({ contractId, isOpen, onClose }: P
         return true;
     });
 
-    // Filter out already-imported
-    const importedTemplateIds = new Set(
-        (contractSupplements ?? []).map((s) => s.templateId).filter((id): id is number => id !== null)
-    );
-    const availableTemplates = dateFilteredTemplates.filter((template) => !importedTemplateIds.has(template.id));
+    const importCountsByTemplateId = new Map<number, number>();
+    for (const supplement of contractSupplements ?? []) {
+        if (supplement.templateId == null) continue;
+        importCountsByTemplateId.set(
+            supplement.templateId,
+            (importCountsByTemplateId.get(supplement.templateId) ?? 0) + 1,
+        );
+    }
+    const importedTemplateCount = [...importCountsByTemplateId.values()].reduce((sum, count) => sum + count, 0);
+    const availableTemplates = dateFilteredTemplates;
 
     const isLoading = isLoadingTemplates || isLoadingContract;
     const hiddenByDate = allTemplates.length - dateFilteredTemplates.length;
@@ -120,16 +125,16 @@ export default function ImportSupplementModal({ contractId, isOpen, onClose }: P
                             className="w-full pl-10 pr-4 py-2 bg-brand-light dark:bg-brand-navy border border-brand-slate/20 rounded-xl text-sm focus:ring-2 focus:ring-brand-mint dark:text-brand-light outline-hidden transition-all"
                         />
                     </div>
-                    {(hiddenByDate > 0 || importedTemplateIds.size > 0) && (
+                    {(hiddenByDate > 0 || importedTemplateCount > 0) && (
                         <div className="mt-2 flex flex-col gap-0.5">
                             {hiddenByDate > 0 && (
                                 <p className="text-[10px] text-brand-slate dark:text-brand-light/75 font-bold flex items-center gap-1">
                                     <CalendarDays size={11} /> {hiddenByDate} supplément(s) d'évènement hors des dates du contrat sont masqués.
                                 </p>
                             )}
-                            {importedTemplateIds.size > 0 && (
+                            {importedTemplateCount > 0 && (
                                 <p className="text-[10px] text-brand-mint font-bold flex items-center gap-1">
-                                    ✓ {importedTemplateIds.size} supplément(s) déjà importé(s) dans ce contrat sont masqués.
+                                    {importedTemplateCount} supplement(s) deja importe(s) restent disponibles pour une nouvelle affectation.
                                 </p>
                             )}
                         </div>
@@ -147,17 +152,20 @@ export default function ImportSupplementModal({ contractId, isOpen, onClose }: P
                         <div className="text-center py-16">
                             <AlertCircle className="mx-auto text-brand-slate/30 mb-4" size={48} />
                             <p className="text-brand-navy dark:text-brand-light font-bold tracking-tight">
-                                {allTemplates.length > 0 ? 'Tous les suppléments ont déjà été importés' : 'Le catalogue est vide'}
+                                {allTemplates.length > 0 ? 'Aucun supplement disponible pour les dates du contrat' : 'Le catalogue est vide'}
                             </p>
                             <p className="text-xs text-brand-slate/60 mt-1 max-w-[260px] mx-auto">
                                 {allTemplates.length > 0
-                                    ? 'Tous les suppléments disponibles sont déjà présents dans ce contrat.'
+                                    ? 'Les supplements lies a un evenement hors periode sont masques.'
                                     : 'Veuillez d\'abord configurer vos suppléments dans les paramètres de l\'hôtel.'}
                             </p>
                         </div>
                     ) : (
                         <div className="grid gap-4">
-                            {availableTemplates.map((template) => (
+                            {availableTemplates.map((template) => {
+                                const importCount = importCountsByTemplateId.get(template.id) ?? 0;
+
+                                return (
                                 <div
                                     key={template.id}
                                     onClick={() => toggle(template.id)}
@@ -189,6 +197,11 @@ export default function ImportSupplementModal({ contractId, isOpen, onClose }: P
                                             {template.isMandatory && (
                                                 <span className="text-[10px] font-bold bg-brand-slate/10 text-brand-slate border border-brand-slate/30 px-2 py-0.5 rounded-xl">{t('auto.features.catalog.supplements.components.importsupplementmodal.18e9554a', { defaultValue: "Obligatoire" })}</span>
                                             )}
+                                            {importCount > 0 && (
+                                                <span className="text-[10px] font-bold bg-brand-mint/10 text-brand-mint border border-brand-mint/30 px-2 py-0.5 rounded-xl">
+                                                    Deja importe {importCount}x
+                                                </span>
+                                            )}
                                         </div>
                                         <h4 className={`font-bold uppercase tracking-tight text-sm transition-colors ${
                                             selectedIds.has(template.id) ? 'text-brand-mint' : 'text-brand-navy dark:text-brand-light group-hover:text-brand-mint'
@@ -203,7 +216,8 @@ export default function ImportSupplementModal({ contractId, isOpen, onClose }: P
                                         )}
                                     </div>
                                 </div>
-                            ))}
+                                );
+                            })}
                         </div>
                     )}
                 </div>

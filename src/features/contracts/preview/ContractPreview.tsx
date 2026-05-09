@@ -43,6 +43,7 @@ interface PeriodTarget {
 interface RoomTarget {
     contractRoom?: {
         roomType?: {
+            code?: string | null;
             name?: string | null;
         } | null;
     } | null;
@@ -403,9 +404,21 @@ function valuesVary(values: string[]) {
     return new Set(values.map((value) => value.trim())).size > 1;
 }
 
+function roomDisplayCode(roomType?: { code?: string | null; name?: string | null } | null) {
+    return roomType?.code?.trim() || roomType?.name?.trim() || 'Room';
+}
+
+function roomMatrixLabel(roomType?: { code?: string | null; name?: string | null } | null, fallbackName = 'Room') {
+    const name = roomType?.name?.trim() || fallbackName;
+    const code = roomType?.code?.trim();
+    return code ? `${name} (${code})` : name;
+}
+
 function roomScope(rooms?: RoomTarget[]) {
-    const roomNames = rooms?.map((item) => item.contractRoom?.roomType?.name).filter(Boolean) ?? [];
-    return roomNames.length > 0 ? roomNames.join(', ') : 'All rooms';
+    const roomCodes = rooms
+        ?.map((item) => item.contractRoom?.roomType ? roomDisplayCode(item.contractRoom.roomType) : null)
+        .filter(Boolean) ?? [];
+    return roomCodes.length > 0 ? roomCodes.join(', ') : 'All rooms';
 }
 
 function matrixChunks(periods: Period[]) {
@@ -666,8 +679,7 @@ export function RatesSection({ contract, prices, language }: { contract: Contrac
         key: room.id,
         baseCells: [
             <span className="font-black text-brand-navy">
-                {translatedName(room.roomType as unknown as Record<string, unknown>, 'Room', language)}
-                {room.reference && <span className="mt-1 block text-[9px] font-semibold text-slate-500">{room.reference}</span>}
+                {roomMatrixLabel(room.roomType, translatedName(room.roomType as unknown as Record<string, unknown>, 'Room', language))}
             </span>,
         ],
         applicablePeriodIds: new Set(periods.map((period) => period.id)),

@@ -261,6 +261,15 @@ export default function SimulatorPage() {
     const canIncludeInactiveContracts = user?.role === 'ADMIN' || user?.role === 'COMMERCIAL';
     const selectedContractCandidate = contractMatches?.candidates.find((candidate) => candidate.contractId === selectedContractId);
     const selectedContractIsInactive = selectedContractCandidate?.status && selectedContractCandidate.status !== 'ACTIVE';
+    const stayNights = useMemo(() => {
+        if (!checkIn || !checkOut) return undefined;
+
+        const start = new Date(`${checkIn}T00:00:00`);
+        const end = new Date(`${checkOut}T00:00:00`);
+        const nights = Math.round((end.getTime() - start.getTime()) / 86_400_000);
+
+        return nights > 0 ? nights : undefined;
+    }, [checkIn, checkOut]);
 
     return (
         <div className="space-y-6 p-4 md:p-6">
@@ -298,8 +307,24 @@ export default function SimulatorPage() {
                 )}
             />
 
-            <section className="premium-surface p-6">
-                <div className="grid grid-cols-1 gap-5 lg:grid-cols-4 lg:items-end">
+            <section className="premium-surface p-4 md:p-5">
+                <div className="mb-4 flex flex-col gap-3 border-b border-brand-light/60 pb-4 dark:border-brand-light/10 lg:flex-row lg:items-center lg:justify-between">
+                    <h2 className="flex items-center gap-2 text-base font-semibold text-brand-navy dark:text-brand-light">
+                        <Calendar size={17} className="text-brand-mint" />
+                        Booking criteria
+                    </h2>
+
+                    <div className="flex flex-wrap gap-2 text-[11px] font-semibold">
+                        <span className="premium-pill border-brand-light/70 bg-brand-light/70 text-brand-slate dark:border-brand-light/10 dark:bg-brand-light/5 dark:text-brand-light/75">
+                            {stayNights ? `${stayNights} night${stayNights > 1 ? 's' : ''}` : 'Stay dates pending'}
+                        </span>
+                        <span className="premium-pill border-brand-mint/20 bg-brand-mint/8 text-brand-mint">
+                            {includeInactive ? 'Inactive matching enabled' : 'Active contracts only'}
+                        </span>
+                    </div>
+                </div>
+
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4 xl:items-end">
                     <div className="space-y-2">
                         <label className={`${labelClassName} flex items-center gap-2`}>
                             <Building2 size={16} className="text-brand-mint" />
@@ -320,7 +345,23 @@ export default function SimulatorPage() {
                     </div>
 
                     <div className="space-y-2">
-                        <label className={labelClassName}>{t('auto.features.simulator.pages.simulatorpage.8fcd76c5', { defaultValue: "Check-in" })}</label>
+                        <label className={`${labelClassName} flex items-center gap-2`}>
+                            <Clock size={14} className="text-brand-mint" />
+                            Booking date for offers
+                        </label>
+                        <input
+                            type="date"
+                            value={bookingDate}
+                            onChange={(event) => setBookingDate(event.target.value)}
+                            className={inputClassName}
+                        />
+                    </div>
+
+                    <div className="space-y-2">
+                        <label className={`${labelClassName} flex items-center gap-2`}>
+                            <Calendar size={15} className="text-brand-mint" />
+                            Check-in
+                        </label>
                         <input
                             type="date"
                             value={checkIn}
@@ -330,7 +371,16 @@ export default function SimulatorPage() {
                     </div>
 
                     <div className="space-y-2">
-                        <label className={labelClassName}>{t('auto.features.simulator.pages.simulatorpage.a1bdbe16', { defaultValue: "Check-out" })}</label>
+                        <div className="flex items-center justify-between gap-3">
+                            <label className={labelClassName}>
+                                Check-out
+                            </label>
+                            {stayNights && (
+                                <span className="text-xs font-semibold text-brand-mint">
+                                    {stayNights} night{stayNights > 1 ? 's' : ''}
+                                </span>
+                            )}
+                        </div>
                         <input
                             type="date"
                             value={checkOut}
@@ -339,46 +389,43 @@ export default function SimulatorPage() {
                             className={inputClassName}
                         />
                     </div>
-
-                    <div className="space-y-2">
-                        <label className={`${labelClassName} flex items-center gap-2`}>
-                            <Clock size={14} className="text-brand-mint" />
-                            Simulated booking date
-                        </label>
-                        <input
-                            type="date"
-                            value={bookingDate}
-                            onChange={(event) => setBookingDate(event.target.value)}
-                            className={inputClassName}
-                        />
-                    </div>
                 </div>
 
                 {canIncludeInactiveContracts && (
-                    <div className="mt-5 space-y-3 rounded-2xl border border-brand-light/70 bg-brand-light/55 p-4 dark:border-brand-light/10 dark:bg-brand-light/5">
-                        <label className="flex items-start gap-3 text-sm font-medium text-brand-navy dark:text-brand-light">
-                            <input
-                                type="checkbox"
-                                checked={includeInactive}
-                                onChange={(event) => setIncludeInactive(event.target.checked)}
-                                className="mt-1 h-4 w-4 rounded border-brand-slate/40 text-brand-mint focus:ring-brand-mint"
-                            />
-                            <span>
-                                Include inactive / expired contracts
-                                <span className="mt-1 block text-xs font-normal text-brand-slate dark:text-brand-light/70">
-                                    Active-only matching stays the default. Use this only for controlled commercial simulations.
+                    <div className="mt-4 border-t border-brand-light/60 pt-4 dark:border-brand-light/10">
+                        <label className="flex flex-col gap-3 rounded-2xl border border-brand-light/70 bg-brand-light/45 px-4 py-3 text-sm font-medium text-brand-navy dark:border-brand-light/10 dark:bg-brand-light/5 dark:text-brand-light sm:flex-row sm:items-center sm:justify-between">
+                            <span className="flex items-start gap-3">
+                                <input
+                                    type="checkbox"
+                                    checked={includeInactive}
+                                    onChange={(event) => setIncludeInactive(event.target.checked)}
+                                    className="mt-1 h-4 w-4 rounded border-brand-slate/40 text-brand-mint focus:ring-brand-mint"
+                                />
+                                <span>
+                                    Include inactive / expired contracts
+                                    <span className="mt-1 block text-xs font-normal text-brand-slate dark:text-brand-light/70">
+                                        Enable only for controlled commercial simulations.
+                                    </span>
                                 </span>
+                            </span>
+                            <span className={`premium-pill self-start ${includeInactive ? 'border-amber-300/50 bg-amber-100 text-amber-800 dark:border-amber-400/30 dark:bg-amber-400/10 dark:text-amber-200' : 'border-brand-light/70 bg-brand-light/80 text-brand-slate dark:border-brand-light/10 dark:bg-brand-light/5 dark:text-brand-light/70'}`}>
+                                {includeInactive ? 'Override on' : 'Default'}
                             </span>
                         </label>
 
                         {includeInactive && (
-                            <textarea
-                                value={inactiveOverrideReason}
-                                onChange={(event) => setInactiveOverrideReason(event.target.value)}
-                                rows={2}
-                                placeholder="Optional reason for using an inactive contract"
-                                className="w-full resize-none rounded-2xl border border-brand-light/70 bg-brand-light/80 px-4 py-3 text-xs text-brand-navy shadow-sm outline-none transition placeholder:text-brand-slate/50 focus:border-brand-mint focus:ring-2 focus:ring-brand-mint/20 dark:border-brand-light/10 dark:bg-brand-light/5 dark:text-brand-light"
-                            />
+                            <label className="mt-3 block space-y-2">
+                                <span className="text-xs font-semibold text-brand-slate dark:text-brand-light/70">
+                                    Override reason
+                                </span>
+                                <textarea
+                                    value={inactiveOverrideReason}
+                                    onChange={(event) => setInactiveOverrideReason(event.target.value)}
+                                    rows={2}
+                                    placeholder="Optional reason for using an inactive contract"
+                                    className="w-full resize-none rounded-2xl border border-brand-light/70 bg-brand-light/80 px-4 py-3 text-xs text-brand-navy shadow-sm outline-none transition placeholder:text-brand-slate/50 focus:border-brand-mint focus:ring-2 focus:ring-brand-mint/20 dark:border-brand-light/10 dark:bg-brand-light/5 dark:text-brand-light"
+                                />
+                            </label>
                         )}
                     </div>
                 )}

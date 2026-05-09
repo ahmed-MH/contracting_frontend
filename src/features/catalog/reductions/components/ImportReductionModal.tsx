@@ -29,14 +29,18 @@ export default function ImportReductionModal({ isOpen, onClose, contractId }: Pr
     const { data: result, isLoading: isLoadingTemplates } = useTemplateReductions(1, 100, search);
     const templates = result?.data ?? [];
 
-    // Already-imported reductions in this contract
     const { data: contractReductions, isLoading: isLoadingContract } = useContractReductions(contractId);
-    const importedTemplateIds = new Set(
-        (contractReductions ?? []).map((r) => r.templateId).filter((id): id is number => id !== null)
-    );
+    const importCountsByTemplateId = new Map<number, number>();
+    for (const reduction of contractReductions ?? []) {
+        if (reduction.templateId == null) continue;
+        importCountsByTemplateId.set(
+            reduction.templateId,
+            (importCountsByTemplateId.get(reduction.templateId) ?? 0) + 1,
+        );
+    }
 
-    // Filter out already-imported templates
-    const availableTemplates = templates.filter((t) => !importedTemplateIds.has(t.id));
+    const importedTemplateCount = [...importCountsByTemplateId.values()].reduce((sum, count) => sum + count, 0);
+    const availableTemplates = templates;
     const isLoading = isLoadingTemplates || isLoadingContract;
 
     const importMutation = useImportReduction(contractId);
@@ -94,9 +98,9 @@ export default function ImportReductionModal({ isOpen, onClose, contractId }: Pr
                             className="w-full pl-10 pr-4 py-2 bg-brand-light dark:bg-brand-navy border border-brand-slate/20 rounded-xl text-sm focus:ring-2 focus:ring-brand-mint dark:text-brand-light outline-hidden transition-all"
                         />
                     </div>
-                    {importedTemplateIds.size > 0 && (
+                    {importedTemplateCount > 0 && (
                         <p className="text-[10px] text-brand-mint font-bold mt-2 flex items-center gap-1">
-                            ℹ️ {importedTemplateIds.size} réduction(s) déjà importée(s) dans ce contrat sont masquées.
+                            {importedTemplateCount} reduction(s) deja importee(s) restent disponibles pour une nouvelle affectation.
                         </p>
                     )}
                 </div>
@@ -112,17 +116,20 @@ export default function ImportReductionModal({ isOpen, onClose, contractId }: Pr
                         <div className="text-center py-16">
                             <AlertCircle className="mx-auto text-brand-slate mb-4" size={48} />
                             <p className="text-brand-slate font-bold tracking-tight">
-                                {templates.length > 0 ? 'Toutes les réductions ont déjà été importées' : 'Le catalogue est vide'}
+                                {templates.length > 0 ? 'Aucune reduction disponible' : 'Le catalogue est vide'}
                             </p>
                             <p className="text-xs text-brand-slate mt-1 max-w-[260px] mx-auto">
                                 {templates.length > 0
-                                    ? 'Toutes les réductions disponibles sont déjà présentes dans ce contrat.'
+                                    ? 'Aucune reduction ne correspond a votre recherche.'
                                     : 'Veuillez d\'abord configurer vos réductions dans les paramètres de l\'hôtel.'}
                             </p>
                         </div>
                     ) : (
                         <div className="grid gap-4">
-                            {availableTemplates.map((t) => (
+                            {availableTemplates.map((t) => {
+                                const importCount = importCountsByTemplateId.get(t.id) ?? 0;
+
+                                return (
                                 <div
                                     key={t.id}
                                     onClick={() => toggle(t.id)}
@@ -160,10 +167,16 @@ export default function ImportReductionModal({ isOpen, onClose, contractId }: Pr
                                             <span className="font-bold text-brand-mint bg-brand-mint/10 px-1.5 py-0.5 rounded border border-brand-mint/20">
                                                 {t.calculationType === 'FREE' ? 'Gratuit' : t.calculationType === 'PERCENTAGE' ? `${t.value}%` : `${t.value} TND`}
                                             </span>
+                                            {importCount > 0 && (
+                                                <span className="font-bold text-brand-mint bg-brand-mint/10 px-1.5 py-0.5 rounded border border-brand-mint/30">
+                                                    Deja importe {importCount}x
+                                                </span>
+                                            )}
                                         </p>
                                     </div>
                                 </div>
-                            ))}
+                                );
+                            })}
                         </div>
                     )}
                 </div>

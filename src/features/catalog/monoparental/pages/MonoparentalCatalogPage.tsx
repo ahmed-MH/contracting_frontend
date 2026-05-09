@@ -56,7 +56,7 @@ export default function MonoparentalCatalogPage() {
     const limit = 10;
     const { user } = useAuth();
     const { confirm } = useConfirm();
-    const isAdmin = user?.role === 'ADMIN';
+    const canManageArchive = user?.role === 'ADMIN' || user?.role === 'COMMERCIAL';
 
     useEffect(() => {
         const timer = setTimeout(() => {
@@ -69,7 +69,7 @@ export default function MonoparentalCatalogPage() {
     const { data: paginatedResult, isLoading, isError } = useTemplateMonoparentalRules(page, limit, debouncedSearch);
     const rules = paginatedResult?.data ?? [];
     const meta = paginatedResult?.meta;
-    const { data: archivedRules } = useArchivedTemplateMonoparentalRules({ enabled: isAdmin });
+    const { data: archivedRules } = useArchivedTemplateMonoparentalRules({ enabled: canManageArchive });
     
     const createMutation = useCreateTemplateMonoparentalRule();
     const updateMutation = useUpdateTemplateMonoparentalRule();
@@ -265,7 +265,7 @@ export default function MonoparentalCatalogPage() {
                 </div>
             )}
 
-            {isAdmin && (
+            {canManageArchive && (
                 <div className="mt-10">
                     <button onClick={() => setShowArchived(!showArchived)}
                         className="inline-flex items-center gap-2 text-sm font-bold text-brand-slate hover:text-brand-navy transition-colors cursor-pointer border-none bg-transparent outline-none dark:hover:text-brand-light">

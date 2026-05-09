@@ -16,19 +16,21 @@ export default function RoomTypesPage() {
     const [search, setSearch] = useState('');
     const { user } = useAuth();
     const { confirm } = useConfirm();
-    const isAdmin = user?.role === 'ADMIN';
+    const canManageArchive = user?.role === 'ADMIN' || user?.role === 'COMMERCIAL';
 
     const { data: roomTypes, isLoading, isError } = useRoomTypes();
-    const { data: archivedRoomTypes } = useArchivedRoomTypes(isAdmin && showArchived);
+    const { data: archivedRoomTypes } = useArchivedRoomTypes(canManageArchive && showArchived);
 
     const displayedRoomTypes = roomTypes?.filter(rt =>
         rt.name.toLowerCase().includes(search.toLowerCase()) ||
-        rt.code.toLowerCase().includes(search.toLowerCase())
+        rt.code.toLowerCase().includes(search.toLowerCase()) ||
+        (rt.inventoryType ?? 'STANDARD').toLowerCase().includes(search.toLowerCase())
     );
 
     const displayedArchivedTypes = archivedRoomTypes?.filter(rt =>
         rt.name.toLowerCase().includes(search.toLowerCase()) ||
-        rt.code.toLowerCase().includes(search.toLowerCase())
+        rt.code.toLowerCase().includes(search.toLowerCase()) ||
+        (rt.inventoryType ?? 'STANDARD').toLowerCase().includes(search.toLowerCase())
     );
 
     const closeModal = () => {
@@ -164,6 +166,7 @@ export default function RoomTypesPage() {
                             <tr className="bg-brand-light/80 border-b border-brand-slate/15">
                                 <th className="px-5 py-3 font-semibold text-brand-slate text-xs uppercase tracking-wide">{t('auto.features.rooms.pages.roomtypespage.60a25d6c', { defaultValue: "Code" })}</th>
                                 <th className="px-5 py-3 font-semibold text-brand-slate text-xs uppercase tracking-wide">{t('auto.features.rooms.pages.roomtypespage.f530c0be', { defaultValue: "Libellé" })}</th>
+                                <th className="px-5 py-3 font-semibold text-brand-slate text-xs uppercase tracking-wide text-center">{t('pages.roomTypes.table.inventoryType', { defaultValue: 'Type' })}</th>
                                 <th className="px-5 py-3 font-semibold text-brand-slate text-xs uppercase tracking-wide text-center">{t('auto.features.rooms.pages.roomtypespage.b23ebeb0', { defaultValue: "Occupancy" })}</th>
                                 <th className="px-5 py-3 font-semibold text-brand-slate text-xs uppercase tracking-wide text-center">{t('auto.features.rooms.pages.roomtypespage.3033d562', { defaultValue: "Adultes" })}</th>
                                 <th className="px-5 py-3 font-semibold text-brand-slate text-xs uppercase tracking-wide text-center">{t('auto.features.rooms.pages.roomtypespage.8ebed994', { defaultValue: "Enfants" })}</th>
@@ -187,6 +190,17 @@ export default function RoomTypesPage() {
                                             <span className="text-sm font-medium text-brand-navy group-hover:text-brand-mint transition-colors leading-tight">{rt.name}</span>
                                             <span className="text-xs text-brand-slate/70 mt-0.5 font-mono uppercase">{rt.reference || 'REF-PENDING'}</span>
                                         </div>
+                                    </td>
+                                    <td className="px-5 py-3 text-center">
+                                        {(rt.inventoryType ?? 'STANDARD') === 'PROMO' ? (
+                                            <span className="text-[10px] bg-amber-100 text-amber-700 border border-amber-200 px-2 py-0.5 rounded-full font-bold uppercase dark:bg-amber-400/10 dark:text-amber-200 dark:border-amber-400/20">
+                                                {t('pages.roomTypes.inventory.promo', { defaultValue: 'Promo' })}
+                                            </span>
+                                        ) : (
+                                            <span className="text-[10px] bg-brand-light/80 text-brand-slate/70 border border-brand-slate/10 px-2 py-0.5 rounded-full font-bold uppercase">
+                                                {t('pages.roomTypes.inventory.standard', { defaultValue: 'Standard' })}
+                                            </span>
+                                        )}
                                     </td>
                                     <td className="px-5 py-3 text-center">
                                         <span className="text-xs font-bold text-brand-slate bg-brand-slate/10 px-2 py-0.5 rounded border border-brand-slate/15">
@@ -238,8 +252,8 @@ export default function RoomTypesPage() {
                 </div>
             )}
 
-            {/* ─── Archived Section (ADMIN only) ───────────────────────── */}
-            {isAdmin && (
+            {/* ─── Archived Section ───────────────────────── */}
+            {canManageArchive && (
                 <div className="mt-10">
                     <button onClick={() => setShowArchived(!showArchived)}
                         className="inline-flex items-center gap-2 text-sm font-medium text-brand-slate hover:text-brand-navy transition-colors cursor-pointer border-none outline-none bg-transparent">

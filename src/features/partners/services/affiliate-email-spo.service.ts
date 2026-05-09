@@ -1,6 +1,8 @@
 import apiClient from '../../../services/api.client';
 import type {
     AffiliateEmailSpo,
+    BulkCreateAffiliateEmailSpoPayload,
+    BulkCreateAffiliateEmailSpoResult,
     CreateAffiliateEmailSpoPayload,
     UpdateAffiliateEmailSpoPayload,
 } from '../types/affiliate-email-spo.types';
@@ -11,6 +13,9 @@ export const affiliateEmailSpoService = {
 
     create: (affiliateId: number, data: CreateAffiliateEmailSpoPayload) =>
         apiClient.post<AffiliateEmailSpo>(`/affiliates/${affiliateId}/email-spo`, data).then((response) => response.data),
+
+    createBulk: (data: BulkCreateAffiliateEmailSpoPayload) =>
+        apiClient.post<BulkCreateAffiliateEmailSpoResult>('/affiliates/email-spo/bulk', data).then((response) => response.data),
 
     update: (affiliateId: number, emailSpoId: number, data: UpdateAffiliateEmailSpoPayload) =>
         apiClient.patch<AffiliateEmailSpo>(`/affiliates/${affiliateId}/email-spo/${emailSpoId}`, data).then((response) => response.data),

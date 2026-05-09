@@ -8,6 +8,7 @@ import type {
     UpdateProformaPreviewSettingsPayload,
 } from '../types/simulator.types';
 import type { ProformaPreviewLanguage } from '../utils/proformaFormatting';
+import type { PaginatedResult } from '../../../types/pagination.types';
 
 /**
  * Fetch a single proforma invoice by ID.
@@ -40,14 +41,27 @@ export function useCreateProforma(onSuccess?: (data: ProformaInvoice) => void) {
 }
 
 export function useGetIssuedProformas(filters: IssuedProformaFilters) {
-    return useQuery<ProformaInvoice[]>({
+    return useQuery<PaginatedResult<ProformaInvoice>>({
         queryKey: ['proforma-invoices', filters],
         queryFn: async () => {
-            const { data } = await apiClient.get<ProformaInvoice[]>('/proforma/invoices', {
+            const { data } = await apiClient.get<PaginatedResult<ProformaInvoice>>('/proforma/invoices', {
                 params: filters,
             });
             return data;
         },
+    });
+}
+
+export function useGetArchivedIssuedProformas(filters: IssuedProformaFilters, enabled: boolean) {
+    return useQuery<PaginatedResult<ProformaInvoice>>({
+        queryKey: ['proforma-invoices', 'archived', filters],
+        queryFn: async () => {
+            const { data } = await apiClient.get<PaginatedResult<ProformaInvoice>>('/proforma/invoices/archived', {
+                params: filters,
+            });
+            return data;
+        },
+        enabled,
     });
 }
 
@@ -62,9 +76,44 @@ export function useUpdateProformaPreviewSettings(id: number | undefined) {
         },
         onSuccess: (data) => {
             queryClient.setQueryData(['proforma', data.id], data);
+            queryClient.invalidateQueries({ queryKey: ['proforma-invoices'] });
         },
         onError: () => {
             toast.error('Could not update proforma preview');
+        },
+    });
+}
+
+export function useArchiveProforma() {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: async (id: number): Promise<void> => {
+            await apiClient.delete(`/proforma/${id}`);
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['proforma-invoices'] });
+            toast.success('Proforma invoice archived');
+        },
+        onError: () => {
+            toast.error('Could not archive proforma invoice');
+        },
+    });
+}
+
+export function useRestoreProforma() {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: async (id: number): Promise<void> => {
+            await apiClient.patch(`/proforma/${id}/restore`);
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['proforma-invoices'] });
+            toast.success('Proforma invoice restored');
+        },
+        onError: () => {
+            toast.error('Could not restore proforma invoice');
         },
     });
 }

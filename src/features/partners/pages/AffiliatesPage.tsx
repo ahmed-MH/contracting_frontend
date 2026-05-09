@@ -25,7 +25,7 @@ export default function AffiliatesPage() {
     const [emailSpoAffiliate, setEmailSpoAffiliate] = useState<Affiliate | null>(null);
     const { user } = useAuth();
     const { confirm } = useConfirm();
-    const isAdmin = user?.role === 'ADMIN';
+    const canManageArchive = user?.role === 'ADMIN' || user?.role === 'COMMERCIAL';
 
     const { register, handleSubmit, reset, control, formState: { errors } } = useForm<AffiliateFormInput, unknown, AffiliateFormValues>({
         resolver: zodResolver(schema),
@@ -51,7 +51,7 @@ export default function AffiliatesPage() {
     const closeModal = () => { setIsModalOpen(false); setEditing(null); reset(); };
 
     const { data: affiliates, isLoading, isError } = useAffiliates();
-    const { data: archivedAffiliates } = useArchivedAffiliates(isAdmin && showArchived);
+    const { data: archivedAffiliates } = useArchivedAffiliates(canManageArchive && showArchived);
     const createMutation = useCreateAffiliate(closeModal);
     const updateMutation = useUpdateAffiliate(closeModal);
     const deleteMutation = useDeleteAffiliate();
@@ -252,8 +252,8 @@ export default function AffiliatesPage() {
                 </div>
             )}
 
-            {/* ─── Archived Section (ADMIN only) ───────────────────────── */}
-            {isAdmin && (
+            {/* ─── Archived Section ───────────────────────── */}
+            {canManageArchive && (
                 <div className="mt-10">
                     <button onClick={() => setShowArchived(!showArchived)}
                         className="inline-flex items-center gap-2 text-sm font-medium text-brand-slate hover:text-brand-navy transition-colors cursor-pointer">

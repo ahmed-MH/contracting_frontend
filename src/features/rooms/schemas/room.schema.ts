@@ -8,6 +8,7 @@ export function createRoomTypeSchema(t: TFunction) {
     return z.object({
         code: z.string().trim().min(1, required).max(4, t('validation.maxLength', { defaultValue: 'Too long' })),
         name: z.string().trim().min(1, required),
+        inventoryType: z.enum(['STANDARD', 'PROMO']).default('STANDARD'),
         minOccupancy: z.coerce.number().int().min(0, nonNegative),
         maxOccupancy: z.coerce.number().int().min(1, required),
         minAdults: z.coerce.number().int().min(0, nonNegative),

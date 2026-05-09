@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useDeferredValue, useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useNavigate } from 'react-router-dom';
@@ -6,13 +6,15 @@ import { useTranslation } from 'react-i18next';
 import { clsx } from 'clsx';
 import { useAffiliates } from '../../partners/hooks/useAffiliates';
 import { useArrangements } from '../../arrangements/hooks/useArrangements';
-import { useContracts, useCreateContract } from '../hooks/useContracts';
-import { Calendar, ExternalLink, FileText, Plus } from 'lucide-react';
+import { useArchiveContract, useArchivedContracts, useContracts, useCreateContract, useRestoreContract } from '../hooks/useContracts';
+import { Archive, Calendar, ChevronDown, ChevronLeft, ChevronRight, ExternalLink, FileText, Plus, RotateCcw, Search } from 'lucide-react';
 import Modal from '../../../components/ui/Modal';
 import type { ContractStatus } from '../types/contract.types';
 import { createContractSchema, type CreateContractFormInput, type CreateContractFormValues } from '../schemas/contract.schema';
 import { GuidedPageHeader, SectionCard, WorkspaceContainer } from '../../../components/layout/Workspace';
 import UpdatedByCell from '../../../components/audit/UpdatedByCell';
+import { useConfirm } from '../../../context/ConfirmContext';
+import type { PageMeta } from '../../../types/pagination.types';
 
 function formatDate(iso: string, locale: string): string {
     return new Date(iso).toLocaleDateString(locale, { day: '2-digit', month: 'short', year: 'numeric' });
@@ -20,18 +22,83 @@ function formatDate(iso: string, locale: string): string {
 
 const inputClassName = 'w-full rounded-2xl border border-brand-light/70 bg-brand-light/80 px-4 py-3 text-sm text-brand-navy shadow-sm outline-none transition focus:border-brand-mint focus:ring-2 focus:ring-brand-mint/20 dark:border-brand-light/10 dark:bg-brand-light/5 dark:text-brand-light';
 const labelClassName = 'mb-1 block text-sm font-medium text-brand-navy dark:text-brand-light';
+const pageSize = 10;
+
+function PaginationControls({
+    meta,
+    onPageChange,
+}: {
+    meta?: PageMeta;
+    onPageChange: (page: number) => void;
+}) {
+    if (!meta || meta.lastPage <= 1) return null;
+
+    return (
+        <div className="flex items-center justify-between gap-3 border-t border-brand-light/70 px-5 py-4 text-sm text-brand-slate dark:border-brand-light/10 dark:text-brand-light/70">
+            <span>
+                Page {meta.page} of {meta.lastPage} - {meta.total} total
+            </span>
+            <div className="flex items-center gap-2">
+                <button
+                    type="button"
+                    disabled={meta.page <= 1}
+                    onClick={() => onPageChange(meta.page - 1)}
+                    className="inline-flex h-9 items-center gap-1 rounded-lg border border-brand-light/70 bg-brand-light/70 px-3 font-semibold text-brand-navy transition hover:border-brand-mint hover:text-brand-mint disabled:cursor-not-allowed disabled:opacity-50 dark:border-brand-light/10 dark:bg-brand-light/5 dark:text-brand-light"
+                >
+                    <ChevronLeft size={14} />
+                    Previous
+                </button>
+                <button
+                    type="button"
+                    disabled={meta.page >= meta.lastPage}
+                    onClick={() => onPageChange(meta.page + 1)}
+                    className="inline-flex h-9 items-center gap-1 rounded-lg border border-brand-light/70 bg-brand-light/70 px-3 font-semibold text-brand-navy transition hover:border-brand-mint hover:text-brand-mint disabled:cursor-not-allowed disabled:opacity-50 dark:border-brand-light/10 dark:bg-brand-light/5 dark:text-brand-light"
+                >
+                    Next
+                    <ChevronRight size={14} />
+                </button>
+            </div>
+        </div>
+    );
+}
 
 export default function ContractsList() {
     const { t, i18n } = useTranslation('common');
     const locale = i18n.language.startsWith('fr') ? 'fr-FR' : 'en-US';
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [search, setSearch] = useState('');
+    const [page, setPage] = useState(1);
+    const [archivedPage, setArchivedPage] = useState(1);
+    const [showArchived, setShowArchived] = useState(false);
     const navigate = useNavigate();
+    const { confirm } = useConfirm();
+    const deferredSearch = useDeferredValue(search.trim());
+    const listParams = useMemo(() => ({
+        page,
+        limit: pageSize,
+        search: deferredSearch || undefined,
+    }), [deferredSearch, page]);
+    const archivedParams = useMemo(() => ({
+        page: archivedPage,
+        limit: pageSize,
+        search: deferredSearch || undefined,
+    }), [archivedPage, deferredSearch]);
 
-    const { data: contracts, isLoading, isError } = useContracts();
+    const { data: contractsPage, isLoading, isError } = useContracts(listParams);
+    const { data: archivedContractsPage } = useArchivedContracts(archivedParams, showArchived);
+    const contracts = contractsPage?.data ?? [];
+    const archivedContracts = archivedContractsPage?.data ?? [];
     const { data: affiliates = [] } = useAffiliates();
     const { data: arrangements = [] } = useArrangements();
     const createMutation = useCreateContract();
+    const archiveMutation = useArchiveContract();
+    const restoreMutation = useRestoreContract();
     const schema = useMemo(() => createContractSchema(t), [t]);
+
+    useEffect(() => {
+        setPage(1);
+        setArchivedPage(1);
+    }, [deferredSearch]);
 
     const { register, handleSubmit, watch, setValue, reset, formState: { errors } } = useForm<CreateContractFormInput, unknown, CreateContractFormValues>({
         resolver: zodResolver(schema),
@@ -67,6 +134,28 @@ export default function ContractsList() {
         }, {
             onSuccess: closeModal,
         });
+    };
+
+    const handleArchive = async (contract: typeof contracts[number]) => {
+        if (await confirm({
+            title: `Archive contract "${contract.name}"?`,
+            description: 'This contract will move out of the active roster until it is restored.',
+            confirmLabel: 'Archive',
+            variant: 'danger',
+        })) {
+            archiveMutation.mutate(contract.id);
+        }
+    };
+
+    const handleRestore = async (contract: typeof contracts[number]) => {
+        if (await confirm({
+            title: `Restore contract "${contract.name}"?`,
+            description: 'This contract will return to the active roster.',
+            confirmLabel: 'Restore',
+            variant: 'info',
+        })) {
+            restoreMutation.mutate(contract.id);
+        }
     };
 
     const getStatusConfig = (status: ContractStatus) => {
@@ -140,13 +229,27 @@ export default function ContractsList() {
                 </SectionCard>
             )}
 
-            {contracts && contracts.length > 0 && (
+            {!isError && (
+                <SectionCard bodyClassName="p-4">
+                    <label className="relative block">
+                        <Search size={15} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-brand-slate" />
+                        <input
+                            value={search}
+                            onChange={(event) => setSearch(event.target.value)}
+                            placeholder="Search contract, reference, or partner"
+                            className="h-11 w-full rounded-lg border border-brand-light/70 bg-brand-light/80 pl-10 pr-4 text-sm text-brand-navy shadow-sm outline-none transition focus:border-brand-mint focus:ring-2 focus:ring-brand-mint/20 dark:border-brand-light/10 dark:bg-brand-light/5 dark:text-brand-light"
+                        />
+                    </label>
+                </SectionCard>
+            )}
+
+            {contracts.length > 0 && (
                 <SectionCard
                     title={t('pages.contracts.table.title', { defaultValue: 'Contract roster' })}
                     description={t('pages.contracts.table.eyebrow', { defaultValue: 'Portfolio' })}
                     action={(
                         <span className="premium-pill border-brand-mint/20 bg-brand-mint/8 text-brand-mint">
-                            {t('pages.contracts.table.count', { defaultValue: '{{count}} contracts', count: contracts.length })}
+                            {t('pages.contracts.table.count', { defaultValue: '{{count}} contracts', count: contractsPage?.meta.total ?? contracts.length })}
                         </span>
                     )}
                     bodyClassName="p-0"
@@ -223,6 +326,15 @@ export default function ContractsList() {
                                                         <ExternalLink size={14} />
                                                         {t('actions.open', { defaultValue: 'Open' })}
                                                     </button>
+                                                    <button
+                                                        type="button"
+                                                        disabled={archiveMutation.isPending}
+                                                        onClick={() => handleArchive(contract)}
+                                                        className="ml-2 inline-flex h-10 w-10 items-center justify-center rounded-lg border border-brand-light/70 bg-brand-light/70 text-brand-slate transition hover:border-brand-mint hover:text-brand-mint disabled:cursor-not-allowed disabled:opacity-60 dark:border-brand-light/10 dark:bg-brand-light/5 dark:text-brand-light"
+                                                        aria-label="Archive contract"
+                                                    >
+                                                        <Archive size={14} />
+                                                    </button>
                                                 </td>
                                             </tr>
                                         );
@@ -230,7 +342,83 @@ export default function ContractsList() {
                                 </tbody>
                             </table>
                         </div>
+                        <PaginationControls meta={contractsPage?.meta} onPageChange={setPage} />
                     </div>
+                </SectionCard>
+            )}
+
+            {!isLoading && !isError && (
+                <SectionCard bodyClassName="space-y-4">
+                    <button
+                        type="button"
+                        onClick={() => setShowArchived((value) => !value)}
+                        className="inline-flex items-center gap-2 rounded-lg border border-brand-light/70 bg-brand-light/70 px-4 py-2 text-sm font-semibold text-brand-navy transition hover:border-brand-mint hover:text-brand-mint dark:border-brand-light/10 dark:bg-brand-light/5 dark:text-brand-light"
+                    >
+                        {showArchived ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+                        <Archive size={16} />
+                        Archived contracts {showArchived ? `(${archivedContractsPage?.meta.total ?? archivedContracts.length})` : ''}
+                    </button>
+
+                    {showArchived && archivedContracts.length === 0 && (
+                        <div className="rounded-lg border border-dashed border-brand-slate/20 px-6 py-10 text-center text-sm text-brand-slate dark:border-brand-light/10 dark:text-brand-light/70">
+                            No archived contracts match these filters.
+                        </div>
+                    )}
+
+                    {showArchived && archivedContracts.length > 0 && (
+                        <div className="overflow-hidden rounded-lg border border-brand-light/70 dark:border-brand-light/10">
+                            <div className="overflow-x-auto">
+                                <table className="min-w-full text-left text-sm">
+                                    <thead className="bg-brand-light/70 text-brand-slate dark:bg-brand-light/5">
+                                        <tr>
+                                            <th className="px-5 py-4 font-semibold uppercase tracking-[0.18em]">Contract</th>
+                                            <th className="px-5 py-4 font-semibold uppercase tracking-[0.18em]">Partners</th>
+                                            <th className="px-5 py-4 text-center font-semibold uppercase tracking-[0.18em]">Window</th>
+                                            <th className="px-5 py-4 text-center font-semibold uppercase tracking-[0.18em]">Status</th>
+                                            <th className="px-5 py-4 text-right font-semibold uppercase tracking-[0.18em]">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody className="divide-y divide-brand-light/60 dark:divide-brand-light/10">
+                                        {archivedContracts.map((contract) => {
+                                            const status = getStatusConfig(contract.status);
+                                            const affiliatesForContract = contract.affiliates ?? [];
+                                            const shownAffiliates = affiliatesForContract.slice(0, 2).map((affiliate) => affiliate.companyName).join(', ');
+
+                                            return (
+                                                <tr key={contract.id} className="bg-brand-light/20 dark:bg-transparent">
+                                                    <td className="px-5 py-4 align-top">
+                                                        <p className="font-semibold text-brand-navy dark:text-brand-light">{contract.name}</p>
+                                                        <p className="mt-1 font-mono text-xs text-brand-slate dark:text-brand-light/75">{contract.reference || `#${contract.id}`}</p>
+                                                    </td>
+                                                    <td className="px-5 py-4 align-top text-brand-slate dark:text-brand-light/75">
+                                                        {shownAffiliates || t('common.notAvailable', { defaultValue: 'N/A' })}
+                                                    </td>
+                                                    <td className="px-5 py-4 align-top text-center">
+                                                        {formatDate(contract.startDate, locale)} - {formatDate(contract.endDate, locale)}
+                                                    </td>
+                                                    <td className="px-5 py-4 align-top text-center">
+                                                        <span className={clsx('premium-pill', status.className)}>{status.label}</span>
+                                                    </td>
+                                                    <td className="px-5 py-4 align-top text-right">
+                                                        <button
+                                                            type="button"
+                                                            disabled={restoreMutation.isPending}
+                                                            onClick={() => handleRestore(contract)}
+                                                            className="inline-flex h-10 items-center gap-2 rounded-lg bg-brand-mint/10 px-4 text-sm font-semibold text-brand-mint transition hover:bg-brand-mint hover:text-brand-light disabled:cursor-not-allowed disabled:opacity-60"
+                                                        >
+                                                            <RotateCcw size={14} />
+                                                            Restore
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            );
+                                        })}
+                                    </tbody>
+                                </table>
+                            </div>
+                            <PaginationControls meta={archivedContractsPage?.meta} onPageChange={setArchivedPage} />
+                        </div>
+                    )}
                 </SectionCard>
             )}
 

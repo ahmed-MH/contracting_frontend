@@ -297,6 +297,7 @@ export interface ProformaInvoice extends AuditMetadata {
     issuedByUserId?: number | null;
     issuedByName?: string | null;
     issuedByEmail?: string | null;
+    deletedAt?: string | null;
 }
 
 export interface CreateProformaPayload {
@@ -337,6 +338,8 @@ export interface IssuedProformaFilters {
     affiliateId?: number;
     issuedFrom?: string;
     issuedTo?: string;
+    page?: number;
+    limit?: number;
 }
 
 import type { AuditMetadata } from '../../../types/audit';

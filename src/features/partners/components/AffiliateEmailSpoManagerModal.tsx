@@ -1,7 +1,7 @@
 import { useEffect, useId, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { CalendarRange, Mail, Pencil, Plus, Power, Trash2 } from 'lucide-react';
+import { CalendarRange, ChevronDown, Mail, Pencil, Plus, Power, Search, Trash2, Users } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import type { AxiosError } from 'axios';
 import Modal from '../../../components/ui/Modal';
@@ -11,11 +11,12 @@ import { useConfirm } from '../../../context/ConfirmContext';
 import type { Affiliate } from '../types/affiliate.types';
 import {
     useAffiliateEmailSpos,
-    useCreateAffiliateEmailSpo,
+    useBulkCreateAffiliateEmailSpo,
     useDeleteAffiliateEmailSpo,
     useUpdateAffiliateEmailSpo,
     type AffiliateEmailSpo,
 } from '../hooks/useAffiliateEmailSpos';
+import { useAffiliates } from '../hooks/useAffiliates';
 import {
     createAffiliateEmailSpoSchema,
     type AffiliateEmailSpoFormInput,
@@ -71,17 +72,21 @@ function getApiErrorMessage(error: unknown, fallback: string) {
 
 interface EmailSpoFormModalProps {
     affiliateName: string;
+    availableAffiliates: Affiliate[];
+    currentAffiliateId: number;
     emailSpo?: AffiliateEmailSpo | null;
     errorMessage: string | null;
     isOpen: boolean;
     isSubmitting: boolean;
     mode: 'create' | 'edit';
     onClose: () => void;
-    onSubmit: (values: AffiliateEmailSpoFormValues) => Promise<void>;
+    onSubmit: (values: AffiliateEmailSpoFormValues, targetAffiliateIds: number[]) => Promise<void>;
 }
 
 function EmailSpoFormModal({
     affiliateName,
+    availableAffiliates,
+    currentAffiliateId,
     emailSpo = null,
     errorMessage,
     isOpen,
@@ -93,6 +98,10 @@ function EmailSpoFormModal({
     const { t, i18n } = useTranslation('common');
     const schema = useMemo(() => createAffiliateEmailSpoSchema(t), [t]);
     const fieldPrefix = useId();
+    const [targetAffiliateIds, setTargetAffiliateIds] = useState<number[]>([]);
+    const [targetSearch, setTargetSearch] = useState('');
+    const [targetError, setTargetError] = useState<string | null>(null);
+    const [isPartnerPickerOpen, setIsPartnerPickerOpen] = useState(false);
     const statusLabels = useMemo(
         () => ({
             ACTIVE: t('pages.affiliates.emailSpo.status.active', { defaultValue: 'Enabled' }),
@@ -133,6 +142,10 @@ function EmailSpoFormModal({
     useEffect(() => {
         if (!isOpen) {
             reset(defaultValues());
+            setTargetAffiliateIds([]);
+            setTargetSearch('');
+            setTargetError(null);
+            setIsPartnerPickerOpen(false);
             return;
         }
 
@@ -147,11 +160,19 @@ function EmailSpoFormModal({
                 applicationStep: emailSpo.applicationStep,
                 status: emailSpo.status,
             });
+            setTargetAffiliateIds([currentAffiliateId]);
+            setTargetSearch('');
+            setTargetError(null);
+            setIsPartnerPickerOpen(false);
             return;
         }
 
         reset(defaultValues());
-    }, [emailSpo, isOpen, mode, reset]);
+        setTargetAffiliateIds([currentAffiliateId]);
+        setTargetSearch('');
+        setTargetError(null);
+        setIsPartnerPickerOpen(false);
+    }, [currentAffiliateId, emailSpo, isOpen, mode, reset]);
 
     if (!isOpen || (mode === 'edit' && !emailSpo)) {
         return null;
@@ -173,6 +194,49 @@ function EmailSpoFormModal({
     const submitLabel = mode === 'create'
         ? t('pages.affiliates.emailSpo.actions.create', { defaultValue: 'Create Email SPO' })
         : t('pages.affiliates.emailSpo.actions.saveChanges', { defaultValue: 'Save changes' });
+    const targetAffiliates = availableAffiliates.length > 0
+        ? availableAffiliates
+        : [{ id: currentAffiliateId, companyName: affiliateName } as Affiliate];
+    const visibleTargetAffiliates = targetAffiliates.filter((item) => {
+        const query = targetSearch.trim().toLowerCase();
+
+        if (!query) return true;
+
+        return `${item.companyName} ${item.reference ?? ''}`.toLowerCase().includes(query);
+    });
+    const selectedTargetAffiliates = targetAffiliates.filter((item) => targetAffiliateIds.includes(item.id));
+    const allVisibleSelected = visibleTargetAffiliates.length > 0
+        && visibleTargetAffiliates.every((item) => targetAffiliateIds.includes(item.id));
+    const toggleAffiliateTarget = (affiliateId: number) => {
+        setTargetError(null);
+        setTargetAffiliateIds((current) => (
+            current.includes(affiliateId)
+                ? current.filter((id) => id !== affiliateId)
+                : [...current, affiliateId]
+        ));
+    };
+    const toggleVisibleTargets = () => {
+        setTargetError(null);
+        const visibleIds = visibleTargetAffiliates.map((item) => item.id);
+
+        setTargetAffiliateIds((current) => {
+            if (allVisibleSelected) {
+                return current.filter((id) => !visibleIds.includes(id));
+            }
+
+            return [...new Set([...current, ...visibleIds])];
+        });
+    };
+    const submitForm = handleSubmit(async (values) => {
+        if (mode === 'create' && targetAffiliateIds.length === 0) {
+            setTargetError(t('pages.affiliates.emailSpo.errors.selectPartners', {
+                defaultValue: 'Select at least one partner.',
+            }));
+            return;
+        }
+
+        await onSubmit(values, mode === 'create' ? targetAffiliateIds : [currentAffiliateId]);
+    });
 
     return (
         <Modal isOpen={isOpen} onClose={onClose} title={title} maxWidth="max-w-2xl">
@@ -194,13 +258,114 @@ function EmailSpoFormModal({
                     )}
                 </div>
 
-                <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
+                <form onSubmit={submitForm} className="space-y-4" noValidate>
                     {errorMessage && (
                         <div
                             role="alert"
                             className="rounded-2xl border border-brand-slate/20 bg-brand-slate/10 px-4 py-3 text-sm text-brand-navy dark:border-brand-slate/30 dark:bg-brand-slate/20 dark:text-brand-light"
                         >
                             {errorMessage}
+                        </div>
+                    )}
+
+                    {mode === 'create' && (
+                        <div className="rounded-2xl border border-brand-light/70 bg-brand-light/65 p-4 dark:border-brand-light/10 dark:bg-brand-light/5">
+                            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                                <div>
+                                    <label
+                                        htmlFor={`${fieldPrefix}-partner-search`}
+                                        className="flex items-center gap-2 text-sm font-semibold text-brand-navy dark:text-brand-light"
+                                    >
+                                        <Users size={16} className="text-brand-mint" />
+                                        {t('pages.affiliates.emailSpo.fields.targetPartners', { defaultValue: 'Target partners' })}
+                                    </label>
+                                    <p className="mt-1 text-xs font-medium text-brand-slate dark:text-brand-light/70">
+                                        {t('pages.affiliates.emailSpo.fields.targetPartnersHelper', {
+                                            defaultValue: '{{count}} selected',
+                                            count: targetAffiliateIds.length,
+                                        })}
+                                    </p>
+                                </div>
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        setIsPartnerPickerOpen(true);
+                                        toggleVisibleTargets();
+                                    }}
+                                    className="self-start rounded-2xl border border-brand-light/70 px-3 py-2 text-xs font-semibold text-brand-navy transition hover:border-brand-mint/40 hover:bg-brand-mint/10 dark:border-brand-light/10 dark:text-brand-light"
+                                >
+                                    {allVisibleSelected
+                                        ? t('pages.affiliates.emailSpo.actions.clearVisiblePartners', { defaultValue: 'Clear visible' })
+                                        : t('pages.affiliates.emailSpo.actions.selectVisiblePartners', { defaultValue: 'Select visible' })}
+                                </button>
+                            </div>
+
+                            <button
+                                type="button"
+                                onClick={() => setIsPartnerPickerOpen((current) => !current)}
+                                className="mt-3 flex w-full items-center justify-between gap-3 rounded-2xl border border-brand-light/70 bg-brand-light/95 px-4 py-3 text-left text-sm font-medium text-brand-navy transition hover:border-brand-mint/40 hover:bg-brand-mint/8 dark:border-brand-light/10 dark:bg-brand-navy/60 dark:text-brand-light"
+                            >
+                                <span className="min-w-0 flex-1 truncate">
+                                    {selectedTargetAffiliates.length === 0
+                                        ? t('pages.affiliates.emailSpo.fields.noPartnersSelected', { defaultValue: 'No partners selected' })
+                                        : selectedTargetAffiliates.slice(0, 2).map((item) => item.companyName).join(', ')}
+                                    {selectedTargetAffiliates.length > 2 ? ` +${selectedTargetAffiliates.length - 2}` : ''}
+                                </span>
+                                <ChevronDown
+                                    size={16}
+                                    className={`shrink-0 text-brand-slate transition ${isPartnerPickerOpen ? 'rotate-180' : ''}`}
+                                />
+                            </button>
+
+                            {isPartnerPickerOpen && (
+                                <div className="mt-3 rounded-2xl border border-brand-light/70 bg-brand-light/50 p-3 dark:border-brand-light/10 dark:bg-brand-navy/35">
+                                    <div className="relative">
+                                        <Search size={15} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-brand-slate" />
+                                        <input
+                                            id={`${fieldPrefix}-partner-search`}
+                                            value={targetSearch}
+                                            onChange={(event) => setTargetSearch(event.target.value)}
+                                            placeholder={t('pages.affiliates.emailSpo.fields.searchPartners', { defaultValue: 'Search partners' })}
+                                            className="w-full rounded-2xl border border-brand-light/70 bg-brand-light/95 py-2.5 pl-9 pr-4 text-sm text-brand-navy outline-none transition placeholder:text-brand-slate/60 focus:border-brand-mint focus:ring-2 focus:ring-brand-mint/20 dark:border-brand-light/10 dark:bg-brand-navy/60 dark:text-brand-light"
+                                        />
+                                    </div>
+
+                                    <div className="mt-3 max-h-40 space-y-2 overflow-y-auto pr-1">
+                                        {visibleTargetAffiliates.map((item) => (
+                                            <label
+                                                key={item.id}
+                                                className="flex cursor-pointer items-center gap-3 rounded-2xl border border-brand-light/70 bg-brand-light/80 px-3 py-2.5 text-sm font-medium text-brand-navy transition hover:border-brand-mint/30 hover:bg-brand-mint/8 dark:border-brand-light/10 dark:bg-brand-navy/40 dark:text-brand-light"
+                                            >
+                                                <input
+                                                    type="checkbox"
+                                                    checked={targetAffiliateIds.includes(item.id)}
+                                                    onChange={() => toggleAffiliateTarget(item.id)}
+                                                    className="h-4 w-4 rounded border-brand-slate/40 text-brand-mint focus:ring-brand-mint"
+                                                />
+                                                <span className="min-w-0 flex-1 truncate">
+                                                    {item.companyName}
+                                                    {item.reference ? (
+                                                        <span className="ml-2 text-xs text-brand-slate dark:text-brand-light/60">
+                                                            {item.reference}
+                                                        </span>
+                                                    ) : null}
+                                                </span>
+                                                {item.id === currentAffiliateId && (
+                                                    <span className="rounded-full bg-brand-mint/10 px-2 py-1 text-[10px] font-bold uppercase tracking-[0.16em] text-brand-mint">
+                                                        Current
+                                                    </span>
+                                                )}
+                                            </label>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {targetError && (
+                                <p className="mt-2 text-xs font-medium text-brand-slate dark:text-brand-light/70">
+                                    {targetError}
+                                </p>
+                            )}
                         </div>
                     )}
 
@@ -561,7 +726,15 @@ export default function AffiliateEmailSpoManagerModal({
     const affiliateId = affiliate?.id ?? null;
     const locale = getLocale(i18n.language);
     const { data: emailSpos, isLoading, isError } = useAffiliateEmailSpos(affiliateId, isOpen);
-    const createMutation = useCreateAffiliateEmailSpo(affiliateId);
+    const { data: affiliates = [] } = useAffiliates();
+    const availableAffiliates = useMemo(() => {
+        if (!affiliate || affiliates.some((item) => item.id === affiliate.id)) {
+            return affiliates;
+        }
+
+        return [affiliate, ...affiliates];
+    }, [affiliate, affiliates]);
+    const bulkCreateMutation = useBulkCreateAffiliateEmailSpo();
     const updateMutation = useUpdateAffiliateEmailSpo(affiliateId);
     const statusMutation = useUpdateAffiliateEmailSpo(affiliateId);
     const deleteMutation = useDeleteAffiliateEmailSpo(affiliateId);
@@ -636,11 +809,14 @@ export default function AffiliateEmailSpoManagerModal({
         setEditingEmailSpoId(null);
     };
 
-    const handleCreateSubmit = async (values: AffiliateEmailSpoFormValues) => {
+    const handleCreateSubmit = async (values: AffiliateEmailSpoFormValues, targetAffiliateIds: number[]) => {
         setCreateError(null);
 
         try {
-            await createMutation.mutateAsync(values);
+            await bulkCreateMutation.mutateAsync({
+                ...values,
+                affiliateIds: targetAffiliateIds,
+            });
             closeCreateModal();
         } catch (error) {
             setCreateError(
@@ -848,9 +1024,11 @@ export default function AffiliateEmailSpoManagerModal({
 
             <EmailSpoFormModal
                 affiliateName={affiliate.companyName}
+                availableAffiliates={availableAffiliates}
+                currentAffiliateId={affiliate.id}
                 errorMessage={createError}
                 isOpen={isCreateModalOpen}
-                isSubmitting={createMutation.isPending}
+                isSubmitting={bulkCreateMutation.isPending}
                 mode="create"
                 onClose={closeCreateModal}
                 onSubmit={handleCreateSubmit}
@@ -858,6 +1036,8 @@ export default function AffiliateEmailSpoManagerModal({
 
             <EmailSpoFormModal
                 affiliateName={affiliate.companyName}
+                availableAffiliates={availableAffiliates}
+                currentAffiliateId={affiliate.id}
                 emailSpo={selectedEmailSpo}
                 errorMessage={updateError}
                 isOpen={editingEmailSpoId !== null && !!selectedEmailSpo}

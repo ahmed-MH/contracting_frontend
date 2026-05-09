@@ -39,3 +39,16 @@ export interface CreateAffiliateEmailSpoPayload {
 }
 
 export type UpdateAffiliateEmailSpoPayload = Partial<CreateAffiliateEmailSpoPayload>;
+
+export interface BulkCreateAffiliateEmailSpoPayload extends CreateAffiliateEmailSpoPayload {
+    affiliateIds: number[];
+}
+
+export interface BulkCreateAffiliateEmailSpoResult {
+    created: AffiliateEmailSpo[];
+    skipped: {
+        affiliateId: number;
+        affiliateName?: string;
+        reason: string;
+    }[];
+}

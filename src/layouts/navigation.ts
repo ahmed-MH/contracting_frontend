@@ -1,5 +1,6 @@
 import type { LucideIcon } from 'lucide-react';
 import {
+    Activity,
     BedDouble,
     Briefcase,
     Building2,
@@ -358,6 +359,15 @@ export const commercialTopNavGroups: NavigationSection[] = commercialWorkspaceSe
 
 export const commercialTopNavItems: NavigationItem[] = [
     {
+        label: 'Overview',
+        labelKey: 'common:navigation.commercial.primary.overview.label',
+        to: '/overview',
+        icon: Activity,
+        description: 'Commercial KPIs, readiness, and attention queue.',
+        descriptionKey: 'common:navigation.commercial.primary.overview.description',
+        exact: true,
+    },
+    {
         label: 'Contracts',
         labelKey: 'common:navigation.commercial.primary.contracts.label',
         to: '/contracts',
@@ -439,7 +449,7 @@ const roleConfigs: Record<UserRole, RoleNavigationConfig> = {
         titleKey: 'common:navigation.roles.commercial.title',
         subtitle: 'Stay in flow while editing inventory, partners, and contract data.',
         subtitleKey: 'common:navigation.roles.commercial.subtitle',
-        defaultPath: '/contracts',
+        defaultPath: '/overview',
         sections: commercialWorkspaceSections,
     },
     AGENT: {

@@ -18,6 +18,9 @@ import type { IntegrationPlaygroundRequest, IntegrationUsageLog, IntegrationUsag
 const formatDateTime = (value: string, locale: string) =>
     new Intl.DateTimeFormat(locale, { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(value));
 
+const filterLabelClass = 'mb-1.5 block text-[10px] font-black uppercase tracking-[0.16em] text-brand-slate dark:text-brand-light/50';
+const filterControlClass = 'h-11 w-full rounded-2xl border border-brand-light/70 bg-brand-light/80 px-4 text-sm shadow-sm outline-none transition focus:border-brand-mint focus:ring-2 focus:ring-brand-mint/20 dark:border-brand-light/10 dark:bg-brand-light/5';
+
 export default function IntegrationUsageLogsPage() {
     const { t, i18n } = useTranslation('common');
     const navigate = useNavigate();
@@ -50,31 +53,49 @@ export default function IntegrationUsageLogsPage() {
                 description={t('pages.integrations.logs.filters.description')}
             >
                 <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-                    <select className="rounded-2xl border border-brand-light/70 bg-brand-light/80 px-4 py-3 text-sm shadow-sm outline-none transition focus:border-brand-mint focus:ring-2 focus:ring-brand-mint/20 dark:border-brand-light/10 dark:bg-brand-light/5" onChange={(event) => updateFilter('endpointCode', event.target.value || undefined)}>
-                        <option value="">{t('pages.integrations.logs.filters.allEndpoints')}</option>
-                        {endpoints.map((endpoint) => (
-                            <option key={endpoint.id} value={endpoint.code}>{endpoint.code}</option>
-                        ))}
-                    </select>
-                    <select className="rounded-2xl border border-brand-light/70 bg-brand-light/80 px-4 py-3 text-sm shadow-sm outline-none transition focus:border-brand-mint focus:ring-2 focus:ring-brand-mint/20 dark:border-brand-light/10 dark:bg-brand-light/5" onChange={(event) => updateFilter('apiUserId', event.target.value ? Number(event.target.value) : undefined)}>
-                        <option value="">{t('pages.integrations.logs.filters.allUsers')}</option>
-                        {apiUsers.map((apiUser) => (
-                            <option key={apiUser.id} value={apiUser.id}>{apiUser.name}</option>
-                        ))}
-                    </select>
-                    <select className="rounded-2xl border border-brand-light/70 bg-brand-light/80 px-4 py-3 text-sm shadow-sm outline-none transition focus:border-brand-mint focus:ring-2 focus:ring-brand-mint/20 dark:border-brand-light/10 dark:bg-brand-light/5" onChange={(event) => updateFilter('hotelId', event.target.value ? Number(event.target.value) : undefined)}>
-                        <option value="">{t('pages.integrations.logs.filters.allHotels')}</option>
-                        {hotels.map((hotel) => (
-                            <option key={hotel.id} value={hotel.id}>{hotel.name}</option>
-                        ))}
-                    </select>
-                    <select className="rounded-2xl border border-brand-light/70 bg-brand-light/80 px-4 py-3 text-sm shadow-sm outline-none transition focus:border-brand-mint focus:ring-2 focus:ring-brand-mint/20 dark:border-brand-light/10 dark:bg-brand-light/5" onChange={(event) => updateFilter('success', event.target.value === '' ? undefined : event.target.value === 'true')}>
-                        <option value="">{t('pages.integrations.logs.filters.allResults')}</option>
-                        <option value="true">{t('pages.integrations.logs.filters.successOnly')}</option>
-                        <option value="false">{t('pages.integrations.logs.filters.failureOnly')}</option>
-                    </select>
-                    <input type="date" className="rounded-2xl border border-brand-light/70 bg-brand-light/80 px-4 py-3 text-sm shadow-sm outline-none transition focus:border-brand-mint focus:ring-2 focus:ring-brand-mint/20 dark:border-brand-light/10 dark:bg-brand-light/5" onChange={(event) => updateFilter('dateFrom', event.target.value || undefined)} />
-                    <input type="date" className="rounded-2xl border border-brand-light/70 bg-brand-light/80 px-4 py-3 text-sm shadow-sm outline-none transition focus:border-brand-mint focus:ring-2 focus:ring-brand-mint/20 dark:border-brand-light/10 dark:bg-brand-light/5" onChange={(event) => updateFilter('dateTo', event.target.value || undefined)} />
+                    <label className="block">
+                        <span className={filterLabelClass}>Endpoint</span>
+                        <select className={filterControlClass} onChange={(event) => updateFilter('endpointCode', event.target.value || undefined)}>
+                            <option value="">{t('pages.integrations.logs.filters.allEndpoints')}</option>
+                            {endpoints.map((endpoint) => (
+                                <option key={endpoint.id} value={endpoint.code}>{endpoint.code}</option>
+                            ))}
+                        </select>
+                    </label>
+                    <label className="block">
+                        <span className={filterLabelClass}>API user</span>
+                        <select className={filterControlClass} onChange={(event) => updateFilter('apiUserId', event.target.value ? Number(event.target.value) : undefined)}>
+                            <option value="">{t('pages.integrations.logs.filters.allUsers')}</option>
+                            {apiUsers.map((apiUser) => (
+                                <option key={apiUser.id} value={apiUser.id}>{apiUser.name}</option>
+                            ))}
+                        </select>
+                    </label>
+                    <label className="block">
+                        <span className={filterLabelClass}>Hotel</span>
+                        <select className={filterControlClass} onChange={(event) => updateFilter('hotelId', event.target.value ? Number(event.target.value) : undefined)}>
+                            <option value="">{t('pages.integrations.logs.filters.allHotels')}</option>
+                            {hotels.map((hotel) => (
+                                <option key={hotel.id} value={hotel.id}>{hotel.name}</option>
+                            ))}
+                        </select>
+                    </label>
+                    <label className="block">
+                        <span className={filterLabelClass}>Result</span>
+                        <select className={filterControlClass} onChange={(event) => updateFilter('success', event.target.value === '' ? undefined : event.target.value === 'true')}>
+                            <option value="">{t('pages.integrations.logs.filters.allResults')}</option>
+                            <option value="true">{t('pages.integrations.logs.filters.successOnly')}</option>
+                            <option value="false">{t('pages.integrations.logs.filters.failureOnly')}</option>
+                        </select>
+                    </label>
+                    <label className="block">
+                        <span className={filterLabelClass}>Date from</span>
+                        <input type="date" className={filterControlClass} onChange={(event) => updateFilter('dateFrom', event.target.value || undefined)} />
+                    </label>
+                    <label className="block">
+                        <span className={filterLabelClass}>Date to</span>
+                        <input type="date" className={filterControlClass} onChange={(event) => updateFilter('dateTo', event.target.value || undefined)} />
+                    </label>
                 </div>
             </IntegrationSectionCard>
 

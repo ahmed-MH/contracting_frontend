@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
     contractService,
     type Contract,
+    type ContractListParams,
     type CreateContractPayload,
     type CreateContractRoomPayload,
     type CreatePeriodPayload,
@@ -10,6 +11,7 @@ import {
 import { toast } from 'sonner';
 import { useHotel } from '../../hotel/context/HotelContext';
 import i18next from '../../../lib/i18n';
+import type { PaginatedResult } from '../../../types/pagination.types';
 
 function getErrorMessage(error: any, defaultMessage: string): string {
     const activationErrors = error?.response?.data?.validation?.errors;
@@ -25,16 +27,28 @@ function getErrorMessage(error: any, defaultMessage: string): string {
 
 export const contractKeys = {
     all: (hotelId: number | undefined) => ['contracts', hotelId] as const,
+    list: (hotelId: number | undefined, params: ContractListParams) => ['contracts', hotelId, params] as const,
+    archived: (hotelId: number | undefined, params: ContractListParams) => ['contracts', hotelId, 'archived', params] as const,
     detail: (hotelId: number | undefined, contractId: number | undefined) => ['contract', hotelId, contractId] as const,
 };
 
-export function useContracts() {
+export function useContracts(params: ContractListParams = {}) {
     const { currentHotel } = useHotel();
     const hotelId = currentHotel?.id;
-    return useQuery<Contract[]>({
-        queryKey: contractKeys.all(hotelId),
-        queryFn: contractService.getContracts,
+    return useQuery<PaginatedResult<Contract>>({
+        queryKey: contractKeys.list(hotelId, params),
+        queryFn: () => contractService.getContracts(params),
         enabled: !!hotelId,
+    });
+}
+
+export function useArchivedContracts(params: ContractListParams = {}, enabled: boolean) {
+    const { currentHotel } = useHotel();
+    const hotelId = currentHotel?.id;
+    return useQuery<PaginatedResult<Contract>>({
+        queryKey: contractKeys.archived(hotelId, params),
+        queryFn: () => contractService.getArchivedContracts(params),
+        enabled: !!hotelId && enabled,
     });
 }
 
@@ -71,6 +85,34 @@ export function useCreateContract() {
         onError: (error: any) => {
             toast.error(getErrorMessage(error, 'Erreur lors de la creation du contrat'));
         },
+    });
+}
+
+export function useArchiveContract() {
+    const { currentHotel } = useHotel();
+    const qc = useQueryClient();
+
+    return useMutation({
+        mutationFn: (id: number) => contractService.archiveContract(id),
+        onSuccess: () => {
+            qc.invalidateQueries({ queryKey: contractKeys.all(currentHotel?.id) });
+            toast.success('Contract archived');
+        },
+        onError: (error: any) => toast.error(getErrorMessage(error, 'Could not archive contract')),
+    });
+}
+
+export function useRestoreContract() {
+    const { currentHotel } = useHotel();
+    const qc = useQueryClient();
+
+    return useMutation({
+        mutationFn: (id: number) => contractService.restoreContract(id),
+        onSuccess: () => {
+            qc.invalidateQueries({ queryKey: contractKeys.all(currentHotel?.id) });
+            toast.success('Contract restored');
+        },
+        onError: (error: any) => toast.error(getErrorMessage(error, 'Could not restore contract')),
     });
 }
 
