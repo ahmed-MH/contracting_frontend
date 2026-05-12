@@ -11,10 +11,11 @@ import { useConfirm } from '../../../../context/ConfirmContext';
 import { useAuth } from '../../../auth/context/AuthContext';
 import { 
     Gift, Plus, Pencil, Trash2, GitMerge, Search, 
-    ChevronLeft, ChevronRight, Archive, RotateCcw, ChevronDown
+    ChevronRight, Archive, RotateCcw, ChevronDown
 } from 'lucide-react';
 import EditSpoTemplateModal from '../components/EditSpoTemplateModal';
 import UpdatedByCell from '../../../../components/audit/UpdatedByCell';
+import PaginationControls, { createClientPageMeta, getPageItems } from '../../../../components/ui/PaginationControls';
 
 export default function SpoTemplatesPage() {
     const { t } = useTranslation('common');
@@ -24,6 +25,7 @@ export default function SpoTemplatesPage() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingSpo, setEditingSpo] = useState<TemplateSpo | null>(null);
     const [showArchived, setShowArchived] = useState(false);
+    const [archivedPage, setArchivedPage] = useState(1);
     
     const { user } = useAuth();
     const canManageArchive = user?.role === 'ADMIN' || user?.role === 'COMMERCIAL';
@@ -40,6 +42,9 @@ export default function SpoTemplatesPage() {
 
     const { data: pageData, isLoading, isError } = useSpoTemplates({ page, limit, search: debouncedSearch });
     const { data: archivedSpos } = useArchivedSpoTemplates({ enabled: canManageArchive });
+    const archivedSposList = archivedSpos ?? [];
+    const archivedMeta = createClientPageMeta(archivedSposList.length, archivedPage, limit);
+    const paginatedArchivedSpos = getPageItems(archivedSposList, archivedMeta);
     
     const deleteMutation = useDeleteSpoTemplate();
     const restoreMutation = useRestoreSpoTemplate();
@@ -212,49 +217,23 @@ export default function SpoTemplatesPage() {
                         </table>
                     </div>
 
-                    {/* ─── Pagination Standard ────────────────────────────────── */}
-                    {pageData?.meta && pageData.meta.lastPage > 0 && (
-                        <div className="flex items-center justify-between border-t border-brand-slate/15 bg-brand-mint/5 px-5 py-3 dark:border-brand-light/10 dark:bg-brand-light/5">
-                            <p className="text-xs text-brand-slate font-medium tracking-tight">
-                                {t('auto.pagination.summary', { defaultValue: 'Affichage de {{from}} ? {{to}} sur {{total}}', from: (page - 1) * limit + 1, to: Math.min(page * limit, pageData.meta.total), total: pageData.meta.total })}
-                            </p>
-                            <div className="flex items-center gap-1.5">
-                                <button
-                                    onClick={() => setPage((p) => Math.max(1, p - 1))}
-                                    disabled={page <= 1}
-                                    className="p-1.5 text-brand-slate hover:text-brand-mint hover:bg-brand-mint/10 rounded-xl transition-all disabled:opacity-30 disabled:pointer-events-none cursor-pointer border border-transparent hover:border-brand-mint/30"
-                                >
-                                    <ChevronLeft size={18} />
-                                </button>
-                                <div className="flex h-9 min-w-[52px] items-center justify-center rounded-xl border border-brand-slate/20 bg-brand-light/70 px-2.5 text-xs font-bold text-brand-slate shadow-sm dark:border-brand-light/10 dark:bg-brand-light/5 dark:text-brand-light">
-                                    {page} / {pageData.meta.lastPage}
-                                </div>
-                                <button
-                                    onClick={() => setPage((p) => Math.min(pageData.meta.lastPage, p + 1))}
-                                    disabled={page >= pageData.meta.lastPage}
-                                    className="p-1.5 text-brand-slate hover:text-brand-mint hover:bg-brand-mint/10 rounded-xl transition-all disabled:opacity-30 disabled:pointer-events-none cursor-pointer border border-transparent hover:border-brand-mint/30"
-                                >
-                                    <ChevronRight size={18} />
-                                </button>
-                            </div>
-                        </div>
-                    )}
+                    <PaginationControls meta={pageData?.meta} onPageChange={setPage} />
                 </div>
             )}
 
             {canManageArchive && (
-                <div className="mt-10">
+                <div className="mt-10 space-y-4">
                     <button onClick={() => setShowArchived(!showArchived)}
-                        className="inline-flex items-center gap-2 text-sm font-bold text-brand-slate hover:text-brand-navy transition-colors cursor-pointer border-none bg-transparent outline-none dark:hover:text-brand-light">
+                        className="inline-flex items-center gap-2 rounded-lg border border-brand-light/70 bg-brand-light/70 px-4 py-2 text-sm font-semibold text-brand-navy transition hover:border-brand-mint hover:text-brand-mint dark:border-brand-light/10 dark:bg-brand-light/5 dark:text-brand-light">
                         {showArchived ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
                         <Archive size={16} />
                         Offres archivées {archivedSpos ? `(${archivedSpos.length})` : ''}
                     </button>
 
                     {showArchived && archivedSpos && archivedSpos.length > 0 && (
-                        <div className="premium-surface mt-4 overflow-hidden opacity-80">
+                        <div className="overflow-hidden rounded-lg border border-brand-light/70 dark:border-brand-light/10">
                             <div className="overflow-x-auto">
-                                <table className="w-full min-w-[520px] text-left text-sm">
+                                <table className="min-w-[520px] w-full text-left text-sm">
                                     <thead>
                                         <tr className="border-b border-brand-slate/15 bg-brand-mint/6 dark:border-brand-light/10 dark:bg-brand-light/5">
                                             <th className="px-5 py-4 text-xs font-semibold uppercase tracking-wide text-brand-slate dark:text-brand-light/65">{t('auto.features.catalog.spos.pages.spotemplatespage.994aa2d8', { defaultValue: "Modèle" })}</th>
@@ -263,7 +242,7 @@ export default function SpoTemplatesPage() {
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-brand-slate/10 dark:divide-brand-light/10">
-                                        {archivedSpos.map((spo: TemplateSpo) => (
+                                        {paginatedArchivedSpos.map((spo: TemplateSpo) => (
                                             <tr key={spo.id} className="transition-colors hover:bg-brand-mint/5 dark:hover:bg-brand-light/5">
                                                 <td className="px-5 py-3 text-brand-slate font-bold dark:text-brand-light/75">{spo.name}</td>
                                                 <td className="px-5 py-3 align-top">
@@ -271,7 +250,7 @@ export default function SpoTemplatesPage() {
                                                 </td>
                                                 <td className="px-5 py-3 text-right">
                                                     <button onClick={() => handleRestore(spo)}
-                                                        className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-brand-mint/10 text-brand-mint text-xs font-bold rounded-xl hover:bg-brand-mint/10 transition-colors cursor-pointer border-none shadow-xs">
+                                                        className="inline-flex h-10 items-center gap-2 rounded-lg bg-brand-mint/10 px-4 text-sm font-semibold text-brand-mint transition hover:bg-brand-mint hover:text-brand-light disabled:cursor-not-allowed disabled:opacity-60">
                                                         <RotateCcw size={14} /> Restaurer
                                                     </button>
                                                 </td>
@@ -280,6 +259,12 @@ export default function SpoTemplatesPage() {
                                     </tbody>
                                 </table>
                             </div>
+                            <PaginationControls meta={archivedMeta} onPageChange={setArchivedPage} />
+                        </div>
+                    )}
+                    {showArchived && archivedSpos && archivedSpos.length === 0 && (
+                        <div className="rounded-lg border border-dashed border-brand-slate/20 px-6 py-10 text-center text-sm text-brand-slate dark:border-brand-light/10 dark:text-brand-light/70">
+                            Aucune offre archivée
                         </div>
                     )}
                 </div>

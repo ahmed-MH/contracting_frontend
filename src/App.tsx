@@ -11,6 +11,7 @@ import { getDefaultPathForRole } from './layouts/navigation';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from './hooks/useTheme';
 import type { UserRole } from './features/auth/types/auth.types';
+import AppErrorBoundary from './features/errors/components/AppErrorBoundary';
 
 const LandingPage = lazy(() => import('./features/public/LandingPage'));
 const LoginPage = lazy(() => import('./features/auth/pages/LoginPage'));
@@ -56,13 +57,16 @@ const SupervisorOverviewPage = lazy(() => import('./features/supervisor/pages/Su
 const SupervisorPlatformSettingsPage = lazy(() => import('./features/supervisor/pages/SupervisorPlatformSettingsPage'));
 const SupervisorSystemLogsPage = lazy(() => import('./features/supervisor/pages/SupervisorSystemLogsPage'));
 const SupervisorTenantsPage = lazy(() => import('./features/supervisor/pages/SupervisorTenantsPage'));
+const NotFoundPage = lazy(() => import('./features/errors/pages/NotFoundPage'));
 
 const supervisorOnlyRoles: UserRole[] = ['SUPERVISOR'];
 const adminOnlyRoles: UserRole[] = ['ADMIN'];
+const commercialOnlyRoles: UserRole[] = ['COMMERCIAL'];
 const authenticatedRoles: UserRole[] = ['SUPERVISOR', 'ADMIN', 'COMMERCIAL', 'AGENT'];
 const tenantOperatorRoles: UserRole[] = ['ADMIN', 'COMMERCIAL'];
-const contractAccessRoles: UserRole[] = ['ADMIN', 'COMMERCIAL', 'AGENT'];
+const contractAccessRoles: UserRole[] = ['ADMIN', 'COMMERCIAL'];
 const simulatorAccessRoles: UserRole[] = ['ADMIN', 'COMMERCIAL', 'AGENT'];
+const proformaAccessRoles: UserRole[] = ['ADMIN', 'COMMERCIAL'];
 
 const GlobalLoader = () => (
     <div className="flex h-screen w-full items-center justify-center bg-brand-light dark:bg-brand-navy">
@@ -112,9 +116,10 @@ function App() {
                 }}
             />
             <BrowserRouter>
-                <Suspense fallback={<GlobalLoader />}>
-                    <Routes>
-                        <Route path="/" element={<LandingPage />} />
+                <AppErrorBoundary>
+                    <Suspense fallback={<GlobalLoader />}>
+                        <Routes>
+                            <Route path="/" element={<LandingPage />} />
 
                         <Route element={<GuestRoute><AuthLayout /></GuestRoute>}>
                             <Route path="/login" element={<LoginPage />} />
@@ -179,7 +184,7 @@ function App() {
                             <Route
                                 path="product/rooms"
                                 element={
-                                    <ProtectedRoute allowedRoles={tenantOperatorRoles}>
+                                    <ProtectedRoute allowedRoles={commercialOnlyRoles}>
                                         <RoomTypesPage />
                                     </ProtectedRoute>
                                 }
@@ -187,7 +192,7 @@ function App() {
                             <Route
                                 path="product/arrangements"
                                 element={
-                                    <ProtectedRoute allowedRoles={tenantOperatorRoles}>
+                                    <ProtectedRoute allowedRoles={commercialOnlyRoles}>
                                         <ArrangementsPage />
                                     </ProtectedRoute>
                                 }
@@ -195,7 +200,7 @@ function App() {
                             <Route
                                 path="product/supplements"
                                 element={
-                                    <ProtectedRoute allowedRoles={tenantOperatorRoles}>
+                                    <ProtectedRoute allowedRoles={commercialOnlyRoles}>
                                         <SupplementsCatalogPage />
                                     </ProtectedRoute>
                                 }
@@ -203,7 +208,7 @@ function App() {
                             <Route
                                 path="product/spos"
                                 element={
-                                    <ProtectedRoute allowedRoles={tenantOperatorRoles}>
+                                    <ProtectedRoute allowedRoles={commercialOnlyRoles}>
                                         <SpoTemplatesPage />
                                     </ProtectedRoute>
                                 }
@@ -211,7 +216,7 @@ function App() {
                             <Route
                                 path="product/reductions"
                                 element={
-                                    <ProtectedRoute allowedRoles={tenantOperatorRoles}>
+                                    <ProtectedRoute allowedRoles={commercialOnlyRoles}>
                                         <ReductionsCatalogPage />
                                     </ProtectedRoute>
                                 }
@@ -219,7 +224,7 @@ function App() {
                             <Route
                                 path="product/monoparental"
                                 element={
-                                    <ProtectedRoute allowedRoles={tenantOperatorRoles}>
+                                    <ProtectedRoute allowedRoles={commercialOnlyRoles}>
                                         <MonoparentalCatalogPage />
                                     </ProtectedRoute>
                                 }
@@ -227,7 +232,7 @@ function App() {
                             <Route
                                 path="product/early-bookings"
                                 element={
-                                    <ProtectedRoute allowedRoles={tenantOperatorRoles}>
+                                    <ProtectedRoute allowedRoles={commercialOnlyRoles}>
                                         <EarlyBookingsCatalogPage />
                                     </ProtectedRoute>
                                 }
@@ -235,7 +240,7 @@ function App() {
                             <Route
                                 path="product/cancellations"
                                 element={
-                                    <ProtectedRoute allowedRoles={tenantOperatorRoles}>
+                                    <ProtectedRoute allowedRoles={commercialOnlyRoles}>
                                         <CancellationCatalogPage />
                                     </ProtectedRoute>
                                 }
@@ -243,7 +248,7 @@ function App() {
                             <Route
                                 path="partners/affiliates"
                                 element={
-                                    <ProtectedRoute allowedRoles={tenantOperatorRoles}>
+                                    <ProtectedRoute allowedRoles={commercialOnlyRoles}>
                                         <AffiliatesPage />
                                     </ProtectedRoute>
                                 }
@@ -267,7 +272,7 @@ function App() {
                             <Route
                                 path="proforma/invoices"
                                 element={
-                                    <ProtectedRoute allowedRoles={simulatorAccessRoles}>
+                                    <ProtectedRoute allowedRoles={proformaAccessRoles}>
                                         <SavedProformaInvoicesPage />
                                     </ProtectedRoute>
                                 }
@@ -275,7 +280,7 @@ function App() {
                             <Route
                                 path="proforma/:id"
                                 element={
-                                    <ProtectedRoute allowedRoles={simulatorAccessRoles}>
+                                    <ProtectedRoute allowedRoles={proformaAccessRoles}>
                                         <ProformaPreviewPage />
                                     </ProtectedRoute>
                                 }
@@ -407,9 +412,10 @@ function App() {
                             />
                         </Route>
 
-                        <Route path="*" element={<Navigate to="/" replace />} />
-                    </Routes>
-                </Suspense>
+                            <Route path="*" element={<NotFoundPage />} />
+                        </Routes>
+                    </Suspense>
+                </AppErrorBoundary>
             </BrowserRouter>
         </>
     );

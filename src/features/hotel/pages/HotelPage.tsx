@@ -71,13 +71,13 @@ function DetailCard({
     );
 }
 
-function InfoRow({ label, value }: { label: string; value?: string | number | null }) {
+function InfoRow({ label, value, valueClassName = '' }: { label: string; value?: string | number | null; valueClassName?: string }) {
     return (
         <div className="rounded-2xl border border-brand-light/70 bg-brand-light/72 px-4 py-3 dark:border-brand-light/10 dark:bg-brand-light/5">
             <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-brand-slate">
                 {label}
             </p>
-            <p className="mt-2 break-words text-sm font-semibold text-brand-navy dark:text-brand-light">
+            <p className={`mt-2 break-words text-sm font-semibold text-brand-navy dark:text-brand-light ${valueClassName}`}>
                 {value || 'Not provided'}
             </p>
         </div>
@@ -432,16 +432,16 @@ export default function HotelPage() {
                                                     ? t('pages.hotel.logoUpload.status.ready', { defaultValue: 'Logo configured' })
                                                     : t('pages.hotel.logoUpload.status.empty', { defaultValue: 'No logo uploaded yet' })}
                                             </p>
-                                            <p className="mt-2 text-xs text-brand-slate dark:text-brand-light/75">
-                                                {currentHotel.logoUrl
-                                                    ? t('pages.hotel.logoUpload.status.description', { defaultValue: 'This logo is used across hotel-facing previews, contracts, and proformas.' })
-                                                    : t('pages.hotel.logoUpload.source.empty', { defaultValue: 'Upload a logo to brand previews and PDF exports.' })}
-                                            </p>
+                                            {!currentHotel.logoUrl && (
+                                                <p className="mt-2 text-xs leading-relaxed text-brand-slate dark:text-brand-light/75">
+                                                    {t('pages.hotel.logoUpload.source.empty', { defaultValue: 'Upload a logo to brand previews and PDF exports.' })}
+                                                </p>
+                                            )}
                                         </div>
                                     </div>
 
                                     {isAdmin && (
-                                        <div className="mt-4 flex flex-wrap items-center gap-3">
+                                        <div className="mt-4 space-y-3">
                                             <button
                                                 type="button"
                                                 onClick={() => setIsLogoModalOpen(true)}
@@ -452,9 +452,9 @@ export default function HotelPage() {
                                                     ? t('pages.hotel.logoUpload.actions.change', { defaultValue: 'Change logo' })
                                                     : t('pages.hotel.logoUpload.actions.upload', { defaultValue: 'Upload logo' })}
                                             </button>
-                                            <span className="text-xs text-brand-slate dark:text-brand-light/75">
+                                            <p className="max-w-[17rem] text-xs leading-relaxed text-brand-slate dark:text-brand-light/75">
                                                 {t('pages.hotel.logoUpload.actions.helper', { defaultValue: 'PNG and JPG upload natively. WebP is converted automatically to keep PDFs compatible.' })}
-                                            </span>
+                                            </p>
                                         </div>
                                     )}
                                 </div>
@@ -482,9 +482,17 @@ export default function HotelPage() {
                         >
                             <div className="space-y-3">
                                 <InfoRow label={t('pages.hotel.fields.address', { defaultValue: 'Address' })} value={currentHotel.address} />
-                                <div className="grid gap-3 sm:grid-cols-2">
-                                    <InfoRow label={t('pages.hotel.fields.phone', { defaultValue: 'Phone' })} value={currentHotel.phone} />
-                                    <InfoRow label={t('pages.hotel.fields.fax', { defaultValue: 'Fax' })} value={currentHotel.fax} />
+                                <div className="grid gap-3">
+                                    <InfoRow
+                                        label={t('pages.hotel.fields.phone', { defaultValue: 'Phone' })}
+                                        value={currentHotel.phone}
+                                        valueClassName="break-normal whitespace-nowrap text-[13px]"
+                                    />
+                                    <InfoRow
+                                        label={t('pages.hotel.fields.fax', { defaultValue: 'Fax' })}
+                                        value={currentHotel.fax}
+                                        valueClassName="break-normal whitespace-nowrap text-[13px]"
+                                    />
                                 </div>
                                 <div className="flex items-center gap-3 rounded-2xl border border-brand-mint/15 bg-brand-mint/8 px-4 py-4">
                                     <User size={17} className="text-brand-mint" />

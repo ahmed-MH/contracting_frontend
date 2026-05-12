@@ -69,9 +69,11 @@ export function BrandLockup({ eyebrow, title, subtitle, compact = false }: Brand
 export function HotelSelector({ compact = false, className }: { compact?: boolean; className?: string }) {
     const { t } = useTranslation(['auth', 'common']);
     const { currentHotel, availableHotels, isLoading, switchHotel } = useHotel();
+    const hotelName = currentHotel?.name ?? t('common:entities.hotel', { defaultValue: 'Hotel' });
+    const hotelReference = currentHotel?.reference;
 
     if (isLoading) {
-        return <div className={clsx('h-11 w-52 animate-pulse rounded-2xl border border-brand-light/50 bg-transparent dark:border-brand-light/10', className)} />;
+        return <div className={clsx(compact ? 'h-10' : 'h-11', 'w-52 animate-pulse rounded-xl border border-brand-light/50 bg-transparent dark:border-brand-light/10', className)} />;
     }
 
     if (availableHotels.length === 0) {
@@ -81,17 +83,20 @@ export function HotelSelector({ compact = false, className }: { compact?: boolea
     if (availableHotels.length === 1) {
         return (
             <div className={clsx(
-                'inline-flex min-w-0 items-center gap-3 rounded-2xl border border-brand-light/60 bg-transparent px-3 py-2 backdrop-blur-xl transition-colors hover:bg-brand-light/55 dark:border-brand-light/10 dark:hover:bg-brand-light/5',
+                compact ? 'h-10' : 'h-11',
+                'inline-flex min-w-0 items-center gap-2.5 rounded-xl border border-brand-slate/12 bg-brand-light/72 px-2.5 shadow-sm backdrop-blur-xl transition-colors hover:border-brand-mint/25 hover:bg-brand-light dark:border-brand-light/10 dark:bg-brand-light/5 dark:hover:border-brand-mint/25 dark:hover:bg-brand-light/8',
                 className,
-            )}>
-                <div className="rounded-xl bg-brand-light/55 p-2 text-brand-slate dark:bg-transparent dark:text-brand-light/45">
-                    <Hotel size={16} />
+            )}
+            title={hotelReference ? `${hotelName} - ${hotelReference}` : hotelName}
+            >
+                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-brand-mint/10 text-brand-mint ring-1 ring-brand-mint/15">
+                    <Hotel size={15} />
                 </div>
-                <div className="min-w-0">
-                    <p className="truncate text-sm font-semibold text-brand-navy dark:text-brand-light">{currentHotel?.name ?? t('common:entities.hotel', { defaultValue: 'Hotel' })}</p>
-                    {currentHotel?.reference && (
-                        <p className="truncate text-[11px] uppercase tracking-[0.16em] text-brand-slate">
-                            {currentHotel.reference}
+                <div className="min-w-0 leading-none">
+                    <p className="truncate text-[13px] font-semibold text-brand-navy dark:text-brand-light">{hotelName}</p>
+                    {hotelReference && (
+                        <p className="mt-1 truncate text-[10px] font-semibold uppercase tracking-[0.18em] text-brand-slate dark:text-brand-light/45">
+                            {hotelReference}
                         </p>
                     )}
                 </div>
@@ -100,15 +105,32 @@ export function HotelSelector({ compact = false, className }: { compact?: boolea
     }
 
     return (
-        <div className={clsx('relative min-w-0', className)}>
-            <Hotel size={16} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-brand-slate dark:text-brand-light/45" />
+        <div
+            className={clsx(
+                compact ? 'h-10' : 'h-11',
+                'group relative min-w-0 overflow-hidden rounded-xl border border-brand-slate/12 bg-brand-light/72 shadow-sm backdrop-blur-xl transition-colors hover:border-brand-mint/25 hover:bg-brand-light focus-within:border-brand-mint focus-within:ring-2 focus-within:ring-brand-mint/20 dark:border-brand-light/10 dark:bg-brand-light/5 dark:hover:border-brand-mint/25 dark:hover:bg-brand-light/8',
+                className,
+            )}
+            title={hotelReference ? `${hotelName} - ${hotelReference}` : hotelName}
+        >
+            <div className="pointer-events-none flex h-full min-w-0 items-center gap-2.5 px-2.5 pr-8">
+                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-brand-mint/10 text-brand-mint ring-1 ring-brand-mint/15">
+                    <Hotel size={15} />
+                </div>
+                <div className="min-w-0 leading-none">
+                    <p className="truncate text-[13px] font-semibold text-brand-navy dark:text-brand-light">{hotelName}</p>
+                    {hotelReference && (
+                        <p className="mt-1 truncate text-[10px] font-semibold uppercase tracking-[0.18em] text-brand-slate dark:text-brand-light/45">
+                            {hotelReference}
+                        </p>
+                    )}
+                </div>
+            </div>
             <select
+                aria-label={t('common:actions.selectHotel', { defaultValue: 'Select hotel' })}
                 value={currentHotel?.id ?? ''}
                 onChange={(event) => switchHotel(Number(event.target.value))}
-                className={clsx(
-                    'w-full appearance-none rounded-2xl border border-brand-light/60 bg-transparent pl-10 pr-10 text-sm font-medium text-brand-navy outline-none backdrop-blur-xl transition-colors hover:bg-brand-light/55 focus:border-brand-mint focus:ring-2 focus:ring-brand-mint/20 dark:border-brand-light/10 dark:text-brand-light dark:hover:bg-brand-light/5',
-                    compact ? 'h-10 min-w-[210px]' : 'h-11 min-w-[240px]',
-                )}
+                className="absolute inset-0 h-full w-full cursor-pointer appearance-none opacity-0"
             >
                 {availableHotels.map((hotel) => (
                     <option key={hotel.id} value={hotel.id}>
@@ -116,7 +138,7 @@ export function HotelSelector({ compact = false, className }: { compact?: boolea
                     </option>
                 ))}
             </select>
-            <ChevronsUpDown size={14} className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-brand-slate" />
+            <ChevronsUpDown size={14} className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-brand-slate transition-colors group-hover:text-brand-mint" />
         </div>
     );
 }
@@ -257,7 +279,11 @@ export function HeaderActions({
             compact && 'gap-2',
             className,
         )}>
-            {showHotel && <HotelSelector compact={compact} className="hidden lg:block" />}
+            {showHotel && (
+                <div className="hidden w-[230px] lg:block">
+                    <HotelSelector compact={compact} className="w-full" />
+                </div>
+            )}
             {withGroupDividers && showHotel && (
                 <span className="hidden h-10 w-px bg-brand-navy/10 dark:bg-brand-light/10 lg:block" aria-hidden="true" />
             )}

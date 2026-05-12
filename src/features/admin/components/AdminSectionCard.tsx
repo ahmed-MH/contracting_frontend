@@ -16,9 +16,9 @@ export default function AdminSectionCard({
     children,
 }: AdminSectionCardProps) {
     return (
-        <section className="premium-surface p-6">
+        <section className="premium-surface rounded-2xl p-5 md:p-6">
             <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
-                <div>
+                <div className="min-w-0">
                     <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-brand-slate">
                         {eyebrow}
                     </p>
@@ -31,7 +31,7 @@ export default function AdminSectionCard({
                         </p>
                     )}
                 </div>
-                {actions}
+                {actions && <div className="shrink-0">{actions}</div>}
             </div>
 
             <div className="mt-6">{children}</div>

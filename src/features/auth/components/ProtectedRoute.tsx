@@ -1,8 +1,8 @@
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import type { UserRole } from '../types/auth.types';
-import { getDefaultPathForRole } from '../../../layouts/navigation';
 import { useTranslation } from 'react-i18next';
+import AccessDeniedPage from '../../errors/pages/AccessDeniedPage';
 
 interface ProtectedRouteProps {
     children: React.ReactNode;
@@ -34,15 +34,15 @@ export default function ProtectedRoute({
     }
 
     if (requiredRole && user?.role !== requiredRole) {
-        return <Navigate to={getDefaultPathForRole(user?.role)} replace />;
+        return <AccessDeniedPage />;
     }
 
     if (allowedRoles && user?.role && !allowedRoles.includes(user.role)) {
-        return <Navigate to={getDefaultPathForRole(user?.role)} replace />;
+        return <AccessDeniedPage />;
     }
 
     if (deniedRoles && user?.role && deniedRoles.includes(user.role)) {
-        return <Navigate to={getDefaultPathForRole(user?.role)} replace />;
+        return <AccessDeniedPage />;
     }
 
     return <>{children}</>;

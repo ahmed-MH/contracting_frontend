@@ -3,6 +3,7 @@ import type { Arrangement } from '../../arrangements/types/arrangement.types';
 import type { Hotel } from '../../hotel/types/hotel.types';
 import type { Affiliate } from '../../partners/types/affiliate.types';
 import type { RoomType } from '../../rooms/types/room.types';
+import type { PaginatedResult } from '../../../types/pagination.types';
 import type {
     CreateIntegrationApiKeyResponse,
     IntegrationApiKey,
@@ -28,6 +29,8 @@ const toQueryString = (filters: IntegrationUsageLogFilters) => {
     if (filters.success !== undefined) params.set('success', String(filters.success));
     if (filters.dateFrom) params.set('dateFrom', filters.dateFrom);
     if (filters.dateTo) params.set('dateTo', filters.dateTo);
+    if (filters.page) params.set('page', String(filters.page));
+    if (filters.limit) params.set('limit', String(filters.limit));
     return params.toString();
 };
 
@@ -66,7 +69,7 @@ export const integrationsService = {
         apiClient.patch<IntegrationEndpoint>(`/integrations/endpoints/${id}`, payload).then((response) => response.data),
 
     getUsageLogs: (filters: IntegrationUsageLogFilters) =>
-        apiClient.get<IntegrationUsageLog[]>(`/integrations/usage-logs?${toQueryString(filters)}`).then((response) => response.data),
+        apiClient.get<PaginatedResult<IntegrationUsageLog>>(`/integrations/usage-logs?${toQueryString(filters)}`).then((response) => response.data),
 
     getPlaygroundHotels: () =>
         apiClient.get<Hotel[]>('/hotel').then((response) => response.data),

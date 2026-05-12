@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Plus, Archive, Search, Calendar, ChevronDown, ChevronRight, RotateCcw } from 'lucide-react';
+import { Plus, Archive, Search, Calendar, ChevronDown, ChevronRight } from 'lucide-react';
 import { useAuth } from '../../../auth/context/AuthContext';
 import { useConfirm } from '../../../../context/ConfirmContext';
 import type { CreateTemplateEarlyBookingPayload, TemplateEarlyBooking } from '../types/early-bookings.types';
@@ -14,6 +14,7 @@ import {
 } from '../hooks/useTemplateEarlyBookings';
 import EarlyBookingsTable from '../components/EarlyBookingsTable';
 import EditEarlyBookingTemplateModal from '../components/EditEarlyBookingTemplateModal';
+import PaginationControls, { createClientPageMeta, getPageItems } from '../../../../components/ui/PaginationControls';
 
 export default function EarlyBookingsCatalogPage() {
     const { t } = useTranslation('common');
@@ -21,6 +22,7 @@ export default function EarlyBookingsCatalogPage() {
     const [editing, setEditing] = useState<TemplateEarlyBooking | null>(null);
     const [showArchived, setShowArchived] = useState(false);
     const [page, setPage] = useState(1);
+    const [archivedPage, setArchivedPage] = useState(1);
     const [search, setSearch] = useState('');
     const [debouncedSearch, setDebouncedSearch] = useState('');
     const limit = 10;
@@ -42,6 +44,9 @@ export default function EarlyBookingsCatalogPage() {
     const earlyBookings = paginatedResult?.data ?? [];
     const meta = paginatedResult?.meta;
     const { data: archivedEarlyBookings } = useArchivedTemplateEarlyBookings({ enabled: canManageArchive });
+    const archivedEarlyBookingsList = archivedEarlyBookings ?? [];
+    const archivedMeta = createClientPageMeta(archivedEarlyBookingsList.length, archivedPage, limit);
+    const paginatedArchivedEarlyBookings = getPageItems(archivedEarlyBookingsList, archivedMeta);
 
     const createMutation = useCreateTemplateEarlyBooking();
     const updateMutation = useUpdateTemplateEarlyBooking();
@@ -167,34 +172,30 @@ export default function EarlyBookingsCatalogPage() {
             )}
 
             {canManageArchive && (
-                <div className="mt-10">
+                <div className="mt-10 space-y-4">
                     <button onClick={() => setShowArchived(!showArchived)}
-                        className="inline-flex items-center gap-2 text-sm font-bold text-brand-slate hover:text-brand-navy transition-colors cursor-pointer border-none bg-transparent outline-none dark:hover:text-brand-light">
+                        className="inline-flex items-center gap-2 rounded-lg border border-brand-light/70 bg-brand-light/70 px-4 py-2 text-sm font-semibold text-brand-navy transition hover:border-brand-mint hover:text-brand-mint dark:border-brand-light/10 dark:bg-brand-light/5 dark:text-brand-light">
                         {showArchived ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
                         <Archive size={16} />
                         Templates archivés {archivedEarlyBookings ? `(${archivedEarlyBookings.length})` : ''}
                     </button>
 
                     {showArchived && archivedEarlyBookings && archivedEarlyBookings.length > 0 && (
-                        <div className="premium-surface mt-4 overflow-x-auto opacity-80">
-                            <table className="w-full text-sm text-left">
-                                <tbody className="divide-y divide-brand-slate/10 dark:divide-brand-light/10">
-                                    {archivedEarlyBookings.map((eb: any) => (
-                                        <tr key={eb.id} className="transition-colors hover:bg-brand-mint/5 dark:hover:bg-brand-light/5">
-                                            <td className="px-5 py-3 text-brand-slate font-bold dark:text-brand-light/75">{eb.name}</td>
-                                            <td className="px-5 py-3 text-center text-[10px] text-brand-slate font-mono italic">
-                                                {eb.bookingWindowStart ? `${eb.bookingWindowStart} -> ${eb.bookingWindowEnd}` : 'Fenêtre libre'}
-                                            </td>
-                                            <td className="px-5 py-3 text-right">
-                                                <button onClick={() => handleRestore(eb)}
-                                                    className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-brand-mint/10 text-brand-mint text-xs font-bold rounded-xl hover:bg-brand-mint/10 transition-colors cursor-pointer border-none shadow-sm">
-                                                    <RotateCcw size={14} /> Restaurer
-                                                </button>
-                                            </td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
+                        <div className="overflow-hidden rounded-lg border border-brand-light/70 dark:border-brand-light/10">
+                            <div className="overflow-x-auto">
+                                <EarlyBookingsTable
+                                    data={paginatedArchivedEarlyBookings}
+                                    isArchivedView
+                                    onRestore={handleRestore}
+                                    restorePending={restoreMutation.isPending}
+                                />
+                            </div>
+                            <PaginationControls meta={archivedMeta} onPageChange={setArchivedPage} />
+                        </div>
+                    )}
+                    {showArchived && archivedEarlyBookings && archivedEarlyBookings.length === 0 && (
+                        <div className="rounded-lg border border-dashed border-brand-slate/20 px-6 py-10 text-center text-sm text-brand-slate dark:border-brand-light/10 dark:text-brand-light/70">
+                            Aucun template archivé
                         </div>
                     )}
                 </div>

@@ -4,7 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import {
     X, Save, Building2, MapPin, Phone, User, Coins,
     Hash, Plus, Trash2, Mail, Landmark, Star,
-    IdCard, CreditCard, Building, FileText, Image, Palette, Globe, Upload, CircleCheck
+    IdCard, CreditCard, Building, FileText, Palette, Globe, Upload, CircleCheck
 } from 'lucide-react';
 import type { Hotel, CreateHotelPayload, HotelEmail, HotelBankAccountPayload } from '../types/hotel.types';
 import { EMAIL_LABELS } from '../../../constants/emailLabels';
@@ -284,7 +284,7 @@ export default function EditHotelModal({ isOpen, onClose, editing, onSubmit, isP
                                             <p className="mt-1 text-xs text-brand-slate dark:text-brand-light/75">
                                                 {editing
                                                     ? t('pages.hotel.logoUpload.status.description', { defaultValue: 'Upload a polished logo for hotel-facing previews, contracts, and proformas.' })
-                                                    : t('pages.hotel.logoUpload.status.createFirst', { defaultValue: 'Create the hotel first to unlock local logo uploads. You can still keep a manual URL below.' })}
+                                                    : t('pages.hotel.logoUpload.status.createFirst', { defaultValue: 'Create the hotel first to unlock local logo uploads.' })}
                                             </p>
                                         </div>
                                     </div>
@@ -306,23 +306,6 @@ export default function EditHotelModal({ isOpen, onClose, editing, onSubmit, isP
                                         </span>
                                     </div>
                                 </div>
-
-                                <details className="group rounded-2xl border border-brand-slate/15 bg-brand-light/40 px-4 py-3 dark:border-brand-light/10 dark:bg-brand-light/5">
-                                    <summary className="flex cursor-pointer list-none items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-brand-slate">
-                                        <Globe size={14} />
-                                        {t('pages.hotel.logoUpload.manual.title', { defaultValue: 'Advanced URL fallback' })}
-                                    </summary>
-                                    <div className="mt-3 space-y-2">
-                                        <InputWrapper icon={<Image size={15} />}>
-                                            <input {...register('logoUrl')} className={inputCls()} placeholder="https://.../logo.png" />
-                                        </InputWrapper>
-                                        <p className="text-xs text-brand-slate dark:text-brand-light/75">
-                                            {t('pages.hotel.logoUpload.manual.description', { defaultValue: 'Remote URLs remain supported for existing records and edge cases.' })}
-                                        </p>
-                                    </div>
-                                </details>
-
-                                {errors.logoUrl && <p className="mt-1 text-xs font-bold text-brand-slate">{errors.logoUrl.message}</p>}
                             </div>
                             <div>
                                 <FieldLabel>Couleur documents</FieldLabel>

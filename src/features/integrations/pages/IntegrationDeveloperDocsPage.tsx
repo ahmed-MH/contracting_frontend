@@ -33,8 +33,11 @@ const successJson = `{
   "stay": { "checkIn": "2025-07-10", "checkOut": "2025-07-17", "nights": 7 },
   "pricing": {
     "currency": "EUR",
+    "nightlyLineMode": "commercial_pricing_basis",
+    "nightlyLineModeLabel": "Nightly amounts are before stay-level discounts. Discounts are summarized below.",
     "nightlyRates": [],
     "discounts": [],
+    "reductions": [],
     "supplements": [],
     "taxes": [],
     "totalBeforeDiscount": 1400,

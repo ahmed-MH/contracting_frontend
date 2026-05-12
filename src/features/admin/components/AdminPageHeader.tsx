@@ -27,12 +27,12 @@ export default function AdminPageHeader({
     children,
 }: AdminPageHeaderProps) {
     return (
-        <section className="premium-surface relative overflow-hidden p-6 md:p-7">
-            <div className="pointer-events-none absolute inset-x-0 top-0 h-28 bg-brand-mint/10 dark:bg-brand-navy/80" />
+        <section className="premium-surface relative overflow-hidden rounded-2xl p-5 md:p-6">
+            <div className="pointer-events-none absolute inset-x-0 top-0 h-24 bg-brand-mint/10 dark:bg-brand-navy/80" />
 
             <div className="relative">
                 <div className="flex flex-col gap-5 xl:flex-row xl:items-start xl:justify-between">
-                    <div>
+                    <div className="min-w-0">
                         <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-brand-slate">
                             {eyebrow}
                         </p>
@@ -44,7 +44,7 @@ export default function AdminPageHeader({
                         </p>
                     </div>
 
-                    <div className="flex flex-wrap items-center gap-3">
+                    <div className="flex shrink-0 flex-wrap items-center gap-3">
                         {badge && (
                             <span className={clsx('premium-pill', badgeToneClasses[badgeTone])}>
                                 {badge}

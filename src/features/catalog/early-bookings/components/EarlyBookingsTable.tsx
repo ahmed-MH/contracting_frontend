@@ -1,8 +1,9 @@
-import { Pencil, Trash2, RotateCcw, ChevronLeft, ChevronRight, Clock } from 'lucide-react';
+import { Pencil, Trash2, RotateCcw, Clock } from 'lucide-react';
 import type { TemplateEarlyBooking } from '../types/early-bookings.types';
 import type { PageMeta } from '../../../../types';
 import { useTranslation } from 'react-i18next';
 import UpdatedByCell from '../../../../components/audit/UpdatedByCell';
+import PaginationControls from '../../../../components/ui/PaginationControls';
 
 interface EarlyBookingsTableProps {
     data: TemplateEarlyBooking[];
@@ -162,33 +163,7 @@ export default function EarlyBookingsTable({
                 </tbody>
             </table>
 
-            {/* ─── Pagination Standard ────────────────────────────────── */}
-            {meta && meta.lastPage > 0 && onPageChange && (
-                <div className="flex items-center justify-between border-t border-brand-slate/15 bg-brand-mint/5 px-5 py-3 dark:border-brand-light/10 dark:bg-brand-light/5">
-                    <p className="text-xs text-brand-slate font-medium tracking-tight">
-                        {t('auto.pagination.summary', { defaultValue: 'Affichage de {{from}} ? {{to}} sur {{total}}', from: (meta.page - 1) * (meta.limit || 10) + 1, to: Math.min(meta.page * (meta.limit || 10), meta.total), total: meta.total })}
-                    </p>
-                    <div className="flex items-center gap-1.5">
-                        <button
-                            onClick={() => onPageChange(Math.max(1, meta.page - 1))}
-                            disabled={meta.page <= 1}
-                            className="p-1.5 text-brand-slate hover:text-brand-mint hover:bg-brand-mint/10 rounded-xl transition-all disabled:opacity-30 disabled:pointer-events-none cursor-pointer border border-transparent hover:border-brand-mint/30"
-                        >
-                            <ChevronLeft size={18} />
-                        </button>
-                        <div className="flex h-9 min-w-[52px] items-center justify-center rounded-xl border border-brand-slate/20 bg-brand-light/70 px-2.5 text-xs font-bold text-brand-slate shadow-sm dark:border-brand-light/10 dark:bg-brand-light/5 dark:text-brand-light">
-                            {meta.page} / {meta.lastPage}
-                        </div>
-                        <button
-                            onClick={() => onPageChange(Math.min(meta.lastPage, meta.page + 1))}
-                            disabled={meta.page >= meta.lastPage}
-                            className="p-1.5 text-brand-slate hover:text-brand-mint hover:bg-brand-mint/10 rounded-xl transition-all disabled:opacity-30 disabled:pointer-events-none cursor-pointer border border-transparent hover:border-brand-mint/30"
-                        >
-                            <ChevronRight size={18} />
-                        </button>
-                    </div>
-                </div>
-            )}
+            {onPageChange && <PaginationControls meta={meta} onPageChange={onPageChange} />}
         </div>
     );
 }

@@ -27,10 +27,10 @@ export function useUpdateUser(onSuccess?: () => void) {
     });
 }
 
-export function useDeleteUser() {
+export function useSuspendUser() {
     const qc = useQueryClient();
     return useMutation({
-        mutationFn: userService.remove,
+        mutationFn: userService.suspend,
         onSuccess: () => {
             qc.invalidateQueries({ queryKey: [...QUERY_KEY] });
             toast.success(i18next.t('auto.features.admin.hooks.useusers.toast.success.ea6f670a', { defaultValue: "User suspended successfully" }));
@@ -40,3 +40,19 @@ export function useDeleteUser() {
         },
     });
 }
+
+export function useReactivateUser() {
+    const qc = useQueryClient();
+    return useMutation({
+        mutationFn: userService.reactivate,
+        onSuccess: () => {
+            qc.invalidateQueries({ queryKey: [...QUERY_KEY] });
+            toast.success(i18next.t('pages.users.toast.reactivated', { defaultValue: 'User reactivated successfully' }));
+        },
+        onError: () => {
+            toast.error(i18next.t('pages.users.toast.reactivateFailed', { defaultValue: 'Unable to reactivate the user' }));
+        },
+    });
+}
+
+export const useDeleteUser = useSuspendUser;

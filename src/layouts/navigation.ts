@@ -401,15 +401,6 @@ export const agentTabs: NavigationItem[] = [
         description: 'Tool-centric price validation.',
         descriptionKey: 'common:navigation.agent.simulator.description',
     },
-    {
-        label: 'Contracts',
-        labelKey: 'common:navigation.agent.contracts.label',
-        to: '/contracts',
-        icon: FileText,
-        description: 'Reference the underlying agreements when needed.',
-        descriptionKey: 'common:navigation.agent.contracts.description',
-        matchPrefixes: ['/contracts'],
-    },
 ];
 
 const roleConfigs: Record<UserRole, RoleNavigationConfig> = {

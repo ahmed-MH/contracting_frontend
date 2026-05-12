@@ -1,14 +1,14 @@
 import type { TFunction } from 'i18next';
 import { z } from 'zod';
 
-const roleSchema = z.enum(['ADMIN', 'COMMERCIAL']);
+const roleSchema = z.enum(['ADMIN', 'COMMERCIAL', 'AGENT']);
 
 const hotelIdsSchema = z
     .array(z.union([z.number(), z.string()]))
     .transform((ids) => ids.map(Number).filter((id) => Number.isFinite(id) && id > 0));
 
-const validateHotelAssignment = (t: TFunction) => (value: { role: 'ADMIN' | 'COMMERCIAL'; hotelIds: number[] }, ctx: z.RefinementCtx) => {
-    if (value.role === 'COMMERCIAL' && value.hotelIds.length === 0) {
+const validateHotelAssignment = (t: TFunction) => (value: { role: 'ADMIN' | 'COMMERCIAL' | 'AGENT'; hotelIds: number[] }, ctx: z.RefinementCtx) => {
+    if ((value.role === 'COMMERCIAL' || value.role === 'AGENT') && value.hotelIds.length === 0) {
         ctx.addIssue({
             code: 'custom',
             path: ['hotelIds'],

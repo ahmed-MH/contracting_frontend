@@ -816,7 +816,7 @@ export function ProformaPreviewDocument({
 
                 {proforma.notes && (
                     <section className="contract-page-section rounded-lg border border-slate-200 bg-slate-50 p-5">
-                        <p className="text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">
+                        <p className="text-[10px] font-black uppercase tracking-[0.18em]" style={{ color: themeColor }}>
                             {t('invoiceNotes')}
                         </p>
                         <p className="mt-2 whitespace-pre-wrap text-sm font-semibold leading-6 text-brand-navy">

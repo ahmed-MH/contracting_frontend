@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { clsx } from 'clsx';
@@ -67,6 +67,16 @@ interface MiniStatProps {
 interface MonthlyPoint {
     label: string;
     value: number;
+}
+
+interface PartnerValuePoint {
+    id: number | string;
+    name: string;
+    value: number;
+    share: number;
+    invoices: number;
+    activeContracts: number;
+    draftContracts: number;
 }
 
 interface ContractPriceSummary {
@@ -163,6 +173,10 @@ function getInvoiceTotal(invoice: ProformaInvoice): number {
         ?? 0;
 }
 
+function getInvoicePartnerId(invoice: ProformaInvoice): number | string {
+    return invoice.affiliateId ?? invoice.documentSnapshot?.affiliate?.id ?? `invoice-${invoice.id}`;
+}
+
 function getMonthlyTrend(invoices: ProformaInvoice[], locale: string): MonthlyPoint[] {
     const months = Array.from({ length: 6 }, (_, index) => {
         const date = new Date();
@@ -200,6 +214,17 @@ function formatSeasonLabel(startDate: string, endDate: string, locale: string): 
     });
 
     return `${formatter.format(start)} - ${formatter.format(end)}`;
+}
+
+function formatCompactDate(value: string | null | undefined, locale: string): string {
+    const date = parseDate(value);
+    if (!date) return '-';
+
+    return new Intl.DateTimeFormat(locale, {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric',
+    }).format(date);
 }
 
 function getSeasonWindows(contracts: Contract[], locale: string): {
@@ -260,19 +285,26 @@ function getSeasonWindows(contracts: Contract[], locale: string): {
 }
 
 function summarizePriceGrid(contract: Contract, lines: ContractLineData[] | undefined): ContractPriceSummary {
-    const expectedCells = (contract.periods?.length ?? 0) * (contract.contractRooms?.length ?? 0);
+    const modelExpectedCells = (contract.periods?.length ?? 0) * (contract.contractRooms?.length ?? 0);
+    const lineCellKeys = new Set<string>();
     const completedKeys = new Set<string>();
     let zeroPriceAlerts = 0;
 
     lines?.forEach((line) => {
+        const key = `${line.period.id}-${line.contractRoom.id}`;
         const positivePrices = (line.prices ?? []).filter((price) => Number(price.amount) > 0);
         zeroPriceAlerts += (line.prices ?? []).filter((price) => Number(price.amount) <= 0).length;
 
+        if (line.isContracted) {
+            lineCellKeys.add(key);
+        }
+
         if (line.isContracted && positivePrices.length > 0) {
-            completedKeys.add(`${line.period.id}-${line.contractRoom.id}`);
+            completedKeys.add(key);
         }
     });
 
+    const expectedCells = modelExpectedCells > 0 ? modelExpectedCells : lineCellKeys.size;
     const completedCells = Math.min(expectedCells, completedKeys.size);
 
     return {
@@ -355,10 +387,142 @@ function ProgressRow({ label, value, detail }: { label: string; value: number; d
     );
 }
 
+function PartnerValueChart({
+    rows,
+    currency,
+    locale,
+    emptyLabel,
+    selectedPartnerId,
+    onPartnerSelect,
+    onClearSelection,
+}: {
+    rows: PartnerValuePoint[];
+    currency: string;
+    locale: string;
+    emptyLabel: string;
+    selectedPartnerId: number | string | null;
+    onPartnerSelect: (partnerId: number | string) => void;
+    onClearSelection: () => void;
+}) {
+    const revenueRows = rows.filter((row) => row.value > 0);
+    const noValueCount = rows.length - revenueRows.length;
+    const shownRows = revenueRows.slice(0, 10);
+    const hiddenRevenueCount = Math.max(0, revenueRows.length - shownRows.length);
+    const selectedRow = selectedPartnerId === null ? null : rows.find((row) => row.id === selectedPartnerId) ?? null;
+
+    if (rows.length === 0 || revenueRows.length === 0) {
+        return (
+            <div className="rounded-3xl border border-brand-light/70 bg-brand-light/72 p-5 dark:border-brand-light/10 dark:bg-brand-light/5">
+                <div className="flex min-h-[220px] items-center justify-center rounded-2xl border border-dashed border-brand-slate/20 p-6 text-center text-sm text-brand-slate dark:border-brand-light/10 dark:text-brand-light/70">
+                    {emptyLabel}
+                </div>
+                {rows.length > 0 && (
+                    <div className="mt-3 text-center text-xs font-medium text-brand-slate dark:text-brand-light/65">
+                        {rows.length} partners tracked, no issued value yet.
+                    </div>
+                )}
+            </div>
+        );
+    }
+
+    const maxValue = Math.max(...revenueRows.map((row) => row.value), 1);
+
+    return (
+        <div className="overflow-hidden rounded-3xl border border-brand-light/70 bg-brand-light/72 dark:border-brand-light/10 dark:bg-brand-light/5">
+            <div className="flex flex-wrap items-center justify-between gap-2 border-b border-brand-light/70 px-4 py-3 text-xs font-semibold text-brand-slate dark:border-brand-light/10 dark:text-brand-light/70">
+                <div className="flex flex-wrap items-center gap-2">
+                    <span className="rounded-full bg-brand-mint/10 px-3 py-1 text-brand-mint">
+                        Top {shownRows.length} by issued value
+                    </span>
+                    <span className="rounded-full bg-brand-light/80 px-3 py-1 dark:bg-brand-light/8">
+                        {revenueRows.length} revenue partner{revenueRows.length > 1 ? 's' : ''}
+                    </span>
+                    {noValueCount > 0 && (
+                        <span className="rounded-full bg-brand-light/80 px-3 py-1 dark:bg-brand-light/8">
+                            {noValueCount} without issued value
+                        </span>
+                    )}
+                </div>
+                {selectedRow && (
+                    <button
+                        type="button"
+                        onClick={onClearSelection}
+                        className="rounded-full border border-brand-mint/30 bg-brand-mint/10 px-3 py-1 text-brand-mint transition hover:bg-brand-mint hover:text-brand-light"
+                    >
+                        {selectedRow.name} x
+                    </button>
+                )}
+            </div>
+            <div className="max-h-[330px] divide-y divide-brand-light/70 overflow-y-auto dark:divide-brand-light/10">
+                {shownRows.map((row, index) => {
+                    const width = row.value > 0 ? Math.max(5, (row.value / maxValue) * 100) : 0;
+                    const isSelected = row.id === selectedPartnerId;
+                    const contractLabel = row.activeContracts > 0
+                        ? `${row.activeContracts} active`
+                        : row.draftContracts > 0
+                            ? `${row.draftContracts} draft`
+                            : 'No active contract';
+
+                    return (
+                        <button
+                            key={row.id}
+                            type="button"
+                            onClick={() => onPartnerSelect(row.id)}
+                            className={clsx(
+                                'block w-full px-4 py-3 text-left transition hover:bg-brand-mint/5 dark:hover:bg-brand-light/5',
+                                isSelected && 'bg-brand-mint/10 dark:bg-brand-mint/10',
+                            )}
+                        >
+                            <div className="grid gap-3 sm:grid-cols-[minmax(0,1fr),auto] sm:items-center">
+                                <div className="min-w-0">
+                                    <div className="flex min-w-0 items-center gap-2">
+                                        <span className={clsx(
+                                            'flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-xs font-semibold',
+                                            isSelected ? 'bg-brand-mint text-brand-light' : 'bg-brand-mint/10 text-brand-mint',
+                                        )}>
+                                            {index + 1}
+                                        </span>
+                                        <div className="min-w-0">
+                                            <p className="truncate font-semibold text-brand-navy dark:text-brand-light">{row.name}</p>
+                                            <p className="mt-0.5 text-xs text-brand-slate dark:text-brand-light/65">
+                                                {row.invoices} proforma{row.invoices > 1 ? 's' : ''} · {contractLabel}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="flex items-end justify-between gap-4 sm:block sm:text-right">
+                                    <p className="font-semibold text-brand-navy dark:text-brand-light">{formatMoney(row.value, currency, locale)}</p>
+                                    <p className="text-xs text-brand-slate dark:text-brand-light/65">{formatPercent(row.share)} share</p>
+                                </div>
+                            </div>
+                            <div className="mt-3 h-2 overflow-hidden rounded-full bg-brand-slate/10 dark:bg-brand-light/10">
+                                <div
+                                    className={clsx(
+                                        'h-full rounded-full',
+                                        isSelected ? 'bg-brand-light shadow-[0_0_0_1px_rgba(16,185,129,0.35)] dark:bg-brand-mint' : row.activeContracts > 0 ? 'bg-brand-mint' : row.draftContracts > 0 ? 'bg-brand-slate' : 'bg-brand-slate/40',
+                                    )}
+                                    style={{ width: `${width}%` }}
+                                />
+                            </div>
+                        </button>
+                    );
+                })}
+            </div>
+            {(hiddenRevenueCount > 0 || noValueCount > 0) && (
+                <div className="border-t border-brand-light/70 px-4 py-3 text-xs font-medium text-brand-slate dark:border-brand-light/10 dark:text-brand-light/65">
+                    {hiddenRevenueCount > 0 && `${hiddenRevenueCount} revenue partner${hiddenRevenueCount > 1 ? 's' : ''} hidden below the top 10. `}
+                    {noValueCount > 0 && `${noValueCount} partner${noValueCount > 1 ? 's' : ''} tracked with no issued value in this season.`}
+                </div>
+            )}
+        </div>
+    );
+}
+
 export default function CommercialOverviewPage() {
     const { t, i18n } = useTranslation('common');
     const locale = i18n.language.startsWith('fr') ? 'fr-FR' : 'en-US';
     const { currentHotel, isLoading: isHotelLoading } = useHotel();
+    const [selectedPartnerId, setSelectedPartnerId] = useState<number | string | null>(null);
 
     const contractsQuery = useContracts({ page: 1, limit: 100 });
     const affiliatesQuery = useAffiliates();
@@ -494,6 +658,7 @@ export default function CommercialOverviewPage() {
         });
 
         const activeContracts = seasonContracts.filter((contract) => contract.status === 'ACTIVE');
+        const draftContracts = seasonContracts.filter((contract) => contract.status === 'DRAFT');
         const activePartnerIds = new Set<number>();
         activeContracts.forEach((contract) => {
             contract.affiliates?.forEach((affiliate) => activePartnerIds.add(affiliate.id));
@@ -513,6 +678,23 @@ export default function CommercialOverviewPage() {
             const days = daysUntil(contract.endDate);
             return days !== null && days > 60 && days <= 90;
         });
+        const seasonEndingContracts = selectedSeason
+            ? seasonContracts.filter((contract) => normalizeDate(contract.endDate) === selectedSeason.endDate)
+            : activeContracts.filter((contract) => {
+                const days = daysUntil(contract.endDate);
+                return days !== null && days >= 0;
+            });
+        const selectedSeasonDaysRemaining = selectedSeason ? daysUntil(selectedSeason.endDate) : null;
+        const nextSeasonContractCount = nextSeason?.contractIds.length ?? 0;
+        const nextSeasonCoverage = seasonContracts.length > 0
+            ? (nextSeasonContractCount / seasonContracts.length) * 100
+            : 0;
+        const selectedSeasonYear = parseDate(selectedSeason?.startDate)?.getFullYear() ?? new Date().getFullYear();
+        const annualSeasonWindows = seasons.filter((season) => {
+            const startYear = parseDate(season.startDate)?.getFullYear();
+            const endYear = parseDate(season.endDate)?.getFullYear();
+            return startYear === selectedSeasonYear || endYear === selectedSeasonYear;
+        });
 
         const missingRooms = seasonContracts.filter((contract) => (contract.contractRooms?.length ?? 0) === 0);
         const missingPeriods = seasonContracts.filter((contract) => (contract.periods?.length ?? 0) === 0);
@@ -520,6 +702,7 @@ export default function CommercialOverviewPage() {
         const priceCompletedCells = seasonPriceSummaries.reduce((sum, item) => sum + item.completedCells, 0);
         const missingRateCells = seasonPriceSummaries.reduce((sum, item) => sum + item.missingCells, 0);
         const zeroPriceAlerts = seasonPriceSummaries.reduce((sum, item) => sum + item.zeroPriceAlerts, 0);
+        const hasPriceGridCells = priceExpectedCells > 0;
         const priceGridCompletion = priceExpectedCells > 0 ? (priceCompletedCells / priceExpectedCells) * 100 : 0;
         const rulesAttachedToContracts = seasonRuleSummaries.reduce((sum, item) => sum + item.totalRules, 0);
         const contractsMissingRules = seasonContracts.filter((contract) => {
@@ -532,25 +715,121 @@ export default function CommercialOverviewPage() {
         });
 
         const commercialRulesTotal = supplementsTotal + reductionsTotal + earlyBookingsTotal + sposTotal;
-        const readinessInputs = [
-            Boolean(currentHotel?.name && currentHotel?.defaultCurrency),
-            roomTypes.length > 0,
-            arrangements.length > 0,
-            affiliates.length > 0,
-            activeContracts.length > 0,
-            priceGridCompletion >= 70,
-            commercialRulesTotal > 0,
-            activeWithoutCancellationRules.length === 0,
+        const readinessChecks = [
+            {
+                score: currentHotel?.name && currentHotel?.defaultCurrency ? 1 : 0,
+                label: t('pages.commercialOverview.readiness.hotelProfile', { defaultValue: 'hotel profile and currency' }),
+            },
+            {
+                score: roomTypes.length > 0 ? 1 : 0,
+                label: t('pages.commercialOverview.readiness.roomInventory', { defaultValue: 'room inventory' }),
+            },
+            {
+                score: arrangements.length > 0 ? 1 : 0,
+                label: t('pages.commercialOverview.readiness.arrangements', { defaultValue: 'board arrangements' }),
+            },
+            {
+                score: affiliates.length > 0 ? 1 : 0,
+                label: t('pages.commercialOverview.readiness.affiliates', { defaultValue: 'affiliate partners' }),
+            },
+            {
+                score: activeContracts.length > 0 ? 1 : draftContracts.length > 0 ? 0.5 : 0,
+                label: activeContracts.length > 0
+                    ? t('pages.commercialOverview.readiness.activeContracts', { defaultValue: 'active contracts for the focus season' })
+                    : draftContracts.length > 0
+                        ? t('pages.commercialOverview.readiness.activateDraftContracts', { defaultValue: 'activate draft contracts for the focus season' })
+                        : t('pages.commercialOverview.readiness.activeContracts', { defaultValue: 'active contracts for the focus season' }),
+            },
+            {
+                score: priceGridCompletion >= 70 ? 1 : 0,
+                label: t('pages.commercialOverview.readiness.priceGrid', { defaultValue: 'price grid completion' }),
+            },
+            {
+                score: commercialRulesTotal > 0 ? 1 : 0,
+                label: t('pages.commercialOverview.readiness.commercialRules', { defaultValue: 'commercial rules' }),
+            },
+            {
+                score: activeWithoutCancellationRules.length === 0 ? 1 : 0,
+                label: t('pages.commercialOverview.readiness.cancellationRules', { defaultValue: 'cancellation rules on active contracts' }),
+            },
         ];
-        const contractingReadiness = Math.round((readinessInputs.filter(Boolean).length / readinessInputs.length) * 100);
+        const readinessGaps = readinessChecks.filter((check) => check.score < 1).map((check) => check.label);
+        const readinessScore = readinessChecks.reduce((sum, check) => sum + check.score, 0);
+        const contractingReadiness = Math.round((readinessScore / readinessChecks.length) * 100);
 
         const invoicesForValue = proformas.filter((invoice) =>
             invoice.status !== 'CANCELLED'
             && (!selectedSeason || isDateInsideRange(invoice.checkIn, selectedSeason.startDate, selectedSeason.endDate)),
         );
         const issuedInvoices = invoicesForValue.filter((invoice) => invoice.status === 'ISSUED' || invoice.status === 'GENERATED');
-        const issuedValue = invoicesForValue.reduce((sum, invoice) => sum + getInvoiceTotal(invoice), 0);
+        const issuedValue = issuedInvoices.reduce((sum, invoice) => sum + getInvoiceTotal(invoice), 0);
         const averageProformaValue = issuedInvoices.length > 0 ? issuedValue / issuedInvoices.length : 0;
+        const partnerValueMap = new Map<number | string, PartnerValuePoint>();
+
+        affiliates.forEach((affiliate) => {
+            partnerValueMap.set(affiliate.id, {
+                id: affiliate.id,
+                name: affiliate.companyName,
+                value: 0,
+                share: 0,
+                invoices: 0,
+                activeContracts: activeContracts.filter((contract) =>
+                    contract.affiliates?.some((item) => item.id === affiliate.id),
+                ).length,
+                draftContracts: draftContracts.filter((contract) =>
+                    contract.affiliates?.some((item) => item.id === affiliate.id),
+                ).length,
+            });
+        });
+
+        issuedInvoices.forEach((invoice) => {
+            const id = getInvoicePartnerId(invoice);
+            const existing = partnerValueMap.get(id);
+            const fallbackName = invoice.affiliate?.companyName
+                ?? invoice.documentSnapshot?.affiliate?.companyName
+                ?? t('pages.commercialOverview.output.unknownPartner', { defaultValue: 'Unknown partner' });
+
+            if (!existing) {
+                partnerValueMap.set(id, {
+                    id,
+                    name: fallbackName,
+                    value: getInvoiceTotal(invoice),
+                    share: 0,
+                    invoices: 1,
+                    activeContracts: activeContracts.filter((contract) =>
+                        contract.affiliates?.some((item) => item.id === id),
+                    ).length,
+                    draftContracts: draftContracts.filter((contract) =>
+                        contract.affiliates?.some((item) => item.id === id),
+                    ).length,
+                });
+                return;
+            }
+
+            existing.value += getInvoiceTotal(invoice);
+            existing.invoices += 1;
+        });
+
+        const partnerValueTotal = [...partnerValueMap.values()].reduce((sum, item) => sum + item.value, 0);
+        const partnerValueRows = [...partnerValueMap.values()]
+            .map((item) => ({
+                ...item,
+                share: partnerValueTotal > 0 ? (item.value / partnerValueTotal) * 100 : 0,
+            }))
+            .sort((a, b) => {
+                if (b.value !== a.value) return b.value - a.value;
+                if (b.activeContracts !== a.activeContracts) return b.activeContracts - a.activeContracts;
+                return a.name.localeCompare(b.name, locale);
+            });
+        const topCommercialPartner = partnerValueRows.find((item) => item.value > 0) ?? null;
+        const selectedPartner = selectedPartnerId === null
+            ? null
+            : partnerValueRows.find((item) => item.id === selectedPartnerId) ?? null;
+        const outputInvoices = selectedPartner
+            ? issuedInvoices.filter((invoice) => getInvoicePartnerId(invoice) === selectedPartner.id)
+            : issuedInvoices;
+        const outputIssuedValue = outputInvoices.reduce((sum, invoice) => sum + getInvoiceTotal(invoice), 0);
+        const outputAverageProformaValue = outputInvoices.length > 0 ? outputIssuedValue / outputInvoices.length : 0;
 
         const partnerRows = affiliates
             .map((affiliate) => ({
@@ -673,6 +952,7 @@ export default function CommercialOverviewPage() {
             commercialRulesTotal,
             contractingReadiness,
             contractsMissingRules,
+            draftContracts,
             draftReadyItems,
             emailSpoCoverage,
             expiring30,
@@ -683,15 +963,31 @@ export default function CommercialOverviewPage() {
             missingPeriods,
             missingRateCells,
             missingRooms,
-            monthlyTrend: getMonthlyTrend(invoicesForValue, locale),
+            monthlyTrend: getMonthlyTrend(outputInvoices, locale),
+            annualSeasonWindows,
+            nextSeasonContractCount,
+            nextSeasonCoverage,
+            outputAverageProformaValue,
+            outputInvoices,
+            outputIssuedValue,
             partnerRows,
+            partnerValueRows,
+            partnerValueTotal,
+            hasPriceGridCells,
+            priceCompletedCells,
+            priceExpectedCells,
             priceGridCompletion,
+            readinessGaps,
             rulesAttachedToContracts,
+            seasonEndingContracts,
+            selectedSeasonDaysRemaining,
             seasonContracts,
             seasons,
             selectedSeason,
+            selectedPartner,
             nextSeason,
             statusCounts,
+            topCommercialPartner,
             uncontractedAffiliates,
             zeroPriceAlerts,
         };
@@ -709,6 +1005,7 @@ export default function CommercialOverviewPage() {
         reductionsTotal,
         roomTypes.length,
         ruleSummaries,
+        selectedPartnerId,
         sposTotal,
         supplementsTotal,
         t,
@@ -806,23 +1103,41 @@ export default function CommercialOverviewPage() {
                 <MetricCard
                     label={t('pages.commercialOverview.command.readiness', { defaultValue: 'Season Readiness' })}
                     value={formatPercent(dashboard.contractingReadiness)}
-                    detail={t('pages.commercialOverview.command.readinessDetail', { defaultValue: 'Composite score for the focus season across setup, active contracts, price grids, and rules.' })}
+                    detail={dashboard.readinessGaps.length === 0
+                        ? t('pages.commercialOverview.command.readinessReadyDetail', { defaultValue: 'All focus-season readiness checks are complete.' })
+                        : t('pages.commercialOverview.command.readinessGapDetail', {
+                            defaultValue: 'Not ready yet: {{items}}.',
+                            items: dashboard.readinessGaps.join(', '),
+                        })}
                     icon={Gauge}
                 />
                 <MetricCard
                     label={t('pages.commercialOverview.command.coverage', { defaultValue: 'Season Active Coverage' })}
                     value={`${dashboard.activePartnerIds.size} / ${affiliates.length}`}
-                    detail={t('pages.commercialOverview.command.coverageDetail', { defaultValue: 'Affiliates covered by at least one active contract in the focus season.' })}
+                    detail={dashboard.draftContracts.length > 0
+                        ? t('pages.commercialOverview.command.coverageDraftDetail', {
+                            defaultValue: 'Only active contracts count as coverage; {{count}} draft contract remains pending activation.',
+                            count: dashboard.draftContracts.length,
+                        })
+                        : t('pages.commercialOverview.command.coverageDetail', { defaultValue: 'Affiliates covered by at least one active contract in the focus season.' })}
                     icon={Users}
                     tone="navy"
                 />
                 <MetricCard
                     label={t('pages.commercialOverview.command.priceCompletion', { defaultValue: 'Price Grid Completion' })}
-                    value={formatPercent(dashboard.priceGridCompletion)}
-                    detail={t('pages.commercialOverview.command.priceCompletionDetail', {
-                        defaultValue: '{{count}} missing rate cells in focus-season contracts.',
-                        count: dashboard.missingRateCells,
-                    })}
+                    value={dashboard.hasPriceGridCells
+                        ? formatPercent(dashboard.priceGridCompletion)
+                        : t('pages.commercialOverview.command.priceCompletionEmptyValue', { defaultValue: 'No grid' })}
+                    detail={dashboard.hasPriceGridCells
+                        ? t('pages.commercialOverview.command.priceCompletionDetail', {
+                            defaultValue: '{{completed}} / {{total}} rate cells completed, {{missing}} still missing.',
+                            completed: dashboard.priceCompletedCells,
+                            total: dashboard.priceExpectedCells,
+                            missing: dashboard.missingRateCells,
+                        })
+                        : t('pages.commercialOverview.command.priceCompletionEmptyDetail', {
+                            defaultValue: 'No room-period rate cells exist in the focus season yet, so completion is not measurable.',
+                        })}
                     icon={Percent}
                     tone="amber"
                 />
@@ -843,12 +1158,12 @@ export default function CommercialOverviewPage() {
                     eyebrow={t('pages.commercialOverview.health.eyebrow', { defaultValue: 'Section 2' })}
                     title={t('pages.commercialOverview.health.title', { defaultValue: 'Contract Portfolio Health' })}
                     description={t('pages.commercialOverview.health.description', {
-                        defaultValue: 'Lifecycle distribution, renewal risk, and setup blockers for {{season}}.',
+                        defaultValue: 'Seasonal portfolio alignment and setup blockers for {{season}}.',
                         season: dashboard.selectedSeason?.label ?? t('pages.commercialOverview.hero.noSeason', { defaultValue: 'the detected season' }),
                     })}
                     icon={FileText}
                 />
-                <div className="mt-5 grid gap-5 xl:grid-cols-[1.1fr,0.9fr]">
+                <div className="mt-5 space-y-5">
                     <div className="space-y-4">
                         {statusOrder.map((status) => {
                             const count = dashboard.statusCounts[status];
@@ -862,17 +1177,41 @@ export default function CommercialOverviewPage() {
                             );
                         })}
                     </div>
-                    <div className="grid gap-3 md:grid-cols-3 xl:grid-cols-1">
-                        <MiniStat label={t('pages.commercialOverview.health.next30', { defaultValue: 'Expiring next 30 days' })} value={dashboard.expiring30.length} icon={CalendarClock} />
-                        <MiniStat label={t('pages.commercialOverview.health.next60', { defaultValue: 'Expiring 31-60 days' })} value={dashboard.expiring60.length} icon={CalendarClock} />
-                        <MiniStat label={t('pages.commercialOverview.health.next90', { defaultValue: 'Expiring 61-90 days' })} value={dashboard.expiring90.length} icon={CalendarClock} />
+                    <div className="grid gap-3 md:grid-cols-3">
+                        <MiniStat
+                            label={t('pages.commercialOverview.health.seasonEndWave', { defaultValue: 'Season end wave' })}
+                            value={dashboard.seasonEndingContracts.length}
+                            icon={CalendarClock}
+                            detail={dashboard.selectedSeasonDaysRemaining === null
+                                ? t('pages.commercialOverview.health.noSeasonEnd', { defaultValue: 'No shared season end detected yet.' })
+                                : t('pages.commercialOverview.health.seasonEndWaveDetail', {
+                                    defaultValue: 'Ends {{date}} with {{count}} contracts aligned.',
+                                    date: formatCompactDate(dashboard.selectedSeason?.endDate, locale),
+                                    count: dashboard.seasonEndingContracts.length,
+                                })}
+                        />
+                        <MiniStat
+                            label={t('pages.commercialOverview.health.nextSeasonLoaded', { defaultValue: 'Next period loaded' })}
+                            value={`${dashboard.nextSeasonContractCount} / ${dashboard.seasonContracts.length}`}
+                            icon={ArrowRight}
+                            detail={dashboard.nextSeason
+                                ? t('pages.commercialOverview.health.nextSeasonLoadedDetail', {
+                                    defaultValue: '{{coverage}} of current-period contracts already exist for the next contractual period.',
+                                    coverage: formatPercent(dashboard.nextSeasonCoverage),
+                                })
+                                : t('pages.commercialOverview.health.nextSeasonMissing', { defaultValue: 'Winter or summer renewal period is not planned yet.' })}
+                        />
+                        <MiniStat
+                            label={t('pages.commercialOverview.health.seasonCadence', { defaultValue: 'Season cadence' })}
+                            value={`${dashboard.annualSeasonWindows.length} / 2`}
+                            icon={Gauge}
+                            detail={dashboard.annualSeasonWindows.length === 2
+                                ? t('pages.commercialOverview.health.seasonCadenceHealthy', { defaultValue: 'Winter and summer contractual periods are detected.' })
+                                : t('pages.commercialOverview.health.seasonCadenceDetail', {
+                                    defaultValue: 'Hospitality baseline is two yearly periods: winter and summer.',
+                                })}
+                        />
                     </div>
-                </div>
-                <div className="mt-5 grid gap-3 md:grid-cols-4">
-                    <MiniStat label={t('pages.commercialOverview.health.missingRooms', { defaultValue: 'Missing rooms' })} value={dashboard.missingRooms.length} icon={BedDouble} />
-                    <MiniStat label={t('pages.commercialOverview.health.missingPeriods', { defaultValue: 'Missing periods' })} value={dashboard.missingPeriods.length} icon={CalendarClock} />
-                    <MiniStat label={t('pages.commercialOverview.health.missingPrices', { defaultValue: 'Missing prices' })} value={dashboard.missingRateCells} icon={CircleDollarSign} />
-                    <MiniStat label={t('pages.commercialOverview.health.missingRules', { defaultValue: 'Missing rules' })} value={dashboard.contractsMissingRules.length} icon={ShieldAlert} />
                 </div>
             </section>
 
@@ -888,16 +1227,20 @@ export default function CommercialOverviewPage() {
                         <div className="flex items-center justify-between gap-4">
                             <div>
                                 <p className="text-sm text-brand-slate">{t('pages.commercialOverview.pricing.completion', { defaultValue: 'Price Grid Completion' })}</p>
-                                <p className="mt-2 text-5xl font-semibold">{formatPercent(dashboard.priceGridCompletion)}</p>
+                                <p className="mt-2 text-5xl font-semibold">
+                                    {dashboard.hasPriceGridCells
+                                        ? formatPercent(dashboard.priceGridCompletion)
+                                        : t('pages.commercialOverview.pricing.noGridValue', { defaultValue: 'No grid' })}
+                                </p>
                             </div>
                             <div
                                 className="flex h-24 w-24 items-center justify-center rounded-full"
                                 style={{
-                                    background: `conic-gradient(var(--color-brand-mint) ${dashboard.priceGridCompletion * 3.6}deg, rgba(248,250,252,0.14) 0deg)`,
+                                    background: `conic-gradient(var(--color-brand-mint) ${dashboard.hasPriceGridCells ? dashboard.priceGridCompletion * 3.6 : 0}deg, rgba(248,250,252,0.14) 0deg)`,
                                 }}
                             >
                                 <div className="flex h-16 w-16 items-center justify-center rounded-full bg-brand-navy text-lg font-semibold">
-                                    {Math.round(dashboard.priceGridCompletion)}
+                                    {dashboard.hasPriceGridCells ? Math.round(dashboard.priceGridCompletion) : '-'}
                                 </div>
                             </div>
                         </div>
@@ -968,13 +1311,62 @@ export default function CommercialOverviewPage() {
                     description={t('pages.commercialOverview.output.description', { defaultValue: 'Issued proforma value for stays belonging to the focus season.' })}
                     icon={LineChart}
                 />
-                <div className="mt-5 grid gap-4 xl:grid-cols-[0.9fr,1.1fr]">
-                    <div className="grid gap-3 md:grid-cols-3 xl:grid-cols-1">
-                        <MiniStat label={t('pages.commercialOverview.output.issuedValue', { defaultValue: 'Issued proforma value' })} value={formatMoney(dashboard.issuedValue, currency, locale)} icon={CircleDollarSign} />
-                        <MiniStat label={t('pages.commercialOverview.output.issuedCount', { defaultValue: 'Issued proformas' })} value={dashboard.issuedInvoices.length} icon={FileText} />
-                        <MiniStat label={t('pages.commercialOverview.output.averageValue', { defaultValue: 'Average proforma value' })} value={formatMoney(dashboard.averageProformaValue, currency, locale)} icon={Activity} />
+                <div className="mt-5 grid gap-4 xl:grid-cols-[0.85fr,1.15fr]">
+                    <div className="grid gap-3 sm:grid-cols-2">
+                        <MiniStat
+                            label={dashboard.selectedPartner
+                                ? t('pages.commercialOverview.output.filteredIssuedValue', { defaultValue: 'Partner issued value' })
+                                : t('pages.commercialOverview.output.issuedValue', { defaultValue: 'Issued proforma value' })}
+                            value={formatMoney(dashboard.outputIssuedValue, currency, locale)}
+                            icon={CircleDollarSign}
+                            detail={dashboard.selectedPartner?.name}
+                        />
+                        <MiniStat
+                            label={dashboard.selectedPartner
+                                ? t('pages.commercialOverview.output.filteredIssuedCount', { defaultValue: 'Partner proformas' })
+                                : t('pages.commercialOverview.output.issuedCount', { defaultValue: 'Issued proformas' })}
+                            value={dashboard.outputInvoices.length}
+                            icon={FileText}
+                        />
+                        <MiniStat
+                            label={t('pages.commercialOverview.output.averageValue', { defaultValue: 'Average proforma value' })}
+                            value={formatMoney(dashboard.outputAverageProformaValue, currency, locale)}
+                            icon={Activity}
+                        />
+                        <MiniStat
+                            label={t('pages.commercialOverview.output.topPartner', { defaultValue: 'Top partner' })}
+                            value={dashboard.topCommercialPartner ? formatMoney(dashboard.topCommercialPartner.value, currency, locale) : '-'}
+                            icon={Users}
+                            detail={dashboard.topCommercialPartner
+                                ? dashboard.topCommercialPartner.name
+                                : t('pages.commercialOverview.output.noPartnerValue', { defaultValue: 'No issued partner value yet.' })}
+                        />
                     </div>
-                    <div className="rounded-3xl bg-brand-navy p-5">
+                    <div>
+                        <div className="mb-3 flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
+                            <div>
+                                <p className="text-sm font-semibold text-brand-navy dark:text-brand-light">
+                                    {t('pages.commercialOverview.output.partnerValueTitle', { defaultValue: 'Partner Commercial Value' })}
+                                </p>
+                                <p className="text-xs leading-5 text-brand-slate dark:text-brand-light/70">
+                                    {t('pages.commercialOverview.output.partnerValueDescription', { defaultValue: 'Issued value by affiliate for stays in the focus season.' })}
+                                </p>
+                            </div>
+                            <span className="text-xs font-semibold text-brand-slate dark:text-brand-light/65">
+                                {formatMoney(dashboard.partnerValueTotal, currency, locale)}
+                            </span>
+                        </div>
+                        <PartnerValueChart
+                            rows={dashboard.partnerValueRows}
+                            currency={currency}
+                            locale={locale}
+                            selectedPartnerId={selectedPartnerId}
+                            onPartnerSelect={(partnerId) => setSelectedPartnerId((current) => current === partnerId ? null : partnerId)}
+                            onClearSelection={() => setSelectedPartnerId(null)}
+                            emptyLabel={t('pages.commercialOverview.output.partnerValueEmpty', { defaultValue: 'Issue proformas to start ranking commercial partners.' })}
+                        />
+                    </div>
+                    <div className="rounded-3xl bg-brand-navy p-5 xl:col-span-2">
                         <div className="flex h-60 items-end gap-3">
                             {dashboard.monthlyTrend.map((point) => (
                                 <div key={point.label} className="flex min-w-0 flex-1 flex-col items-center gap-3">

@@ -1,9 +1,10 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { useHotels } from '../../hotel/hooks/useHotels';
 import Modal from '../../../components/ui/Modal';
+import PaginationControls, { DEFAULT_PAGE_SIZE } from '../../../components/ui/PaginationControls';
 import {
     IntegrationCodeBlock,
     IntegrationDetailTile,
@@ -28,10 +29,20 @@ export default function IntegrationUsageLogsPage() {
     const { data: endpoints = [] } = useIntegrationEndpoints();
     const { data: hotels = [] } = useHotels();
     const [filters, setFilters] = useState<IntegrationUsageLogFilters>({});
+    const [page, setPage] = useState(1);
     const [selectedLog, setSelectedLog] = useState<IntegrationUsageLog | null>(null);
-    const { data: logs = [], isLoading } = useIntegrationUsageLogs(filters);
+    const usageLogFilters = useMemo(
+        () => ({ ...filters, page, limit: DEFAULT_PAGE_SIZE }),
+        [filters, page],
+    );
+    const { data: logsPage, isLoading } = useIntegrationUsageLogs(usageLogFilters);
+    const logs = useMemo(
+        () => (logsPage?.data ?? []).filter((log) => filters.success === undefined || log.success === filters.success),
+        [filters.success, logsPage?.data],
+    );
 
     const updateFilter = <K extends keyof IntegrationUsageLogFilters>(key: K, value: IntegrationUsageLogFilters[K]) => {
+        setPage(1);
         setFilters((current) => ({
             ...current,
             [key]: value,
@@ -44,7 +55,7 @@ export default function IntegrationUsageLogsPage() {
                 eyebrow={t('pages.integrations.logs.header.eyebrow')}
                 title={t('pages.integrations.logs.header.title')}
                 description={t('pages.integrations.logs.header.subtitle')}
-                badge={t('pages.integrations.logs.header.badge', { count: logs.length })}
+                badge={t('pages.integrations.logs.header.badge', { count: logsPage?.meta.total ?? logs.length })}
             />
 
             <IntegrationSectionCard
@@ -55,7 +66,11 @@ export default function IntegrationUsageLogsPage() {
                 <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
                     <label className="block">
                         <span className={filterLabelClass}>Endpoint</span>
-                        <select className={filterControlClass} onChange={(event) => updateFilter('endpointCode', event.target.value || undefined)}>
+                        <select
+                            className={filterControlClass}
+                            value={filters.endpointCode ?? ''}
+                            onChange={(event) => updateFilter('endpointCode', event.target.value || undefined)}
+                        >
                             <option value="">{t('pages.integrations.logs.filters.allEndpoints')}</option>
                             {endpoints.map((endpoint) => (
                                 <option key={endpoint.id} value={endpoint.code}>{endpoint.code}</option>
@@ -64,7 +79,11 @@ export default function IntegrationUsageLogsPage() {
                     </label>
                     <label className="block">
                         <span className={filterLabelClass}>API user</span>
-                        <select className={filterControlClass} onChange={(event) => updateFilter('apiUserId', event.target.value ? Number(event.target.value) : undefined)}>
+                        <select
+                            className={filterControlClass}
+                            value={filters.apiUserId ?? ''}
+                            onChange={(event) => updateFilter('apiUserId', event.target.value ? Number(event.target.value) : undefined)}
+                        >
                             <option value="">{t('pages.integrations.logs.filters.allUsers')}</option>
                             {apiUsers.map((apiUser) => (
                                 <option key={apiUser.id} value={apiUser.id}>{apiUser.name}</option>
@@ -73,7 +92,11 @@ export default function IntegrationUsageLogsPage() {
                     </label>
                     <label className="block">
                         <span className={filterLabelClass}>Hotel</span>
-                        <select className={filterControlClass} onChange={(event) => updateFilter('hotelId', event.target.value ? Number(event.target.value) : undefined)}>
+                        <select
+                            className={filterControlClass}
+                            value={filters.hotelId ?? ''}
+                            onChange={(event) => updateFilter('hotelId', event.target.value ? Number(event.target.value) : undefined)}
+                        >
                             <option value="">{t('pages.integrations.logs.filters.allHotels')}</option>
                             {hotels.map((hotel) => (
                                 <option key={hotel.id} value={hotel.id}>{hotel.name}</option>
@@ -82,7 +105,11 @@ export default function IntegrationUsageLogsPage() {
                     </label>
                     <label className="block">
                         <span className={filterLabelClass}>Result</span>
-                        <select className={filterControlClass} onChange={(event) => updateFilter('success', event.target.value === '' ? undefined : event.target.value === 'true')}>
+                        <select
+                            className={filterControlClass}
+                            value={filters.success === undefined ? '' : String(filters.success)}
+                            onChange={(event) => updateFilter('success', event.target.value === '' ? undefined : event.target.value === 'true')}
+                        >
                             <option value="">{t('pages.integrations.logs.filters.allResults')}</option>
                             <option value="true">{t('pages.integrations.logs.filters.successOnly')}</option>
                             <option value="false">{t('pages.integrations.logs.filters.failureOnly')}</option>
@@ -90,11 +117,21 @@ export default function IntegrationUsageLogsPage() {
                     </label>
                     <label className="block">
                         <span className={filterLabelClass}>Date from</span>
-                        <input type="date" className={filterControlClass} onChange={(event) => updateFilter('dateFrom', event.target.value || undefined)} />
+                        <input
+                            type="date"
+                            className={filterControlClass}
+                            value={filters.dateFrom ?? ''}
+                            onChange={(event) => updateFilter('dateFrom', event.target.value || undefined)}
+                        />
                     </label>
                     <label className="block">
                         <span className={filterLabelClass}>Date to</span>
-                        <input type="date" className={filterControlClass} onChange={(event) => updateFilter('dateTo', event.target.value || undefined)} />
+                        <input
+                            type="date"
+                            className={filterControlClass}
+                            value={filters.dateTo ?? ''}
+                            onChange={(event) => updateFilter('dateTo', event.target.value || undefined)}
+                        />
                     </label>
                 </div>
             </IntegrationSectionCard>
@@ -146,6 +183,7 @@ export default function IntegrationUsageLogsPage() {
                                 </tbody>
                             </table>
                         </div>
+                        <PaginationControls meta={logsPage?.meta} onPageChange={setPage} />
                     </div>
                 )}
             </IntegrationSectionCard>

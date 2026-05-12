@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next';
-import { Activity, AlertTriangle, Clock3, KeyRound, LockKeyhole, ServerCog, ShieldCheck, TimerReset, XCircle } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { Activity, AlertTriangle, ArrowRight, Clock3, KeyRound, LockKeyhole, ServerCog, ShieldCheck, TimerReset, XCircle } from 'lucide-react';
 import {
     IntegrationDetailTile,
     IntegrationEmptyState,
@@ -129,6 +130,16 @@ export default function IntegrationOverviewPage() {
                         eyebrow={t('pages.integrations.overview.recent.eyebrow')}
                         title={t('pages.integrations.overview.recent.title')}
                         description={t('pages.integrations.overview.recent.description')}
+                        actions={(
+                            <Link
+                                to="/admin/integrations/logs"
+                                aria-label={t('pages.integrations.nav.logs')}
+                                title={t('pages.integrations.nav.logs')}
+                                className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-brand-light/70 bg-brand-light/70 text-brand-navy shadow-sm transition hover:border-brand-mint hover:text-brand-mint dark:border-brand-light/10 dark:bg-brand-light/5 dark:text-brand-light"
+                            >
+                                <ArrowRight size={18} />
+                            </Link>
+                        )}
                     >
                         <div className="overflow-x-auto">
                             <table className="min-w-full text-left text-sm">

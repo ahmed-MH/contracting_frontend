@@ -9,6 +9,7 @@ export interface UserListItem {
     lastName?: string;
     role: string;
     isActive: boolean;
+    accountStatus?: 'ACTIVE' | 'PENDING_INVITE' | 'SUSPENDED';
     hotels?: { id: number; name: string }[];
     createdAt: string;
 }
@@ -28,6 +29,12 @@ export const userService = {
 
     update: (id: number, data: UpdateUserPayload) =>
         apiClient.patch<UserListItem>(`/users/${id}`, data).then(r => r.data),
+
+    suspend: (id: number) =>
+        apiClient.patch<UserListItem>(`/users/${id}/suspend`).then(r => r.data),
+
+    reactivate: (id: number) =>
+        apiClient.patch<UserListItem>(`/users/${id}/reactivate`).then(r => r.data),
 
     remove: (id: number) =>
         apiClient.delete(`/users/${id}`).then(r => r.data),

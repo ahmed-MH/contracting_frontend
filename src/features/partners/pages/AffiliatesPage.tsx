@@ -14,6 +14,7 @@ import { createAffiliateSchema, type AffiliateFormInput, type AffiliateFormValue
 import { GuidedPageHeader } from '../../../components/layout/Workspace';
 import UpdatedByCell from '../../../components/audit/UpdatedByCell';
 import UpdatedMeta from '../../../components/audit/UpdatedMeta';
+import PaginationControls, { DEFAULT_PAGE_SIZE, createClientPageMeta, getPageItems } from '../../../components/ui/PaginationControls';
 
 export default function AffiliatesPage() {
     const { t } = useTranslation('common');
@@ -21,6 +22,8 @@ export default function AffiliatesPage() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editing, setEditing] = useState<Affiliate | null>(null);
     const [showArchived, setShowArchived] = useState(false);
+    const [page, setPage] = useState(1);
+    const [archivedPage, setArchivedPage] = useState(1);
     const [contractsViewAff, setContractsViewAff] = useState<Affiliate | null>(null);
     const [emailSpoAffiliate, setEmailSpoAffiliate] = useState<Affiliate | null>(null);
     const { user } = useAuth();
@@ -52,6 +55,12 @@ export default function AffiliatesPage() {
 
     const { data: affiliates, isLoading, isError } = useAffiliates();
     const { data: archivedAffiliates } = useArchivedAffiliates(canManageArchive && showArchived);
+    const affiliatesList = affiliates ?? [];
+    const archivedAffiliatesList = archivedAffiliates ?? [];
+    const affiliatesMeta = createClientPageMeta(affiliatesList.length, page, DEFAULT_PAGE_SIZE);
+    const archivedAffiliatesMeta = createClientPageMeta(archivedAffiliatesList.length, archivedPage, DEFAULT_PAGE_SIZE);
+    const paginatedAffiliates = getPageItems(affiliatesList, affiliatesMeta);
+    const paginatedArchivedAffiliates = getPageItems(archivedAffiliatesList, archivedAffiliatesMeta);
     const createMutation = useCreateAffiliate(closeModal);
     const updateMutation = useUpdateAffiliate(closeModal);
     const deleteMutation = useDeleteAffiliate();
@@ -169,7 +178,8 @@ export default function AffiliatesPage() {
 
             {/* Table — compact columns: Nom, Type, Représentant, Email, Actions */}
             {affiliates && affiliates.length > 0 && (
-                <div className="premium-surface overflow-x-auto">
+                <div className="premium-surface overflow-hidden">
+                    <div className="overflow-x-auto">
                     <table className="w-full text-sm text-left">
                         <thead>
                             <tr className="bg-brand-light/80 border-b border-brand-slate/15">
@@ -184,7 +194,7 @@ export default function AffiliatesPage() {
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-brand-slate/10">
-                            {affiliates.map((aff) => (
+                            {paginatedAffiliates.map((aff) => (
                                 <tr key={aff.id} className="hover:bg-brand-light/80 transition-colors">
                                     <td className="px-5 py-4 whitespace-nowrap">
                                         <div className="flex flex-col">
@@ -246,24 +256,24 @@ export default function AffiliatesPage() {
                             ))}
                         </tbody>
                     </table>
-                    <div className="px-5 py-3 bg-brand-light/80 border-t border-brand-slate/10 text-xs text-brand-slate/70">
-                        {affiliates.length} partenaire{affiliates.length > 1 ? 's' : ''}
                     </div>
+                    <PaginationControls meta={affiliatesMeta} onPageChange={setPage} />
                 </div>
             )}
 
             {/* ─── Archived Section ───────────────────────── */}
             {canManageArchive && (
-                <div className="mt-10">
+                <div className="mt-10 space-y-4">
                     <button onClick={() => setShowArchived(!showArchived)}
-                        className="inline-flex items-center gap-2 text-sm font-medium text-brand-slate hover:text-brand-navy transition-colors cursor-pointer">
+                        className="inline-flex items-center gap-2 rounded-lg border border-brand-light/70 bg-brand-light/70 px-4 py-2 text-sm font-semibold text-brand-navy transition hover:border-brand-mint hover:text-brand-mint dark:border-brand-light/10 dark:bg-brand-light/5 dark:text-brand-light">
                         {showArchived ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
                         <Archive size={16} />
                         Partenaires archivés {archivedAffiliates ? `(${archivedAffiliates.length})` : ''}
                     </button>
 
                     {showArchived && archivedAffiliates && archivedAffiliates.length > 0 && (
-                        <div className="premium-surface mt-4 overflow-x-auto opacity-80">
+                        <div className="overflow-hidden rounded-lg border border-brand-light/70 dark:border-brand-light/10">
+                            <div className="overflow-x-auto">
                             <table className="w-full text-sm text-left">
                                 <thead>
                                     <tr className="bg-brand-slate/10 border-b border-brand-slate/15">
@@ -274,7 +284,7 @@ export default function AffiliatesPage() {
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-brand-slate/10">
-                                    {archivedAffiliates.map((aff) => (
+                                    {paginatedArchivedAffiliates.map((aff) => (
                                         <tr key={aff.id} className="hover:bg-brand-slate/10 transition-colors">
                                             <td className="px-5 py-3 text-brand-slate font-medium">{aff.companyName}</td>
                                             <td className="px-5 py-3 text-brand-slate/70">{aff.representativeName || '—'}</td>
@@ -283,7 +293,7 @@ export default function AffiliatesPage() {
                                             </td>
                                             <td className="px-5 py-3 text-right">
                                                 <button onClick={() => handleRestore(aff)} disabled={restoreMutation.isPending}
-                                                    className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-brand-mint/10 text-brand-mint text-xs font-medium rounded-xl hover:bg-brand-mint/15 transition-colors cursor-pointer disabled:opacity-50">
+                                                    className="inline-flex h-10 items-center gap-2 rounded-lg bg-brand-mint/10 px-4 text-sm font-semibold text-brand-mint transition hover:bg-brand-mint hover:text-brand-light disabled:cursor-not-allowed disabled:opacity-60">
                                                     <RotateCcw size={14} /> Restaurer
                                                 </button>
                                             </td>
@@ -291,11 +301,13 @@ export default function AffiliatesPage() {
                                     ))}
                                 </tbody>
                             </table>
+                            </div>
+                            <PaginationControls meta={archivedAffiliatesMeta} onPageChange={setArchivedPage} />
                         </div>
                     )}
 
                     {showArchived && archivedAffiliates && archivedAffiliates.length === 0 && (
-                        <p className="mt-3 text-sm text-brand-slate/70 italic">{t('auto.features.partners.pages.affiliatespage.6bed5020', { defaultValue: "Aucun partenaire archivé" })}</p>
+                        <div className="rounded-lg border border-dashed border-brand-slate/20 px-6 py-10 text-center text-sm text-brand-slate dark:border-brand-light/10 dark:text-brand-light/70">{t('auto.features.partners.pages.affiliatespage.6bed5020', { defaultValue: "Aucun partenaire archivé" })}</div>
                     )}
                 </div>
             )}

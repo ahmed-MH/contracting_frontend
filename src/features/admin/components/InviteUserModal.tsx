@@ -37,7 +37,7 @@ export default function InviteUserModal({ isOpen, onClose }: InviteUserModalProp
         mutationFn: (data: InviteUserFormValues) => authService.invite({
             email: data.email,
             role: data.role,
-            hotelIds: data.role === 'COMMERCIAL' ? data.hotelIds.map(Number) : [],
+            hotelIds: data.role === 'ADMIN' ? [] : data.hotelIds.map(Number),
         }),
         onSuccess: (result) => {
             queryClient.invalidateQueries({ queryKey: ['users'] });
@@ -80,15 +80,18 @@ export default function InviteUserModal({ isOpen, onClose }: InviteUserModalProp
                     <select {...register('role')} className={inputClassName}>
                         <option value="ADMIN">{t('pages.users.roles.admin', { defaultValue: 'Administrator' })}</option>
                         <option value="COMMERCIAL">{t('pages.users.roles.commercial', { defaultValue: 'Commercial' })}</option>
+                        <option value="AGENT">{t('pages.users.roles.agent', { defaultValue: 'Agent' })}</option>
                     </select>
                     <p className={helperTextClassName}>
                         {selectedRole === 'ADMIN'
                             ? t('pages.users.modals.roleHints.admin', { defaultValue: 'Global platform access (no hotel assignment required)' })
-                            : t('pages.users.modals.roleHints.commercial', { defaultValue: 'Local employee, must be assigned to at least one hotel' })}
+                            : selectedRole === 'AGENT'
+                                ? t('pages.users.modals.roleHints.agent', { defaultValue: 'Simulator-only user, must be assigned to at least one hotel' })
+                                : t('pages.users.modals.roleHints.commercial', { defaultValue: 'Local employee, must be assigned to at least one hotel' })}
                     </p>
                 </div>
 
-                {selectedRole === 'COMMERCIAL' && hotels.length > 0 && (
+                {selectedRole !== 'ADMIN' && hotels.length > 0 && (
                     <div>
                         <label className="mb-1 block text-sm font-medium text-brand-navy dark:text-brand-light">
                             {t('pages.users.modals.invite.assignedHotels', { defaultValue: 'Assigned Hotels' })} *

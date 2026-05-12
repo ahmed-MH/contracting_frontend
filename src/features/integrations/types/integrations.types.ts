@@ -78,6 +78,8 @@ export interface IntegrationUsageLogFilters {
     success?: boolean;
     dateFrom?: string;
     dateTo?: string;
+    page?: number;
+    limit?: number;
 }
 
 export interface IntegrationApiUserPayload {
@@ -190,16 +192,34 @@ export interface IntegrationPlaygroundSuccessResponse {
     };
     pricing: {
         currency: string;
+        nightlyLineMode: string;
+        nightlyLineModeLabel: string;
         nightlyRates: Array<{
             date: string;
             roomTypeCode: string;
             boardCode: string;
             baseRate: number;
+            occupancy: {
+                adults: number;
+                children: number;
+                total: number;
+                amount: number;
+                pricingBasisParts: Array<{
+                    type: string;
+                    label: string;
+                    unitAmount: number;
+                    quantity: number;
+                    amount: number;
+                    percentageOfBase?: number | null;
+                    reductionPercentage?: number | null;
+                }>;
+            };
             discountAmount: number;
             supplementsAmount: number;
             totalBeforeTax: number;
         }>;
         discounts: Array<{ name: string; amount: number }>;
+        reductions: Array<{ name: string; amount: number }>;
         supplements: Array<{ name: string; amount: number }>;
         taxes: Array<Record<string, unknown>>;
         totalBeforeDiscount: number;

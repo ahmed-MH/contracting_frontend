@@ -19,6 +19,7 @@ import {
     Mail,
     Minus,
     Plus,
+    Printer,
     Receipt,
     Ticket,
     Trash2,
@@ -34,6 +35,7 @@ import { useAuth } from '../../auth/context/AuthContext';
 import { useCalculateSimulation, useSimulationContractMatches } from '../hooks/useSimulator';
 import { useCreateProforma } from '../hooks/useProforma';
 import { SimulationRequest, OccupantType } from '../types/simulator.types';
+import apiClient from '../../../services/api.client';
 
 interface RoomingState {
     id: string;
@@ -50,8 +52,28 @@ function formatCurrency(value: number, currency: string) {
     return `${new Intl.NumberFormat('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value)} ${currency}`;
 }
 
+function baseOccupancyAmount(day: { netRate: number; reductionsApplied: Array<{ amount: number }> }) {
+    const adjustmentsTotal = day.reductionsApplied.reduce((sum, adjustment) => sum + Number(adjustment.amount || 0), 0);
+    return Math.max(0, day.netRate - adjustmentsTotal);
+}
+
+function hasNightlyReduction(day: { promotionApplied: { amount: number } | null; reductionsApplied: Array<{ amount: number }> }) {
+    return Boolean(day.promotionApplied && day.promotionApplied.amount < 0)
+        || day.reductionsApplied.some((adjustment) => Number(adjustment.amount || 0) < 0);
+}
+
 function formatDate(date: string) {
     return new Date(date).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric' });
+}
+
+function filenameFromContentDisposition(header?: string) {
+    if (!header) return 'simulation-ticket.pdf';
+
+    const utf8Match = header.match(/filename\*=UTF-8''([^;]+)/i);
+    if (utf8Match?.[1]) return decodeURIComponent(utf8Match[1].replace(/"/g, ''));
+
+    const asciiMatch = header.match(/filename="?([^";]+)"?/i);
+    return asciiMatch?.[1] ?? 'simulation-ticket.pdf';
 }
 
 export default function SimulatorPage() {
@@ -85,9 +107,12 @@ export default function SimulatorPage() {
     ]);
 
     const [expandedNights, setExpandedNights] = useState<Record<string, boolean>>({});
+    const [isDownloadingTicket, setIsDownloadingTicket] = useState(false);
 
     const { mutate: runSimulation, data: simulationResult, isPending: isSimulating } = useCalculateSimulation();
     const { mutate: createProforma, isPending: isCreatingProforma } = useCreateProforma((data) => navigate(`/proforma/${data.id}`));
+    const canIncludeInactiveContracts = user?.role === 'ADMIN' || user?.role === 'COMMERCIAL';
+    const effectiveIncludeInactive = canIncludeInactiveContracts ? includeInactive : false;
 
     const {
         data: contractMatches,
@@ -96,7 +121,7 @@ export default function SimulatorPage() {
         affiliateId: selectedAffiliateId ? Number(selectedAffiliateId) : undefined,
         checkIn,
         checkOut,
-        includeInactive,
+        includeInactive: effectiveIncludeInactive,
     });
 
     const { data: activeContract, isLoading: loadingActiveContract } = useContract(selectedContractId);
@@ -150,10 +175,10 @@ export default function SimulatorPage() {
     }, [activeContract?.id]);
 
     useEffect(() => {
-        if (!includeInactive) {
+        if (!effectiveIncludeInactive) {
             setInactiveOverrideReason('');
         }
-    }, [includeInactive]);
+    }, [effectiveIncludeInactive]);
 
     const addRoom = () => {
         setRoomingList((prev) => [
@@ -222,17 +247,17 @@ export default function SimulatorPage() {
         return true;
     }, [activeContract, checkIn, checkOut, roomingList]);
 
-    const handleRunSimulation = () => {
-        if (!isFormValid || !activeContract) return;
+    const buildSimulationRequest = (): SimulationRequest | null => {
+        if (!isFormValid || !activeContract) return null;
 
-        const request: SimulationRequest = {
+        return {
             contractId: activeContract.id,
             affiliateId: Number(selectedAffiliateId),
             checkIn,
             checkOut,
             bookingDate,
-            includeInactive,
-            inactiveOverrideReason: inactiveOverrideReason.trim() || undefined,
+            includeInactive: effectiveIncludeInactive,
+            inactiveOverrideReason: effectiveIncludeInactive ? inactiveOverrideReason.trim() || undefined : undefined,
             roomingList: roomingList.map((room) => {
                 let paxOrder = 1;
                 return {
@@ -246,8 +271,38 @@ export default function SimulatorPage() {
                 };
             }),
         };
+    };
+
+    const handleRunSimulation = () => {
+        const request = buildSimulationRequest();
+        if (!request) return;
 
         runSimulation(request);
+    };
+
+    const handleDownloadAgentTicket = async () => {
+        const request = buildSimulationRequest();
+        if (!request) return;
+
+        setIsDownloadingTicket(true);
+        try {
+            const response = await apiClient.post<Blob>('/simulation/ticket', request, {
+                responseType: 'blob',
+                timeout: 30_000,
+            });
+            const blob = new Blob([response.data], { type: 'application/pdf' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+
+            link.href = url;
+            link.download = filenameFromContentDisposition(response.headers['content-disposition']);
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            URL.revokeObjectURL(url);
+        } finally {
+            setIsDownloadingTicket(false);
+        }
     };
 
     const toggleNight = (date: string) => {
@@ -258,9 +313,9 @@ export default function SimulatorPage() {
     const totalChildren = roomingList.reduce((acc, room) => acc + room.occupants.filter((occupant) => occupant.type !== OccupantType.ADULT).length, 0);
     const selectedAffiliate = affiliates?.find((affiliate) => String(affiliate.id) === selectedAffiliateId);
     const nightsCount = simulationResult?.roomsBreakdown?.[0]?.dailyRates.length ?? 0;
-    const canIncludeInactiveContracts = user?.role === 'ADMIN' || user?.role === 'COMMERCIAL';
     const selectedContractCandidate = contractMatches?.candidates.find((candidate) => candidate.contractId === selectedContractId);
     const selectedContractIsInactive = selectedContractCandidate?.status && selectedContractCandidate.status !== 'ACTIVE';
+    const isAgent = user?.role === 'AGENT';
     const stayNights = useMemo(() => {
         if (!checkIn || !checkOut) return undefined;
 
@@ -319,7 +374,7 @@ export default function SimulatorPage() {
                             {stayNights ? `${stayNights} night${stayNights > 1 ? 's' : ''}` : 'Stay dates pending'}
                         </span>
                         <span className="premium-pill border-brand-mint/20 bg-brand-mint/8 text-brand-mint">
-                            {includeInactive ? 'Inactive matching enabled' : 'Active contracts only'}
+                            {effectiveIncludeInactive ? 'Inactive matching enabled' : 'Active contracts only'}
                         </span>
                     </div>
                 </div>
@@ -509,10 +564,10 @@ export default function SimulatorPage() {
                                 </div>
                                 <div>
                                     <p className="text-[11px] font-bold uppercase tracking-[0.22em]">
-                                        {includeInactive ? 'No allowed contract' : t('auto.features.simulator.pages.simulatorpage.f9fa769d', { defaultValue: "No active contract" })}
+                                        {effectiveIncludeInactive ? 'No allowed contract' : t('auto.features.simulator.pages.simulatorpage.f9fa769d', { defaultValue: "No active contract" })}
                                     </p>
                                     <p className="text-sm font-medium">
-                                        {selectedAffiliate?.companyName} has no {includeInactive ? 'allowed' : 'active'} contract covering {formatDate(checkIn)} to {formatDate(checkOut)} for {currentHotel?.name ?? 'this hotel'}.
+                                        {selectedAffiliate?.companyName} has no {effectiveIncludeInactive ? 'allowed' : 'active'} contract covering {formatDate(checkIn)} to {formatDate(checkOut)} for {currentHotel?.name ?? 'this hotel'}.
                                     </p>
                                 </div>
                             </div>
@@ -864,8 +919,8 @@ export default function SimulatorPage() {
                                                                         <div className="mx-6 mb-4 rounded-2xl border border-brand-light/70 bg-brand-light/80 p-4 text-sm shadow-inner animate-in slide-in-from-top-2 duration-200 dark:border-brand-light/10 dark:bg-brand-light/5">
                                                                             <div className="mb-1 flex justify-between text-brand-slate dark:text-brand-light/75">
                                                                                 <span>{t('auto.features.simulator.pages.simulatorpage.afc48449', { defaultValue: "Base / occupancy" })}</span>
-                                                                                <span className={(day.promotionApplied || day.reductionsApplied.length > 0) ? 'line-through opacity-70' : ''}>
-                                                                                    {formatCurrency(day.netRate, day.currency)}
+                                                                                <span className={hasNightlyReduction(day) ? 'line-through opacity-70' : ''}>
+                                                                                    {formatCurrency(baseOccupancyAmount(day), day.currency)}
                                                                                 </span>
                                                                             </div>
 
@@ -1015,7 +1070,28 @@ export default function SimulatorPage() {
                                                     </div>
                                                 )}
 
-                                                {/* ─── Proforma Invoice Actions ─── */}
+                                                {isAgent ? (
+                                                    <div className="mt-4 space-y-3 animate-in slide-in-from-bottom-3 duration-500">
+                                                        <button
+                                                            type="button"
+                                                            onClick={handleDownloadAgentTicket}
+                                                            disabled={isDownloadingTicket}
+                                                            className="group relative flex w-full items-center justify-center gap-2 overflow-hidden rounded-2xl border-2 border-brand-navy bg-brand-navy px-6 py-3 text-sm font-bold text-brand-light shadow-md transition hover:-translate-y-0.5 hover:bg-brand-navy/90 disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:translate-y-0 dark:border-brand-light/20 dark:bg-brand-light/10 dark:text-brand-light dark:hover:bg-brand-light/15"
+                                                        >
+                                                            {isDownloadingTicket ? (
+                                                                <Loader2 size={16} className="animate-spin" />
+                                                            ) : (
+                                                                <Printer size={16} />
+                                                            )}
+                                                            {isDownloadingTicket
+                                                                ? t('pages.simulator.ticket.downloading', { defaultValue: 'Preparing ticket...' })
+                                                                : t('pages.simulator.ticket.download', { defaultValue: 'Download ticket PDF' })}
+                                                        </button>
+                                                        <p className="text-center text-[11px] font-medium leading-5 text-brand-slate dark:text-brand-light/70">
+                                                            {t('pages.simulator.ticket.helper', { defaultValue: 'Ticket format is for internal sharing only. It is not a proforma invoice.' })}
+                                                        </p>
+                                                    </div>
+                                                ) : (
                                                 <div className="mt-4 space-y-3 animate-in slide-in-from-bottom-3 duration-500">
                                                     {/* Proforma create button - always show when no proforma created yet */}
                                                     <>
@@ -1060,12 +1136,12 @@ export default function SimulatorPage() {
                                                                         checkIn,
                                                                         checkOut,
                                                                         bookingDate,
-                                                                        includeInactive,
-                                                                        inactiveOverrideReason: inactiveOverrideReason.trim() || undefined,
+                                                                        includeInactive: effectiveIncludeInactive,
+                                                                        inactiveOverrideReason: effectiveIncludeInactive ? inactiveOverrideReason.trim() || undefined : undefined,
                                                                         contractOverrideContext: {
                                                                             contractStatus: activeContract.status,
-                                                                            includeInactive,
-                                                                            overrideReason: inactiveOverrideReason.trim() || undefined,
+                                                                            includeInactive: effectiveIncludeInactive,
+                                                                            overrideReason: effectiveIncludeInactive ? inactiveOverrideReason.trim() || undefined : undefined,
                                                                         },
                                                                         roomingList: roomingList.map((room) => ({
                                                                             roomId: parseInt(room.roomId),
@@ -1098,6 +1174,7 @@ export default function SimulatorPage() {
                                                         </button>
                                                     </>
                                                 </div>
+                                                )}
                                             </>
                                         )}
                                     </div>
@@ -1116,7 +1193,7 @@ export default function SimulatorPage() {
                     <div className="max-w-md">
                         <h3 className="text-lg font-bold text-brand-navy dark:text-brand-light">{t('auto.features.simulator.pages.simulatorpage.d729c3d7', { defaultValue: "Simulator unavailable" })}</h3>
                         <p className="mt-2 text-sm text-brand-slate dark:text-brand-light/75">
-                            No {includeInactive ? 'allowed' : 'active'} contract was found for this partner and stay date range.
+                            No {effectiveIncludeInactive ? 'allowed' : 'active'} contract was found for this partner and stay date range.
                         </p>
                     </div>
                 </section>

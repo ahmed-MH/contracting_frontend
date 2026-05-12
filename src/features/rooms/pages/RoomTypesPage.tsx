@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useRoomTypes, useArchivedRoomTypes, useCreateRoomType, useUpdateRoomType, useDeleteRoomType, useRestoreRoomType, type RoomType, type CreateRoomTypePayload } from '../hooks/useRoomTypes';
 import { useAuth } from '../../auth/context/AuthContext';
@@ -7,6 +7,7 @@ import { BedDouble, Plus, Pencil, Trash2, RotateCcw, Archive, ChevronDown, Chevr
 import EditRoomTypeModal from '../components/EditRoomTypeModal';
 import { GuidedPageHeader } from '../../../components/layout/Workspace';
 import UpdatedByCell from '../../../components/audit/UpdatedByCell';
+import PaginationControls, { DEFAULT_PAGE_SIZE, createClientPageMeta, getPageItems } from '../../../components/ui/PaginationControls';
 
 export default function RoomTypesPage() {
     const { t } = useTranslation('common');
@@ -14,6 +15,8 @@ export default function RoomTypesPage() {
     const [editingRoom, setEditingRoom] = useState<RoomType | null>(null);
     const [showArchived, setShowArchived] = useState(false);
     const [search, setSearch] = useState('');
+    const [page, setPage] = useState(1);
+    const [archivedPage, setArchivedPage] = useState(1);
     const { user } = useAuth();
     const { confirm } = useConfirm();
     const canManageArchive = user?.role === 'ADMIN' || user?.role === 'COMMERCIAL';
@@ -21,17 +24,26 @@ export default function RoomTypesPage() {
     const { data: roomTypes, isLoading, isError } = useRoomTypes();
     const { data: archivedRoomTypes } = useArchivedRoomTypes(canManageArchive && showArchived);
 
+    useEffect(() => {
+        setPage(1);
+        setArchivedPage(1);
+    }, [search]);
+
     const displayedRoomTypes = roomTypes?.filter(rt =>
         rt.name.toLowerCase().includes(search.toLowerCase()) ||
         rt.code.toLowerCase().includes(search.toLowerCase()) ||
         (rt.inventoryType ?? 'STANDARD').toLowerCase().includes(search.toLowerCase())
-    );
+    ) ?? [];
 
     const displayedArchivedTypes = archivedRoomTypes?.filter(rt =>
         rt.name.toLowerCase().includes(search.toLowerCase()) ||
         rt.code.toLowerCase().includes(search.toLowerCase()) ||
         (rt.inventoryType ?? 'STANDARD').toLowerCase().includes(search.toLowerCase())
-    );
+    ) ?? [];
+    const roomTypesMeta = createClientPageMeta(displayedRoomTypes.length, page, DEFAULT_PAGE_SIZE);
+    const archivedTypesMeta = createClientPageMeta(displayedArchivedTypes.length, archivedPage, DEFAULT_PAGE_SIZE);
+    const paginatedRoomTypes = getPageItems(displayedRoomTypes, roomTypesMeta);
+    const paginatedArchivedTypes = getPageItems(displayedArchivedTypes, archivedTypesMeta);
 
     const closeModal = () => {
         setIsModalOpen(false);
@@ -154,13 +166,14 @@ export default function RoomTypesPage() {
                     <p className="text-brand-slate text-sm">{t('auto.features.rooms.pages.roomtypespage.6d41bf0a', { defaultValue: "Aucune chambre définie pour le moment" })}</p>
                     <p className="text-brand-slate/70 text-xs mt-1">{t('auto.features.rooms.pages.roomtypespage.eea025ef', { defaultValue: "Cliquez sur « Nouvelle Chambre » pour commencer" })}</p>
                 </div>
-            ) : roomTypes && roomTypes.length > 0 && displayedRoomTypes?.length === 0 ? (
+            ) : roomTypes && roomTypes.length > 0 && displayedRoomTypes.length === 0 ? (
                 <div className="premium-surface border-dashed border-brand-slate/25 p-12 text-center">
                     <BedDouble size={40} className="mx-auto text-brand-slate/45 mb-3" />
                     <p className="text-brand-slate text-sm">Aucune chambre trouvée pour "{search}"</p>
                 </div>
-            ) : displayedRoomTypes && displayedRoomTypes.length > 0 && (
-                <div className="premium-surface overflow-x-auto animate-in slide-in-from-bottom-2 duration-300">
+            ) : displayedRoomTypes.length > 0 && (
+                <div className="premium-surface overflow-hidden animate-in slide-in-from-bottom-2 duration-300">
+                    <div className="overflow-x-auto">
                     <table className="w-full text-sm text-left">
                         <thead>
                             <tr className="bg-brand-light/80 border-b border-brand-slate/15">
@@ -178,7 +191,7 @@ export default function RoomTypesPage() {
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-brand-slate/10">
-                            {displayedRoomTypes.map((rt) => (
+                            {paginatedRoomTypes.map((rt) => (
                                 <tr key={rt.id} className="hover:bg-brand-light/80 transition-colors group">
                                     <td className="px-5 py-3">
                                         <span className="inline-flex items-center px-2.5 py-0.5 rounded-xl bg-brand-mint/10 text-brand-mint text-xs font-bold font-mono tracking-wider border border-brand-mint/20">
@@ -246,24 +259,24 @@ export default function RoomTypesPage() {
                             ))}
                         </tbody>
                     </table>
-                    <div className="px-5 py-3 bg-brand-light/80 border-t border-brand-slate/10 text-[10px] font-bold text-brand-slate/70 uppercase tracking-widest text-center">
-                        Total {displayedRoomTypes.length} type{displayedRoomTypes.length > 1 ? 's' : ''} de chambre{displayedRoomTypes.length > 1 ? 's' : ''} affiché{displayedRoomTypes.length > 1 ? 's' : ''}
                     </div>
+                    <PaginationControls meta={roomTypesMeta} onPageChange={setPage} />
                 </div>
             )}
 
             {/* ─── Archived Section ───────────────────────── */}
             {canManageArchive && (
-                <div className="mt-10">
+                <div className="mt-10 space-y-4">
                     <button onClick={() => setShowArchived(!showArchived)}
-                        className="inline-flex items-center gap-2 text-sm font-medium text-brand-slate hover:text-brand-navy transition-colors cursor-pointer border-none outline-none bg-transparent">
+                        className="inline-flex items-center gap-2 rounded-lg border border-brand-light/70 bg-brand-light/70 px-4 py-2 text-sm font-semibold text-brand-navy transition hover:border-brand-mint hover:text-brand-mint dark:border-brand-light/10 dark:bg-brand-light/5 dark:text-brand-light">
                         {showArchived ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
                         <Archive size={16} />
                         Chambres archivées {archivedRoomTypes ? `(${archivedRoomTypes.length})` : ''}
                     </button>
 
-                    {showArchived && displayedArchivedTypes && displayedArchivedTypes.length > 0 && (
-                        <div className="premium-surface mt-4 overflow-x-auto opacity-80">
+                    {showArchived && displayedArchivedTypes.length > 0 && (
+                        <div className="overflow-hidden rounded-lg border border-brand-light/70 dark:border-brand-light/10">
+                            <div className="overflow-x-auto">
                             <table className="w-full text-sm text-left">
                                 <thead>
                                     <tr className="bg-brand-slate/10 border-b border-brand-slate/15">
@@ -274,7 +287,7 @@ export default function RoomTypesPage() {
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-brand-slate/10">
-                                    {displayedArchivedTypes.map((rt) => (
+                                    {paginatedArchivedTypes.map((rt) => (
                                         <tr key={rt.id} className="hover:bg-brand-slate/10 transition-colors cursor-default">
                                             <td className="px-5 py-3">
                                                 <span className="inline-flex items-center px-2.5 py-0.5 rounded-xl bg-brand-slate/15 text-brand-slate text-xs font-bold font-mono tracking-wider border border-brand-slate/25">
@@ -287,7 +300,7 @@ export default function RoomTypesPage() {
                                             </td>
                                             <td className="px-5 py-3 text-right">
                                                 <button onClick={() => handleRestore(rt)} disabled={restoreMutation.isPending}
-                                                    className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-brand-mint/10 text-brand-mint text-xs font-medium rounded-xl hover:bg-brand-mint/15 transition-colors cursor-pointer disabled:opacity-50 border-none outline-none">
+                                                    className="inline-flex h-10 items-center gap-2 rounded-lg bg-brand-mint/10 px-4 text-sm font-semibold text-brand-mint transition hover:bg-brand-mint hover:text-brand-light disabled:cursor-not-allowed disabled:opacity-60">
                                                     <RotateCcw size={14} /> Restaurer
                                                 </button>
                                             </td>
@@ -295,11 +308,13 @@ export default function RoomTypesPage() {
                                     ))}
                                 </tbody>
                             </table>
+                            </div>
+                            <PaginationControls meta={archivedTypesMeta} onPageChange={setArchivedPage} />
                         </div>
                     )}
 
                     {showArchived && archivedRoomTypes && archivedRoomTypes.length === 0 && (
-                        <p className="mt-3 text-sm text-brand-slate/70 italic">{t('auto.features.rooms.pages.roomtypespage.112be6b0', { defaultValue: "Aucune chambre archivée" })}</p>
+                        <div className="rounded-lg border border-dashed border-brand-slate/20 px-6 py-10 text-center text-sm text-brand-slate dark:border-brand-light/10 dark:text-brand-light/70">{t('auto.features.rooms.pages.roomtypespage.112be6b0', { defaultValue: "Aucune chambre archivée" })}</div>
                     )}
                 </div>
             )}

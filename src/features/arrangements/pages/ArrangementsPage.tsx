@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useArrangements, useArchivedArrangements, useCreateArrangement, useUpdateArrangement, useDeleteArrangement, useRestoreArrangement, type Arrangement, type CreateArrangementPayload } from '../hooks/useArrangements';
 import { useAuth } from '../../auth/context/AuthContext';
@@ -7,6 +7,7 @@ import { UtensilsCrossed, Plus, Pencil, Trash2, RotateCcw, Archive, ChevronDown,
 import EditArrangementModal from '../components/EditArrangementModal';
 import { GuidedPageHeader } from '../../../components/layout/Workspace';
 import UpdatedByCell from '../../../components/audit/UpdatedByCell';
+import PaginationControls, { DEFAULT_PAGE_SIZE, createClientPageMeta, getPageItems } from '../../../components/ui/PaginationControls';
 
 export default function ArrangementsPage() {
     const { t } = useTranslation('common');
@@ -14,6 +15,8 @@ export default function ArrangementsPage() {
     const [editing, setEditing] = useState<Arrangement | null>(null);
     const [showArchived, setShowArchived] = useState(false);
     const [search, setSearch] = useState('');
+    const [page, setPage] = useState(1);
+    const [archivedPage, setArchivedPage] = useState(1);
     const { user } = useAuth();
     const { confirm } = useConfirm();
     const canManageArchive = user?.role === 'ADMIN' || user?.role === 'COMMERCIAL';
@@ -23,15 +26,24 @@ export default function ArrangementsPage() {
     const { data: arrangements, isLoading, isError } = useArrangements();
     const { data: archivedArrangements } = useArchivedArrangements(canManageArchive && showArchived);
 
+    useEffect(() => {
+        setPage(1);
+        setArchivedPage(1);
+    }, [search]);
+
     const displayedArrangements = arrangements?.filter(arr =>
         arr.name.toLowerCase().includes(search.toLowerCase()) ||
         arr.code.toLowerCase().includes(search.toLowerCase())
-    );
+    ) ?? [];
 
     const displayedArchivedArrangements = archivedArrangements?.filter(arr =>
         arr.name.toLowerCase().includes(search.toLowerCase()) ||
         arr.code.toLowerCase().includes(search.toLowerCase())
-    );
+    ) ?? [];
+    const arrangementsMeta = createClientPageMeta(displayedArrangements.length, page, DEFAULT_PAGE_SIZE);
+    const archivedArrangementsMeta = createClientPageMeta(displayedArchivedArrangements.length, archivedPage, DEFAULT_PAGE_SIZE);
+    const paginatedArrangements = getPageItems(displayedArrangements, arrangementsMeta);
+    const paginatedArchivedArrangements = getPageItems(displayedArchivedArrangements, archivedArrangementsMeta);
     const createMutation = useCreateArrangement(closeModal);
     const updateMutation = useUpdateArrangement(closeModal);
     const deleteMutation = useDeleteArrangement();
@@ -134,13 +146,14 @@ export default function ArrangementsPage() {
                     <p className="text-brand-slate text-sm">{t('auto.features.arrangements.pages.arrangementspage.c87031c2', { defaultValue: "Aucun arrangement défini" })}</p>
                     <p className="text-brand-slate/70 text-xs mt-1">{t('auto.features.arrangements.pages.arrangementspage.5dcf7e80', { defaultValue: "Cliquez sur « Nouvel Arrangement » pour commencer" })}</p>
                 </div>
-            ) : arrangements && arrangements.length > 0 && displayedArrangements?.length === 0 ? (
+            ) : arrangements && arrangements.length > 0 && displayedArrangements.length === 0 ? (
                 <div className="premium-surface border-dashed border-brand-slate/25 p-12 text-center">
                     <UtensilsCrossed size={40} className="mx-auto text-brand-slate/45 mb-3" />
                     <p className="text-brand-slate text-sm">Aucun arrangement trouvé pour "{search}"</p>
                 </div>
-            ) : displayedArrangements && displayedArrangements.length > 0 && (
-                <div className="premium-surface overflow-x-auto animate-in slide-in-from-bottom-2 duration-300">
+            ) : displayedArrangements.length > 0 && (
+                <div className="premium-surface overflow-hidden animate-in slide-in-from-bottom-2 duration-300">
+                    <div className="overflow-x-auto">
                     <table className="w-full text-sm text-left">
                         <thead>
                             <tr className="bg-brand-light/80 border-b border-brand-slate/15">
@@ -153,7 +166,7 @@ export default function ArrangementsPage() {
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-brand-slate/10">
-                            {displayedArrangements.map((arr) => (
+                            {paginatedArrangements.map((arr) => (
                                 <tr key={arr.id} className="hover:bg-brand-light/80 transition-colors group">
                                     <td className="px-5 py-3">
                                         <span className="inline-flex items-center px-2.5 py-0.5 rounded-xl bg-brand-mint/10 text-brand-mint text-xs font-bold font-mono tracking-wider border border-brand-mint/20 uppercase">
@@ -195,24 +208,24 @@ export default function ArrangementsPage() {
                             ))}
                         </tbody>
                     </table>
-                    <div className="px-5 py-3 bg-brand-light/80 border-t border-brand-slate/10 text-[10px] font-bold text-brand-slate/70 uppercase tracking-widest text-center">
-                        {displayedArrangements.length} arrangement{displayedArrangements.length > 1 ? 's' : ''} {arrangements && arrangements.length > displayedArrangements.length && `(sur ${arrangements.length})`}
                     </div>
+                    <PaginationControls meta={arrangementsMeta} onPageChange={setPage} />
                 </div>
             )}
 
             {/* ─── Archived Section ───────────────────────── */}
             {canManageArchive && (
-                <div className="mt-10">
+                <div className="mt-10 space-y-4">
                     <button onClick={() => setShowArchived(!showArchived)}
-                        className="inline-flex items-center gap-2 text-sm font-medium text-brand-slate hover:text-brand-navy transition-colors cursor-pointer border-none outline-none bg-transparent">
+                        className="inline-flex items-center gap-2 rounded-lg border border-brand-light/70 bg-brand-light/70 px-4 py-2 text-sm font-semibold text-brand-navy transition hover:border-brand-mint hover:text-brand-mint dark:border-brand-light/10 dark:bg-brand-light/5 dark:text-brand-light">
                         {showArchived ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
                         <Archive size={16} />
                         Arrangements archivés {archivedArrangements ? `(${archivedArrangements.length})` : ''}
                     </button>
 
-                    {showArchived && displayedArchivedArrangements && displayedArchivedArrangements.length > 0 && (
-                        <div className="premium-surface mt-4 overflow-x-auto opacity-80">
+                    {showArchived && displayedArchivedArrangements.length > 0 && (
+                        <div className="overflow-hidden rounded-lg border border-brand-light/70 dark:border-brand-light/10">
+                            <div className="overflow-x-auto">
                             <table className="w-full text-sm text-left">
                                 <thead>
                                     <tr className="bg-brand-slate/10 border-b border-brand-slate/15">
@@ -223,7 +236,7 @@ export default function ArrangementsPage() {
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-brand-slate/10">
-                                    {displayedArchivedArrangements.map((arr) => (
+                                    {paginatedArchivedArrangements.map((arr) => (
                                         <tr key={arr.id} className="hover:bg-brand-slate/10 transition-colors">
                                             <td className="px-5 py-3">
                                                 <span className="inline-flex items-center px-2.5 py-0.5 rounded-xl bg-brand-slate/15 text-brand-slate text-xs font-bold font-mono tracking-wider">
@@ -236,7 +249,7 @@ export default function ArrangementsPage() {
                                             </td>
                                             <td className="px-5 py-3 text-right">
                                                 <button onClick={() => handleRestore(arr)} disabled={restoreMutation.isPending}
-                                                    className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-brand-mint/10 text-brand-mint text-xs font-medium rounded-xl hover:bg-brand-mint/15 transition-colors cursor-pointer border-none outline-none">
+                                                    className="inline-flex h-10 items-center gap-2 rounded-lg bg-brand-mint/10 px-4 text-sm font-semibold text-brand-mint transition hover:bg-brand-mint hover:text-brand-light disabled:cursor-not-allowed disabled:opacity-60">
                                                     <RotateCcw size={14} /> Restaurer
                                                 </button>
                                             </td>
@@ -244,11 +257,13 @@ export default function ArrangementsPage() {
                                     ))}
                                 </tbody>
                             </table>
+                            </div>
+                            <PaginationControls meta={archivedArrangementsMeta} onPageChange={setArchivedPage} />
                         </div>
                     )}
 
                     {showArchived && archivedArrangements && archivedArrangements.length === 0 && (
-                        <p className="mt-3 text-sm text-brand-slate/70 italic">{t('auto.features.arrangements.pages.arrangementspage.34b0529a', { defaultValue: "Aucun arrangement archivé" })}</p>
+                        <div className="rounded-lg border border-dashed border-brand-slate/20 px-6 py-10 text-center text-sm text-brand-slate dark:border-brand-light/10 dark:text-brand-light/70">{t('auto.features.arrangements.pages.arrangementspage.34b0529a', { defaultValue: "Aucun arrangement archivé" })}</div>
                     )}
                 </div>
             )}

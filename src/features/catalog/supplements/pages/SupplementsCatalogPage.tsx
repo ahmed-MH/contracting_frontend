@@ -21,13 +21,13 @@ import {
     Archive,
     ChevronDown,
     ChevronRight,
-    ChevronLeft,
     Search,
     CalendarDays,
 } from 'lucide-react';
 import type { SupplementCalculationType, PricingModifierApplicationType } from '../../../../types';
 import EditSupplementTemplateModal from '../components/EditSupplementTemplateModal';
 import UpdatedByCell from '../../../../components/audit/UpdatedByCell';
+import PaginationControls, { createClientPageMeta, getPageItems } from '../../../../components/ui/PaginationControls';
 
 const TYPE_LABELS: Record<SupplementCalculationType, string> = {
     FIXED: 'Fixe',
@@ -60,6 +60,7 @@ export default function SupplementsCatalogPage() {
     const [editing, setEditing] = useState<TemplateSupplement | null>(null);
     const [showArchived, setShowArchived] = useState(false);
     const [page, setPage] = useState(1);
+    const [archivedPage, setArchivedPage] = useState(1);
     const [search, setSearch] = useState('');
     const [debouncedSearch, setDebouncedSearch] = useState('');
     const limit = 10;
@@ -82,6 +83,9 @@ export default function SupplementsCatalogPage() {
     const supplements = paginatedResult?.data ?? [];
     const meta = paginatedResult?.meta;
     const { data: archivedSupplements } = useArchivedTemplateSupplements({ enabled: canManageArchive });
+    const archivedSupplementsList = archivedSupplements ?? [];
+    const archivedMeta = createClientPageMeta(archivedSupplementsList.length, archivedPage, limit);
+    const paginatedArchivedSupplements = getPageItems(archivedSupplementsList, archivedMeta);
     const createMutation = useCreateTemplateSupplement();
     const updateMutation = useUpdateTemplateSupplement();
     const deleteMutation = useDeleteTemplateSupplement();
@@ -289,49 +293,24 @@ export default function SupplementsCatalogPage() {
                         </tbody>
                     </table>
 
-                    {/* ─── Pagination Standard ────────────────────────────────── */}
-                    {meta && meta.lastPage > 0 && (
-                        <div className="flex items-center justify-between border-t border-brand-slate/15 bg-brand-mint/5 px-5 py-3 dark:border-brand-light/10 dark:bg-brand-light/5">
-                            <p className="text-xs text-brand-slate font-medium tracking-tight">
-                                {t('auto.pagination.summary', { defaultValue: 'Affichage de {{from}} ? {{to}} sur {{total}}', from: (page - 1) * limit + 1, to: Math.min(page * limit, meta.total), total: meta.total })}
-                            </p>
-                            <div className="flex items-center gap-1.5">
-                                <button
-                                    onClick={() => setPage((p) => Math.max(1, p - 1))}
-                                    disabled={page <= 1}
-                                    className="p-1.5 text-brand-slate hover:text-brand-mint hover:bg-brand-mint/10 rounded-xl transition-all disabled:opacity-30 disabled:pointer-events-none cursor-pointer border border-transparent hover:border-brand-mint/30"
-                                >
-                                    <ChevronLeft size={18} />
-                                </button>
-                                <div className="flex h-9 min-w-[52px] items-center justify-center rounded-xl border border-brand-slate/20 bg-brand-light/70 px-2.5 text-xs font-bold text-brand-slate shadow-sm dark:border-brand-light/10 dark:bg-brand-light/5 dark:text-brand-light">
-                                    {page} / {meta.lastPage}
-                                </div>
-                                <button
-                                    onClick={() => setPage((p) => Math.min(meta.lastPage, p + 1))}
-                                    disabled={page >= meta.lastPage}
-                                    className="p-1.5 text-brand-slate hover:text-brand-mint hover:bg-brand-mint/10 rounded-xl transition-all disabled:opacity-30 disabled:pointer-events-none cursor-pointer border border-transparent hover:border-brand-mint/30"
-                                >
-                                    <ChevronRight size={18} />
-                                </button>
-                            </div>
-                        </div>
-                    )}
+                    <PaginationControls meta={meta} onPageChange={setPage} />
                 </div>
             )}
 
             {/* ─── Archived Section ───────────────────────── */}
             {canManageArchive && (
-                <div className="mt-10">
+                <div className="mt-10 space-y-4">
                     <button onClick={() => setShowArchived(!showArchived)}
-                        className="inline-flex items-center gap-2 text-sm font-bold text-brand-slate hover:text-brand-navy transition-colors cursor-pointer border-none bg-transparent outline-none dark:hover:text-brand-light">
+                        className="inline-flex items-center gap-2 rounded-lg border border-brand-light/70 bg-brand-light/70 px-4 py-2 text-sm font-semibold text-brand-navy transition hover:border-brand-mint hover:text-brand-mint dark:border-brand-light/10 dark:bg-brand-light/5 dark:text-brand-light">
                         {showArchived ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
                         <Archive size={16} />
                         Suppléments archivés {archivedSupplements ? `(${archivedSupplements.length})` : ''}
                     </button>
 
                     {showArchived && archivedSupplements && archivedSupplements.length > 0 && (
-                        <div className="premium-surface mt-4 overflow-x-auto opacity-80">
-                            <table className="w-full text-sm text-left">
+                        <div className="overflow-hidden rounded-lg border border-brand-light/70 dark:border-brand-light/10">
+                            <div className="overflow-x-auto">
+                            <table className="min-w-full text-left text-sm">
                                 <thead>
                                     <tr className="border-b border-brand-slate/15 bg-brand-mint/6 dark:border-brand-light/10 dark:bg-brand-light/5">
                                         <th className="px-5 py-4 text-xs font-semibold uppercase tracking-wide text-brand-slate dark:text-brand-light/65">{t('auto.features.catalog.supplements.pages.supplementscatalogpage.51293b71', { defaultValue: "Nom" })}</th>
@@ -341,7 +320,7 @@ export default function SupplementsCatalogPage() {
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-brand-slate/10 dark:divide-brand-light/10">
-                                    {archivedSupplements.map((s) => (
+                                    {paginatedArchivedSupplements.map((s) => (
                                         <tr key={s.id} className="transition-colors hover:bg-brand-mint/5 dark:hover:bg-brand-light/5">
                                             <td className="px-5 py-3 text-brand-slate font-semibold dark:text-brand-light/75">{s.name}</td>
                                             <td className="px-5 py-3">
@@ -354,7 +333,7 @@ export default function SupplementsCatalogPage() {
                                             </td>
                                             <td className="px-5 py-3 text-right">
                                                 <button onClick={() => handleRestore(s)} disabled={restoreMutation.isPending}
-                                                    className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-brand-mint/10 text-brand-mint text-xs font-bold rounded-xl hover:bg-brand-mint/10 transition-colors cursor-pointer disabled:opacity-50 border-none">
+                                                    className="inline-flex h-10 items-center gap-2 rounded-lg bg-brand-mint/10 px-4 text-sm font-semibold text-brand-mint transition hover:bg-brand-mint hover:text-brand-light disabled:cursor-not-allowed disabled:opacity-60">
                                                     <RotateCcw size={14} /> Restaurer
                                                 </button>
                                             </td>
@@ -362,11 +341,13 @@ export default function SupplementsCatalogPage() {
                                     ))}
                                 </tbody>
                             </table>
+                            </div>
+                            <PaginationControls meta={archivedMeta} onPageChange={setArchivedPage} />
                         </div>
                     )}
 
                     {showArchived && archivedSupplements && archivedSupplements.length === 0 && (
-                        <p className="mt-3 text-sm text-brand-slate italic font-medium ml-6">{t('auto.features.catalog.supplements.pages.supplementscatalogpage.7333e56a', { defaultValue: "Aucun supplément archivé" })}</p>
+                        <div className="rounded-lg border border-dashed border-brand-slate/20 px-6 py-10 text-center text-sm text-brand-slate dark:border-brand-light/10 dark:text-brand-light/70">{t('auto.features.catalog.supplements.pages.supplementscatalogpage.7333e56a', { defaultValue: "Aucun supplément archivé" })}</div>
                     )}
                 </div>
             )}

@@ -1,13 +1,85 @@
 import { useEffect, useMemo, useState } from 'react';
 import { NavLink, Outlet, useLocation } from 'react-router-dom';
 import { clsx } from 'clsx';
-import { PanelLeftClose, PanelLeftOpen } from 'lucide-react';
+import { ArrowRight, PanelLeftClose, PanelLeftOpen } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { adminSections, getRoleNavigation, isNavigationItemActive } from './navigation';
 import { BrandLockup, HeaderActions } from './LayoutControls';
 import { Logo } from '../components/ui/Logo';
+import { useUsers } from '../features/admin/hooks/useUsers';
+import { useHotels } from '../features/hotel/hooks/useHotels';
 
 const SIDEBAR_STORAGE_KEY = 'adminSidebarCollapsed';
+
+function getAccountStatus(user: { isActive: boolean; accountStatus?: string }): 'ACTIVE' | 'PENDING_INVITE' | 'SUSPENDED' {
+    if (user.accountStatus === 'ACTIVE' || user.accountStatus === 'PENDING_INVITE' || user.accountStatus === 'SUSPENDED') {
+        return user.accountStatus;
+    }
+
+    return user.isActive ? 'ACTIVE' : 'PENDING_INVITE';
+}
+
+function SidebarInsight() {
+    const { t } = useTranslation('common');
+    const { data: users = [], isLoading: usersLoading, isError: usersError } = useUsers();
+    const { data: hotels = [], isLoading: hotelsLoading, isError: hotelsError } = useHotels();
+    const isLoading = usersLoading || hotelsLoading;
+    const hasError = usersError || hotelsError;
+
+    const activeUsers = users.filter((user) => getAccountStatus(user) === 'ACTIVE').length;
+    const pendingUsers = users.filter((user) => getAccountStatus(user) === 'PENDING_INVITE').length;
+    const assignedHotelIds = new Set(
+        users
+            .filter((user) => user.role === 'COMMERCIAL' && getAccountStatus(user) === 'ACTIVE')
+            .flatMap((user) => user.hotels?.map((hotel) => hotel.id) ?? []),
+    );
+    const unassignedHotels = Math.max(0, hotels.length - assignedHotelIds.size);
+    const primarySignal = pendingUsers > 0
+        ? t('layouts.admin.sidebarInsight.pendingInvites', {
+            defaultValue: '{{count}} pending invite needs review.',
+            count: pendingUsers,
+        })
+        : unassignedHotels > 0
+            ? t('layouts.admin.sidebarInsight.unassignedHotels', {
+                defaultValue: '{{count}} hotel needs an owner.',
+                count: unassignedHotels,
+            })
+            : t('layouts.admin.sidebarInsight.ready', {
+                defaultValue: 'Access and hotel ownership look current.',
+            });
+
+    return (
+        <div className="mt-auto overflow-hidden rounded-2xl border border-brand-mint/20 bg-brand-mint/8 p-4 shadow-sm dark:border-brand-mint/25 dark:bg-brand-mint/12">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-brand-mint">
+                {t('layouts.admin.sidebarInsight.title', { defaultValue: 'Workspace Signals' })}
+            </p>
+            {isLoading ? (
+                <div className="mt-3 animate-pulse space-y-2">
+                    <div className="h-4 w-4/5 rounded-full bg-brand-slate/15 dark:bg-brand-light/10" />
+                    <div className="h-3 w-full rounded-full bg-brand-slate/15 dark:bg-brand-light/10" />
+                </div>
+            ) : hasError ? (
+                <p className="mt-2 text-sm text-brand-slate dark:text-brand-light/75">
+                    {t('layouts.admin.sidebarInsight.unavailable', { defaultValue: 'Workspace signals are unavailable right now.' })}
+                </p>
+            ) : (
+                <>
+                    <p className="mt-3 text-sm font-semibold leading-5 text-brand-navy dark:text-brand-light">
+                        {primarySignal}
+                    </p>
+                    <p className="mt-2 text-xs leading-5 text-brand-slate dark:text-brand-light/70">
+                        {t('layouts.admin.sidebarInsight.summary', {
+                            defaultValue: '{{active}} active seats, {{assigned}}/{{total}} hotels covered.',
+                            active: activeUsers,
+                            assigned: assignedHotelIds.size,
+                            total: hotels.length,
+                        })}
+                    </p>
+                </>
+            )}
+        </div>
+    );
+}
 
 export default function AdminLayout() {
     const { t } = useTranslation(['auth', 'common']);
@@ -78,56 +150,75 @@ export default function AdminLayout() {
                                         {section.titleKey ? t(section.titleKey, { defaultValue: section.title }) : section.title}
                                     </p>
                                 )}
-                                <div className={clsx(isSidebarCollapsed ? 'space-y-3' : 'mt-2 space-y-1.5')}>
+                                <div className={clsx(isSidebarCollapsed ? 'space-y-3' : 'mt-3 space-y-2')}>
                                     {section.items.map((item) => {
                                         const Icon = item.icon;
                                         const isActive = isNavigationItemActive(location.pathname, item);
+                                        const label = item.labelKey ? t(item.labelKey, { defaultValue: item.label }) : item.label;
+                                        const description = item.descriptionKey
+                                            ? t(item.descriptionKey, { defaultValue: item.description })
+                                            : item.description;
 
                                         return (
                                             <NavLink
                                                 key={item.to}
                                                 to={item.to}
-                                                title={item.label}
+                                                title={label}
                                                 className={clsx(
-                                                    'transition',
+                                                    'group relative transition',
                                                     isSidebarCollapsed
                                                         ? [
-                                                            'flex items-center justify-center rounded-3xl px-0 py-3',
+                                                            'flex h-12 items-center justify-center rounded-2xl border',
                                                             isActive
-                                                                ? 'bg-brand-navy text-brand-light shadow-md'
-                                                                : 'text-brand-slate hover:bg-brand-light/75 hover:text-brand-navy dark:text-brand-light/75 dark:hover:bg-brand-light/8 dark:hover:text-brand-light',
+                                                                ? 'border-brand-mint/35 bg-brand-mint/12 text-brand-mint shadow-sm'
+                                                                : 'border-transparent text-brand-slate hover:border-brand-mint/20 hover:bg-brand-mint/8 hover:text-brand-mint dark:text-brand-light/70 dark:hover:text-brand-light',
                                                         ]
                                                         : [
-                                                            'block rounded-3xl border px-4 py-3',
+                                                            'block overflow-hidden rounded-2xl border px-3 py-3 shadow-sm',
                                                             isActive
-                                                                ? 'border-brand-mint/25 bg-brand-navy text-brand-light shadow-md'
-                                                                : 'border-transparent bg-brand-light/52 text-brand-slate hover:border-brand-light/80 hover:bg-brand-light/90 hover:text-brand-navy dark:bg-brand-light/5 dark:hover:bg-brand-light/8 dark:hover:text-brand-light',
+                                                                ? 'border-brand-mint/35 bg-brand-mint/12 text-brand-navy dark:bg-brand-mint/12 dark:text-brand-light'
+                                                                : 'border-brand-light/50 bg-brand-light/56 text-brand-slate hover:border-brand-mint/25 hover:bg-brand-light/90 hover:text-brand-navy dark:border-brand-light/8 dark:bg-brand-light/[0.04] dark:hover:border-brand-mint/25 dark:hover:bg-brand-light/8 dark:hover:text-brand-light',
                                                         ],
                                                 )}
                                             >
-                                                <div className={clsx('flex', isSidebarCollapsed ? 'items-center justify-center' : 'items-start gap-3')}>
+                                                {!isSidebarCollapsed && (
+                                                    <span className={clsx(
+                                                        'absolute inset-y-3 left-0 w-1 rounded-r-full transition',
+                                                        isActive ? 'bg-brand-mint' : 'bg-transparent group-hover:bg-brand-mint/40',
+                                                    )} />
+                                                )}
+                                                <div className={clsx('flex', isSidebarCollapsed ? 'items-center justify-center' : 'items-start gap-3 pl-1')}>
                                                     <div className={clsx(
-                                                        'rounded-2xl p-2.5',
-                                                        isActive ? 'bg-brand-light/10 text-brand-mint' : 'bg-brand-mint/10 text-brand-mint',
+                                                        'flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ring-1 transition',
+                                                        isActive
+                                                            ? 'bg-brand-mint/14 text-brand-mint ring-brand-mint/25'
+                                                            : 'bg-brand-mint/8 text-brand-mint ring-brand-mint/10 group-hover:bg-brand-mint/12 group-hover:ring-brand-mint/20',
                                                     )}>
                                                         <Icon size={17} />
                                                     </div>
 
                                                     {!isSidebarCollapsed && (
-                                                        <div className="min-w-0">
-                                                            <p className="text-sm font-semibold">
-                                                                {item.labelKey ? t(item.labelKey, { defaultValue: item.label }) : item.label}
-                                                            </p>
-                                                            {item.description && (
+                                                        <div className="flex min-w-0 flex-1 items-start justify-between gap-3">
+                                                            <div className="min-w-0">
+                                                                <p className="truncate text-sm font-semibold">
+                                                                    {label}
+                                                                </p>
+                                                                {description && (
                                                                 <p className={clsx(
                                                                     'mt-1 text-xs leading-5',
-                                                                    isActive ? 'text-brand-light/80' : 'text-brand-slate dark:text-brand-light/75',
+                                                                    isActive ? 'text-brand-slate dark:text-brand-light/78' : 'text-brand-slate dark:text-brand-light/70',
                                                                 )}>
-                                                                    {item.descriptionKey
-                                                                        ? t(item.descriptionKey, { defaultValue: item.description })
-                                                                        : item.description}
+                                                                    {description}
                                                                 </p>
-                                                            )}
+                                                                )}
+                                                            </div>
+                                                            <ArrowRight
+                                                                size={15}
+                                                                className={clsx(
+                                                                    'mt-1 shrink-0 transition',
+                                                                    isActive ? 'text-brand-mint' : 'text-brand-slate/55 group-hover:translate-x-0.5 group-hover:text-brand-mint',
+                                                                )}
+                                                            />
                                                         </div>
                                                     )}
                                                 </div>
@@ -139,19 +230,7 @@ export default function AdminLayout() {
                         ))}
                     </div>
 
-                    {!isSidebarCollapsed && (
-                        <div className="mt-auto rounded-3xl border border-brand-mint/15 bg-brand-mint/8 p-4 dark:border-brand-mint/25 dark:bg-brand-mint/12">
-                            <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-brand-mint">
-                                {t('common:layouts.admin.billingGuardrails.title', { defaultValue: 'Billing Guardrails' })}
-                            </p>
-                            <p className="mt-2 text-sm font-medium text-brand-navy dark:text-brand-light">
-                                {t('common:layouts.admin.billingGuardrails.renewals', { defaultValue: '3 renewals need attention before the next cycle closes.' })}
-                            </p>
-                            <p className="mt-1 text-sm text-brand-slate dark:text-brand-light/75">
-                                {t('common:layouts.admin.billingGuardrails.subtitle', { defaultValue: 'Keep seat assignments, invited users, and hotel ownership synchronized.' })}
-                            </p>
-                        </div>
-                    )}
+                    {!isSidebarCollapsed && <SidebarInsight />}
                 </aside>
 
                 <div className="flex min-w-0 flex-1 flex-col">
