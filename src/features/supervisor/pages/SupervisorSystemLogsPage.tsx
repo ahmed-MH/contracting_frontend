@@ -4,22 +4,22 @@ import { SupervisorMetricCard } from '../components/SupervisorMetricCard';
 import { SupervisorPageHeader } from '../components/SupervisorPageHeader';
 import { SupervisorSectionCard } from '../components/SupervisorSectionCard';
 import { SupervisorDataTable, type SupervisorTableColumn } from '../components/SupervisorDataTable';
-import { auditTrail, systemLogEvents } from '../data/supervisor.data';
+import { temporaryAuditTrail, temporarySystemLogEvents } from '../data/supervisor.data';
 
 export default function SupervisorSystemLogsPage() {
     const { t } = useTranslation('common');
 
-    const auditColumns: SupervisorTableColumn<(typeof auditTrail)[number]>[] = [
+    const auditColumns: SupervisorTableColumn<(typeof temporaryAuditTrail)[number]>[] = [
         {
             key: 'actor',
             label: t('pages.supervisor.logs.cards.auditTrail.columns.actor', { defaultValue: 'Actor' }),
             render: (row) => (
                 <div>
                     <p className="font-semibold text-brand-navy dark:text-brand-light">
-                        {t(`pages.supervisor.logs.cards.auditTrail.rows.${auditTrail.indexOf(row)}.actor`, { defaultValue: row.actor })}
+                        {t(`pages.supervisor.logs.cards.auditTrail.rows.${temporaryAuditTrail.indexOf(row)}.actor`, { defaultValue: row.actor })}
                     </p>
                     <p className="mt-1 text-xs text-brand-slate">
-                        {t(`pages.supervisor.logs.cards.auditTrail.rows.${auditTrail.indexOf(row)}.severity`, { defaultValue: row.severity })}
+                        {t(`pages.supervisor.logs.cards.auditTrail.rows.${temporaryAuditTrail.indexOf(row)}.severity`, { defaultValue: row.severity })}
                     </p>
                 </div>
             ),
@@ -29,7 +29,7 @@ export default function SupervisorSystemLogsPage() {
             label: t('pages.supervisor.logs.cards.auditTrail.columns.action', { defaultValue: 'Action' }),
             render: (row) => (
                 <span className="text-brand-navy dark:text-brand-light">
-                    {t(`pages.supervisor.logs.cards.auditTrail.rows.${auditTrail.indexOf(row)}.action`, { defaultValue: row.action })}
+                    {t(`pages.supervisor.logs.cards.auditTrail.rows.${temporaryAuditTrail.indexOf(row)}.action`, { defaultValue: row.action })}
                 </span>
             ),
         },
@@ -38,7 +38,7 @@ export default function SupervisorSystemLogsPage() {
             label: t('pages.supervisor.logs.cards.auditTrail.columns.target', { defaultValue: 'Target' }),
             render: (row) => (
                 <span className="text-brand-slate dark:text-brand-light/75">
-                    {t(`pages.supervisor.logs.cards.auditTrail.rows.${auditTrail.indexOf(row)}.target`, { defaultValue: row.target })}
+                    {t(`pages.supervisor.logs.cards.auditTrail.rows.${temporaryAuditTrail.indexOf(row)}.target`, { defaultValue: row.target })}
                 </span>
             ),
         },
@@ -101,7 +101,7 @@ export default function SupervisorSystemLogsPage() {
                     description={t('pages.supervisor.logs.cards.liveEventStream.description', { defaultValue: 'Supervisor-visible system activity, organized by severity and control surface.' })}
                 >
                     <div className="space-y-3">
-                        {systemLogEvents.map((event, index) => (
+                        {temporarySystemLogEvents.map((event, index) => (
                             <div key={`${event.timestamp}-${event.title}`} className="rounded-2xl border border-brand-light/70 bg-brand-light/72 p-5 dark:border-brand-light/10 dark:bg-brand-light/5">
                                 <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
                                     <div>
@@ -140,7 +140,7 @@ export default function SupervisorSystemLogsPage() {
                 >
                     <SupervisorDataTable
                         columns={auditColumns}
-                        rows={[...auditTrail]}
+                        rows={[...temporaryAuditTrail]}
                         rowKey={(row) => `${row.actor}-${row.timestamp}`}
                     />
                 </SupervisorSectionCard>

@@ -30,7 +30,7 @@ export function SupervisorPageHeader({
     return (
         <section className="premium-surface p-6 md:p-7">
             <div className="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
-                <div>
+                <div className="min-w-0 max-w-4xl">
                     <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-brand-slate">
                         {eyebrow}
                     </p>
@@ -42,13 +42,17 @@ export function SupervisorPageHeader({
                     </p>
                 </div>
 
-                <div className="flex flex-wrap items-center gap-3">
+                <div className="flex shrink-0 flex-col items-start gap-3 sm:items-end">
                     {badge && (
                         <span className={clsx('premium-pill', badgeToneClasses[badgeTone])}>
                             {badge}
                         </span>
                     )}
-                    {actions}
+                    {actions ? (
+                        <div className="flex flex-wrap items-center gap-3 sm:justify-end">
+                            {actions}
+                        </div>
+                    ) : null}
                 </div>
             </div>
         </section>

@@ -24,9 +24,11 @@ import {
 import { Logo } from '../../components/ui/Logo';
 import { LanguageSwitcher } from '../../components/ui/LanguageSwitcher';
 import { useTheme } from '../../hooks/useTheme';
+import { usePublicPlans, type PublicPlan } from './hooks/usePublicPlans';
 
 const navItems = [
     { key: 'landing.nav.overview', defaultLabel: 'Overview', href: '#platform' },
+    { key: 'landing.nav.plans', defaultLabel: 'Plans', href: '#plans' },
     { key: 'landing.nav.features', defaultLabel: 'Features', href: '#features' },
     { key: 'landing.nav.roles', defaultLabel: 'Roles', href: '#roles' },
     { key: 'landing.nav.control', defaultLabel: 'Control', href: '#security' },
@@ -143,6 +145,7 @@ const roleCards = [
 
 const footerLinks = [
     { key: 'landing.nav.overview', defaultLabel: 'Overview', href: '#platform' },
+    { key: 'landing.nav.plans', defaultLabel: 'Plans', href: '#plans' },
     { key: 'landing.nav.features', defaultLabel: 'Features', href: '#features' },
     { key: 'landing.nav.roles', defaultLabel: 'Roles', href: '#roles' },
     { key: 'landing.nav.control', defaultLabel: 'Control', href: '#security' },
@@ -160,10 +163,33 @@ function surfaceTone(tone: 'navy' | 'mint' | 'light') {
     return 'border-brand-light/70 bg-brand-light/78 text-brand-navy shadow-md dark:border-brand-light/10 dark:bg-brand-navy/80 dark:text-brand-light';
 }
 
+function formatPlanPrice(plan: PublicPlan): string {
+    if (plan.monthlyPrice === 0 && plan.name.toLowerCase().includes('enterprise')) {
+        return 'Custom';
+    }
+
+    return new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: plan.currency,
+        maximumFractionDigits: 0,
+    }).format(plan.monthlyPrice);
+}
+
+function formatBillingCadence(plan: PublicPlan): string {
+    if (plan.monthlyPrice <= 0) return '';
+    return plan.billingType === 'ONE_TIME' ? 'one-time' : '/month';
+}
+
+function formatLimit(value: number, noun: string): string {
+    return value >= 9999 ? `Unlimited ${noun}` : `${value} ${noun}`;
+}
+
 export default function LandingPage() {
     const [isScrolled, setIsScrolled] = useState(false);
     const { t } = useTranslation('common');
     const { isDark, toggleTheme } = useTheme();
+    const publicPlansQuery = usePublicPlans();
+    const publicPlans = publicPlansQuery.data ?? [];
 
     useEffect(() => {
         const onScroll = () => setIsScrolled(window.scrollY > 16);
@@ -220,13 +246,13 @@ export default function LandingPage() {
                         >
                             {t('landing.actions.login', { defaultValue: 'Log in' })}
                         </Link>
-                        <Link
-                            to="/plans"
+                        <a
+                            href="#plans"
                             className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-brand-mint px-4 text-sm font-semibold text-brand-light shadow-md transition hover:-translate-y-0.5 hover:bg-brand-mint md:px-5"
                         >
                             {t('landing.actions.getStarted', { defaultValue: 'Get Started' })}
                             <ArrowRight size={16} />
-                        </Link>
+                        </a>
                     </div>
                 </div>
             </header>
@@ -260,13 +286,13 @@ export default function LandingPage() {
                             </div>
 
                             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-                                <Link
-                                    to="/plans"
+                                <a
+                                    href="#plans"
                                     className="inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl bg-brand-navy px-6 text-base font-semibold text-brand-light shadow-md transition hover:-translate-y-0.5 hover:bg-brand-navy"
                                 >
                                     {t('landing.actions.getStarted', { defaultValue: 'Get Started' })}
                                     <ArrowRight size={18} />
-                                </Link>
+                                </a>
                                 <a
                                     href="#features"
                                     className="inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl border border-brand-navy/10 bg-brand-light/76 px-6 text-base font-semibold text-brand-navy backdrop-blur-xl transition hover:bg-brand-light dark:border-brand-light/10 dark:bg-brand-navy/80 dark:text-brand-light dark:hover:bg-brand-navy/80"
@@ -529,6 +555,112 @@ export default function LandingPage() {
                                 );
                             })}
                         </div>
+                    </div>
+                </section>
+
+                <section id="plans" className="bg-brand-light/50 px-4 py-18 backdrop-blur-xl dark:bg-brand-navy/80 md:px-6 md:py-22">
+                    <div className="mx-auto max-w-7xl">
+                        <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+                            <div className="max-w-3xl">
+                                <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-brand-slate">
+                                    {t('landing.plans.eyebrow', { defaultValue: 'SaaS plans' })}
+                                </p>
+                                <h2 className="mt-4 text-4xl font-semibold tracking-tight text-brand-navy md:text-5xl">
+                                    {t('landing.plans.title', { defaultValue: 'Choose the plan that fits your hotel operation.' })}
+                                </h2>
+                                <p className="mt-5 text-base leading-8 text-brand-slate md:text-lg">
+                                    {t('landing.plans.subtitle', { defaultValue: 'Plan data comes from the live platform catalog, so public buyers see only active offers that supervisors have published.' })}
+                                </p>
+                            </div>
+
+                            <a
+                                href="mailto:sales@pricify.local"
+                                className="inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl bg-brand-navy px-6 text-base font-semibold text-brand-light shadow-md transition hover:-translate-y-0.5 hover:bg-brand-navy"
+                            >
+                                {t('landing.plans.contactSales', { defaultValue: 'Contact sales' })}
+                                <ArrowRight size={18} />
+                            </a>
+                        </div>
+
+                        {publicPlansQuery.isLoading ? (
+                            <div className="mt-10 rounded-2xl border border-brand-light/70 bg-brand-light/72 p-6 text-sm text-brand-slate shadow-md dark:border-brand-light/10 dark:bg-brand-navy/80 dark:text-brand-light/75">
+                                {t('landing.plans.loading', { defaultValue: 'Loading available plans...' })}
+                            </div>
+                        ) : publicPlansQuery.isError ? (
+                            <div className="mt-10 rounded-2xl border border-brand-light/70 bg-brand-light/72 p-6 text-sm text-brand-slate shadow-md dark:border-brand-light/10 dark:bg-brand-navy/80 dark:text-brand-light/75">
+                                {t('landing.plans.error', { defaultValue: 'Plans are temporarily unavailable. Please contact sales for current packaging.' })}
+                            </div>
+                        ) : publicPlans.length === 0 ? (
+                            <div className="mt-10 rounded-2xl border border-dashed border-brand-light/70 bg-brand-light/56 p-8 text-center text-sm text-brand-slate dark:border-brand-light/10 dark:bg-brand-light/5 dark:text-brand-light/75">
+                                {t('landing.plans.empty', { defaultValue: 'No public SaaS plans are published yet.' })}
+                            </div>
+                        ) : (
+                            <div className="mt-10 grid gap-4 lg:grid-cols-3">
+                                {publicPlans.map((plan, index) => (
+                                    <article
+                                        key={plan.id}
+                                        className={`rounded-2xl border p-6 shadow-md backdrop-blur-xl ${
+                                            index === 1
+                                                ? 'border-brand-mint/35 bg-brand-navy text-brand-light'
+                                                : 'border-brand-light/70 bg-brand-light/78 text-brand-navy dark:border-brand-light/10 dark:bg-brand-navy/80 dark:text-brand-light'
+                                        }`}
+                                    >
+                                        <div className="flex items-start justify-between gap-4">
+                                            <div>
+                                                <p className={`text-[11px] font-semibold uppercase tracking-[0.24em] ${index === 1 ? 'text-brand-mint' : 'text-brand-slate'}`}>
+                                                    {plan.name}
+                                                </p>
+                                                <div className="mt-4 flex items-end gap-1">
+                                                    <span className="text-4xl font-semibold tracking-tight">{formatPlanPrice(plan)}</span>
+                                                    {plan.monthlyPrice > 0 ? <span className="pb-1 text-sm text-brand-slate">{formatBillingCadence(plan)}</span> : null}
+                                                </div>
+                                            </div>
+                                            {index === 1 ? (
+                                                <span className="rounded-full bg-brand-mint/15 px-3 py-1 text-xs font-semibold text-brand-mint">
+                                                    {t('landing.plans.popular', { defaultValue: 'Popular' })}
+                                                </span>
+                                            ) : null}
+                                        </div>
+
+                                        <p className={`mt-4 text-sm leading-7 ${index === 1 ? 'text-brand-slate' : 'text-brand-slate dark:text-brand-light/75'}`}>
+                                            {plan.description}
+                                        </p>
+
+                                        <div className="mt-5 grid gap-2 text-sm">
+                                            <div className={`rounded-2xl px-4 py-3 ${index === 1 ? 'bg-brand-light/8 text-brand-slate' : 'bg-brand-light/70 text-brand-navy dark:bg-brand-light/5 dark:text-brand-light'}`}>
+                                                {formatLimit(plan.maxHotels, 'hotels')} / {formatLimit(plan.maxUsers, 'users')}
+                                            </div>
+                                            <div className={`rounded-2xl px-4 py-3 ${index === 1 ? 'bg-brand-light/8 text-brand-slate' : 'bg-brand-light/70 text-brand-navy dark:bg-brand-light/5 dark:text-brand-light'}`}>
+                                                {plan.supportTier} support · {plan.apiAccess ? 'API access included' : 'API access not included'}
+                                            </div>
+                                        </div>
+
+                                        <div className="mt-5 space-y-3">
+                                            {plan.features.slice(0, 5).map((feature) => (
+                                                <div key={`${plan.id}-${feature}`} className="flex items-start gap-3 text-sm leading-6">
+                                                    <CheckCircle2 size={16} className="mt-1 shrink-0 text-brand-mint" />
+                                                    <span className={index === 1 ? 'text-brand-slate' : 'text-brand-slate dark:text-brand-light/75'}>{feature}</span>
+                                                </div>
+                                            ))}
+                                        </div>
+
+                                        <Link
+                                            to={`/onboarding?planId=${plan.id}`}
+                                            className={`mt-6 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-2xl px-5 text-sm font-semibold transition ${
+                                                index === 1
+                                                    ? 'bg-brand-mint text-brand-light hover:bg-brand-mint/90'
+                                                    : 'border border-brand-navy/10 bg-brand-light/80 text-brand-navy hover:bg-brand-light dark:border-brand-light/10 dark:bg-brand-light/8 dark:text-brand-light'
+                                            }`}
+                                        >
+                                            {plan.canSubscribe || plan.monthlyPrice > 0
+                                                ? t('landing.plans.subscribe', { defaultValue: 'Start with this plan' })
+                                                : t('landing.plans.requestAccess', { defaultValue: 'Request access' })}
+                                            <ArrowRight size={16} />
+                                        </Link>
+                                    </article>
+                                ))}
+                            </div>
+                        )}
                     </div>
                 </section>
 

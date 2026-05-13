@@ -14,6 +14,9 @@ import type { UserRole } from './features/auth/types/auth.types';
 import AppErrorBoundary from './features/errors/components/AppErrorBoundary';
 
 const LandingPage = lazy(() => import('./features/public/LandingPage'));
+const OnboardingPage = lazy(() => import('./features/public/OnboardingPage'));
+const OnboardingSuccessPage = lazy(() => import('./features/public/OnboardingSuccessPage'));
+const OnboardingCancelPage = lazy(() => import('./features/public/OnboardingCancelPage'));
 const LoginPage = lazy(() => import('./features/auth/pages/LoginPage'));
 const AcceptInvitePage = lazy(() => import('./features/auth/pages/AcceptInvitePage'));
 const ForgotPasswordPage = lazy(() => import('./features/auth/pages/ForgotPasswordPage'));
@@ -120,6 +123,9 @@ function App() {
                     <Suspense fallback={<GlobalLoader />}>
                         <Routes>
                             <Route path="/" element={<LandingPage />} />
+                            <Route path="/onboarding" element={<OnboardingPage />} />
+                            <Route path="/onboarding/success" element={<OnboardingSuccessPage />} />
+                            <Route path="/onboarding/cancel" element={<OnboardingCancelPage />} />
 
                         <Route element={<GuestRoute><AuthLayout /></GuestRoute>}>
                             <Route path="/login" element={<LoginPage />} />
