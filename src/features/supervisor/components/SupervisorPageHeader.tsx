@@ -13,8 +13,8 @@ interface SupervisorPageHeaderProps {
 
 const badgeToneClasses = {
     mint: 'border-brand-mint/20 bg-brand-mint/8 text-brand-mint',
-    slate: 'border-brand-slate/20 bg-brand-light text-brand-slate dark:border-brand-light/10 dark:bg-brand-light/5 dark:text-brand-light/75',
-    amber: 'border-brand-slate/30 bg-brand-slate/10 text-brand-slate dark:border-brand-slate/30 dark:bg-brand-navy/80 dark:text-brand-light/75',
+    slate: 'border-brand-slate/20 bg-white/80 text-brand-slate dark:border-brand-light/10 dark:bg-brand-light/5 dark:text-brand-light/75',
+    amber: 'border-amber-200 bg-amber-100 text-amber-700 dark:border-amber-500/25 dark:bg-amber-500/15 dark:text-amber-200',
 } as const;
 
 export function SupervisorPageHeader({
@@ -31,7 +31,7 @@ export function SupervisorPageHeader({
         <section className="premium-surface p-6 md:p-7">
             <div className="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
                 <div className="min-w-0 max-w-4xl">
-                    <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-brand-slate">
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-brand-slate dark:text-brand-light/60">
                         {eyebrow}
                     </p>
                     <h1 className="mt-3 text-3xl font-semibold tracking-tight text-brand-navy dark:text-brand-light">

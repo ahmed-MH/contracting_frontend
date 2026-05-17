@@ -3,10 +3,15 @@ import { toast } from 'sonner';
 import i18next from '../../../lib/i18n';
 import {
     supervisorService,
+    type AssignSupervisorTenantPlanPayload,
     type CreateSupervisorPlanPayload,
     type CreateSupervisorTenantPayload,
+    type ListSupervisorPublicSignupsParams,
+    type ListSupervisorSystemLogsParams,
+    type PaginatedSupervisorSystemLogs,
     type SupervisorCheckoutSession,
     type SupervisorPlan,
+    type SupervisorPublicSignup,
     type SupervisorSubscription,
     type SupervisorSubscriptionSummary,
     type SupervisorTenant,
@@ -15,13 +20,22 @@ import {
 } from '../services/supervisor.service';
 
 export type {
+    AssignSupervisorTenantPlanPayload,
     CreateSupervisorPlanPayload,
     CreateSupervisorTenantPayload,
+    ListSupervisorPublicSignupsParams,
+    ListSupervisorSystemLogsParams,
+    PaginatedSupervisorSystemLogs,
     SupervisorPlan,
     SupervisorCheckoutSession,
+    SupervisorPublicSignup,
+    SupervisorPublicSignupStatus,
     SupervisorSubscription,
     SupervisorSubscriptionStatus,
     SupervisorSubscriptionSummary,
+    SupervisorSystemLog,
+    SupervisorAuditLogCategory,
+    SupervisorAuditLogSeverity,
     SupervisorTenant,
     UpdateSupervisorPlanPayload,
     UpdateSupervisorSubscriptionStatusPayload,
@@ -31,6 +45,8 @@ export const SUPERVISOR_TENANTS_QUERY_KEY = ['supervisor', 'tenants'] as const;
 export const SUPERVISOR_PLANS_QUERY_KEY = ['supervisor', 'plans'] as const;
 export const SUPERVISOR_SUBSCRIPTIONS_QUERY_KEY = ['supervisor', 'subscriptions'] as const;
 export const SUPERVISOR_SUBSCRIPTIONS_SUMMARY_QUERY_KEY = ['supervisor', 'subscriptions', 'summary'] as const;
+export const SUPERVISOR_PUBLIC_SIGNUPS_QUERY_KEY = ['supervisor', 'public-signups'] as const;
+export const SUPERVISOR_SYSTEM_LOGS_QUERY_KEY = ['supervisor', 'system-logs'] as const;
 
 export function useSupervisorTenants() {
     return useQuery<SupervisorTenant[]>({
@@ -58,6 +74,17 @@ export function useSuspendSupervisorTenant() {
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: [...SUPERVISOR_TENANTS_QUERY_KEY] });
             toast.success(i18next.t('pages.supervisor.tenants.toasts.suspended', { defaultValue: 'Tenant suspended successfully' }));
+        },
+    });
+}
+
+export function useReactivateSupervisorTenant() {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: (id: number) => supervisorService.reactivateTenant(id),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: [...SUPERVISOR_TENANTS_QUERY_KEY] });
+            toast.success(i18next.t('pages.supervisor.tenants.toasts.reactivated', { defaultValue: 'Tenant reactivated successfully' }));
         },
     });
 }
@@ -119,6 +146,28 @@ export function useSupervisorSubscriptionSummary() {
     });
 }
 
+export function useSupervisorPublicSignups(params?: ListSupervisorPublicSignupsParams) {
+    return useQuery<SupervisorPublicSignup[]>({
+        queryKey: [...SUPERVISOR_PUBLIC_SIGNUPS_QUERY_KEY, params ?? {}],
+        queryFn: () => supervisorService.listPublicSignups(params),
+    });
+}
+
+export function useSupervisorPublicSignup(id?: number) {
+    return useQuery<SupervisorPublicSignup>({
+        queryKey: [...SUPERVISOR_PUBLIC_SIGNUPS_QUERY_KEY, id],
+        queryFn: () => supervisorService.getPublicSignup(id!),
+        enabled: id !== undefined,
+    });
+}
+
+export function useSupervisorSystemLogs(params?: ListSupervisorSystemLogsParams) {
+    return useQuery<PaginatedSupervisorSystemLogs>({
+        queryKey: [...SUPERVISOR_SYSTEM_LOGS_QUERY_KEY, params ?? {}],
+        queryFn: () => supervisorService.listSystemLogs(params),
+    });
+}
+
 export function useUpdateSupervisorSubscriptionStatus() {
     const queryClient = useQueryClient();
     return useMutation({
@@ -128,6 +177,20 @@ export function useUpdateSupervisorSubscriptionStatus() {
             queryClient.invalidateQueries({ queryKey: [...SUPERVISOR_SUBSCRIPTIONS_QUERY_KEY] });
             queryClient.invalidateQueries({ queryKey: [...SUPERVISOR_SUBSCRIPTIONS_SUMMARY_QUERY_KEY] });
             toast.success(i18next.t('pages.supervisor.subscriptions.toasts.updated', { defaultValue: 'Subscription status updated' }));
+        },
+    });
+}
+
+export function useAssignSupervisorTenantPlan(onSuccess?: () => void) {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: (payload: AssignSupervisorTenantPlanPayload) => supervisorService.assignTenantPlan(payload),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: [...SUPERVISOR_SUBSCRIPTIONS_QUERY_KEY] });
+            queryClient.invalidateQueries({ queryKey: [...SUPERVISOR_SUBSCRIPTIONS_SUMMARY_QUERY_KEY] });
+            queryClient.invalidateQueries({ queryKey: [...SUPERVISOR_TENANTS_QUERY_KEY] });
+            toast.success(i18next.t('pages.supervisor.tenants.toasts.planAssigned', { defaultValue: 'Plan assigned as payment required' }));
+            onSuccess?.();
         },
     });
 }

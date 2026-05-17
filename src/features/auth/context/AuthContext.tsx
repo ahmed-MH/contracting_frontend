@@ -17,6 +17,7 @@ interface AuthContextType {
     isLoading: boolean;
     login: (email: string, password: string) => Promise<void>;
     loginWithResponse: (response: LoginResponse) => void;
+    syncUserProfile: (profile: Partial<AuthUser>) => void;
     logout: () => void;
 }
 
@@ -67,6 +68,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         loginWithResponse(response);
     }, [loginWithResponse]);
 
+    const syncUserProfile = useCallback((profile: Partial<AuthUser>) => {
+        setUser((current) => {
+            if (!current) return current;
+            const next = { ...current, ...profile };
+            localStorage.setItem(USER_KEY, JSON.stringify(next));
+            return next;
+        });
+    }, []);
+
     const logout = useCallback(() => {
         // 1. Nuke localStorage — auth + hotel selection
         localStorage.removeItem(TOKEN_KEY);
@@ -92,6 +102,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 isLoading,
                 login,
                 loginWithResponse,
+                syncUserProfile,
                 logout,
             }}
         >

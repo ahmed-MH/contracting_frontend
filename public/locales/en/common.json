@@ -48,6 +48,17 @@
         "platformControlsOnly": "Platform controls only",
         "systemHealth": "System Health",
         "liveLogs": "Live Logs",
+        "environmentStatus": "Environment Status",
+        "runtime": "Runtime",
+        "localRuntime": "Local",
+        "productionRuntime": "Production",
+        "apiHost": "API Host",
+        "stripeWebhook": "Stripe Webhook",
+        "webhookChecking": "Checking",
+        "webhookUnavailable": "Unavailable",
+        "webhookRecent": "Recent",
+        "webhookQuiet": "Quiet",
+        "webhookNoEvents": "No events",
         "expandSidebar": "Expand sidebar",
         "collapseSidebar": "Collapse sidebar"
       }
@@ -761,16 +772,16 @@
     "supervisor": {
       "overview": {
         "header": {
-          "eyebrow": "Overview / MRR",
+          "eyebrow": "Overview / Revenue",
           "title": "Platform command center for revenue and tenant health.",
           "description": "This dashboard stays at platform level: subscription performance, organization status, and supervisor-safe signals.",
           "badge": "Zero-trust supervisor surface"
         },
         "metrics": {
           "0": {
-            "label": "Platform MRR",
+            "label": "Recurring MRR",
             "delta": "+8.1% month over month",
-            "description": "Recurring revenue across every active subscription tier."
+            "description": "Active recurring subscriptions only. One-time plan payments are excluded from MRR."
           },
           "1": {
             "label": "Active Organizations",
@@ -783,17 +794,17 @@
             "description": "Organizations flagged for delinquency or manual intervention."
           },
           "3": {
-            "label": "Audit Throughput",
-            "delta": "Events in 24h",
-            "description": "Supervisor-visible platform and billing events captured today."
+            "label": "One-time revenue",
+            "delta": "License payments excluded from MRR",
+            "description": "Completed one-time plan payments reported separately from recurring revenue."
           }
         },
         "cards": {
           "mrrComposition": {
-            "eyebrow": "MRR Composition",
+            "eyebrow": "Recurring MRR Composition",
             "title": "Revenue mix by plan tier",
             "description": "A high-level read on where recurring revenue is concentrated across the platform.",
-            "ofMrr": "{{share}} of platform MRR",
+            "ofMrr": "{{share}} of recurring MRR",
             "segments": {
               "0": {
                 "name": "Enterprise",
@@ -1222,8 +1233,8 @@
     "supervisor": {
       "sectionTitle": "Command Center",
       "overview": {
-        "label": "Overview / MRR",
-        "description": "MRR, growth, churn watch, and platform readiness."
+        "label": "Overview / Revenue",
+        "description": "Recurring revenue, one-time payments, churn watch, and platform readiness."
       },
       "tenants": {
         "label": "Tenants / Organizations",

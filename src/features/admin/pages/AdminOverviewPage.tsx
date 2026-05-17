@@ -9,6 +9,7 @@ import {
     FileText,
     Hotel,
     KeyRound,
+    LockKeyhole,
     ShieldCheck,
     UserCog,
     Users,
@@ -17,7 +18,7 @@ import type { LucideIcon } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import AdminPageHeader from '../components/AdminPageHeader';
 import AdminSectionCard from '../components/AdminSectionCard';
-import { useUsers } from '../hooks/useUsers';
+import { useTenantUsage, useUsers } from '../hooks/useUsers';
 import { useHotels } from '../../hotel/hooks/useHotels';
 
 interface MetricCardProps {
@@ -38,6 +39,8 @@ interface WorkAreaLinkProps {
     description: string;
     to: string;
     icon: LucideIcon;
+    locked?: boolean;
+    lockedLabel?: string;
 }
 
 function getUserAccountStatus(user: { isActive: boolean; accountStatus?: string }): 'ACTIVE' | 'PENDING_INVITE' | 'SUSPENDED' {
@@ -109,23 +112,48 @@ function ProgressRow({ label, value, detail }: ProgressRowProps) {
     );
 }
 
-function WorkAreaLink({ title, description, to, icon: Icon }: WorkAreaLinkProps) {
+function WorkAreaContent({ title, description, icon: Icon, locked, lockedLabel }: Omit<WorkAreaLinkProps, 'to'>) {
     return (
-        <Link
-            to={to}
-            className="group relative overflow-hidden rounded-2xl border border-brand-light/70 bg-brand-light/72 p-5 shadow-sm transition hover:-translate-y-0.5 hover:border-brand-mint/30 hover:bg-brand-light/90 hover:shadow-md dark:border-brand-light/10 dark:bg-brand-light/5 dark:hover:bg-brand-light/8"
-        >
+        <>
             <span className="absolute inset-x-0 top-0 h-1 bg-brand-mint/70 opacity-0 transition group-hover:opacity-100" />
             <div className="flex items-start justify-between gap-4">
                 <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-brand-mint/10 text-brand-mint ring-1 ring-brand-mint/15 transition group-hover:bg-brand-mint/14">
                     <Icon size={18} />
                 </span>
                 <span className="flex h-9 w-9 items-center justify-center rounded-xl border border-brand-light/70 bg-brand-light/70 text-brand-slate transition group-hover:translate-x-0.5 group-hover:border-brand-mint/25 group-hover:text-brand-mint dark:border-brand-light/10 dark:bg-brand-light/5">
-                    <ArrowRight size={16} />
+                    {locked ? <LockKeyhole size={16} /> : <ArrowRight size={16} />}
                 </span>
             </div>
-            <p className="mt-4 font-semibold text-brand-navy dark:text-brand-light">{title}</p>
+            <div className="mt-4 flex flex-wrap items-center gap-2">
+                <p className="font-semibold text-brand-navy dark:text-brand-light">{title}</p>
+                {locked ? (
+                    <span className="rounded-full border border-brand-coral/25 bg-brand-coral/10 px-2.5 py-1 text-[11px] font-semibold text-brand-coral">
+                        Plan locked
+                    </span>
+                ) : null}
+            </div>
             <p className="mt-2 text-sm leading-6 text-brand-slate dark:text-brand-light/75">{description}</p>
+            {lockedLabel ? <p className="mt-3 text-xs font-semibold text-brand-coral">{lockedLabel}</p> : null}
+        </>
+    );
+}
+
+function WorkAreaLink({ title, description, to, icon, locked, lockedLabel }: WorkAreaLinkProps) {
+    const className = locked
+        ? 'group relative overflow-hidden rounded-2xl border border-brand-coral/25 bg-brand-coral/8 p-5 shadow-sm opacity-95 dark:bg-brand-coral/8'
+        : 'group relative overflow-hidden rounded-2xl border border-brand-light/70 bg-brand-light/72 p-5 shadow-sm transition hover:-translate-y-0.5 hover:border-brand-mint/30 hover:bg-brand-light/90 hover:shadow-md dark:border-brand-light/10 dark:bg-brand-light/5 dark:hover:bg-brand-light/8';
+
+    if (locked) {
+        return (
+            <div className={className} aria-disabled="true">
+                <WorkAreaContent title={title} description={description} icon={icon} locked={locked} lockedLabel={lockedLabel} />
+            </div>
+        );
+    }
+
+    return (
+        <Link to={to} className={className}>
+            <WorkAreaContent title={title} description={description} icon={icon} />
         </Link>
     );
 }
@@ -133,6 +161,7 @@ function WorkAreaLink({ title, description, to, icon: Icon }: WorkAreaLinkProps)
 export default function AdminOverviewPage() {
     const { t } = useTranslation('common');
     const { data: users = [], isLoading: usersLoading, isError: usersError } = useUsers();
+    const { data: tenantUsage } = useTenantUsage();
     const { data: hotels = [], isLoading: hotelsLoading, isError: hotelsError } = useHotels();
 
     const admins = users.filter((user) => user.role === 'ADMIN');
@@ -150,6 +179,8 @@ export default function AdminOverviewPage() {
     const unassignedHotels = Math.max(0, hotels.length - assignedHotelIds.size);
     const isLoading = usersLoading || hotelsLoading;
     const hasError = usersError || hotelsError;
+    const apiAccessLocked = tenantUsage?.canUseApiAccess === false;
+    const hasPlan = tenantUsage?.hasPlan !== false;
 
     const attentionItems = [
         pendingUsers > 0
@@ -187,9 +218,17 @@ export default function AdminOverviewPage() {
         },
         {
             title: t('pages.adminOverview.workAreas.integrations.title', { defaultValue: 'Integrations' }),
-            description: t('pages.adminOverview.workAreas.integrations.description', { defaultValue: 'Manage API users, keys, endpoint policy, and request logs.' }),
+            description: apiAccessLocked
+                ? hasPlan
+                    ? t('pages.adminOverview.workAreas.integrations.lockedDescription', { defaultValue: 'This plan does not include active API access, keys, endpoint controls, or usage logs.' })
+                    : t('pages.adminOverview.workAreas.integrations.noPlanDescription', { defaultValue: 'No plan is assigned to this organization, so API access is unavailable.' })
+                : t('pages.adminOverview.workAreas.integrations.description', { defaultValue: 'Manage API users, keys, endpoint policy, and request logs.' }),
             to: '/admin/integrations/overview',
             icon: KeyRound,
+            locked: apiAccessLocked,
+            lockedLabel: apiAccessLocked
+                ? t('pages.adminOverview.workAreas.integrations.lockedLabel', { defaultValue: 'Choose or upgrade a plan from your profile.' })
+                : undefined,
         },
         {
             title: t('pages.adminOverview.workAreas.hotels.title', { defaultValue: 'Hotel information' }),

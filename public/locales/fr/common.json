@@ -48,6 +48,17 @@
         "platformControlsOnly": "Controles plateforme uniquement",
         "systemHealth": "Sante systeme",
         "liveLogs": "Logs en direct",
+        "environmentStatus": "Statut environnement",
+        "runtime": "Execution",
+        "localRuntime": "Local",
+        "productionRuntime": "Production",
+        "apiHost": "API",
+        "stripeWebhook": "Webhook Stripe",
+        "webhookChecking": "Verification",
+        "webhookUnavailable": "Indisponible",
+        "webhookRecent": "Recent",
+        "webhookQuiet": "Calme",
+        "webhookNoEvents": "Aucun event",
         "expandSidebar": "Etendre la barre laterale",
         "collapseSidebar": "Reduire la barre laterale"
       }

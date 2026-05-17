@@ -22,7 +22,7 @@ export function SupervisorSectionCard({
         <section className="premium-surface p-6">
             <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
                 <div>
-                    <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-brand-slate">
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-brand-slate dark:text-brand-light/60">
                         {eyebrow}
                     </p>
                     <h2 className="mt-2 text-xl font-semibold tracking-tight text-brand-navy dark:text-brand-light">

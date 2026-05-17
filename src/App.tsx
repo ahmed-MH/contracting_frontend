@@ -12,6 +12,7 @@ import { useTranslation } from 'react-i18next';
 import { useTheme } from './hooks/useTheme';
 import type { UserRole } from './features/auth/types/auth.types';
 import AppErrorBoundary from './features/errors/components/AppErrorBoundary';
+import IntegrationPlanAccessGate from './features/integrations/components/IntegrationPlanAccessGate';
 
 const LandingPage = lazy(() => import('./features/public/LandingPage'));
 const OnboardingPage = lazy(() => import('./features/public/OnboardingPage'));
@@ -49,6 +50,9 @@ const ContractPreviewPage = lazy(() => import('./features/contracts/pages/Contra
 const CommercialOverviewPage = lazy(() => import('./features/commercial/pages/CommercialOverviewPage'));
 const UsersPage = lazy(() => import('./features/admin/pages/UsersPage'));
 const AdminOverviewPage = lazy(() => import('./features/admin/pages/AdminOverviewPage'));
+const ProfilePage = lazy(() => import('./features/profile/pages/ProfilePage'));
+const ProfileBillingSuccessPage = lazy(() => import('./features/profile/pages/ProfileBillingSuccessPage'));
+const ProfileBillingCancelPage = lazy(() => import('./features/profile/pages/ProfileBillingCancelPage'));
 const IntegrationOverviewPage = lazy(() => import('./features/integrations/pages/IntegrationOverviewPage'));
 const IntegrationApiUsersPage = lazy(() => import('./features/integrations/pages/IntegrationApiUsersPage'));
 const IntegrationApiKeysPage = lazy(() => import('./features/integrations/pages/IntegrationApiKeysPage'));
@@ -329,6 +333,30 @@ function App() {
                                 }
                             />
                             <Route
+                                path="profile"
+                                element={
+                                    <ProtectedRoute allowedRoles={['ADMIN', 'COMMERCIAL', 'AGENT']}>
+                                        <ProfilePage />
+                                    </ProtectedRoute>
+                                }
+                            />
+                            <Route
+                                path="profile/billing/success"
+                                element={
+                                    <ProtectedRoute allowedRoles={['ADMIN', 'COMMERCIAL', 'AGENT']}>
+                                        <ProfileBillingSuccessPage />
+                                    </ProtectedRoute>
+                                }
+                            />
+                            <Route
+                                path="profile/billing/cancel"
+                                element={
+                                    <ProtectedRoute allowedRoles={['ADMIN', 'COMMERCIAL', 'AGENT']}>
+                                        <ProfileBillingCancelPage />
+                                    </ProtectedRoute>
+                                }
+                            />
+                            <Route
                                 path="admin/integrations"
                                 element={
                                     <ProtectedRoute allowedRoles={adminOnlyRoles}>
@@ -340,7 +368,9 @@ function App() {
                                 path="admin/integrations/overview"
                                 element={
                                     <ProtectedRoute allowedRoles={adminOnlyRoles}>
-                                        <IntegrationOverviewPage />
+                                        <IntegrationPlanAccessGate>
+                                            <IntegrationOverviewPage />
+                                        </IntegrationPlanAccessGate>
                                     </ProtectedRoute>
                                 }
                             />
@@ -348,7 +378,9 @@ function App() {
                                 path="admin/integrations/users"
                                 element={
                                     <ProtectedRoute allowedRoles={adminOnlyRoles}>
-                                        <IntegrationApiUsersPage />
+                                        <IntegrationPlanAccessGate>
+                                            <IntegrationApiUsersPage />
+                                        </IntegrationPlanAccessGate>
                                     </ProtectedRoute>
                                 }
                             />
@@ -356,7 +388,9 @@ function App() {
                                 path="admin/integrations/keys"
                                 element={
                                     <ProtectedRoute allowedRoles={adminOnlyRoles}>
-                                        <IntegrationApiKeysPage />
+                                        <IntegrationPlanAccessGate>
+                                            <IntegrationApiKeysPage />
+                                        </IntegrationPlanAccessGate>
                                     </ProtectedRoute>
                                 }
                             />
@@ -364,7 +398,9 @@ function App() {
                                 path="admin/integrations/endpoints"
                                 element={
                                     <ProtectedRoute allowedRoles={adminOnlyRoles}>
-                                        <IntegrationEndpointsPage />
+                                        <IntegrationPlanAccessGate>
+                                            <IntegrationEndpointsPage />
+                                        </IntegrationPlanAccessGate>
                                     </ProtectedRoute>
                                 }
                             />
@@ -372,7 +408,9 @@ function App() {
                                 path="admin/integrations/playground"
                                 element={
                                     <ProtectedRoute allowedRoles={adminOnlyRoles}>
-                                        <IntegrationPlaygroundPage />
+                                        <IntegrationPlanAccessGate>
+                                            <IntegrationPlaygroundPage />
+                                        </IntegrationPlanAccessGate>
                                     </ProtectedRoute>
                                 }
                             />
@@ -380,7 +418,9 @@ function App() {
                                 path="admin/integrations/logs"
                                 element={
                                     <ProtectedRoute allowedRoles={adminOnlyRoles}>
-                                        <IntegrationUsageLogsPage />
+                                        <IntegrationPlanAccessGate>
+                                            <IntegrationUsageLogsPage />
+                                        </IntegrationPlanAccessGate>
                                     </ProtectedRoute>
                                 }
                             />
@@ -388,7 +428,9 @@ function App() {
                                 path="admin/integrations/docs"
                                 element={
                                     <ProtectedRoute allowedRoles={adminOnlyRoles}>
-                                        <IntegrationDeveloperDocsPage />
+                                        <IntegrationPlanAccessGate>
+                                            <IntegrationDeveloperDocsPage />
+                                        </IntegrationPlanAccessGate>
                                     </ProtectedRoute>
                                 }
                             />

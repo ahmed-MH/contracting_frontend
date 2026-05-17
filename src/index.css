@@ -155,7 +155,7 @@
   }
 
   .premium-surface {
-    @apply rounded-2xl border border-brand-light/60 bg-brand-light/78 shadow-md backdrop-blur-xl dark:border-brand-light/10 dark:bg-brand-navy/80;
+    @apply rounded-2xl border border-brand-slate/15 bg-white/82 shadow-md shadow-brand-navy/5 backdrop-blur-xl dark:border-brand-light/10 dark:bg-brand-navy/80 dark:shadow-md;
   }
 
   .contract-section-surface,
@@ -263,6 +263,10 @@
     scrollbar-gutter: stable;
   }
 
+  .dark .premium-surface .text-brand-slate {
+    color: color-mix(in srgb, var(--color-brand-light) 68%, var(--color-brand-slate)) !important;
+  }
+
   .dark .premium-surface table thead tr {
     background-color: color-mix(in srgb, var(--color-brand-light) 6%, transparent) !important;
     border-color: color-mix(in srgb, var(--color-brand-light) 12%, transparent) !important;
@@ -295,7 +299,7 @@
   }
 
   .premium-nav-glass {
-    @apply rounded-2xl border border-brand-light/60 bg-brand-light/65 shadow-md backdrop-blur-2xl dark:border-brand-light/10 dark:bg-brand-navy/80;
+    @apply rounded-2xl border border-brand-slate/15 bg-white/70 shadow-md shadow-brand-navy/5 backdrop-blur-2xl dark:border-brand-light/10 dark:bg-brand-navy/80 dark:shadow-md;
   }
 
   .premium-pill {

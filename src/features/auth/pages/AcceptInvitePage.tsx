@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useSearchParams, useNavigate, Link } from 'react-router-dom';
@@ -22,6 +22,8 @@ export default function AcceptInvitePage() {
     const [showPassword, setShowPassword] = useState(false);
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
+    const [isCheckingInvite, setIsCheckingInvite] = useState(Boolean(token));
+    const [inviteUnavailable, setInviteUnavailable] = useState(!token);
     const schema = useMemo(() => createAcceptInviteSchema(t), [t]);
 
     const {
@@ -35,7 +37,7 @@ export default function AcceptInvitePage() {
 
     const onSubmit = async (data: AcceptInviteFormValues) => {
         if (!token) {
-            setError(t('auth:acceptInvite.errors.missingToken'));
+            setInviteUnavailable(true);
             return;
         }
         setError('');
@@ -50,13 +52,56 @@ export default function AcceptInvitePage() {
             loginWithResponse(response);
             navigate(getDefaultPathForRole(response.user.role), { replace: true });
         } catch {
-            setError(t('auth:acceptInvite.errors.invalidToken'));
+            setInviteUnavailable(true);
         } finally {
             setLoading(false);
         }
     };
 
-    if (!token) {
+    useEffect(() => {
+        let isMounted = true;
+
+        if (!token) {
+            setInviteUnavailable(true);
+            setIsCheckingInvite(false);
+            return undefined;
+        }
+
+        setIsCheckingInvite(true);
+        authService.validateInvite(token)
+            .then(() => {
+                if (isMounted) {
+                    setInviteUnavailable(false);
+                }
+            })
+            .catch(() => {
+                if (isMounted) {
+                    setInviteUnavailable(true);
+                }
+            })
+            .finally(() => {
+                if (isMounted) {
+                    setIsCheckingInvite(false);
+                }
+            });
+
+        return () => {
+            isMounted = false;
+        };
+    }, [token]);
+
+    if (isCheckingInvite) {
+        return (
+            <div className="flex w-full flex-col items-center justify-center py-10 text-center">
+                <Spinner />
+                <p className="mt-4 text-sm font-medium text-brand-slate dark:text-brand-light/75">
+                    Checking invitation...
+                </p>
+            </div>
+        );
+    }
+
+    if (inviteUnavailable) {
         return (
             <div className="w-full text-center">
                 <div className="mx-auto w-16 h-16 rounded-2xl bg-brand-slate/10 dark:bg-brand-navy/80 border border-brand-slate/30 dark:border-brand-slate/30 flex items-center justify-center mb-6">
@@ -65,10 +110,10 @@ export default function AcceptInvitePage() {
                     </svg>
                 </div>
                 <h1 className="text-[1.75rem] sm:text-[2rem] font-extrabold text-brand-navy dark:text-brand-light tracking-tight mb-2">
-                    {t('auth:acceptInvite.missingToken.title')}
+                    Invitation unavailable
                 </h1>
                 <p className="text-[14px] text-brand-slate dark:text-brand-light/75 font-medium mb-8">
-                    {t('auth:acceptInvite.missingToken.subtitle')}
+                    This invitation is no longer valid. Please contact your organization administrator for a new invite.
                 </p>
                 <Link to="/login">
                     <Button
@@ -76,7 +121,7 @@ export default function AcceptInvitePage() {
                         className="w-full h-12 font-semibold text-[14px] gap-2 border-brand-slate/20 dark:border-brand-slate/20 hover:border-brand-mint/40"
                     >
                         <ArrowLeft size={16} />
-                        {t('auth:acceptInvite.backToLogin')}
+                        Go to login
                     </Button>
                 </Link>
             </div>

@@ -13,8 +13,8 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 
     const variants = {
       primary: 'bg-brand-mint text-brand-light hover:bg-brand-mint/90',
-      secondary: 'bg-transparent border border-brand-navy text-brand-navy hover:bg-brand-mint/10 dark:border-brand-light dark:text-brand-light dark:hover:bg-brand-light/10',
-      danger: 'bg-brand-slate/20 text-brand-light hover:bg-brand-slate/35 dark:bg-brand-slate/35 dark:hover:bg-brand-slate/50',
+      secondary: 'bg-white/60 border border-brand-slate/25 text-brand-navy hover:border-brand-mint/40 hover:bg-brand-mint/10 dark:bg-transparent dark:border-brand-light/40 dark:text-brand-light dark:hover:bg-brand-light/10',
+      danger: 'bg-red-600 text-white hover:bg-red-700 dark:bg-red-500/85 dark:hover:bg-red-500',
     };
 
     return (

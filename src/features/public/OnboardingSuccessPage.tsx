@@ -16,14 +16,18 @@ export default function OnboardingSuccessPage() {
                     <div className="inline-flex rounded-2xl bg-brand-mint/10 p-3 text-brand-mint">
                         <CheckCircle2 size={24} />
                     </div>
-                    <h1 className="mt-6 text-4xl font-semibold tracking-tight">Payment completed.</h1>
+                    <h1 className="mt-6 text-4xl font-semibold tracking-tight">Payment received.</h1>
                     <p className="mt-4 text-base leading-8 text-brand-slate">
-                        Your tenant workspace is being prepared. The first ADMIN user will receive an invitation link to activate the account and set a password.
+                        Stripe confirmed the payment. Your tenant workspace is prepared through the signed Stripe webhook, then the first ADMIN user receives an invitation email to activate the account and set a password.
+                    </p>
+                    <p className="mt-3 text-base leading-8 text-brand-slate">
+                        After accepting the invitation, the admin can sign in and continue setup from the platform login page.
                     </p>
                     {sessionId ? (
-                        <p className="mt-5 rounded-2xl border border-brand-light/70 bg-brand-light/60 px-4 py-3 text-sm text-brand-slate dark:border-brand-light/10 dark:bg-brand-light/5">
-                            Checkout session: {sessionId}
-                        </p>
+                        <details className="mt-5 rounded-2xl border border-brand-light/70 bg-brand-light/60 px-4 py-3 text-sm text-brand-slate dark:border-brand-light/10 dark:bg-brand-light/5">
+                            <summary className="cursor-pointer font-semibold text-brand-navy dark:text-brand-light">Technical reference</summary>
+                            <p className="mt-2 break-all">Checkout session: {sessionId}</p>
+                        </details>
                     ) : null}
                     <Link
                         to="/login"

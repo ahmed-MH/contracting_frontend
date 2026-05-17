@@ -42,7 +42,9 @@ export interface SupervisorSubscription {
     organizationName: string;
     planId: number;
     planName: string;
+    billingType?: 'RECURRING' | 'ONE_TIME';
     monthlyRecurringRevenue: number;
+    oneTimeRevenue?: number;
     currency: string;
     status: SupervisorSubscriptionStatus;
     renewalDate: string;
@@ -60,6 +62,7 @@ export interface SupervisorSubscriptionSummary {
     suspendedSubscriptions: number;
     monthlyRecurringRevenue: number;
     atRiskMonthlyRecurringRevenue: number;
+    oneTimeRevenue?: number;
     currency: string;
 }
 
@@ -69,9 +72,93 @@ export interface UpdateSupervisorSubscriptionStatusPayload {
     renewalDate?: string;
 }
 
+export interface AssignSupervisorTenantPlanPayload {
+    tenantId: number;
+    planId: number;
+    status?: SupervisorSubscriptionStatus;
+}
+
+export type SupervisorPublicSignupStatus = 'PENDING_PAYMENT' | 'PAID' | 'COMPLETED' | 'EXPIRED' | 'FAILED';
+
+export interface SupervisorPublicSignup {
+    id: number;
+    companyName: string;
+    adminFullName: string;
+    adminEmail: string;
+    phone: string | null;
+    planId: number;
+    planName: string;
+    billingType: 'RECURRING' | 'ONE_TIME';
+    status: SupervisorPublicSignupStatus;
+    failureReason: string | null;
+    stripeCheckoutSessionId: string | null;
+    tenantId: number | null;
+    adminUserId: number | null;
+    subscriptionId: number | null;
+    completedAt: string | null;
+    createdAt: string;
+    updatedAt: string;
+}
+
+export interface ListSupervisorPublicSignupsParams {
+    status?: SupervisorPublicSignupStatus;
+    limit?: number;
+    page?: number;
+}
+
 export interface SupervisorCheckoutSession {
     checkoutUrl: string;
     sessionId: string;
+}
+
+export type SupervisorAuditLogCategory =
+    | 'AUTH'
+    | 'TENANT'
+    | 'PLAN'
+    | 'SUBSCRIPTION'
+    | 'BILLING'
+    | 'WEBHOOK'
+    | 'INVITE'
+    | 'ENTITLEMENT'
+    | 'SYSTEM';
+
+export type SupervisorAuditLogSeverity = 'INFO' | 'WARNING' | 'ERROR' | 'CRITICAL';
+
+export interface SupervisorSystemLog {
+    id: number;
+    eventType: string;
+    category: SupervisorAuditLogCategory;
+    severity: SupervisorAuditLogSeverity;
+    message: string;
+    actorUserId: number | null;
+    actorEmail: string | null;
+    actorRole: string | null;
+    tenantId: number | null;
+    tenantName: string | null;
+    targetType: string | null;
+    targetId: string | null;
+    metadata: Record<string, unknown> | null;
+    ipAddress: string | null;
+    userAgent: string | null;
+    createdAt: string;
+}
+
+export interface ListSupervisorSystemLogsParams {
+    page?: number;
+    limit?: number;
+    category?: SupervisorAuditLogCategory | '';
+    severity?: SupervisorAuditLogSeverity | '';
+    tenantId?: number;
+    search?: string;
+    from?: string;
+    to?: string;
+}
+
+export interface PaginatedSupervisorSystemLogs {
+    items: SupervisorSystemLog[];
+    page: number;
+    limit: number;
+    total: number;
 }
 
 export const supervisorService = {
@@ -83,6 +170,9 @@ export const supervisorService = {
 
     suspendTenant: (id: number) =>
         apiClient.patch<SupervisorTenant>(`/tenants/${id}/suspend`).then((response) => response.data),
+
+    reactivateTenant: (id: number) =>
+        apiClient.patch<SupervisorTenant>(`/tenants/${id}/reactivate`).then((response) => response.data),
 
     listPlans: () =>
         apiClient.get<SupervisorPlan[]>('/plans').then((response) => response.data),
@@ -105,6 +195,18 @@ export const supervisorService = {
     updateSubscriptionStatus: (id: number, payload: UpdateSupervisorSubscriptionStatusPayload) =>
         apiClient.patch<SupervisorSubscription>(`/subscriptions/${id}/status`, payload).then((response) => response.data),
 
+    assignTenantPlan: (payload: AssignSupervisorTenantPlanPayload) =>
+        apiClient.post<SupervisorSubscription>('/subscriptions/assign-plan', payload).then((response) => response.data),
+
+    listPublicSignups: (params?: ListSupervisorPublicSignupsParams) =>
+        apiClient.get<SupervisorPublicSignup[]>('/public-signups', { params }).then((response) => response.data),
+
+    getPublicSignup: (id: number) =>
+        apiClient.get<SupervisorPublicSignup>(`/public-signups/${id}`).then((response) => response.data),
+
     createCheckoutSession: (tenantId: number, planId: number) =>
         apiClient.post<SupervisorCheckoutSession>('/billing/checkout-session', { tenantId, planId }).then((response) => response.data),
+
+    listSystemLogs: (params?: ListSupervisorSystemLogsParams) =>
+        apiClient.get<PaginatedSupervisorSystemLogs>('/system-logs', { params }).then((response) => response.data),
 };

@@ -6,12 +6,11 @@ import { useTranslation } from 'react-i18next';
 import {
     getRoleNavigation,
     isNavigationItemActive,
-    platformLogs,
     supervisorSections,
-    systemHealthSignals,
 } from './navigation';
 import { BrandLockup, HeaderActions } from './LayoutControls';
 import { Logo } from '../components/ui/Logo';
+import { useSupervisorSystemLogs } from '../features/supervisor/hooks/useSupervisor';
 
 const SIDEBAR_STORAGE_KEY = 'supervisorSidebarCollapsed';
 
@@ -20,6 +19,28 @@ export default function SupervisorLayout() {
     const location = useLocation();
     const roleNavigation = getRoleNavigation('SUPERVISOR');
     const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+    const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
+    const apiHost = useMemo(() => {
+        try {
+            return new URL(apiBaseUrl).host;
+        } catch {
+            return apiBaseUrl;
+        }
+    }, [apiBaseUrl]);
+    const webhookLogsQuery = useSupervisorSystemLogs({ page: 1, limit: 1, category: 'WEBHOOK' });
+    const latestWebhookLog = webhookLogsQuery.data?.items[0];
+    const hasRecentWebhookEvent = latestWebhookLog
+        ? Date.now() - new Date(latestWebhookLog.createdAt).getTime() < 24 * 60 * 60 * 1000
+        : false;
+    const webhookStatusLabel = webhookLogsQuery.isLoading
+        ? t('common:layouts.supervisor.sidebar.webhookChecking', { defaultValue: 'Checking' })
+        : webhookLogsQuery.isError
+            ? t('common:layouts.supervisor.sidebar.webhookUnavailable', { defaultValue: 'Unavailable' })
+            : hasRecentWebhookEvent
+                ? t('common:layouts.supervisor.sidebar.webhookRecent', { defaultValue: 'Recent' })
+                : latestWebhookLog
+                    ? t('common:layouts.supervisor.sidebar.webhookQuiet', { defaultValue: 'Quiet' })
+                    : t('common:layouts.supervisor.sidebar.webhookNoEvents', { defaultValue: 'No events' });
 
     useEffect(() => {
         const saved = localStorage.getItem(SIDEBAR_STORAGE_KEY);
@@ -45,29 +66,29 @@ export default function SupervisorLayout() {
             <div className="relative flex min-h-screen">
                 <aside
                     className={clsx(
-                        'hidden shrink-0 border-r border-brand-light/60 bg-brand-navy px-4 py-5 text-brand-light shadow-md transition-[width,padding] duration-300 lg:flex lg:flex-col',
+                        'hidden shrink-0 border-r border-brand-slate/15 bg-brand-light/82 px-4 py-5 text-brand-navy shadow-md shadow-brand-navy/5 backdrop-blur-2xl transition-[width,padding] duration-300 dark:border-brand-light/10 dark:bg-brand-navy dark:text-brand-light dark:shadow-md lg:flex lg:flex-col',
                         isSidebarCollapsed ? 'w-[104px]' : 'w-[320px]',
                     )}
                 >
                     <div className={clsx('flex items-center', isSidebarCollapsed ? 'justify-center' : 'justify-start')}>
                         <div
                             className={clsx(
-                                'rounded-2xl border border-brand-light/10 bg-brand-light/6 shadow-sm backdrop-blur-xl',
+                                'rounded-2xl border border-brand-slate/15 bg-white/70 shadow-sm backdrop-blur-xl dark:border-brand-light/10 dark:bg-brand-light/6',
                                 isSidebarCollapsed ? 'p-4' : 'px-4 py-3',
                             )}
                         >
                             {isSidebarCollapsed ? (
                                 <div className="flex h-12 w-12 items-center justify-center">
-                                    <Logo variant="mark" tone="light" />
+                                    <Logo variant="mark" />
                                 </div>
                             ) : (
                                 <div className="flex items-center gap-3">
-                                    <Logo tone="light" />
+                                    <Logo />
                                     <div>
-                                        <p className="text-sm font-semibold text-brand-light">
+                                        <p className="text-sm font-semibold text-brand-navy dark:text-brand-light">
                                             {t('common:layouts.supervisor.sidebar.supervisor', { defaultValue: 'Supervisor' })}
                                         </p>
-                                        <p className="mt-0.5 text-xs text-brand-light/65">
+                                        <p className="mt-0.5 text-xs text-brand-slate dark:text-brand-light/65">
                                             {t('common:layouts.supervisor.sidebar.platformControlsOnly', { defaultValue: 'Platform controls only' })}
                                         </p>
                                     </div>
@@ -80,7 +101,7 @@ export default function SupervisorLayout() {
                         {supervisorSections.map((section) => (
                             <div key={section.title}>
                                 {!isSidebarCollapsed && (
-                                    <p className="px-3 text-[11px] font-semibold uppercase tracking-[0.28em] text-brand-light/65">
+                                    <p className="px-3 text-[11px] font-semibold uppercase tracking-[0.28em] text-brand-slate/80 dark:text-brand-light/65">
                                         {section.titleKey ? t(section.titleKey, { defaultValue: section.title }) : section.title}
                                     </p>
                                 )}
@@ -100,20 +121,20 @@ export default function SupervisorLayout() {
                                                         ? [
                                                             'flex items-center justify-center rounded-3xl px-0 py-3',
                                                             isActive
-                                                                ? 'bg-brand-light/10 text-brand-light shadow-md'
-                                                                : 'text-brand-light/75 hover:bg-brand-light/6 hover:text-brand-light',
+                                                                ? 'bg-brand-mint/10 text-brand-mint shadow-sm ring-1 ring-brand-mint/20 dark:bg-brand-light/10 dark:text-brand-light dark:shadow-md dark:ring-0'
+                                                                : 'text-brand-slate hover:bg-brand-mint/8 hover:text-brand-navy dark:text-brand-light/75 dark:hover:bg-brand-light/6 dark:hover:text-brand-light',
                                                         ]
                                                         : [
                                                             'flex items-start gap-3 rounded-3xl px-4 py-3',
                                                             isActive
-                                                                ? 'bg-brand-light/10 text-brand-light shadow-md'
-                                                                : 'text-brand-light/75 hover:bg-brand-light/6 hover:text-brand-light',
+                                                                ? 'bg-brand-mint/10 text-brand-navy shadow-sm ring-1 ring-brand-mint/20 dark:bg-brand-light/10 dark:text-brand-light dark:shadow-md dark:ring-0'
+                                                                : 'text-brand-slate hover:bg-brand-mint/8 hover:text-brand-navy dark:text-brand-light/75 dark:hover:bg-brand-light/6 dark:hover:text-brand-light',
                                                         ],
                                                 )}
                                             >
                                                 <div className={clsx(
                                                     'rounded-2xl p-2.5',
-                                                    isActive ? 'bg-brand-mint/18 text-brand-mint' : 'bg-brand-light/5 text-brand-light/75',
+                                                    isActive ? 'bg-brand-mint/15 text-brand-mint' : 'bg-brand-slate/8 text-brand-slate dark:bg-brand-light/5 dark:text-brand-light/75',
                                                 )}>
                                                     <Icon size={17} />
                                                 </div>
@@ -124,7 +145,7 @@ export default function SupervisorLayout() {
                                                             {item.labelKey ? t(item.labelKey, { defaultValue: item.label }) : item.label}
                                                         </p>
                                                         {item.description && (
-                                                            <p className="mt-1 text-xs leading-5 text-brand-light/65">
+                                                            <p className="mt-1 text-xs leading-5 text-brand-slate dark:text-brand-light/65">
                                                                 {item.descriptionKey
                                                                     ? t(item.descriptionKey, { defaultValue: item.description })
                                                                     : item.description}
@@ -141,45 +162,42 @@ export default function SupervisorLayout() {
                     </div>
 
                     {!isSidebarCollapsed && (
-                        <>
-                            <div className="mt-8 rounded-2xl border border-brand-light/10 bg-brand-light/6 p-4">
-                                <p className="text-[11px] font-semibold uppercase tracking-[0.26em] text-brand-light/65">
-                                    {t('common:layouts.supervisor.sidebar.systemHealth', { defaultValue: 'System Health' })}
-                                </p>
-                                <div className="mt-4 space-y-3">
-                                    {systemHealthSignals.map((signal) => (
-                                        <div key={signal.label} className="flex items-center justify-between rounded-2xl bg-brand-light/5 px-3 py-2">
-                                            <span className="text-sm text-brand-light/75">
-                                                {t(signal.labelKey, { defaultValue: signal.label })}
-                                            </span>
-                                            <span className={clsx(
-                                                'text-sm font-semibold',
-                                                signal.tone === 'healthy' && 'text-brand-mint',
-                                                signal.tone === 'steady' && 'text-brand-light/90',
-                                                signal.tone === 'warning' && 'text-brand-light',
-                                            )}>
-                                                {signal.value}
-                                            </span>
-                                        </div>
-                                    ))}
+                        <div className="mt-8 rounded-2xl border border-brand-slate/15 bg-white/70 p-4 shadow-sm shadow-brand-navy/5 dark:border-brand-light/10 dark:bg-brand-light/6 dark:shadow-none">
+                            <p className="text-[11px] font-semibold uppercase tracking-[0.26em] text-brand-slate/80 dark:text-brand-light/65">
+                                {t('common:layouts.supervisor.sidebar.environmentStatus', { defaultValue: 'Environment Status' })}
+                            </p>
+                            <div className="mt-4 space-y-3 text-sm">
+                                <div className="flex items-center justify-between gap-3">
+                                    <span className="text-brand-slate dark:text-brand-light/58">
+                                        {t('common:layouts.supervisor.sidebar.runtime', { defaultValue: 'Runtime' })}
+                                    </span>
+                                    <span className="rounded-full bg-brand-mint/10 px-2.5 py-1 text-xs font-semibold uppercase tracking-[0.12em] text-brand-mint">
+                                        {import.meta.env.PROD
+                                            ? t('common:layouts.supervisor.sidebar.productionRuntime', { defaultValue: 'Production' })
+                                            : t('common:layouts.supervisor.sidebar.localRuntime', { defaultValue: 'Local' })}
+                                    </span>
+                                </div>
+                                <div className="flex items-center justify-between gap-3">
+                                    <span className="text-brand-slate dark:text-brand-light/58">
+                                        {t('common:layouts.supervisor.sidebar.apiHost', { defaultValue: 'API Host' })}
+                                    </span>
+                                    <span className="max-w-[150px] truncate font-semibold text-brand-navy dark:text-brand-light/82" title={apiBaseUrl}>
+                                        {apiHost}
+                                    </span>
+                                </div>
+                                <div className="flex items-center justify-between gap-3">
+                                    <span className="text-brand-slate dark:text-brand-light/58">
+                                        {t('common:layouts.supervisor.sidebar.stripeWebhook', { defaultValue: 'Stripe Webhook' })}
+                                    </span>
+                                    <span
+                                        className="max-w-[150px] truncate font-semibold text-brand-navy dark:text-brand-light/82"
+                                        title={latestWebhookLog?.message}
+                                    >
+                                        {webhookStatusLabel}
+                                    </span>
                                 </div>
                             </div>
-
-                            <div className="mt-4 rounded-2xl border border-brand-light/10 bg-brand-light/6 p-4">
-                                <p className="text-[11px] font-semibold uppercase tracking-[0.26em] text-brand-light/65">
-                                    {t('common:layouts.supervisor.sidebar.liveLogs', { defaultValue: 'Live Logs' })}
-                                </p>
-                                <div className="mt-4 space-y-3">
-                                    {platformLogs.map((entry, index) => (
-                                        <div key={entry} className="rounded-2xl border border-brand-light/6 bg-brand-navy/70 px-3 py-3">
-                                            <p className="text-sm text-brand-light/75">
-                                                {t(`common:layouts.supervisor.logs.${index}`, { defaultValue: entry })}
-                                            </p>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-                        </>
+                        </div>
                     )}
                 </aside>
 
@@ -199,7 +217,7 @@ export default function SupervisorLayout() {
                                     <button
                                         type="button"
                                         onClick={() => setIsSidebarCollapsed((value) => !value)}
-                                        className="inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-brand-light/60 bg-brand-light/70 text-brand-slate shadow-sm backdrop-blur-xl transition hover:text-brand-navy dark:border-brand-light/10 dark:bg-brand-light/5 dark:text-brand-light/75 dark:hover:text-brand-light"
+                                        className="inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-brand-slate/15 bg-white/70 text-brand-slate shadow-sm backdrop-blur-xl transition hover:text-brand-navy dark:border-brand-light/10 dark:bg-brand-light/5 dark:text-brand-light/75 dark:hover:text-brand-light"
                                         aria-label={isSidebarCollapsed
                                             ? t('common:layouts.supervisor.sidebar.expandSidebar', { defaultValue: 'Expand sidebar' })
                                             : t('common:layouts.supervisor.sidebar.collapseSidebar', { defaultValue: 'Collapse sidebar' })}
@@ -248,8 +266,8 @@ export default function SupervisorLayout() {
                                             className={clsx(
                                                 'premium-nav-glass flex items-center gap-2 px-3 py-2 text-sm font-medium transition',
                                                 isActive
-                                                    ? 'border-brand-mint/20 bg-brand-navy text-brand-light'
-                                                    : 'text-brand-slate hover:text-brand-navy dark:hover:text-brand-light',
+                                                    ? 'border-brand-mint/30 bg-brand-mint/10 text-brand-mint dark:bg-brand-light/10 dark:text-brand-light'
+                                                    : 'text-brand-slate hover:text-brand-navy dark:text-brand-light/70 dark:hover:text-brand-light',
                                             )}
                                         >
                                             <Icon size={15} />

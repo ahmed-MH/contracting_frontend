@@ -9,6 +9,7 @@ import {
     Moon,
     Plus,
     Sun,
+    UserCircle,
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -228,6 +229,18 @@ export function UserProfileDropdown({ roleLabel }: { roleLabel: string }) {
                             </span>
                             <LanguageSwitcher compact />
                         </div>
+                        <button
+                            type="button"
+                            role="menuitem"
+                            onClick={() => {
+                                setIsOpen(false);
+                                navigate('/profile');
+                            }}
+                            className="pricify-dropdown-item"
+                        >
+                            <span>{t('navigation.profile', { defaultValue: 'Profile' })}</span>
+                            <UserCircle size={16} />
+                        </button>
                         <button
                             type="button"
                             role="menuitem"

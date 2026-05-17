@@ -20,7 +20,7 @@ import AdminPageHeader from '../components/AdminPageHeader';
 import AdminSectionCard from '../components/AdminSectionCard';
 import InviteUserModal from '../components/InviteUserModal';
 import EditUserModal from '../components/EditUserModal';
-import { useUsers, useSuspendUser, useReactivateUser, type UserListItem } from '../hooks/useUsers';
+import { useUsers, useSuspendUser, useReactivateUser, useRemovePendingInvite, useTenantUsage, type UserListItem } from '../hooks/useUsers';
 import { useHotels } from '../../hotel/hooks/useHotels';
 import { useConfirm } from '../../../context/ConfirmContext';
 
@@ -121,12 +121,14 @@ function ActionButtons({
     onEdit,
     onSuspend,
     onReactivate,
+    onRemoveInvite,
     isPending,
 }: {
     user: UserListItem;
     onEdit: (user: UserListItem) => void;
     onSuspend: (user: UserListItem) => void;
     onReactivate: (user: UserListItem) => void;
+    onRemoveInvite: (user: UserListItem) => void;
     isPending?: boolean;
 }) {
     const { t } = useTranslation('common');
@@ -166,6 +168,18 @@ function ActionButtons({
                     aria-label={t('pages.users.actions.reactivate', { defaultValue: 'Reactivate user' })}
                 >
                     <UserCheck size={16} />
+                </button>
+            )}
+            {status === 'PENDING_INVITE' && (
+                <button
+                    type="button"
+                    onClick={() => onRemoveInvite(user)}
+                    disabled={isPending}
+                    className="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-red-200 bg-red-50 text-red-600 transition hover:border-red-300 hover:bg-red-100 disabled:pointer-events-none disabled:opacity-50 dark:border-red-500/20 dark:bg-red-500/10 dark:text-red-300 dark:hover:bg-red-500/15"
+                    title={t('pages.users.actions.removeInvite', { defaultValue: 'Remove invite' })}
+                    aria-label={t('pages.users.actions.removeInvite', { defaultValue: 'Remove invite' })}
+                >
+                    <X size={16} />
                 </button>
             )}
         </div>
@@ -266,6 +280,7 @@ function UserTable({
     onEdit,
     onSuspend,
     onReactivate,
+    onRemoveInvite,
     isActionPending,
 }: {
     users: UserListItem[];
@@ -274,6 +289,7 @@ function UserTable({
     onEdit: (user: UserListItem) => void;
     onSuspend: (user: UserListItem) => void;
     onReactivate: (user: UserListItem) => void;
+    onRemoveInvite: (user: UserListItem) => void;
     isActionPending?: boolean;
 }) {
     const { t } = useTranslation('common');
@@ -293,7 +309,7 @@ function UserTable({
                     <article key={user.id} className="rounded-lg border border-brand-light/70 bg-brand-light/60 p-4 shadow-sm dark:border-brand-light/10 dark:bg-brand-light/5">
                         <div className="flex items-start justify-between gap-3">
                             <UserAvatar user={user} />
-                            <ActionButtons user={user} onEdit={onEdit} onSuspend={onSuspend} onReactivate={onReactivate} isPending={isActionPending} />
+                            <ActionButtons user={user} onEdit={onEdit} onSuspend={onSuspend} onReactivate={onReactivate} onRemoveInvite={onRemoveInvite} isPending={isActionPending} />
                         </div>
                         <div className="mt-4 flex flex-wrap gap-2">
                             <RoleBadge role={user.role} />
@@ -354,7 +370,7 @@ function UserTable({
                                     </td>
                                 )}
                                 <td className="px-5 py-4 align-top"><StatusBadge user={user} /></td>
-                                <td className="px-5 py-4 align-top text-right"><ActionButtons user={user} onEdit={onEdit} onSuspend={onSuspend} onReactivate={onReactivate} isPending={isActionPending} /></td>
+                                <td className="px-5 py-4 align-top text-right"><ActionButtons user={user} onEdit={onEdit} onSuspend={onSuspend} onReactivate={onReactivate} onRemoveInvite={onRemoveInvite} isPending={isActionPending} /></td>
                             </tr>
                         ))}
                     </tbody>
@@ -375,9 +391,11 @@ export default function UsersPage() {
     const [hotelFilter, setHotelFilter] = useState('ALL');
     const { confirm } = useConfirm();
     const { data: users, isLoading, isError } = useUsers();
+    const { data: tenantUsage } = useTenantUsage();
     const { data: allHotels = [] } = useHotels();
     const suspendMutation = useSuspendUser();
     const reactivateMutation = useReactivateUser();
+    const removeInviteMutation = useRemovePendingInvite();
 
     const allUsers = users ?? [];
     const admins = allUsers.filter((user) => user.role === 'ADMIN');
@@ -385,6 +403,9 @@ export default function UsersPage() {
     const agents = allUsers.filter((user) => user.role === 'AGENT');
     const activeUsers = allUsers.filter((user) => getUserAccountStatus(user) === 'ACTIVE').length;
     const pendingUsers = allUsers.filter((user) => getUserAccountStatus(user) === 'PENDING_INVITE').length;
+    const seatUsageLabel = tenantUsage
+        ? `${tenantUsage.users.used}/${tenantUsage.users.limit}`
+        : users?.length ?? 0;
     const activeCommercials = commercials.filter((user) => getUserAccountStatus(user) === 'ACTIVE');
     const normalizedSearch = searchTerm.trim().toLowerCase();
     const filteredUsers = useMemo(() => allUsers.filter((user) => {
@@ -437,7 +458,20 @@ export default function UsersPage() {
         }
     };
 
-    const isUserActionPending = suspendMutation.isPending || reactivateMutation.isPending;
+    const handleRemoveInvite = async (user: UserListItem) => {
+        if (await confirm({
+            title: t('pages.users.confirmRemoveInvite.title', { defaultValue: 'Remove pending invite?' }),
+            description: t('pages.users.confirmRemoveInvite.description', {
+                defaultValue: 'Remove this pending invite? The invite link will stop working and the seat will become available.',
+            }),
+            confirmLabel: t('pages.users.confirmRemoveInvite.confirmLabel', { defaultValue: 'Remove invite' }),
+            variant: 'danger',
+        })) {
+            removeInviteMutation.mutate(user.id);
+        }
+    };
+
+    const isUserActionPending = suspendMutation.isPending || reactivateMutation.isPending || removeInviteMutation.isPending;
 
     return (
         <div className="space-y-6 p-4 md:p-6">
@@ -464,10 +498,10 @@ export default function UsersPage() {
                 ) : (
                     <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
                         {[
-                            { label: t('pages.users.metrics.totalSeats', { defaultValue: 'Total seats' }), value: users?.length ?? 0, icon: Users },
-                            { label: t('pages.users.metrics.activeUsers', { defaultValue: 'Active users' }), value: activeUsers, icon: ShieldCheck },
-                            { label: t('pages.users.metrics.pendingInvites', { defaultValue: 'Pending invites' }), value: pendingUsers, icon: UserCog },
-                            { label: t('pages.users.metrics.agentSeats', { defaultValue: 'Agent seats' }), value: agents.length, icon: UserCog },
+                            { label: t('pages.users.metrics.totalSeats', { defaultValue: 'Seats used' }), value: seatUsageLabel, icon: Users },
+                            { label: t('pages.users.metrics.activeUsers', { defaultValue: 'Active users' }), value: tenantUsage?.users.active ?? activeUsers, icon: ShieldCheck },
+                            { label: t('pages.users.metrics.pendingInvites', { defaultValue: 'Pending invites' }), value: tenantUsage?.users.pendingInvites ?? pendingUsers, icon: UserCog },
+                            { label: t('pages.users.metrics.hotelUsage', { defaultValue: 'Hotels used' }), value: tenantUsage ? `${tenantUsage.hotels.used}/${tenantUsage.hotels.limit}` : allHotels.length, icon: Building2 },
                         ].map((metric) => {
                             const Icon = metric.icon;
                             return (
@@ -534,6 +568,7 @@ export default function UsersPage() {
                             onEdit={setEditingUser}
                             onSuspend={handleSuspend}
                             onReactivate={handleReactivate}
+                            onRemoveInvite={handleRemoveInvite}
                             isActionPending={isUserActionPending}
                         />
                     </AdminSectionCard>
@@ -560,6 +595,7 @@ export default function UsersPage() {
                             onEdit={setEditingUser}
                             onSuspend={handleSuspend}
                             onReactivate={handleReactivate}
+                            onRemoveInvite={handleRemoveInvite}
                             isActionPending={isUserActionPending}
                         />
                     </AdminSectionCard>
@@ -586,6 +622,7 @@ export default function UsersPage() {
                             onEdit={setEditingUser}
                             onSuspend={handleSuspend}
                             onReactivate={handleReactivate}
+                            onRemoveInvite={handleRemoveInvite}
                             isActionPending={isUserActionPending}
                         />
                     </AdminSectionCard>

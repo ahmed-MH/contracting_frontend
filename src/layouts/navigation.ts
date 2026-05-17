@@ -58,11 +58,11 @@ export const supervisorSections: NavigationSection[] = [
         titleKey: 'common:navigation.supervisor.sectionTitle',
         items: [
             {
-                label: 'Overview / MRR',
+                label: 'Overview / Revenue',
                 labelKey: 'common:navigation.supervisor.overview.label',
                 to: '/platform',
                 icon: LayoutGrid,
-                description: 'MRR, growth, churn watch, and platform readiness.',
+                description: 'Recurring revenue, one-time payments, churn watch, and platform readiness.',
                 descriptionKey: 'common:navigation.supervisor.overview.description',
             },
             {
@@ -489,15 +489,3 @@ export function isCatalogRoute(pathname: string): boolean {
 export function isContractRoute(pathname: string): boolean {
     return pathname.startsWith('/contracts');
 }
-
-export const systemHealthSignals = [
-    { label: 'API Latency', labelKey: 'common:navigation.supervisor.signals.apiLatency', value: '124 ms', tone: 'healthy' },
-    { label: 'Billing Webhooks', labelKey: 'common:navigation.supervisor.signals.billingWebhooks', value: '05 queued', tone: 'steady' },
-    { label: 'Platform Alerts', labelKey: 'common:navigation.supervisor.signals.platformAlerts', value: '02 active', tone: 'warning' },
-] as const;
-
-export const platformLogs = [
-    'Subscription reconciliation completed across 48 active tenants.',
-    'Tenant suspension workflow executed for two overdue accounts.',
-    'Audit ingestion recovered after a transient storage retry.',
-] as const;

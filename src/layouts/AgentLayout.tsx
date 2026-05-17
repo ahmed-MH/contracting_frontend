@@ -1,12 +1,11 @@
-import { NavLink, Outlet, useLocation } from 'react-router-dom';
-import { clsx } from 'clsx';
+import { Outlet } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { agentTabs, getRoleNavigation, isNavigationItemActive } from './navigation';
-import { BrandLockup, HeaderActions } from './LayoutControls';
+import { getRoleNavigation } from './navigation';
+import { HeaderActions } from './LayoutControls';
+import { Logo } from '../components/ui/Logo';
 
 export default function AgentLayout() {
     const { t } = useTranslation(['auth', 'common']);
-    const location = useLocation();
     const roleNavigation = getRoleNavigation('AGENT');
 
     return (
@@ -14,49 +13,41 @@ export default function AgentLayout() {
             <div className="pointer-events-none absolute inset-x-0 top-0 h-96 bg-brand-navy/10 dark:bg-brand-light/10" />
 
             <div className="relative flex min-h-screen flex-col">
-                <header className="px-3 pt-3 md:px-5 md:pt-5">
+                <header className="relative z-50 px-3 pt-3 md:px-5 md:pt-4">
                     <div className="mx-auto max-w-[1480px]">
-                        <div className="premium-nav-glass rounded-2xl px-4 py-4 md:px-6">
-                            <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
-                                <BrandLockup
-                                    eyebrow={roleNavigation.eyebrowKey ? t(roleNavigation.eyebrowKey, { defaultValue: roleNavigation.eyebrow }) : roleNavigation.eyebrow}
-                                    title={roleNavigation.titleKey ? t(roleNavigation.titleKey, { defaultValue: roleNavigation.title }) : roleNavigation.title}
-                                    subtitle={roleNavigation.subtitleKey ? t(roleNavigation.subtitleKey, { defaultValue: roleNavigation.subtitle }) : roleNavigation.subtitle}
-                                />
+                        <div className="premium-nav-glass overflow-visible rounded-[24px] px-4 py-3 shadow-sm md:px-5">
+                            <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+                                <div className="flex min-w-0 flex-1 items-center gap-3">
+                                    <div className="flex h-14 shrink-0 items-center rounded-2xl border border-brand-light/65 bg-brand-light/70 px-3 shadow-sm backdrop-blur-xl dark:border-brand-light/10 dark:bg-brand-light/5">
+                                        <Logo className="scale-95" />
+                                    </div>
+                                    <div className="min-w-0">
+                                        <p className="truncate text-[11px] font-semibold uppercase tracking-[0.26em] text-brand-slate/85">
+                                            {roleNavigation.eyebrowKey ? t(roleNavigation.eyebrowKey, { defaultValue: roleNavigation.eyebrow }) : roleNavigation.eyebrow}
+                                        </p>
+                                        <h1 className="truncate text-lg font-semibold leading-6 tracking-tight text-brand-navy dark:text-brand-light">
+                                            {roleNavigation.titleKey ? t(roleNavigation.titleKey, { defaultValue: roleNavigation.title }) : roleNavigation.title}
+                                        </h1>
+                                        <p className="mt-1 hidden max-w-2xl truncate text-sm font-medium text-brand-slate dark:text-brand-light/70 md:block">
+                                            {roleNavigation.subtitleKey ? t(roleNavigation.subtitleKey, { defaultValue: roleNavigation.subtitle }) : roleNavigation.subtitle}
+                                        </p>
+                                    </div>
+                                </div>
+
                                 <HeaderActions
                                     roleLabel={roleNavigation.labelKey ? t(roleNavigation.labelKey, { defaultValue: roleNavigation.label }) : roleNavigation.label}
-                                    primaryAction={{ label: t('common:layouts.agent.runPricing', { defaultValue: 'Run Pricing' }), to: '/simulator' }}
                                     compact
+                                    compactAccount
+                                    withGroupDividers
+                                    useProfileDropdown
+                                    className="lg:justify-end"
                                 />
-                            </div>
-
-                            <div className="mt-4 flex flex-wrap gap-2">
-                                {agentTabs.map((item) => {
-                                    const Icon = item.icon;
-                                    const isActive = isNavigationItemActive(location.pathname, item);
-
-                                    return (
-                                        <NavLink
-                                            key={item.to}
-                                            to={item.to}
-                                            className={clsx(
-                                                'inline-flex items-center gap-2 rounded-2xl px-4 py-2.5 text-sm font-semibold transition',
-                                                isActive
-                                                    ? 'bg-brand-navy text-brand-light shadow-md'
-                                                    : 'bg-brand-light/65 text-brand-slate hover:text-brand-navy dark:bg-brand-light/5 dark:hover:text-brand-light',
-                                            )}
-                                        >
-                                            <Icon size={15} />
-                                            <span>{item.labelKey ? t(item.labelKey, { defaultValue: item.label }) : item.label}</span>
-                                        </NavLink>
-                                    );
-                                })}
                             </div>
                         </div>
                     </div>
                 </header>
 
-                <main className="flex-1 overflow-y-auto px-3 pb-6 pt-4 md:px-5">
+                <main className="relative z-0 flex-1 overflow-y-auto px-3 pb-6 pt-5 md:px-5">
                     <div className="mx-auto max-w-[1480px]">
                         <div className="premium-surface min-h-[calc(100vh-180px)] overflow-hidden rounded-2xl">
                             <Outlet />

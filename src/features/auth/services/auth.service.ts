@@ -25,6 +25,11 @@ export const authService = {
         return data;
     },
 
+    validateInvite: async (token: string): Promise<{ valid: true }> => {
+        const { data } = await apiClient.get<{ valid: true }>('/auth/invite-status', { params: { token } });
+        return data;
+    },
+
     forgotPassword: async (email: string): Promise<{ message: string }> => {
         const { data } = await apiClient.post<{ message: string }>('/auth/forgot-password', { email });
         return data;

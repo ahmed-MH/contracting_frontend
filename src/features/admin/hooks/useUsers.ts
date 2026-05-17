@@ -1,16 +1,25 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
-import { userService, type UserListItem, type UpdateUserPayload } from '../services/user.service';
+import { userService, type TenantUsage, type UserListItem, type UpdateUserPayload } from '../services/user.service';
 import i18next from '../../../lib/i18n';
 
-export type { UserListItem, UpdateUserPayload };
+export type { TenantUsage, UserListItem, UpdateUserPayload };
 
 const QUERY_KEY = ['users'] as const;
+export const TENANT_USAGE_QUERY_KEY = ['tenant-usage'] as const;
 
 export function useUsers() {
     return useQuery<UserListItem[]>({
         queryKey: [...QUERY_KEY],
         queryFn: userService.getAll,
+    });
+}
+
+export function useTenantUsage() {
+    return useQuery<TenantUsage>({
+        queryKey: [...TENANT_USAGE_QUERY_KEY],
+        queryFn: userService.getUsage,
+        retry: false,
     });
 }
 
@@ -51,6 +60,21 @@ export function useReactivateUser() {
         },
         onError: () => {
             toast.error(i18next.t('pages.users.toast.reactivateFailed', { defaultValue: 'Unable to reactivate the user' }));
+        },
+    });
+}
+
+export function useRemovePendingInvite() {
+    const qc = useQueryClient();
+    return useMutation({
+        mutationFn: userService.removePendingInvite,
+        onSuccess: (result) => {
+            qc.invalidateQueries({ queryKey: [...QUERY_KEY] });
+            qc.invalidateQueries({ queryKey: [...TENANT_USAGE_QUERY_KEY] });
+            toast.success(result.message);
+        },
+        onError: () => {
+            toast.error(i18next.t('pages.users.toast.removeInviteFailed', { defaultValue: 'Unable to remove the pending invite' }));
         },
     });
 }

@@ -24,7 +24,8 @@ import {
 import { Logo } from '../../components/ui/Logo';
 import { LanguageSwitcher } from '../../components/ui/LanguageSwitcher';
 import { useTheme } from '../../hooks/useTheme';
-import { usePublicPlans, type PublicPlan } from './hooks/usePublicPlans';
+import { PlanCard } from './PlanCard';
+import { usePublicPlans } from './hooks/usePublicPlans';
 
 const navItems = [
     { key: 'landing.nav.overview', defaultLabel: 'Overview', href: '#platform' },
@@ -161,27 +162,6 @@ function surfaceTone(tone: 'navy' | 'mint' | 'light') {
     }
 
     return 'border-brand-light/70 bg-brand-light/78 text-brand-navy shadow-md dark:border-brand-light/10 dark:bg-brand-navy/80 dark:text-brand-light';
-}
-
-function formatPlanPrice(plan: PublicPlan): string {
-    if (plan.monthlyPrice === 0 && plan.name.toLowerCase().includes('enterprise')) {
-        return 'Custom';
-    }
-
-    return new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: plan.currency,
-        maximumFractionDigits: 0,
-    }).format(plan.monthlyPrice);
-}
-
-function formatBillingCadence(plan: PublicPlan): string {
-    if (plan.monthlyPrice <= 0) return '';
-    return plan.billingType === 'ONE_TIME' ? 'one-time' : '/month';
-}
-
-function formatLimit(value: number, noun: string): string {
-    return value >= 9999 ? `Unlimited ${noun}` : `${value} ${noun}`;
 }
 
 export default function LandingPage() {
@@ -574,10 +554,10 @@ export default function LandingPage() {
                             </div>
 
                             <a
-                                href="mailto:sales@pricify.local"
+                                href="#plans"
                                 className="inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl bg-brand-navy px-6 text-base font-semibold text-brand-light shadow-md transition hover:-translate-y-0.5 hover:bg-brand-navy"
                             >
-                                {t('landing.plans.contactSales', { defaultValue: 'Contact sales' })}
+                                {t('landing.plans.contactSales', { defaultValue: 'Review plans' })}
                                 <ArrowRight size={18} />
                             </a>
                         </div>
@@ -595,69 +575,19 @@ export default function LandingPage() {
                                 {t('landing.plans.empty', { defaultValue: 'No public SaaS plans are published yet.' })}
                             </div>
                         ) : (
-                            <div className="mt-10 grid gap-4 lg:grid-cols-3">
-                                {publicPlans.map((plan, index) => (
-                                    <article
+                            <div className="mt-10 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+                                {publicPlans.map((plan) => (
+                                    <PlanCard
                                         key={plan.id}
-                                        className={`rounded-2xl border p-6 shadow-md backdrop-blur-xl ${
-                                            index === 1
-                                                ? 'border-brand-mint/35 bg-brand-navy text-brand-light'
-                                                : 'border-brand-light/70 bg-brand-light/78 text-brand-navy dark:border-brand-light/10 dark:bg-brand-navy/80 dark:text-brand-light'
-                                        }`}
-                                    >
-                                        <div className="flex items-start justify-between gap-4">
-                                            <div>
-                                                <p className={`text-[11px] font-semibold uppercase tracking-[0.24em] ${index === 1 ? 'text-brand-mint' : 'text-brand-slate'}`}>
-                                                    {plan.name}
-                                                </p>
-                                                <div className="mt-4 flex items-end gap-1">
-                                                    <span className="text-4xl font-semibold tracking-tight">{formatPlanPrice(plan)}</span>
-                                                    {plan.monthlyPrice > 0 ? <span className="pb-1 text-sm text-brand-slate">{formatBillingCadence(plan)}</span> : null}
-                                                </div>
-                                            </div>
-                                            {index === 1 ? (
-                                                <span className="rounded-full bg-brand-mint/15 px-3 py-1 text-xs font-semibold text-brand-mint">
-                                                    {t('landing.plans.popular', { defaultValue: 'Popular' })}
-                                                </span>
-                                            ) : null}
-                                        </div>
-
-                                        <p className={`mt-4 text-sm leading-7 ${index === 1 ? 'text-brand-slate' : 'text-brand-slate dark:text-brand-light/75'}`}>
-                                            {plan.description}
-                                        </p>
-
-                                        <div className="mt-5 grid gap-2 text-sm">
-                                            <div className={`rounded-2xl px-4 py-3 ${index === 1 ? 'bg-brand-light/8 text-brand-slate' : 'bg-brand-light/70 text-brand-navy dark:bg-brand-light/5 dark:text-brand-light'}`}>
-                                                {formatLimit(plan.maxHotels, 'hotels')} / {formatLimit(plan.maxUsers, 'users')}
-                                            </div>
-                                            <div className={`rounded-2xl px-4 py-3 ${index === 1 ? 'bg-brand-light/8 text-brand-slate' : 'bg-brand-light/70 text-brand-navy dark:bg-brand-light/5 dark:text-brand-light'}`}>
-                                                {plan.supportTier} support · {plan.apiAccess ? 'API access included' : 'API access not included'}
-                                            </div>
-                                        </div>
-
-                                        <div className="mt-5 space-y-3">
-                                            {plan.features.slice(0, 5).map((feature) => (
-                                                <div key={`${plan.id}-${feature}`} className="flex items-start gap-3 text-sm leading-6">
-                                                    <CheckCircle2 size={16} className="mt-1 shrink-0 text-brand-mint" />
-                                                    <span className={index === 1 ? 'text-brand-slate' : 'text-brand-slate dark:text-brand-light/75'}>{feature}</span>
-                                                </div>
-                                            ))}
-                                        </div>
-
-                                        <Link
-                                            to={`/onboarding?planId=${plan.id}`}
-                                            className={`mt-6 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-2xl px-5 text-sm font-semibold transition ${
-                                                index === 1
-                                                    ? 'bg-brand-mint text-brand-light hover:bg-brand-mint/90'
-                                                    : 'border border-brand-navy/10 bg-brand-light/80 text-brand-navy hover:bg-brand-light dark:border-brand-light/10 dark:bg-brand-light/8 dark:text-brand-light'
-                                            }`}
-                                        >
-                                            {plan.canSubscribe || plan.monthlyPrice > 0
+                                        plan={plan}
+                                        variant="public"
+                                        actionTo={`/onboarding?planId=${plan.id}`}
+                                        actionLabel={
+                                            plan.canSubscribe
                                                 ? t('landing.plans.subscribe', { defaultValue: 'Start with this plan' })
-                                                : t('landing.plans.requestAccess', { defaultValue: 'Request access' })}
-                                            <ArrowRight size={16} />
-                                        </Link>
-                                    </article>
+                                                : t('landing.plans.requestAccess', { defaultValue: 'Request access' })
+                                        }
+                                    />
                                 ))}
                             </div>
                         )}

@@ -9,6 +9,7 @@ import {
     type CreateHotelPayload,
 } from '../hooks/useHotels';
 import { useAuth } from '../../auth/context/AuthContext';
+import { useTenantUsage } from '../../admin/hooks/useUsers';
 import { useConfirm } from '../../../context/ConfirmContext';
 import { useHotel } from '../context/HotelContext';
 import {
@@ -114,6 +115,7 @@ export default function HotelPage() {
     const isAdmin = user?.role === 'ADMIN';
 
     const { currentHotel, availableHotels, switchHotel, isLoading: isContextLoading } = useHotel();
+    const { data: tenantUsage } = useTenantUsage();
 
     const closeModal = () => {
         setIsModalOpen(false);
@@ -306,7 +308,7 @@ export default function HotelPage() {
 
                     <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
                         {[
-                            { label: t('pages.hotel.metrics.activeProperties', { defaultValue: 'Active properties' }), value: availableHotels.length, icon: HotelIcon },
+                            { label: t('pages.hotel.metrics.activeProperties', { defaultValue: 'Hotels used' }), value: tenantUsage ? `${tenantUsage.hotels.used}/${tenantUsage.hotels.limit}` : availableHotels.length, icon: HotelIcon },
                             { label: t('pages.hotel.metrics.contactEmails', { defaultValue: 'Contact emails' }), value: currentHotel.emails?.length ?? 0, icon: Mail },
                             { label: t('pages.hotel.metrics.defaultCurrency', { defaultValue: 'Default currency' }), value: currentHotel.defaultCurrency, icon: Coins },
                             { label: t('pages.hotel.metrics.branding', { defaultValue: 'PDF branding' }), value: currentHotel.preferredThemeColor || (currentHotel.logoUrl ? 'Logo' : 'Default'), icon: Palette },

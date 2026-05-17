@@ -52,6 +52,11 @@ export default function ModalPortal({
 }: ModalPortalProps) {
     const rootRef = useRef<HTMLDivElement>(null);
     const previouslyFocusedRef = useRef<HTMLElement | null>(null);
+    const onCloseRef = useRef(onClose);
+
+    useEffect(() => {
+        onCloseRef.current = onClose;
+    }, [onClose]);
 
     useEffect(() => {
         if (!isOpen || typeof document === 'undefined') return;
@@ -71,7 +76,7 @@ export default function ModalPortal({
         const handleKeyDown = (event: KeyboardEvent) => {
             if (event.key === 'Escape' && closeOnEscape) {
                 event.preventDefault();
-                onClose();
+                onCloseRef.current();
                 return;
             }
 
@@ -108,7 +113,7 @@ export default function ModalPortal({
             unlockBodyScroll();
             previouslyFocusedRef.current?.focus?.({ preventScroll: true });
         };
-    }, [closeOnEscape, initialFocusRef, isOpen, onClose]);
+    }, [closeOnEscape, initialFocusRef, isOpen]);
 
     if (!isOpen || typeof document === 'undefined') return null;
 

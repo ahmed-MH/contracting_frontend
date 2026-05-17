@@ -15,7 +15,7 @@ export default function OnboardingCancelPage() {
                     </div>
                     <h1 className="mt-6 text-4xl font-semibold tracking-tight">Checkout canceled.</h1>
                     <p className="mt-4 text-base leading-8 text-brand-slate">
-                        No tenant workspace was created and no admin user was invited. You can choose a plan and start again whenever you are ready.
+                        Payment was canceled or not completed, so no tenant workspace was provisioned and no admin invitation was sent. You can return to plan selection or restart onboarding whenever you are ready.
                     </p>
                     <Link
                         to="/onboarding"
