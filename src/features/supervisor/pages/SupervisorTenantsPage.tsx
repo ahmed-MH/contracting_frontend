@@ -2,6 +2,7 @@ import { Building2, CheckCircle2, Clock3, CreditCard, Globe2, MoreHorizontal, Pe
 import { useEffect, useMemo, useRef, useState, type FormEvent, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
+import { toast } from 'sonner';
 import { Button } from '../../../components/ui/Button';
 import Modal from '../../../components/ui/Modal';
 import { useConfirm } from '../../../context/ConfirmContext';
@@ -19,7 +20,6 @@ import {
     useSupervisorTenants,
     useSuspendSupervisorTenant,
     type SupervisorPublicSignup,
-    type SupervisorPublicSignupStatus,
     type SupervisorSubscription,
     type SupervisorTenant,
 } from '../hooks/useSupervisor';
@@ -28,11 +28,13 @@ interface TenantTableRow {
     id: number;
     name: string;
     plan: string;
+    billingTypeLabel: string;
     footprint: string;
     userCount: string;
-    region: string;
-    mrr: string;
-    billingStatus: string;
+    scope: string;
+    revenue: string;
+    revenueDetail: string;
+    accessStatus: string;
     operationalStatus: string;
     isActive: boolean;
     planId?: number;
@@ -64,11 +66,41 @@ function formatMoney(value: number, currency: string): string {
     }).format(value);
 }
 
-function mapBillingStatus(subscription?: SupervisorSubscription): string {
-    if (!subscription) return 'Not linked';
-    if (subscription.status === 'ACTIVE') return 'Paid';
-    if (subscription.status === 'PAST_DUE') return 'Overdue';
+function mapAccessStatus(subscription?: SupervisorSubscription): string {
+    if (!subscription) return 'No plan';
+    if (subscription.status === 'ACTIVE') return 'Active access';
+    if (subscription.status === 'PAST_DUE') return 'Payment required';
     return 'Suspended';
+}
+
+function accessStatusClass(status: string): string {
+    if (status === 'Active access') return 'border-brand-mint/20 bg-brand-mint/10 text-brand-mint';
+    if (status === 'Payment required') return 'border-amber-200 bg-amber-100 text-amber-700 dark:border-amber-500/25 dark:bg-amber-500/10 dark:text-amber-200';
+    if (status === 'Suspended') return 'border-red-200 bg-red-100 text-red-700 dark:border-red-500/25 dark:bg-red-500/10 dark:text-red-300';
+    return 'border-brand-slate/20 bg-brand-slate/8 text-brand-slate dark:border-brand-light/10 dark:bg-brand-light/10 dark:text-brand-light/75';
+}
+
+function tenantBillingTypeLabel(subscription?: SupervisorSubscription): string {
+    if (!subscription) return 'No plan';
+    return subscription.billingType === 'ONE_TIME' ? 'One-time' : 'Monthly';
+}
+
+function tenantRevenue(subscription?: SupervisorSubscription): { value: string; detail: string } {
+    if (!subscription) {
+        return { value: 'No revenue', detail: 'No subscription record' };
+    }
+
+    if (subscription.billingType === 'ONE_TIME') {
+        return {
+            value: `One-time ${formatMoney(subscription.oneTimeRevenue ?? 0, subscription.currency)}`,
+            detail: 'No recurring MRR',
+        };
+    }
+
+    return {
+        value: `MRR ${formatMoney(subscription.monthlyRecurringRevenue, subscription.currency)}`,
+        detail: 'Recurring subscription',
+    };
 }
 
 function formatDate(value?: string | null): string {
@@ -80,15 +112,54 @@ function formatDate(value?: string | null): string {
     }).format(new Date(value));
 }
 
-function formatSignupStatus(status: SupervisorPublicSignupStatus): string {
+function formatSignupStatus(status: string): string {
     return status.replace(/_/g, ' ').toLowerCase().replace(/\b\w/g, (letter) => letter.toUpperCase());
 }
 
-function signupStatusClass(status: SupervisorPublicSignupStatus): string {
-    if (status === 'COMPLETED') return 'border-brand-mint/20 bg-brand-mint/10 text-brand-mint';
-    if (status === 'FAILED') return 'border-red-200 bg-red-100 text-red-700 dark:border-red-500/25 dark:bg-red-500/10 dark:text-red-300';
-    if (status === 'EXPIRED') return 'border-brand-slate/20 bg-brand-slate/8 text-brand-slate dark:border-brand-light/10 dark:bg-brand-light/10 dark:text-brand-light/75';
+function publicSignupIssues(signup: SupervisorPublicSignup): string[] {
+    if (signup.provisioningIssues?.length) return signup.provisioningIssues;
+    if (signup.status !== 'COMPLETED') return [];
+
+    const issues: string[] = [];
+    if (!signup.tenant) issues.push('Tenant was not linked.');
+    if (!signup.adminUser) issues.push('Admin invite was not linked.');
+    if (!signup.subscription) issues.push('Subscription was not linked.');
+    return issues;
+}
+
+function publicSignupStatusLabel(signup: SupervisorPublicSignup): string {
+    if (signup.provisioningState === 'PROVISIONED') return 'Provisioned';
+    if (signup.provisioningState === 'INCOMPLETE') return 'Needs review';
+    if (signup.provisioningState === 'PAYMENT_RECEIVED') return 'Payment received';
+    if (signup.provisioningState === 'FAILED') return 'Failed';
+    if (signup.provisioningState === 'EXPIRED') return 'Expired';
+    if (signup.provisioningState === 'AWAITING_PAYMENT') return 'Awaiting payment';
+
+    const issues = publicSignupIssues(signup);
+    if (signup.status === 'COMPLETED') return issues.length > 0 ? 'Needs review' : 'Provisioned';
+    if (signup.status === 'FAILED') return 'Failed';
+    if (signup.status === 'EXPIRED') return 'Expired';
+    if (signup.status === 'PAID') return 'Payment received';
+    return 'Awaiting payment';
+}
+
+function publicSignupStatusClass(signup: SupervisorPublicSignup): string {
+    const label = publicSignupStatusLabel(signup);
+    if (label === 'Provisioned') return 'border-brand-mint/20 bg-brand-mint/10 text-brand-mint';
+    if (label === 'Needs review') return 'border-amber-200 bg-amber-100 text-amber-700 dark:border-amber-500/25 dark:bg-amber-500/10 dark:text-amber-200';
+    if (label === 'Failed') return 'border-red-200 bg-red-100 text-red-700 dark:border-red-500/25 dark:bg-red-500/10 dark:text-red-300';
+    if (label === 'Expired') return 'border-brand-slate/20 bg-brand-slate/8 text-brand-slate dark:border-brand-light/10 dark:bg-brand-light/10 dark:text-brand-light/75';
     return 'border-amber-200 bg-amber-100 text-amber-700 dark:border-amber-500/25 dark:bg-amber-500/10 dark:text-amber-200';
+}
+
+function publicSignupWarnings(signup: SupervisorPublicSignup): string[] {
+    if (signup.provisioningWarnings?.length) return signup.provisioningWarnings;
+    if (signup.status === 'COMPLETED' && !signup.completedAt) return ['Completion timestamp missing'];
+    return [];
+}
+
+function referenceValue(value: string | null | undefined): string {
+    return value?.trim() || 'Pending';
 }
 
 function getManualCheckoutState(tenant: TenantTableRow) {
@@ -322,19 +393,22 @@ export default function SupervisorTenantsPage() {
         return tenants.map((tenant: SupervisorTenant) => {
             const subscription = subscriptionsByTenantId.get(tenant.id);
             const plan = subscription?.planId ? plansById.get(subscription.planId) : undefined;
+            const revenue = tenantRevenue(subscription);
             return {
                 id: tenant.id,
                 name: tenant.name,
                 planId: subscription?.planId,
                 plan: subscription?.planName ?? 'Unassigned',
+                billingTypeLabel: tenantBillingTypeLabel(subscription),
                 subscriptionStatus: subscription?.status,
                 hasStripePrice: plan ? Boolean(plan.stripePriceId) : subscription?.planId ? undefined : false,
                 planIsActive: plan?.isActive,
                 footprint: subscription ? `${subscription.hotelUsage} hotels` : 'Not reported',
-                userCount: subscription ? `${subscription.userUsage} platform users` : 'No seat data',
-                region: 'Platform tenant',
-                mrr: subscription ? formatMoney(subscription.monthlyRecurringRevenue, subscription.currency) : 'Not linked',
-                billingStatus: mapBillingStatus(subscription),
+                userCount: subscription ? `${subscription.userUsage} tenant users` : 'No seat data',
+                scope: 'Tenant organization',
+                revenue: revenue.value,
+                revenueDetail: revenue.detail,
+                accessStatus: mapAccessStatus(subscription),
                 operationalStatus: tenant.isActive ? 'Active' : 'Suspended',
                 isActive: tenant.isActive,
             };
@@ -400,7 +474,7 @@ export default function SupervisorTenantsPage() {
         if (!tenant.planId) return;
         if (!(await confirm({
             title: 'Create manual Stripe Checkout session?',
-            description: 'You are about to create a manual Stripe Checkout session for this existing tenant. Use this only for billing recovery or manual payment collection.',
+            description: 'Create a manual Stripe Checkout session for this tenant to recover payment? Billing recovery is separate from platform reactivation.',
             confirmLabel: 'Manual checkout',
             variant: 'info',
         }))) {
@@ -411,7 +485,13 @@ export default function SupervisorTenantsPage() {
             { tenantId: tenant.id, planId: tenant.planId },
             {
                 onSuccess: (session) => {
-                    window.location.assign(session.checkoutUrl);
+                    if (session.checkoutUrl) {
+                        window.location.assign(session.checkoutUrl);
+                    } else if (session.billingStatus === 'ACTIVE' || session.resolved) {
+                        toast.success(session.message || 'Payment confirmed. Billing is now active.');
+                    } else {
+                        toast.error(session.message || 'A previous checkout completed and is being reconciled. Use payment sync or wait for webhook.');
+                    }
                 },
             },
         );
@@ -425,6 +505,7 @@ export default function SupervisorTenantsPage() {
                 <div>
                     <p className="font-semibold text-brand-navy dark:text-brand-light">{tenant.name}</p>
                     <p className="mt-1 text-xs text-brand-slate dark:text-brand-light/60">Plan {tenant.plan}</p>
+                    <p className="mt-1 text-xs text-brand-slate dark:text-brand-light/60">{tenant.billingTypeLabel}</p>
                 </div>
             ),
         },
@@ -439,25 +520,26 @@ export default function SupervisorTenantsPage() {
             ),
         },
         {
-            key: 'region',
-            label: 'Region',
-            render: (tenant) => <span className="text-brand-slate dark:text-brand-light/75">{tenant.region}</span>,
+            key: 'scope',
+            label: 'Scope',
+            render: (tenant) => <span className="text-brand-slate dark:text-brand-light/75">{tenant.scope}</span>,
         },
         {
-            key: 'mrr',
-            label: 'Recurring MRR',
-            render: (tenant) => <span className="font-semibold text-brand-navy dark:text-brand-light">{tenant.mrr}</span>,
-        },
-        {
-            key: 'billingStatus',
-            label: 'Billing',
+            key: 'revenue',
+            label: 'Revenue',
             render: (tenant) => (
-                <span className={`inline-flex rounded-full border px-3 py-1 text-xs font-semibold ${
-                    tenant.billingStatus === 'Paid'
-                        ? 'border-brand-mint/20 bg-brand-mint/10 text-brand-mint'
-                        : 'border-brand-slate/20 bg-brand-slate/8 text-brand-slate dark:border-brand-light/10 dark:bg-brand-light/10 dark:text-brand-light/75'
-                }`}>
-                    {tenant.billingStatus}
+                <div>
+                    <p className="font-semibold text-brand-navy dark:text-brand-light">{tenant.revenue}</p>
+                    <p className="mt-1 text-xs text-brand-slate dark:text-brand-light/60">{tenant.revenueDetail}</p>
+                </div>
+            ),
+        },
+        {
+            key: 'accessStatus',
+            label: 'Billing / access',
+            render: (tenant) => (
+                <span className={`inline-flex rounded-full border px-3 py-1 text-xs font-semibold ${accessStatusClass(tenant.accessStatus)}`}>
+                    {tenant.accessStatus}
                 </span>
             ),
         },
@@ -492,7 +574,7 @@ export default function SupervisorTenantsPage() {
                         onClick: () => openPlanAssignment(tenant),
                     });
                 } else {
-                    if (tenant.isActive) {
+                    if (tenant.isActive || tenant.subscriptionStatus !== 'ACTIVE') {
                         actions.push({
                             label: manualCheckout.label,
                             description: manualCheckout.disabled
@@ -564,38 +646,93 @@ export default function SupervisorTenantsPage() {
         {
             key: 'status',
             label: 'Status',
-            render: (signup) => (
-                <div>
-                    <span className={`inline-flex rounded-full border px-3 py-1 text-xs font-semibold ${signupStatusClass(signup.status)}`}>
-                        {formatSignupStatus(signup.status)}
-                    </span>
-                    {signup.failureReason ? (
-                        <p className="mt-2 max-w-xs text-xs leading-5 text-brand-slate dark:text-brand-light/75">{signup.failureReason}</p>
-                    ) : null}
-                </div>
-            ),
+            render: (signup) => {
+                const issues = publicSignupIssues(signup);
+                const warnings = publicSignupWarnings(signup);
+                return (
+                    <div className="space-y-2">
+                        <span className={`inline-flex rounded-full border px-3 py-1 text-xs font-semibold ${publicSignupStatusClass(signup)}`}>
+                            {publicSignupStatusLabel(signup)}
+                        </span>
+                        {signup.status !== 'COMPLETED' ? (
+                            <p className="text-xs text-brand-slate dark:text-brand-light/60">{formatSignupStatus(signup.status)}</p>
+                        ) : null}
+                        {issues.length > 0 ? (
+                            <p className="max-w-xs text-xs leading-5 text-amber-700 dark:text-amber-200">{issues[0]}</p>
+                        ) : warnings.length > 0 ? (
+                            <p className="max-w-xs text-xs leading-5 text-amber-700 dark:text-amber-200">{warnings[0]}</p>
+                        ) : signup.failureReason ? (
+                            <p className="max-w-xs text-xs leading-5 text-red-700 dark:text-red-300">{signup.failureReason}</p>
+                        ) : null}
+                    </div>
+                );
+            },
         },
         {
-            key: 'submitted',
-            label: 'Submitted',
-            render: (signup) => <span className="text-brand-slate dark:text-brand-light/75">{formatDate(signup.createdAt)}</span>,
-        },
-        {
-            key: 'completed',
-            label: 'Completed',
-            render: (signup) => <span className="text-brand-slate dark:text-brand-light/75">{formatDate(signup.completedAt)}</span>,
-        },
-        {
-            key: 'references',
-            label: 'References',
+            key: 'timeline',
+            label: 'Timeline',
             render: (signup) => (
                 <div className="space-y-1 text-xs text-brand-slate dark:text-brand-light/75">
-                    <p>Tenant: {signup.tenantId ?? 'Pending'}</p>
-                    <p>Admin: {signup.adminUserId ?? 'Pending'}</p>
-                    <p>Subscription: {signup.subscriptionId ?? 'Pending'}</p>
-                    {signup.stripeCheckoutSessionId ? <p className="max-w-[12rem] truncate">Checkout: {signup.stripeCheckoutSessionId}</p> : null}
+                    <p><span className="font-semibold text-brand-navy dark:text-brand-light">Submitted:</span> {formatDate(signup.createdAt)}</p>
+                    <p>
+                        <span className="font-semibold text-brand-navy dark:text-brand-light">Completed:</span>{' '}
+                        {signup.completedAt
+                            ? formatDate(signup.completedAt)
+                            : signup.status === 'COMPLETED'
+                                ? 'Timestamp missing'
+                                : 'Not completed'}
+                    </p>
                 </div>
             ),
+        },
+        {
+            key: 'provisioning',
+            label: 'Provisioning',
+            render: (signup) => (
+                <div className="space-y-1 text-xs text-brand-slate dark:text-brand-light/75">
+                    <p><span className="font-semibold text-brand-navy dark:text-brand-light">Tenant:</span> {referenceValue(signup.tenant?.name)}</p>
+                    <p><span className="font-semibold text-brand-navy dark:text-brand-light">Admin invite:</span> {referenceValue(signup.adminUser?.email ?? signup.adminUser?.name)}</p>
+                    <p>
+                        <span className="font-semibold text-brand-navy dark:text-brand-light">Subscription:</span>{' '}
+                        {signup.subscription
+                            ? `${formatSignupStatus(signup.subscription.status)} - ${signup.subscription.planName}`
+                            : 'Pending'}
+                    </p>
+                </div>
+            ),
+        },
+        {
+            key: 'details',
+            label: 'Details',
+            className: 'min-w-[220px]',
+            render: (signup) => {
+                const issues = publicSignupIssues(signup);
+                const warnings = publicSignupWarnings(signup);
+                return (
+                    <details className="rounded-xl border border-brand-slate/15 bg-white/60 px-3 py-2 text-xs text-brand-slate dark:border-brand-light/10 dark:bg-brand-light/5 dark:text-brand-light/75">
+                        <summary className="cursor-pointer font-semibold text-brand-navy dark:text-brand-light">View details</summary>
+                        <div className="mt-3 space-y-1.5">
+                            <p>Signup ID: #{signup.id}</p>
+                            <p>Tenant: {signup.tenant ? `${signup.tenant.name} (#${signup.tenant.id})` : 'Pending'}</p>
+                            <p>Admin user: {signup.adminUser ? `${signup.adminUser.email} (#${signup.adminUser.id})` : 'Pending'}</p>
+                            <p>Subscription: {signup.subscription ? `#${signup.subscription.id} - ${formatSignupStatus(signup.subscription.status)}` : 'Pending'}</p>
+                            <p>Checkout: {signup.checkout?.sessionIdPreview ?? (signup.checkout?.hasSession ? 'Available' : 'None')}</p>
+                            <p>Updated: {formatDate(signup.updatedAt)}</p>
+                            {signup.failureReason ? <p className="text-red-700 dark:text-red-300">Failure: {signup.failureReason}</p> : null}
+                            {issues.length > 0 ? (
+                                <div className="rounded-lg border border-amber-200 bg-amber-50 px-2 py-1.5 text-amber-800 dark:border-amber-500/25 dark:bg-amber-500/10 dark:text-amber-200">
+                                    {issues.map((issue) => <p key={issue}>{issue}</p>)}
+                                </div>
+                            ) : null}
+                            {warnings.length > 0 ? (
+                                <div className="rounded-lg border border-amber-200 bg-amber-50 px-2 py-1.5 text-amber-800 dark:border-amber-500/25 dark:bg-amber-500/10 dark:text-amber-200">
+                                    {warnings.map((warning) => <p key={warning}>{warning}</p>)}
+                                </div>
+                            ) : null}
+                        </div>
+                    </details>
+                );
+            },
         },
     ];
 
@@ -627,7 +764,7 @@ export default function SupervisorTenantsPage() {
                     tone="navy"
                 />
                 <SupervisorMetricCard
-                    label={t('pages.supervisor.tenants.metrics.platformUsers.label', { defaultValue: 'Platform Users' })}
+                    label={t('pages.supervisor.tenants.metrics.platformUsers.label', { defaultValue: 'Tenant Users' })}
                     value={`${totalUsers}`}
                     delta={t('pages.supervisor.tenants.metrics.platformUsers.delta', { defaultValue: 'Provisioned seats' })}
                     description={t('pages.supervisor.tenants.metrics.platformUsers.description', { defaultValue: 'Total licensed users across all tenant subscriptions.' })}
@@ -646,7 +783,7 @@ export default function SupervisorTenantsPage() {
             <SupervisorSectionCard
                 eyebrow={t('pages.supervisor.tenants.cards.organizationRoster.eyebrow', { defaultValue: 'Organization Roster' })}
                 title={t('pages.supervisor.tenants.cards.organizationRoster.title', { defaultValue: 'Tenant management table' })}
-                description={t('pages.supervisor.tenants.cards.organizationRoster.description', { defaultValue: 'Use this supervisor-safe table to review plan allocation, billing posture, and high-level fleet size.' })}
+                description={t('pages.supervisor.tenants.cards.organizationRoster.description', { defaultValue: 'Shows current tenant organizations, plan assignment, billing/access state, and recovery actions.' })}
             >
                 {tenantsQuery.isLoading ? (
                     <LoadingPanel />
@@ -675,7 +812,7 @@ export default function SupervisorTenantsPage() {
                     label="Completed"
                     value={`${signupCounts.completed}`}
                     delta="Tenant provisioned"
-                    description="Paid signups with tenant, ADMIN user, invite, and subscription references."
+                    description="Completed signup attempts with tenant, admin, and subscription references."
                     icon={CheckCircle2}
                 />
                 <SupervisorMetricCard
@@ -699,7 +836,7 @@ export default function SupervisorTenantsPage() {
             <SupervisorSectionCard
                 eyebrow={t('pages.supervisor.tenants.cards.publicSignups.eyebrow', { defaultValue: 'Public signups' })}
                 title={t('pages.supervisor.tenants.cards.publicSignups.title', { defaultValue: 'Onboarding and payment attempts' })}
-                description={t('pages.supervisor.tenants.cards.publicSignups.description', { defaultValue: 'Monitor public plan selections, Stripe checkout progress, webhook completion, and failed or expired onboarding attempts.' })}
+                description={t('pages.supervisor.tenants.cards.publicSignups.description', { defaultValue: 'Tracks public checkout attempts before and during provisioning. A completed signup may create a tenant, admin invite, and subscription.' })}
             >
                 {publicSignupsQuery.isLoading ? (
                     <LoadingPanel label="Loading public signup attempts..." />

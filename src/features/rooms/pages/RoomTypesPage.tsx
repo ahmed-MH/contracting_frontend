@@ -67,9 +67,15 @@ export default function RoomTypesPage() {
 
     const handleDelete = async (room: RoomType) => {
         if (await confirm({
-            title: `Archiver la chambre "${room.code} – ${room.name}" ?`,
-            description: "La chambre sera archivée et pourra être restaurée plus tard.",
-            confirmLabel: "Archiver",
+            title: t('pages.roomTypes.confirmArchive.title', {
+                defaultValue: 'Archive room type "{{code}} - {{name}}"?',
+                code: room.code,
+                name: room.name,
+            }),
+            description: t('pages.roomTypes.confirmArchive.description', {
+                defaultValue: 'This room type will be archived and can be restored later.',
+            }),
+            confirmLabel: t('pages.roomTypes.confirmArchive.confirmLabel', { defaultValue: 'Archive' }),
             variant: "danger"
         })) {
             deleteMutation.mutate(room.id);
@@ -78,9 +84,15 @@ export default function RoomTypesPage() {
 
     const handleRestore = async (room: RoomType) => {
         if (await confirm({
-            title: `Restaurer la chambre "${room.code} – ${room.name}" ?`,
-            description: "La chambre sera de nouveau active.",
-            confirmLabel: "Restaurer",
+            title: t('pages.roomTypes.confirmRestore.title', {
+                defaultValue: 'Restore room type "{{code}} - {{name}}"?',
+                code: room.code,
+                name: room.name,
+            }),
+            description: t('pages.roomTypes.confirmRestore.description', {
+                defaultValue: 'This room type will become active again.',
+            }),
+            confirmLabel: t('pages.roomTypes.confirmRestore.confirmLabel', { defaultValue: 'Restore' }),
             variant: "info"
         })) {
             restoreMutation.mutate(room.id);
@@ -109,7 +121,7 @@ export default function RoomTypesPage() {
         return (
             <div className="space-y-6 p-4 md:p-6 animate-in fade-in duration-500">
                 <div className="premium-surface border-brand-slate/20 p-6 text-sm text-brand-navy dark:text-brand-light">
-                    Impossible de charger les types de chambres.
+                    {t('pages.roomTypes.errorLoad', { defaultValue: 'Unable to load room types.' })}
                 </div>
             </div>
         );
@@ -121,17 +133,17 @@ export default function RoomTypesPage() {
             <GuidedPageHeader
                 icon={BedDouble}
                 kicker={t('pages.rooms.header.kicker', { defaultValue: 'Hotel Setup' })}
-                title={t('pages.rooms.header.title', { defaultValue: 'Types de Chambres' })}
+                title={t('pages.rooms.header.title', { defaultValue: 'Room Types' })}
                 description={t('pages.rooms.header.subtitle', { defaultValue: "Define the hotel's sellable room inventory." })}
                 actions={(
                 <>
                 <div className="hidden">
                     <h1 className="flex items-center gap-3 text-3xl font-semibold tracking-tight text-brand-navy dark:text-brand-light">
                         <BedDouble className="text-brand-mint" size={28} />
-                        Types de Chambres
+                        {t('pages.rooms.header.title', { defaultValue: 'Room Types' })}
                     </h1>
                     <p className="mt-3 max-w-3xl text-sm leading-6 text-brand-slate dark:text-brand-light/75">
-                        Définissez les chambres vendables de l'hôtel
+                        {t('pages.rooms.header.subtitle', { defaultValue: "Define the hotel's sellable room inventory." })}
                     </p>
                 </div>
                 <button
@@ -139,7 +151,7 @@ export default function RoomTypesPage() {
                     className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl bg-brand-mint px-4 text-sm font-semibold text-brand-light shadow-md transition hover:-translate-y-0.5 hover:bg-brand-mint cursor-pointer border-none outline-none"
                 >
                     <Plus size={16} />
-                    Nouvelle Chambre
+                    {t('pages.roomTypes.modal.createTitle', { defaultValue: 'Add room type' })}
                 </button>
                 </>
                 )}
@@ -153,7 +165,7 @@ export default function RoomTypesPage() {
                         type="text"
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
-                        placeholder={t('auto.features.rooms.pages.roomtypespage.placeholder.4f8e2e50', { defaultValue: "Rechercher une chambre..." })}
+                        placeholder={t('auto.features.rooms.pages.roomtypespage.placeholder.4f8e2e50', { defaultValue: "Search room types..." })}
                         className="w-full rounded-xl border border-brand-slate/20 bg-brand-light/70 py-2.5 pl-9 pr-4 text-sm text-brand-navy outline-none transition focus:border-brand-mint/40 focus:ring-2 focus:ring-brand-mint/15 dark:border-brand-light/10 dark:bg-brand-light/5 dark:text-brand-light"
                     />
                 </div>
@@ -163,13 +175,15 @@ export default function RoomTypesPage() {
             {(!isLoading && !isError && roomTypes?.length === 0) ? (
                 <div className="premium-surface border-dashed border-brand-slate/25 p-12 text-center">
                     <BedDouble size={40} className="mx-auto text-brand-slate/45 mb-3" />
-                    <p className="text-brand-slate text-sm">{t('auto.features.rooms.pages.roomtypespage.6d41bf0a', { defaultValue: "Aucune chambre définie pour le moment" })}</p>
-                    <p className="text-brand-slate/70 text-xs mt-1">{t('auto.features.rooms.pages.roomtypespage.eea025ef', { defaultValue: "Cliquez sur « Nouvelle Chambre » pour commencer" })}</p>
+                    <p className="text-brand-slate text-sm">{t('auto.features.rooms.pages.roomtypespage.6d41bf0a', { defaultValue: "No room types defined yet" })}</p>
+                    <p className="text-brand-slate/70 text-xs mt-1">{t('auto.features.rooms.pages.roomtypespage.eea025ef', { defaultValue: "Click “Add room type” to get started" })}</p>
                 </div>
             ) : roomTypes && roomTypes.length > 0 && displayedRoomTypes.length === 0 ? (
                 <div className="premium-surface border-dashed border-brand-slate/25 p-12 text-center">
                     <BedDouble size={40} className="mx-auto text-brand-slate/45 mb-3" />
-                    <p className="text-brand-slate text-sm">Aucune chambre trouvée pour "{search}"</p>
+                    <p className="text-brand-slate text-sm">
+                        {t('pages.roomTypes.emptySearch', { defaultValue: 'No room type found for "{{search}}"', search })}
+                    </p>
                 </div>
             ) : displayedRoomTypes.length > 0 && (
                 <div className="premium-surface overflow-hidden animate-in slide-in-from-bottom-2 duration-300">
@@ -178,12 +192,12 @@ export default function RoomTypesPage() {
                         <thead>
                             <tr className="bg-brand-light/80 border-b border-brand-slate/15">
                                 <th className="px-5 py-3 font-semibold text-brand-slate text-xs uppercase tracking-wide">{t('auto.features.rooms.pages.roomtypespage.60a25d6c', { defaultValue: "Code" })}</th>
-                                <th className="px-5 py-3 font-semibold text-brand-slate text-xs uppercase tracking-wide">{t('auto.features.rooms.pages.roomtypespage.f530c0be', { defaultValue: "Libellé" })}</th>
+                                <th className="px-5 py-3 font-semibold text-brand-slate text-xs uppercase tracking-wide">{t('auto.features.rooms.pages.roomtypespage.f530c0be', { defaultValue: "Label" })}</th>
                                 <th className="px-5 py-3 font-semibold text-brand-slate text-xs uppercase tracking-wide text-center">{t('pages.roomTypes.table.inventoryType', { defaultValue: 'Type' })}</th>
                                 <th className="px-5 py-3 font-semibold text-brand-slate text-xs uppercase tracking-wide text-center">{t('auto.features.rooms.pages.roomtypespage.b23ebeb0', { defaultValue: "Occupancy" })}</th>
-                                <th className="px-5 py-3 font-semibold text-brand-slate text-xs uppercase tracking-wide text-center">{t('auto.features.rooms.pages.roomtypespage.3033d562', { defaultValue: "Adultes" })}</th>
-                                <th className="px-5 py-3 font-semibold text-brand-slate text-xs uppercase tracking-wide text-center">{t('auto.features.rooms.pages.roomtypespage.8ebed994', { defaultValue: "Enfants" })}</th>
-                                <th className="px-5 py-3 font-semibold text-brand-slate text-xs uppercase tracking-wide text-center">{t('auto.features.rooms.pages.roomtypespage.b3557035', { defaultValue: "Lit bébé" })}</th>
+                                <th className="px-5 py-3 font-semibold text-brand-slate text-xs uppercase tracking-wide text-center">{t('auto.features.rooms.pages.roomtypespage.3033d562', { defaultValue: "Adults" })}</th>
+                                <th className="px-5 py-3 font-semibold text-brand-slate text-xs uppercase tracking-wide text-center">{t('auto.features.rooms.pages.roomtypespage.8ebed994', { defaultValue: "Children" })}</th>
+                                <th className="px-5 py-3 font-semibold text-brand-slate text-xs uppercase tracking-wide text-center">{t('auto.features.rooms.pages.roomtypespage.b3557035', { defaultValue: "Cot" })}</th>
                                 <th className="px-5 py-3 font-semibold text-brand-slate text-xs uppercase tracking-wide">{t('pages.roomTypes.table.updatedBy', { defaultValue: 'Updated by' })}</th>
                                 <th className="px-5 py-3 font-semibold text-brand-slate text-xs uppercase tracking-wide text-right">
                                     {t('pages.roomTypes.table.actions', { defaultValue: 'Actions' })}
@@ -217,18 +231,18 @@ export default function RoomTypesPage() {
                                     </td>
                                     <td className="px-5 py-3 text-center">
                                         <span className="text-xs font-bold text-brand-slate bg-brand-slate/10 px-2 py-0.5 rounded border border-brand-slate/15">
-                                            {rt.minOccupancy}–{rt.maxOccupancy}
+                                            {rt.minOccupancy}-{rt.maxOccupancy}
                                         </span>
                                     </td>
                                     <td className="px-5 py-3 text-center text-brand-slate text-xs font-medium">
-                                        {rt.minAdults}–{rt.maxAdults}
+                                        {rt.minAdults}-{rt.maxAdults}
                                     </td>
                                     <td className="px-5 py-3 text-center text-brand-slate text-xs font-medium">
-                                        {rt.minChildren}–{rt.maxChildren}
+                                        {rt.minChildren}-{rt.maxChildren}
                                     </td>
                                     <td className="px-5 py-3 text-center">
                                         {rt.allowCotOverMax ? (
-                                            <span className="text-[10px] bg-brand-mint/10 text-brand-mint border border-brand-mint/20 px-2 py-0.5 rounded-full font-bold uppercase">{t('auto.features.rooms.pages.roomtypespage.a78b3ab3', { defaultValue: "Autorisé" })}</span>
+                                            <span className="text-[10px] bg-brand-mint/10 text-brand-mint border border-brand-mint/20 px-2 py-0.5 rounded-full font-bold uppercase">{t('auto.features.rooms.pages.roomtypespage.a78b3ab3', { defaultValue: "Allowed" })}</span>
                                         ) : (
                                             <span className="text-[10px] bg-brand-light/80 text-brand-slate/70 border border-brand-slate/10 px-2 py-0.5 rounded-full font-bold uppercase">{t('auto.features.rooms.pages.roomtypespage.dfd69bda', { defaultValue: "Non" })}</span>
                                         )}
@@ -241,7 +255,7 @@ export default function RoomTypesPage() {
                                             <button
                                                 onClick={() => openEdit(rt)}
                                                 className="p-1.5 rounded-xl text-brand-slate/70 hover:text-brand-mint hover:bg-brand-mint/10 transition-colors cursor-pointer border-none outline-none bg-transparent"
-                                                title={t('auto.features.rooms.pages.roomtypespage.title.d44026b9', { defaultValue: "Modifier" })}
+                                                title={t('auto.features.rooms.pages.roomtypespage.title.d44026b9', { defaultValue: "Edit" })}
                                             >
                                                 <Pencil size={15} />
                                             </button>
@@ -249,7 +263,7 @@ export default function RoomTypesPage() {
                                                 onClick={() => handleDelete(rt)}
                                                 disabled={deleteMutation.isPending}
                                                 className="p-1.5 rounded-xl text-brand-slate/70 hover:text-brand-navy hover:bg-brand-slate/10 transition-colors cursor-pointer disabled:opacity-50 border-none outline-none bg-transparent"
-                                                title={t('auto.features.rooms.pages.roomtypespage.title.b7a64043', { defaultValue: "Supprimer" })}
+                                                title={t('auto.features.rooms.pages.roomtypespage.title.b7a64043', { defaultValue: "Archive" })}
                                             >
                                                 <Trash2 size={15} />
                                             </button>
@@ -271,7 +285,10 @@ export default function RoomTypesPage() {
                         className="inline-flex items-center gap-2 rounded-lg border border-brand-light/70 bg-brand-light/70 px-4 py-2 text-sm font-semibold text-brand-navy transition hover:border-brand-mint hover:text-brand-mint dark:border-brand-light/10 dark:bg-brand-light/5 dark:text-brand-light">
                         {showArchived ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
                         <Archive size={16} />
-                        Chambres archivées {archivedRoomTypes ? `(${archivedRoomTypes.length})` : ''}
+                        {t('pages.roomTypes.archived.toggle', {
+                            defaultValue: 'Archived room types {{count}}',
+                            count: archivedRoomTypes ? `(${archivedRoomTypes.length})` : '',
+                        })}
                     </button>
 
                     {showArchived && displayedArchivedTypes.length > 0 && (
@@ -281,7 +298,7 @@ export default function RoomTypesPage() {
                                 <thead>
                                     <tr className="bg-brand-slate/10 border-b border-brand-slate/15">
                                         <th className="px-5 py-3 font-semibold text-brand-slate text-xs uppercase tracking-wide">{t('auto.features.rooms.pages.roomtypespage.60a25d6c', { defaultValue: "Code" })}</th>
-                                        <th className="px-5 py-3 font-semibold text-brand-slate text-xs uppercase tracking-wide">{t('auto.features.rooms.pages.roomtypespage.f530c0be', { defaultValue: "Libellé" })}</th>
+                                        <th className="px-5 py-3 font-semibold text-brand-slate text-xs uppercase tracking-wide">{t('auto.features.rooms.pages.roomtypespage.f530c0be', { defaultValue: "Label" })}</th>
                                         <th className="px-5 py-3 font-semibold text-brand-slate text-xs uppercase tracking-wide">{t('pages.roomTypes.table.updatedBy', { defaultValue: 'Updated by' })}</th>
                                         <th className="px-5 py-3 font-semibold text-brand-slate text-xs uppercase tracking-wide text-right">{t('auto.features.rooms.pages.roomtypespage.ef856737', { defaultValue: "Action" })}</th>
                                     </tr>
@@ -301,7 +318,8 @@ export default function RoomTypesPage() {
                                             <td className="px-5 py-3 text-right">
                                                 <button onClick={() => handleRestore(rt)} disabled={restoreMutation.isPending}
                                                     className="inline-flex h-10 items-center gap-2 rounded-lg bg-brand-mint/10 px-4 text-sm font-semibold text-brand-mint transition hover:bg-brand-mint hover:text-brand-light disabled:cursor-not-allowed disabled:opacity-60">
-                                                    <RotateCcw size={14} /> Restaurer
+                                                    <RotateCcw size={14} />
+                                                    {t('pages.roomTypes.archived.restore', { defaultValue: 'Restore' })}
                                                 </button>
                                             </td>
                                         </tr>
@@ -314,7 +332,7 @@ export default function RoomTypesPage() {
                     )}
 
                     {showArchived && archivedRoomTypes && archivedRoomTypes.length === 0 && (
-                        <div className="rounded-lg border border-dashed border-brand-slate/20 px-6 py-10 text-center text-sm text-brand-slate dark:border-brand-light/10 dark:text-brand-light/70">{t('auto.features.rooms.pages.roomtypespage.112be6b0', { defaultValue: "Aucune chambre archivée" })}</div>
+                        <div className="rounded-lg border border-dashed border-brand-slate/20 px-6 py-10 text-center text-sm text-brand-slate dark:border-brand-light/10 dark:text-brand-light/70">{t('auto.features.rooms.pages.roomtypespage.112be6b0', { defaultValue: "No archived room types" })}</div>
                     )}
                 </div>
             )}

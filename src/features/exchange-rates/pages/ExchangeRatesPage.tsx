@@ -38,7 +38,7 @@ export default function ExchangeRatesPage() {
                         {t('pages.exchangeRates.emptyHotelTitle', { defaultValue: 'No hotel selected' })}
                     </h2>
                     <p className="mt-2 text-sm text-brand-slate dark:text-brand-light/75">
-                        {t('pages.exchangeRates.emptyHotelSubtitle', { defaultValue: 'Choose a property before managing exchange rates.' })}
+                        {t('pages.exchangeRates.emptyHotelSubtitle', { defaultValue: 'Choose a hotel before managing exchange rates.' })}
                     </p>
                 </section>
             ) : (

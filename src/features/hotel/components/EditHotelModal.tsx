@@ -209,7 +209,7 @@ export default function EditHotelModal({ isOpen, onClose, editing, onSubmit, isP
                         <SectionDivider label="Informations Générales" />
                         <div className="space-y-4">
                             <div>
-                                <FieldLabel>{t('auto.features.hotel.components.edithotelmodal.243e2040', { defaultValue: "Nom commercial de l'hôtel *" })}</FieldLabel>
+                                <FieldLabel>{t('auto.features.hotel.components.edithotelmodal.243e2040', { defaultValue: "Hotel trade name *" })}</FieldLabel>
                                 <InputWrapper icon={<Building2 size={15} />}>
                                     <input {...register('name')} className={inputCls()} placeholder={t('auto.features.hotel.components.edithotelmodal.placeholder.38cb0167', { defaultValue: "Grand Hôtel Majestic" })} />
                                 </InputWrapper>
@@ -218,18 +218,18 @@ export default function EditHotelModal({ isOpen, onClose, editing, onSubmit, isP
 
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
-                                    <FieldLabel>{t('auto.features.hotel.components.edithotelmodal.b8343faf', { defaultValue: "Représentant Légal *" })}</FieldLabel>
+                                    <FieldLabel>{t('auto.features.hotel.components.edithotelmodal.b8343faf', { defaultValue: "Legal representative *" })}</FieldLabel>
                                     <InputWrapper icon={<User size={15} />}>
                                         <input {...register('legalRepresentative')} className={inputCls()} placeholder={t('auto.features.hotel.components.edithotelmodal.placeholder.27c19c0c', { defaultValue: "Nom Prénom" })} />
                                     </InputWrapper>
                                     {errors.legalRepresentative && <p className="mt-1 text-xs font-bold text-brand-slate">{errors.legalRepresentative.message}</p>}
                                 </div>
                                 <div>
-                                    <FieldLabel>{t('auto.features.hotel.components.edithotelmodal.2ca8c8ab', { defaultValue: "Devise (ISO 4217) *" })}</FieldLabel>
+                                    <FieldLabel>{t('auto.features.hotel.components.edithotelmodal.2ca8c8ab', { defaultValue: "Currency (ISO 4217) *" })}</FieldLabel>
                                     <InputWrapper icon={<Coins size={15} />}>
                                         <select {...register('defaultCurrency')}
                                             className={`${inputCls()} font-bold font-mono tracking-widest cursor-pointer appearance-none`}>
-                                            <option value="">{t('auto.features.hotel.components.edithotelmodal.79a4a688', { defaultValue: "— Devise —" })}</option>
+                                            <option value="">{t('auto.features.hotel.components.edithotelmodal.79a4a688', { defaultValue: "— Currency —" })}</option>
                                             {CURRENCIES.map((c) => (
                                                 <option key={c.code} value={c.code}>{c.code} - {c.name} ({c.symbol})</option>
                                             ))}
@@ -241,14 +241,14 @@ export default function EditHotelModal({ isOpen, onClose, editing, onSubmit, isP
 
                             <div className="grid grid-cols-3 gap-4">
                                 <div className="col-span-2">
-                                    <FieldLabel>{t('auto.features.hotel.components.edithotelmodal.7d0c40d0', { defaultValue: "Adresse Complète *" })}</FieldLabel>
+                                    <FieldLabel>{t('auto.features.hotel.components.edithotelmodal.7d0c40d0', { defaultValue: "Full address *" })}</FieldLabel>
                                     <InputWrapper icon={<MapPin size={15} />}>
                                         <input {...register('address')} className={inputCls()} placeholder={t('auto.features.hotel.components.edithotelmodal.placeholder.0d9f6dde', { defaultValue: "Avenue Habib Bourguiba, 1001 Tunis" })} />
                                     </InputWrapper>
                                     {errors.address && <p className="mt-1 text-xs font-bold text-brand-slate">{errors.address.message}</p>}
                                 </div>
                                 <div>
-                                    <FieldLabel>{t('auto.features.hotel.components.edithotelmodal.637932f7', { defaultValue: "Catégorie (Étoiles)" })}</FieldLabel>
+                                    <FieldLabel>{t('auto.features.hotel.components.edithotelmodal.637932f7', { defaultValue: "Category (stars)" })}</FieldLabel>
                                     <div className="flex items-center gap-1.5 h-[42px] px-3 bg-brand-light dark:bg-brand-slate/10 border border-brand-slate/20 rounded-xl">
                                         {[1, 2, 3, 4, 5].map((s) => (
                                             <button key={s} type="button"
@@ -329,7 +329,7 @@ export default function EditHotelModal({ isOpen, onClose, editing, onSubmit, isP
                         <div className="space-y-4">
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
-                                    <FieldLabel>{t('auto.features.hotel.components.edithotelmodal.afc60cf6', { defaultValue: "Téléphone *" })}</FieldLabel>
+                                    <FieldLabel>{t('auto.features.hotel.components.edithotelmodal.afc60cf6', { defaultValue: "Phone *" })}</FieldLabel>
                                     <InputWrapper icon={<Phone size={15} />}>
                                         <input {...register('phone')} className={inputCls()} placeholder="+216 71 000 000" />
                                     </InputWrapper>
@@ -345,7 +345,7 @@ export default function EditHotelModal({ isOpen, onClose, editing, onSubmit, isP
 
                             <div>
                                 <div className="flex items-center justify-between mb-2">
-                                    <FieldLabel>{t('auto.features.hotel.components.edithotelmodal.6e775c60', { defaultValue: "Adresses Email" })}</FieldLabel>
+                                    <FieldLabel>{t('auto.features.hotel.components.edithotelmodal.6e775c60', { defaultValue: "Email addresses" })}</FieldLabel>
                                     <button type="button" onClick={() => addEmail({ label: '', address: '' })}
                                         className="inline-flex items-center gap-1.5 text-[11px] font-bold text-brand-mint hover:text-brand-mint/80 transition-colors cursor-pointer border-none outline-none bg-transparent">
                                         <Plus size={13} /> Ajouter un email
@@ -356,7 +356,7 @@ export default function EditHotelModal({ isOpen, onClose, editing, onSubmit, isP
                                     <div onClick={() => addEmail({ label: '', address: '' })}
                                         className="flex items-center gap-2 px-4 py-3 border border-dashed border-brand-slate/20 rounded-xl text-sm text-brand-slate cursor-pointer hover:border-brand-mint hover:text-brand-mint hover:bg-brand-mint/5 transition-all">
                                         <Mail size={15} />
-                                        <span className="text-xs">{t('auto.features.hotel.components.edithotelmodal.3d3545d5', { defaultValue: "Cliquez pour ajouter une adresse email..." })}</span>
+                                        <span className="text-xs">{t('auto.features.hotel.components.edithotelmodal.3d3545d5', { defaultValue: "Click to add an email address..." })}</span>
                                     </div>
                                 ) : (
                                     <div className="space-y-2">
@@ -395,13 +395,13 @@ export default function EditHotelModal({ isOpen, onClose, editing, onSubmit, isP
                         <div className="space-y-4">
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
-                                    <FieldLabel>{t('auto.features.hotel.components.edithotelmodal.607ae752', { defaultValue: "Raison Sociale (Nom Fiscal)" })}</FieldLabel>
+                                    <FieldLabel>{t('auto.features.hotel.components.edithotelmodal.607ae752', { defaultValue: "Legal name (tax name)" })}</FieldLabel>
                                     <InputWrapper icon={<FileText size={15} />}>
                                         <input {...register('fiscalName')} className={inputCls()} placeholder={t('auto.features.hotel.components.edithotelmodal.placeholder.1c4e4c18', { defaultValue: "SARL Grand Hôtel…" })} />
                                     </InputWrapper>
                                 </div>
                                 <div>
-                                    <FieldLabel>{t('auto.features.hotel.components.edithotelmodal.9f31c75d', { defaultValue: "Matricule Fiscal (VAT)" })}</FieldLabel>
+                                    <FieldLabel>{t('auto.features.hotel.components.edithotelmodal.9f31c75d', { defaultValue: "Tax ID / VAT number" })}</FieldLabel>
                                     <InputWrapper icon={<IdCard size={15} />}>
                                         <input {...register('vatNumber')} onChange={handleVatChange}
                                             className={`${inputCls()} font-mono uppercase tracking-wider`}
@@ -531,7 +531,7 @@ export default function EditHotelModal({ isOpen, onClose, editing, onSubmit, isP
 
                     {/* Footer */}
                     <div className="px-6 py-4 bg-brand-light/60 dark:bg-brand-navy/60 border-t border-brand-slate/15 dark:border-brand-slate/20 shrink-0 flex items-center justify-between rounded-b-2xl">
-                        <p className="text-[10px] text-brand-slate font-medium italic">{t('auto.features.hotel.components.edithotelmodal.dc2c01fd', { defaultValue: "* Champs obligatoires" })}</p>
+                        <p className="text-[10px] text-brand-slate font-medium italic">{t('auto.features.hotel.components.edithotelmodal.dc2c01fd', { defaultValue: "* Required fields" })}</p>
                         <div className="flex items-center gap-3">
                             <button type="button" onClick={onClose}
                                 className="px-5 py-2 text-sm font-bold text-brand-slate hover:text-brand-navy dark:hover:text-brand-light transition-colors cursor-pointer border-none outline-none bg-transparent">

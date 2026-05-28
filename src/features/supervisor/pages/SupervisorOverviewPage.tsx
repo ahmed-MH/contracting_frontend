@@ -1,28 +1,19 @@
 import { Activity, Building2, CircleDollarSign, Shield } from 'lucide-react';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import { SupervisorBillingWatchlist } from '../components/SupervisorBillingWatchlist';
 import { SupervisorMetricCard } from '../components/SupervisorMetricCard';
 import { SupervisorPageHeader } from '../components/SupervisorPageHeader';
 import { SupervisorSectionCard } from '../components/SupervisorSectionCard';
-import { SupervisorDataTable, type SupervisorTableColumn } from '../components/SupervisorDataTable';
 import {
     useSupervisorPlans,
     useSupervisorPublicSignups,
     useSupervisorSubscriptions,
     useSupervisorSubscriptionSummary,
     useSupervisorTenants,
-    type SupervisorSubscription,
 } from '../hooks/useSupervisor';
 
 const overviewIcons = [CircleDollarSign, Building2, Shield, Activity] as const;
-
-interface SubscriptionWatchRow {
-    organization: string;
-    plan: string;
-    recurringMrr: string;
-    renewalDate: string;
-    status: string;
-}
 
 function formatMoney(value: number, currency: string): string {
     return new Intl.NumberFormat('en-US', {
@@ -30,12 +21,6 @@ function formatMoney(value: number, currency: string): string {
         currency,
         maximumFractionDigits: 0,
     }).format(value);
-}
-
-function statusLabel(status: SupervisorSubscription['status']): string {
-    if (status === 'ACTIVE') return 'Healthy';
-    if (status === 'PAST_DUE') return 'Overdue';
-    return 'Suspended';
 }
 
 function LoadingPanel() {
@@ -72,26 +57,6 @@ export default function SupervisorOverviewPage() {
     const pendingPublicSignups = publicSignups.filter((signup) => signup.status === 'PENDING_PAYMENT' || signup.status === 'PAID').length;
     const completedPublicSignups = publicSignups.filter((signup) => signup.status === 'COMPLETED').length;
     const failedPublicSignups = publicSignups.filter((signup) => signup.status === 'FAILED' || signup.status === 'EXPIRED').length;
-    const subscriptionWatchRows = useMemo<SubscriptionWatchRow[]>(() => {
-        if (subscriptions.length === 0) {
-            return [];
-        }
-
-        return [...subscriptions]
-            .sort((left, right) => {
-                const leftRisk = left.status === 'ACTIVE' ? 1 : 0;
-                const rightRisk = right.status === 'ACTIVE' ? 1 : 0;
-                return leftRisk - rightRisk;
-            })
-            .map((subscription) => ({
-                organization: subscription.organizationName,
-                plan: subscription.planName,
-                recurringMrr: formatMoney(subscription.monthlyRecurringRevenue, subscription.currency),
-                renewalDate: subscription.renewalDate,
-                status: statusLabel(subscription.status),
-            }));
-    }, [subscriptions]);
-
     const mrrSegments = useMemo(() => {
         if (subscriptions.length === 0) {
             return [];
@@ -144,42 +109,6 @@ export default function SupervisorOverviewPage() {
             value: plansQuery.isLoading ? '...' : String(activePlans),
             delta: plansQuery.isError ? 'Plans API unavailable' : `${plans.length} total plans configured`,
             description: 'Live plan count from the supervisor plans API.',
-        },
-    ];
-
-    const watchlistColumns: SupervisorTableColumn<SubscriptionWatchRow>[] = [
-        {
-            key: 'organization',
-            label: 'Organization',
-            render: (row) => (
-                <div>
-                    <p className="font-semibold text-brand-navy dark:text-brand-light">{row.organization}</p>
-                    <p className="mt-1 text-xs text-brand-slate dark:text-brand-light/60">Plan {row.plan}</p>
-                </div>
-            ),
-        },
-        {
-            key: 'recurringMrr',
-            label: 'Recurring MRR',
-            render: (row) => <span className="font-semibold text-brand-navy dark:text-brand-light">{row.recurringMrr}</span>,
-        },
-        {
-            key: 'renewalDate',
-            label: 'Period end',
-            render: (row) => <span className="text-brand-slate dark:text-brand-light/75">{row.renewalDate}</span>,
-        },
-        {
-            key: 'status',
-            label: 'Status',
-            render: (row) => (
-                <span className={`inline-flex rounded-full border px-3 py-1 text-xs font-semibold ${
-                    row.status === 'Healthy'
-                        ? 'border-brand-mint/20 bg-brand-mint/10 text-brand-mint'
-                        : 'border-brand-slate/20 bg-brand-slate/8 text-brand-slate dark:border-brand-light/10 dark:bg-brand-light/10 dark:text-brand-light/75'
-                }`}>
-                    {row.status}
-                </span>
-            ),
         },
     ];
 
@@ -287,23 +216,17 @@ export default function SupervisorOverviewPage() {
             </section>
 
             <SupervisorSectionCard
-                eyebrow={t('pages.supervisor.overview.cards.subscriptionWatch.eyebrow', { defaultValue: 'Subscription Watch' })}
-                title={t('pages.supervisor.overview.cards.subscriptionWatch.title', { defaultValue: 'Accounts needing supervisor attention' })}
-                description={t('pages.supervisor.overview.cards.subscriptionWatch.description', { defaultValue: 'Billing-centric follow-up queue for organizations approaching suspension or renewal risk.' })}
+                eyebrow={t('pages.supervisor.overview.cards.subscriptionWatch.eyebrow', { defaultValue: 'Billing watchlist' })}
+                title={t('pages.supervisor.overview.cards.subscriptionWatch.title', { defaultValue: 'Billing watchlist' })}
+                description={t('pages.supervisor.overview.cards.subscriptionWatch.description', { defaultValue: 'Track payment-required tenants, renewal dates, and active plan access across the platform.' })}
             >
-                {subscriptionsQuery.isLoading ? (
-                    <LoadingPanel />
-                ) : subscriptionsQuery.isError ? (
-                    <ErrorPanel label="Unable to load live supervisor subscriptions from the API right now." />
-                ) : subscriptionWatchRows.length === 0 ? (
-                    <ErrorPanel label="No subscriptions are available from the supervisor API yet." />
-                ) : (
-                    <SupervisorDataTable
-                        columns={watchlistColumns}
-                        rows={subscriptionWatchRows}
-                        rowKey={(row) => row.organization}
-                    />
-                )}
+                <SupervisorBillingWatchlist
+                    subscriptions={subscriptions}
+                    tenants={tenants}
+                    plans={plans}
+                    isLoading={subscriptionsQuery.isLoading}
+                    isError={subscriptionsQuery.isError}
+                />
             </SupervisorSectionCard>
         </div>
     );

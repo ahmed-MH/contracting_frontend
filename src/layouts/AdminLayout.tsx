@@ -170,8 +170,8 @@ export default function AdminLayout() {
                                                         ? [
                                                             'flex h-12 items-center justify-center rounded-2xl border',
                                                             isActive
-                                                                ? 'border-brand-mint/35 bg-brand-mint/12 text-brand-mint shadow-sm'
-                                                                : 'border-transparent text-brand-slate hover:border-brand-mint/20 hover:bg-brand-mint/8 hover:text-brand-mint dark:text-brand-light/70 dark:hover:text-brand-light',
+                                                                ? 'border-brand-mint/25 bg-brand-light/80 text-brand-navy shadow-sm ring-1 ring-brand-mint/15 dark:border-brand-mint/25 dark:bg-brand-light/8 dark:text-brand-light'
+                                                                : 'border-transparent text-brand-slate hover:border-brand-slate/15 hover:bg-brand-light/75 hover:text-brand-navy dark:text-brand-light/70 dark:hover:border-brand-light/10 dark:hover:bg-brand-light/6 dark:hover:text-brand-light',
                                                         ]
                                                         : [
                                                             'block overflow-hidden rounded-2xl border px-3 py-3 shadow-sm',
@@ -191,8 +191,8 @@ export default function AdminLayout() {
                                                     <div className={clsx(
                                                         'flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ring-1 transition',
                                                         isActive
-                                                            ? 'bg-brand-mint/14 text-brand-mint ring-brand-mint/25'
-                                                            : 'bg-brand-mint/8 text-brand-mint ring-brand-mint/10 group-hover:bg-brand-mint/12 group-hover:ring-brand-mint/20',
+                                                            ? 'bg-brand-mint text-brand-light ring-brand-mint/30 shadow-sm'
+                                                            : 'bg-brand-light/75 text-brand-slate ring-brand-slate/10 group-hover:bg-brand-light group-hover:text-brand-navy group-hover:ring-brand-slate/20 dark:bg-brand-light/[0.04] dark:text-brand-light/65 dark:ring-brand-light/10 dark:group-hover:bg-brand-light/8 dark:group-hover:text-brand-light',
                                                     )}>
                                                         <Icon size={17} />
                                                     </div>

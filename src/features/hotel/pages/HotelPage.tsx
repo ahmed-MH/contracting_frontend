@@ -9,7 +9,6 @@ import {
     type CreateHotelPayload,
 } from '../hooks/useHotels';
 import { useAuth } from '../../auth/context/AuthContext';
-import { useTenantUsage } from '../../admin/hooks/useUsers';
 import { useConfirm } from '../../../context/ConfirmContext';
 import { useHotel } from '../context/HotelContext';
 import {
@@ -23,7 +22,6 @@ import {
     Landmark,
     Mail,
     MapPin,
-    Palette,
     Pencil,
     Plus,
     RotateCcw,
@@ -95,7 +93,7 @@ function Stars({ value }: { value?: number }) {
     }
 
     return (
-        <span className="inline-flex items-center gap-1 rounded-full border border-brand-slate/30 bg-brand-slate/10 px-3 py-1 text-xs font-semibold text-brand-slate dark:border-brand-slate/30 dark:bg-brand-navy/80 dark:text-brand-light/75">
+        <span className="inline-flex items-center gap-1 rounded-full border border-yellow-400/35 bg-yellow-400/10 px-3 py-1 text-xs font-semibold text-yellow-400">
             {Array.from({ length: value }).map((_, index) => (
                 <Star key={index} size={13} fill="currentColor" />
             ))}
@@ -115,7 +113,6 @@ export default function HotelPage() {
     const isAdmin = user?.role === 'ADMIN';
 
     const { currentHotel, availableHotels, switchHotel, isLoading: isContextLoading } = useHotel();
-    const { data: tenantUsage } = useTenantUsage();
 
     const closeModal = () => {
         setIsModalOpen(false);
@@ -144,7 +141,7 @@ export default function HotelPage() {
                 name: hotel.name,
             }),
             description: t('pages.hotel.confirmArchive.description', {
-                defaultValue: 'This property will move to the archive and no longer appear in the active portfolio.',
+                defaultValue: 'This hotel will move to the archive and no longer appear in the active hotel list.',
             }),
             confirmLabel: t('pages.hotel.confirmArchive.confirmLabel', { defaultValue: 'Archive hotel' }),
             variant: 'danger',
@@ -160,7 +157,7 @@ export default function HotelPage() {
                 name: hotel.name,
             }),
             description: t('pages.hotel.confirmRestore.description', {
-                defaultValue: 'This property will return to the active hotel portfolio.',
+                defaultValue: 'This hotel will return to the active hotel list.',
             }),
             confirmLabel: t('pages.hotel.confirmRestore.confirmLabel', { defaultValue: 'Restore hotel' }),
             variant: 'info',
@@ -191,20 +188,20 @@ export default function HotelPage() {
         <div className="space-y-6 p-4 md:p-6">
             <GuidedPageHeader
                 icon={HotelIcon}
-                kicker={t('pages.hotel.header.eyebrow', { defaultValue: 'Hotel Portfolio' })}
-                title={t('pages.hotel.header.title', { defaultValue: 'Property profile' })}
-                description={t('pages.hotel.header.subtitle', { defaultValue: 'Keep property identity, contacts, legal details, and operational metadata aligned with the commercial workspace.' })}
+                kicker={t('pages.hotel.header.eyebrow', { defaultValue: 'Hotel' })}
+                title={t('pages.hotel.header.title', { defaultValue: 'Hotel Information' })}
+                description={t('pages.hotel.header.subtitle', { defaultValue: 'Manage hotel identity, contacts, legal details, and financial settings.' })}
                 actions={(
                 <>
                     <div className="hidden">
                         <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-brand-slate">
-                            {t('pages.hotel.header.eyebrow', { defaultValue: 'Hotel Portfolio' })}
+                            {t('pages.hotel.header.eyebrow', { defaultValue: 'Hotel' })}
                         </p>
                         <h1 className="mt-3 text-3xl font-semibold tracking-tight text-brand-navy dark:text-brand-light">
-                            {t('pages.hotel.header.title', { defaultValue: 'Property profile' })}
+                            {t('pages.hotel.header.title', { defaultValue: 'Hotel Information' })}
                         </h1>
                         <p className="mt-3 max-w-3xl text-sm leading-6 text-brand-slate dark:text-brand-light/75">
-                            {t('pages.hotel.header.subtitle', { defaultValue: 'Keep property identity, contacts, legal details, and operational metadata aligned with the commercial workspace.' })}
+                            {t('pages.hotel.header.subtitle', { defaultValue: 'Manage hotel identity, contacts, legal details, and financial settings.' })}
                         </p>
                     </div>
 
@@ -232,7 +229,7 @@ export default function HotelPage() {
                                 className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl bg-brand-mint px-4 text-sm font-semibold text-brand-light shadow-md transition hover:-translate-y-0.5 hover:bg-brand-mint"
                             >
                                 <Plus size={16} />
-                                {t('pages.hotel.header.newHotel', { defaultValue: 'New hotel' })}
+                                {t('pages.hotel.header.newHotel', { defaultValue: 'Add hotel' })}
                             </button>
                         )}
                     </div>
@@ -249,7 +246,7 @@ export default function HotelPage() {
                         {t('pages.hotel.header.emptyTitle', { defaultValue: 'No hotel selected' })}
                     </h2>
                     <p className="mt-2 text-sm text-brand-slate dark:text-brand-light/75">
-                        {t('pages.hotel.header.emptySubtitle', { defaultValue: 'Choose a property to continue.' })}
+                        {t('pages.hotel.header.emptySubtitle', { defaultValue: 'Choose a hotel to continue.' })}
                     </p>
                 </section>
             ) : (
@@ -303,109 +300,6 @@ export default function HotelPage() {
                                     </button>
                                 </div>
                             )}
-                        </div>
-                    </section>
-
-                    <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-                        {[
-                            { label: t('pages.hotel.metrics.activeProperties', { defaultValue: 'Hotels used' }), value: tenantUsage ? `${tenantUsage.hotels.used}/${tenantUsage.hotels.limit}` : availableHotels.length, icon: HotelIcon },
-                            { label: t('pages.hotel.metrics.contactEmails', { defaultValue: 'Contact emails' }), value: currentHotel.emails?.length ?? 0, icon: Mail },
-                            { label: t('pages.hotel.metrics.defaultCurrency', { defaultValue: 'Default currency' }), value: currentHotel.defaultCurrency, icon: Coins },
-                            { label: t('pages.hotel.metrics.branding', { defaultValue: 'PDF branding' }), value: currentHotel.preferredThemeColor || (currentHotel.logoUrl ? 'Logo' : 'Default'), icon: Palette },
-                        ].map((metric) => {
-                            const Icon = metric.icon;
-                            return (
-                                <div key={metric.label} className="rounded-2xl border border-brand-light/70 bg-brand-light/72 p-5 shadow-sm dark:border-brand-light/10 dark:bg-brand-light/5">
-                                    <div className="flex items-center justify-between gap-4">
-                                        <p className="text-sm font-medium text-brand-slate">{metric.label}</p>
-                                        <div className="rounded-2xl bg-brand-mint/10 p-3 text-brand-mint">
-                                            <Icon size={18} />
-                                        </div>
-                                    </div>
-                                    <p className="mt-6 text-2xl font-semibold tracking-tight text-brand-navy dark:text-brand-light">
-                                        {metric.value}
-                                    </p>
-                                </div>
-                            );
-                        })}
-                    </section>
-
-                    <section className="premium-surface overflow-hidden">
-                        <div className="flex flex-col gap-2 border-b border-brand-light/70 px-6 py-5 dark:border-brand-light/10">
-                            <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-brand-slate">
-                                {t('pages.hotel.portfolio.eyebrow', { defaultValue: 'Roster' })}
-                            </p>
-                            <h3 className="text-xl font-semibold tracking-tight text-brand-navy dark:text-brand-light">
-                                {t('pages.hotel.portfolio.title', { defaultValue: 'Active hotel portfolio' })}
-                            </h3>
-                        </div>
-                        <div className="overflow-x-auto">
-                            <table className="min-w-[720px] w-full text-left text-sm">
-                                <thead>
-                                    <tr className="border-b border-brand-light/70 bg-brand-light/60 dark:border-brand-light/10 dark:bg-brand-light/5">
-                                        <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wide text-brand-slate dark:text-brand-light/65">
-                                            {t('pages.hotel.portfolio.columns.hotel', { defaultValue: 'Hotel' })}
-                                        </th>
-                                        <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wide text-brand-slate dark:text-brand-light/65">
-                                            {t('pages.hotel.portfolio.columns.currency', { defaultValue: 'Currency' })}
-                                        </th>
-                                        <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wide text-brand-slate dark:text-brand-light/65">
-                                            {t('pages.hotel.portfolio.columns.updatedBy', { defaultValue: 'Updated by' })}
-                                        </th>
-                                        <th className="px-6 py-4 text-right text-xs font-semibold uppercase tracking-wide text-brand-slate dark:text-brand-light/65">
-                                            {t('pages.hotel.portfolio.columns.actions', { defaultValue: 'Actions' })}
-                                        </th>
-                                    </tr>
-                                </thead>
-                                <tbody className="divide-y divide-brand-light/70 dark:divide-brand-light/10">
-                                    {availableHotels.map((hotel) => {
-                                        const isCurrent = hotel.id === currentHotel.id;
-
-                                        return (
-                                            <tr key={hotel.id} className="transition-colors hover:bg-brand-light/60 dark:hover:bg-brand-light/5">
-                                                <td className="px-6 py-4">
-                                                    <div className="flex flex-col gap-1">
-                                                        <div className="flex items-center gap-2">
-                                                            <span className="font-semibold text-brand-navy dark:text-brand-light">{hotel.name}</span>
-                                                            {isCurrent && (
-                                                                <span className="inline-flex items-center rounded-full border border-brand-mint/30 bg-brand-mint/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-brand-mint">
-                                                                    {t('pages.hotel.portfolio.current', { defaultValue: 'Current' })}
-                                                                </span>
-                                                            )}
-                                                        </div>
-                                                        <span className="text-xs text-brand-slate dark:text-brand-light/55">
-                                                            {hotel.reference || 'HTL-PENDING'}
-                                                        </span>
-                                                    </div>
-                                                </td>
-                                                <td className="px-6 py-4">
-                                                    <span className="inline-flex items-center rounded-full border border-brand-light/70 bg-brand-light/70 px-3 py-1 text-xs font-semibold text-brand-slate dark:border-brand-light/10 dark:bg-brand-light/5 dark:text-brand-light/75">
-                                                        {hotel.defaultCurrency}
-                                                    </span>
-                                                </td>
-                                                <td className="px-6 py-4 align-top">
-                                                    <UpdatedByCell updatedByName={hotel.updatedByName} updatedAt={hotel.updatedAt} />
-                                                </td>
-                                                <td className="px-6 py-4 text-right">
-                                                    {isCurrent ? (
-                                                        <span className="text-xs font-medium text-brand-slate dark:text-brand-light/55">
-                                                            {t('pages.hotel.portfolio.currentHelper', { defaultValue: 'Open in workspace' })}
-                                                        </span>
-                                                    ) : (
-                                                        <button
-                                                            type="button"
-                                                            onClick={() => switchHotel(hotel.id)}
-                                                            className="inline-flex h-10 items-center rounded-2xl border border-brand-mint/25 bg-brand-mint/8 px-4 text-sm font-semibold text-brand-mint transition hover:bg-brand-mint hover:text-brand-light"
-                                                        >
-                                                            {t('pages.hotel.portfolio.open', { defaultValue: 'Open hotel' })}
-                                                        </button>
-                                                    )}
-                                                </td>
-                                            </tr>
-                                        );
-                                    })}
-                                </tbody>
-                            </table>
                         </div>
                     </section>
 
@@ -480,7 +374,7 @@ export default function HotelPage() {
                         <DetailCard
                             icon={MapPin}
                             eyebrow={t('pages.hotel.cards.location.eyebrow', { defaultValue: 'Location' })}
-                            title={t('pages.hotel.cards.location.title', { defaultValue: 'Property coordinates' })}
+                            title={t('pages.hotel.cards.location.title', { defaultValue: 'Hotel address' })}
                         >
                             <div className="space-y-3">
                                 <InfoRow label={t('pages.hotel.fields.address', { defaultValue: 'Address' })} value={currentHotel.address} />
@@ -596,7 +490,7 @@ export default function HotelPage() {
                                 {t('pages.hotel.archives.eyebrow', { defaultValue: 'Archive' })}
                             </p>
                             <h2 className="mt-2 text-xl font-semibold tracking-tight text-brand-navy dark:text-brand-light">
-                                {t('pages.hotel.archives.title', { defaultValue: 'Archived establishments' })}
+                                {t('pages.hotel.archives.title', { defaultValue: 'Archived hotels' })}
                             </h2>
                         </div>
                         <button

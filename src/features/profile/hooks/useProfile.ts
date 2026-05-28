@@ -77,6 +77,21 @@ export function useCreateTenantCheckoutSession() {
     });
 }
 
+export function useSyncTenantCheckoutSession() {
+    const queryClient = useQueryClient();
+
+    return useMutation<TenantCheckoutSession, Error>({
+        mutationFn: () => profileService.syncTenantCheckoutSession(),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: [...TENANT_USAGE_QUERY_KEY] });
+            queryClient.invalidateQueries({ queryKey: [...CURRENT_PROFILE_QUERY_KEY] });
+        },
+        onError: (error) => {
+            toast.error(error.message || 'Unable to check payment status');
+        },
+    });
+}
+
 export function useSetupOrganization(onSuccess?: (result: SetupOrganizationResult) => void) {
     const queryClient = useQueryClient();
 

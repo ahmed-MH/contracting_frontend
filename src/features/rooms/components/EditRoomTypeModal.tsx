@@ -100,8 +100,8 @@ export default function EditRoomTypeModal({
             >
                 {isPending ? <div className="w-4 h-4 border-2 border-brand-light border-t-transparent rounded-full animate-spin" /> : <Save size={16} />}
                 {editing
-                    ? t('pages.roomTypes.modal.update', { defaultValue: 'Update room' })
-                    : t('pages.roomTypes.modal.create', { defaultValue: 'Create room' })}
+                    ? t('pages.roomTypes.modal.update', { defaultValue: 'Save changes' })
+                    : t('pages.roomTypes.modal.create', { defaultValue: 'Create room type' })}
             </button>
         </>
     );
@@ -111,8 +111,8 @@ export default function EditRoomTypeModal({
             isOpen={isOpen}
             onClose={onClose}
             title={editing
-                ? t('pages.roomTypes.modal.editTitle', { defaultValue: 'Edit room' })
-                : t('pages.roomTypes.modal.createTitle', { defaultValue: 'New room type' })}
+                ? t('pages.roomTypes.modal.editTitle', { defaultValue: 'Edit room type' })
+                : t('pages.roomTypes.modal.createTitle', { defaultValue: 'Add room type' })}
             subtitle={t('pages.roomTypes.modal.subtitle', { defaultValue: 'Technical setup and capacity' })}
             icon={<BedDouble size={20} />}
             iconBg="bg-brand-mint/10 dark:bg-brand-mint/5 text-brand-mint"

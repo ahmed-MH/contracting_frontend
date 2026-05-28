@@ -1,5 +1,5 @@
 import { AlertTriangle, ClipboardList, Filter, RefreshCw, Search, ShieldCheck } from 'lucide-react';
-import { type ReactNode, useMemo, useState } from 'react';
+import { type ReactNode, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { SupervisorMetricCard } from '../components/SupervisorMetricCard';
 import { SupervisorPageHeader } from '../components/SupervisorPageHeader';
@@ -77,6 +77,11 @@ function EmptyState({ label }: { label: string }) {
     );
 }
 
+function formatPaginationSummary(first: number, last: number, total: number): string {
+    if (total === 0) return 'No logs found';
+    return `Showing ${first}-${last} of ${total}`;
+}
+
 function FilterField({
     label,
     meaning,
@@ -107,6 +112,7 @@ export default function SupervisorSystemLogsPage() {
     const [search, setSearch] = useState('');
     const [category, setCategory] = useState<SupervisorAuditLogCategory | ''>('');
     const [severity, setSeverity] = useState<SupervisorAuditLogSeverity | ''>('');
+    const [tenantId, setTenantId] = useState('');
     const [from, setFrom] = useState('');
     const [to, setTo] = useState('');
 
@@ -116,14 +122,20 @@ export default function SupervisorSystemLogsPage() {
         search: search.trim() || undefined,
         category: category || undefined,
         severity: severity || undefined,
+        tenantId: tenantId.trim() && Number.isInteger(Number(tenantId.trim())) ? Number(tenantId.trim()) : undefined,
         from: from || undefined,
         to: to || undefined,
-    }), [category, from, page, search, severity, to]);
+    }), [category, from, page, search, severity, tenantId, to]);
 
     const logsQuery = useSupervisorSystemLogs(queryParams);
     const logs = logsQuery.data?.items ?? [];
     const total = logsQuery.data?.total ?? 0;
-    const totalPages = Math.max(1, Math.ceil(total / pageSize));
+    const responseLimit = logsQuery.data?.limit ?? pageSize;
+    const currentPage = logsQuery.data?.page ?? page;
+    const totalPages = Math.max(1, Math.ceil(total / responseLimit));
+    const firstVisibleLog = total === 0 ? 0 : ((currentPage - 1) * responseLimit) + 1;
+    const lastVisibleLog = total === 0 ? 0 : Math.min(currentPage * responseLimit, total);
+    const paginationDisabled = logsQuery.isFetching;
     const warningCount = logs.filter((log) => log.severity === 'WARNING').length;
     const errorCount = logs.filter((log) => log.severity === 'ERROR' || log.severity === 'CRITICAL').length;
 
@@ -131,6 +143,17 @@ export default function SupervisorSystemLogsPage() {
         setter(value);
         setPage(1);
     };
+
+    useEffect(() => {
+        if (!logsQuery.data || logsQuery.isFetching) return;
+        if (total === 0 && page !== 1) {
+            setPage(1);
+            return;
+        }
+        if (page > totalPages) {
+            setPage(totalPages);
+        }
+    }, [logsQuery.data, logsQuery.isFetching, page, total, totalPages]);
 
     return (
         <div className="space-y-6 p-4 md:p-6">
@@ -155,7 +178,7 @@ export default function SupervisorSystemLogsPage() {
                 />
                 <SupervisorMetricCard
                     label="Visible page"
-                    value={`${page}/${totalPages}`}
+                    value={`${currentPage}/${totalPages}`}
                     delta={`${logs.length} rows loaded`}
                     description="Supervisor endpoint returns paginated audit events."
                     icon={Filter}
@@ -194,7 +217,7 @@ export default function SupervisorSystemLogsPage() {
                     </button>
                 )}
             >
-                <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-6">
+                <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-7">
                     <FilterField label="Search" meaning="Message, actor, tenant, event" className="lg:col-span-2">
                         <div className="relative">
                             <Search className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-brand-slate" size={16} />
@@ -218,6 +241,16 @@ export default function SupervisorSystemLogsPage() {
                             {severities.map((item) => <option key={item} value={item}>{item}</option>)}
                         </select>
                     </FilterField>
+                    <FilterField label="Tenant" meaning="Tenant ID">
+                        <input
+                            type="number"
+                            min="1"
+                            value={tenantId}
+                            onChange={(event) => updateFilter(setTenantId, event.target.value)}
+                            placeholder="Any tenant"
+                            className="h-12 w-full rounded-2xl border border-brand-slate/25 bg-brand-light px-4 text-sm text-brand-navy shadow-sm outline-none focus:border-brand-mint focus:ring-2 focus:ring-brand-mint/20 dark:border-brand-light/10 dark:bg-brand-navy/80 dark:text-brand-light"
+                        />
+                    </FilterField>
                     <FilterField label="From" meaning="Start date">
                         <input type="date" value={from} onChange={(event) => updateFilter(setFrom, event.target.value)} className="h-12 w-full rounded-2xl border border-brand-slate/25 bg-brand-light px-4 text-sm text-brand-navy shadow-sm outline-none focus:border-brand-mint focus:ring-2 focus:ring-brand-mint/20 dark:border-brand-light/10 dark:bg-brand-navy/80 dark:text-brand-light" />
                     </FilterField>
@@ -233,7 +266,7 @@ export default function SupervisorSystemLogsPage() {
                 ) : logsQuery.isError ? (
                     <EmptyState label="System logs could not be loaded." />
                 ) : logs.length === 0 ? (
-                    <EmptyState label="No logs recorded yet." />
+                    <EmptyState label={t('pages.supervisor.logs.pagination.noLogs', { defaultValue: 'No logs found' })} />
                 ) : (
                     <div className="mt-5 overflow-x-auto">
                         <table className="min-w-full text-left text-sm">
@@ -266,15 +299,31 @@ export default function SupervisorSystemLogsPage() {
                 )}
 
                 <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                    <p className="text-sm text-brand-slate dark:text-brand-light/70">
-                        Showing {logs.length} of {total} matching events.
-                    </p>
+                    <div className="space-y-1">
+                        <p className="text-sm font-semibold text-brand-navy dark:text-brand-light">
+                            {total === 0
+                                ? t('pages.supervisor.logs.pagination.noLogs', { defaultValue: 'No logs found' })
+                                : t('pages.supervisor.logs.pagination.range', {
+                                    defaultValue: formatPaginationSummary(firstVisibleLog, lastVisibleLog, total),
+                                    first: firstVisibleLog,
+                                    last: lastVisibleLog,
+                                    total,
+                                })}
+                        </p>
+                        <p className="text-xs text-brand-slate dark:text-brand-light/60">
+                            {t('pages.supervisor.logs.pagination.page', {
+                                defaultValue: 'Page {{page}} of {{totalPages}}',
+                                page: currentPage,
+                                totalPages,
+                            })}
+                        </p>
+                    </div>
                     <div className="flex gap-2">
-                        <button type="button" disabled={page <= 1} onClick={() => setPage((value) => Math.max(1, value - 1))} className="h-10 rounded-2xl border border-brand-slate/15 bg-white/50 px-4 text-sm font-semibold text-brand-navy transition hover:border-brand-mint/40 disabled:cursor-not-allowed disabled:opacity-50 dark:border-brand-light/10 dark:bg-transparent dark:text-brand-light">
-                            Previous
+                        <button type="button" disabled={paginationDisabled || page <= 1} onClick={() => setPage((value) => Math.max(1, value - 1))} className="h-10 rounded-2xl border border-brand-slate/15 bg-white/50 px-4 text-sm font-semibold text-brand-navy transition hover:border-brand-mint/40 disabled:cursor-not-allowed disabled:opacity-50 dark:border-brand-light/10 dark:bg-transparent dark:text-brand-light">
+                            {t('pages.supervisor.logs.pagination.previous', { defaultValue: 'Previous' })}
                         </button>
-                        <button type="button" disabled={page >= totalPages} onClick={() => setPage((value) => value + 1)} className="h-10 rounded-2xl border border-brand-slate/15 bg-white/50 px-4 text-sm font-semibold text-brand-navy transition hover:border-brand-mint/40 disabled:cursor-not-allowed disabled:opacity-50 dark:border-brand-light/10 dark:bg-transparent dark:text-brand-light">
-                            Next
+                        <button type="button" disabled={paginationDisabled || page >= totalPages} onClick={() => setPage((value) => Math.min(totalPages, value + 1))} className="h-10 rounded-2xl border border-brand-slate/15 bg-white/50 px-4 text-sm font-semibold text-brand-navy transition hover:border-brand-mint/40 disabled:cursor-not-allowed disabled:opacity-50 dark:border-brand-light/10 dark:bg-transparent dark:text-brand-light">
+                            {t('pages.supervisor.logs.pagination.next', { defaultValue: 'Next' })}
                         </button>
                     </div>
                 </div>

@@ -18,9 +18,9 @@ interface EditExchangeRateModalProps {
 }
 
 const sourceOptions = [
-    { value: 'manual', label: 'Manual' },
-    { value: 'system', label: 'System' },
-    { value: 'imported', label: 'Imported' },
+    { value: 'manual', labelKey: 'pages.exchangeRates.source.manual', fallback: 'Manual' },
+    { value: 'system', labelKey: 'pages.exchangeRates.source.system', fallback: 'System' },
+    { value: 'imported', labelKey: 'pages.exchangeRates.source.imported', fallback: 'Imported' },
 ] as const;
 
 export default function EditExchangeRateModal({
@@ -167,7 +167,7 @@ export default function EditExchangeRateModal({
                                     <label className={labelCls}>{t('pages.exchangeRates.fields.source', { defaultValue: 'Source' })}</label>
                                     <select {...register('source')} className="h-10 w-full cursor-pointer rounded-lg border border-brand-slate/20 bg-brand-light px-3 text-sm font-bold text-brand-navy outline-none transition-all focus:border-brand-mint focus:ring-2 focus:ring-brand-mint/30 dark:bg-brand-slate/10 dark:text-brand-light">
                                         {sourceOptions.map((source) => (
-                                            <option key={source.value} value={source.value}>{source.label}</option>
+                                            <option key={source.value} value={source.value}>{t(source.labelKey, { defaultValue: source.fallback })}</option>
                                         ))}
                                     </select>
                                 </div>

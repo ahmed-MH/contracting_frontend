@@ -47,8 +47,16 @@ export interface AvailablePlan {
 }
 
 export interface TenantCheckoutSession {
-    checkoutUrl: string;
-    sessionId: string;
+    checkoutUrl?: string;
+    sessionId?: string;
+    alreadyProcessed?: boolean;
+    requiresSync?: boolean;
+    resolved?: boolean;
+    canRetry?: boolean;
+    billingStatus?: 'ACTIVE' | 'PAST_DUE' | 'SUSPENDED';
+    message?: string;
+    sessionStatus?: string | null;
+    paymentStatus?: string | null;
 }
 
 export interface SetupOrganizationPayload {
@@ -83,6 +91,10 @@ export const profileService = {
 
     createTenantCheckoutSession: (planId: number) =>
         apiClient.post<TenantCheckoutSession>('/subscriptions/checkout-session', { planId })
+            .then((response) => response.data),
+
+    syncTenantCheckoutSession: () =>
+        apiClient.post<TenantCheckoutSession>('/subscriptions/sync-checkout')
             .then((response) => response.data),
 
     setupOrganization: (payload: SetupOrganizationPayload) =>

@@ -74,7 +74,7 @@ export function useDeleteArrangement() {
             const hid = currentHotel?.id;
             qc.invalidateQueries({ queryKey: arrangementKeys.all(hid) });
             qc.invalidateQueries({ queryKey: arrangementKeys.archived(hid) });
-            toast.success(i18next.t('auto.features.arrangements.hooks.usearrangements.toast.success.2875ad97', { defaultValue: "Arrangement archivé avec succès" }));
+            toast.success(i18next.t('auto.features.arrangements.hooks.usearrangements.toast.success.2875ad97', { defaultValue: "Arrangement archived successfully" }));
         },
     });
 }

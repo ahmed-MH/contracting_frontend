@@ -9,7 +9,16 @@
     "confirm": "Confirm",
     "cancel": "Cancel",
     "save": "Save",
-    "copy": "Copy"
+    "copy": "Copy",
+    "add": "Add",
+    "edit": "Edit",
+    "archive": "Archive",
+    "restore": "Restore",
+    "delete": "Delete",
+    "close": "Close",
+    "select": "Select",
+    "selectHotel": "Select hotel",
+    "language": "Language"
   },
   "entities": {
     "hotel": "Hotel"
@@ -67,11 +76,12 @@
   "pages": {
     "hotel": {
       "header": {
-        "title": "Hotel Configuration",
-        "subtitle": "Manage your properties and financial settings",
-        "newHotel": "New Hotel",
+        "title": "Hotel Information",
+        "subtitle": "Manage hotel identity, contacts, legal details, and financial settings.",
+        "newHotel": "Add hotel",
         "emptyTitle": "No hotel selected",
-        "emptySubtitle": "Please choose a property to continue."
+        "emptySubtitle": "Choose a hotel to continue.",
+        "eyebrow": "Hotel"
       },
       "bankAccounts": {
         "title": "Bank accounts",
@@ -79,7 +89,7 @@
         "add": "Add account",
         "empty": "Add the first hotel bank account",
         "principal": "Principal",
-        "makePrincipal": "Make principal",
+        "makePrincipal": "Set as principal",
         "active": "Active",
         "remove": "Remove account",
         "label": "Account label",
@@ -92,7 +102,9 @@
         "country": "Country"
       },
       "validation": {
-        "onePrincipalBankAccount": "Choose exactly one principal bank account."
+        "onePrincipalBankAccount": "Choose exactly one principal bank account.",
+        "themeColor": "Use a hex color like #0D9488",
+        "currencyLength": "Use a 3-letter currency code"
       },
       "exchangeRates": {
         "deleteTitle": "Delete this exchange rate?",
@@ -115,6 +127,119 @@
           "expired": "Expired",
           "scheduled": "Scheduled"
         }
+      },
+      "confirmArchive": {
+        "title": "Archive {{name}}?",
+        "description": "This hotel will move to the archive and no longer appear in the active hotel list.",
+        "confirmLabel": "Archive hotel"
+      },
+      "confirmRestore": {
+        "title": "Restore {{name}}?",
+        "description": "This hotel will return to the active hotel list.",
+        "confirmLabel": "Restore hotel"
+      },
+      "actions": {
+        "archive": "Archive hotel",
+        "restore": "Restore hotel",
+        "email": "Email contact"
+      },
+      "metrics": {
+        "activeProperties": "Hotels used",
+        "contactEmails": "Contact emails",
+        "defaultCurrency": "Default currency",
+        "branding": "PDF branding"
+      },
+      "portfolio": {
+        "eyebrow": "Hotels",
+        "title": "Active hotels",
+        "columns": {
+          "hotel": "Hotel",
+          "currency": "Currency",
+          "updatedBy": "Updated by",
+          "actions": "Actions"
+        },
+        "current": "Current",
+        "currentHelper": "Open in workspace",
+        "open": "Open hotel"
+      },
+      "cards": {
+        "branding": {
+          "eyebrow": "Documents",
+          "title": "PDF branding"
+        },
+        "location": {
+          "eyebrow": "Location",
+          "title": "Hotel address"
+        },
+        "contacts": {
+          "eyebrow": "Contacts",
+          "title": "Operational emails",
+          "empty": "No contact email has been configured yet."
+        },
+        "banking": {
+          "eyebrow": "Finance",
+          "title": "Fiscal and banking profile"
+        }
+      },
+      "fields": {
+        "logoStatus": "Logo status",
+        "themeColor": "Theme color",
+        "address": "Address",
+        "phone": "Phone",
+        "fax": "Fax",
+        "legalRepresentative": "Legal representative",
+        "vatNumber": "VAT number",
+        "ibanSwift": "IBAN / SWIFT"
+      },
+      "archives": {
+        "eyebrow": "Archive",
+        "title": "Archived hotels",
+        "hide": "Hide archive",
+        "show": "Show archive"
+      },
+      "logoUpload": {
+        "fieldLabel": "Document logo",
+        "title": "Upload hotel logo",
+        "subtitle": "Branding asset for previews, contracts, and proformas",
+        "status": {
+          "ready": "Logo configured",
+          "empty": "No logo uploaded yet",
+          "description": "Upload a polished logo for hotel-facing previews, contracts, and proformas.",
+          "createFirst": "Create the hotel first to unlock local logo uploads."
+        },
+        "source": {
+          "empty": "Upload a logo to brand previews and PDF exports."
+        },
+        "actions": {
+          "change": "Change logo",
+          "upload": "Upload logo",
+          "helper": "PNG and JPG upload natively. WebP is converted automatically to keep PDFs compatible."
+        },
+        "validation": {
+          "fileTooLarge": "The logo is too large. Choose an image smaller than 5 MB.",
+          "generic": "Unable to use this file.",
+          "hotelRequired": "Save the hotel first before uploading its logo.",
+          "fileRequired": "Choose a logo file before saving."
+        },
+        "notice": {
+          "webpConverted": "WebP files are converted to PNG so document previews and PDFs render correctly."
+        },
+        "dropzone": {
+          "title": "Drag and drop a logo here",
+          "subtitle": "Or click to browse. PNG and JPG are stored directly; WebP is converted automatically for document compatibility.",
+          "maxSize": "Max 5 MB"
+        },
+        "preview": {
+          "selected": "Selected logo",
+          "current": "Current logo",
+          "replaceHint": "Saving will replace the hotel logo path with the stored local upload URL.",
+          "clear": "Discard selection",
+          "currentHint": "Existing remote URLs and previously stored local paths remain supported.",
+          "emptyHint": "No logo is stored yet. Upload one to brand contracts and proformas."
+        },
+        "toast": {
+          "success": "Hotel logo updated"
+        }
       }
     },
     "contracts": {
@@ -126,41 +251,163 @@
     },
     "users": {
       "header": {
-        "title": "User Management",
-        "subtitle": "Invite and manage user accounts",
-        "inviteUser": "Invite user"
+        "title": "Users",
+        "subtitle": "Invite users, assign roles, and manage hotel access.",
+        "inviteUser": "Invite user",
+        "eyebrow": "Users",
+        "loadingBadge": "Loading users",
+        "badge": "{{count}} users"
       },
       "roles": {
         "admin": "Administrator",
-        "commercial": "Commercial"
+        "commercial": "Commercial",
+        "agent": "Agent"
       },
+      "units": {
+        "hotelSingular": "hotel",
+        "hotelPlural": "hotels"
+      },
+      "teamCoverage": "{{count}} {{roleLabel}} across {{hotels}} {{hotelLabel}}",
       "modals": {
         "roleHints": {
-          "admin": "Global platform access (no hotel assignment required)",
-          "commercial": "Local employee, must be assigned to at least one hotel"
+          "admin": "Full platform access; no hotel assignment required.",
+          "commercial": "Hotel operations user; assign at least one hotel.",
+          "agent": "Pricing tool user; assign at least one hotel."
         },
         "edit": {
-          "title": "Edit {{email}}",
-          "pendingActivationHint": "This user has not activated the account yet. First and last name will be set when the invite is accepted.",
-          "firstName": "First Name",
-          "lastName": "Last Name",
+          "title": "Edit user",
+          "pendingActivationHint": "This user has not activated the account yet. Their first and last name will be set when the invitation is accepted.",
+          "firstName": "First name",
+          "lastName": "Last name",
           "role": "Role",
-          "assignedHotels": "Assigned Hotels",
-          "saving": "Saving..."
+          "assignedHotels": "Assigned hotels",
+          "saving": "Saving...",
+          "lastAdminRoleLocked": "You must keep at least one active administrator."
         },
         "invite": {
-          "title": "Invite a user",
+          "title": "Invite user",
           "email": "Email",
           "emailPlaceholder": "new.user@example.com",
           "role": "Role",
-          "assignedHotels": "Assigned Hotels",
+          "assignedHotels": "Assigned hotels",
           "sending": "Sending...",
           "submit": "Send invitation",
           "validation": {
             "emailRequired": "Email is required",
             "hotelRequired": "At least one hotel is required"
-          }
+          },
+          "noHotelsForLocalRoles": "Create at least one hotel before inviting Commercial or Agent users. Administrator invitations can be sent now.",
+          "noHotelsAvailable": "No hotels are available for assignment yet.",
+          "selectHotelHint": "Select at least one hotel to send this invitation."
         }
+      },
+      "status": {
+        "active": "Active",
+        "pendingInvite": "Pending invitation",
+        "suspended": "Suspended",
+        "profilePending": "Profile pending"
+      },
+      "actions": {
+        "edit": "Edit user",
+        "suspend": "Suspend user",
+        "cannotSuspendSelf": "You cannot suspend your own account",
+        "reactivate": "Reactivate user",
+        "removeInvite": "Remove invitation"
+      },
+      "filters": {
+        "eyebrow": "Filters",
+        "title": "Find a user",
+        "description": "Filter by name, email, role, status, or hotel assignment.",
+        "clear": "Clear filters",
+        "ready": "Ready to filter",
+        "search": "Search users",
+        "searchPlaceholder": "Search by name or email",
+        "roles": {
+          "all": "All roles"
+        },
+        "status": {
+          "all": "All statuses"
+        },
+        "hotels": {
+          "all": "All hotels"
+        }
+      },
+      "confirmSuspend": {
+        "title": "Suspend {{name}}?",
+        "description": "This user will lose access to the workspace until reactivated.",
+        "confirmLabel": "Suspend user"
+      },
+      "confirmReactivate": {
+        "title": "Reactivate {{name}}?",
+        "description": "This user will regain access with the same role and hotel assignments.",
+        "confirmLabel": "Reactivate user"
+      },
+      "confirmRemoveInvite": {
+        "title": "Remove pending invitation?",
+        "description": "The invitation link will stop working and the seat will become available.",
+        "confirmLabel": "Remove invitation"
+      },
+      "metrics": {
+        "totalSeats": "Seats used",
+        "activeUsers": "Active users",
+        "pendingInvites": "Pending invitations",
+        "hotelUsage": "Hotels used"
+      },
+      "errors": {
+        "loadFailed": "Unable to load users right now."
+      },
+      "admins": {
+        "eyebrow": "Administrators",
+        "title": "Administrators",
+        "description": "Administrators manage users, hotels, and organization settings.",
+        "filteredCount": "{{shown}}/{{total}} administrators",
+        "count": "{{count}} administrators",
+        "emptyFiltered": "No administrators match the current filters.",
+        "empty": "No administrators yet."
+      },
+      "commercials": {
+        "eyebrow": "Commercial users",
+        "title": "Commercial team",
+        "description": "Commercial users manage hotel setup and contracting workflows.",
+        "unitSingular": "commercial user",
+        "unitPlural": "commercial users",
+        "filteredCount": "{{shown}}/{{total}} commercial users",
+        "count": "{{count}} commercial users across {{hotels}} hotels",
+        "emptyFiltered": "No commercial users match the current filters.",
+        "empty": "No commercial users have been assigned yet."
+      },
+      "agents": {
+        "eyebrow": "Agents",
+        "title": "Agent team",
+        "description": "Agents can use operational pricing tools for assigned hotels.",
+        "unitSingular": "agent",
+        "unitPlural": "agents",
+        "filteredCount": "{{shown}}/{{total}} agents",
+        "count": "{{count}} agents",
+        "emptyFiltered": "No agents match the current filters.",
+        "empty": "No agents have been invited yet."
+      },
+      "guidance": {
+        "eyebrow": "Access management",
+        "title": "Keep user access aligned with hotel operations.",
+        "items": {
+          "reviewPending": "Review pending invitations before sending new ones.",
+          "auditAdmins": "Reserve administrator access for users who manage governance.",
+          "alignHotels": "Match hotel assignments to each user’s operational scope."
+        }
+      },
+      "summary": {
+        "eyebrow": "Summary",
+        "title": "Seat distribution",
+        "adminCoverage": "Administrators",
+        "commercialCoverage": "Commercial users",
+        "agentAccess": "Agents",
+        "hotelAssignments": "Hotel assignments"
+      },
+      "toast": {
+        "reactivated": "User reactivated successfully",
+        "reactivateFailed": "Unable to reactivate the user",
+        "removeInviteFailed": "Unable to remove the pending invitation"
       }
     },
     "integrations": {
@@ -645,8 +892,42 @@
     },
     "arrangements": {
       "header": {
-        "title": "Arrangements"
-      }
+        "title": "Arrangements",
+        "kicker": "Hotel Setup",
+        "subtitle": "Define the meal plans offered by the hotel."
+      },
+      "table": {
+        "updatedBy": "Updated by"
+      },
+      "modal": {
+        "saveChanges": "Save changes",
+        "create": "Create arrangement",
+        "editTitle": "Edit arrangement",
+        "createTitle": "Add arrangement",
+        "subtitle": "Meal plan and board type",
+        "levelHint": "0 = base, 1+ = superior",
+        "namePlaceholder": "e.g. Bed and breakfast",
+        "descriptionPlaceholder": "Describe the meals included in this arrangement...",
+        "levelLogicTitle": "Level logic",
+        "levelLogicBody": "A meal plan is available as an option when its level is higher than the contract base board."
+      },
+      "confirmArchive": {
+        "title": "Archive arrangement \"{{code}} - {{name}}\"?",
+        "description": "This arrangement will be archived and can be restored later.",
+        "confirmLabel": "Archive"
+      },
+      "confirmRestore": {
+        "title": "Restore arrangement \"{{code}} - {{name}}\"?",
+        "description": "This arrangement will become active again.",
+        "confirmLabel": "Restore"
+      },
+      "archived": {
+        "toggle": "Archived arrangements {{count}}",
+        "restore": "Restore",
+        "empty": "No archived arrangements"
+      },
+      "emptySearch": "No arrangement found for \"{{search}}\"",
+      "errorLoad": "Unable to load arrangements."
     },
     "affiliates": {
       "table": {
@@ -671,8 +952,43 @@
     },
     "roomTypes": {
       "table": {
-        "actions": "Actions"
-      }
+        "actions": "Actions",
+        "inventoryType": "Type",
+        "updatedBy": "Updated by"
+      },
+      "inventory": {
+        "promo": "Promo",
+        "standard": "Standard"
+      },
+      "modal": {
+        "update": "Save changes",
+        "create": "Create room type",
+        "editTitle": "Edit room type",
+        "createTitle": "Add room type",
+        "subtitle": "Technical setup and capacity",
+        "namePlaceholder": "e.g. Standard double room",
+        "inventoryType": "Inventory type",
+        "capacityTitle": "Capacity and occupancy",
+        "cotTitle": "Cot / crib",
+        "cotDescription": "Allow adding a cot above max guest capacity."
+      },
+      "confirmArchive": {
+        "title": "Archive room type \"{{code}} - {{name}}\"?",
+        "description": "This room type will be archived and can be restored later.",
+        "confirmLabel": "Archive"
+      },
+      "confirmRestore": {
+        "title": "Restore room type \"{{code}} - {{name}}\"?",
+        "description": "This room type will become active again.",
+        "confirmLabel": "Restore"
+      },
+      "archived": {
+        "toggle": "Archived room types {{count}}",
+        "restore": "Restore",
+        "empty": "No archived room types"
+      },
+      "emptySearch": "No room type found for \"{{search}}\"",
+      "errorLoad": "Unable to load room types."
     },
     "simulator": {
       "roomingList": {
@@ -833,10 +1149,78 @@
             }
           },
           "subscriptionWatch": {
-            "eyebrow": "Subscription Watch",
-            "title": "Accounts needing supervisor attention",
-            "description": "Billing-centric follow-up queue for organizations approaching suspension or renewal risk."
+            "eyebrow": "Billing watchlist",
+            "title": "Billing watchlist",
+            "description": "Track payment-required tenants, renewal dates, and active plan access across the platform."
           }
+        }
+      },
+      "billingWatchlist": {
+        "loading": "Loading billing watchlist...",
+        "error": "Could not load billing watchlist.",
+        "empty": "No subscriptions found yet.",
+        "planPrefix": "Plan {{plan}}",
+        "columns": {
+          "organization": "Organization",
+          "revenue": "Revenue",
+          "access": "Billing / access",
+          "period": "Period",
+          "risk": "Risk / next step",
+          "action": "Action"
+        },
+        "summary": {
+          "paymentRequired": "Payment required",
+          "activeAccess": "Active access",
+          "oneTimeAccess": "One-time access",
+          "recurring": "Recurring"
+        },
+        "billingType": {
+          "oneTime": "One-time",
+          "recurring": "Recurring"
+        },
+        "revenue": {
+          "oneTime": "One-time {{amount}}",
+          "mrr": "MRR {{amount}}",
+          "noRecurringMrr": "No recurring MRR",
+          "recurringDetail": "Recurring subscription"
+        },
+        "access": {
+          "active": "Active access",
+          "paymentRequired": "Payment required",
+          "suspended": "Suspended",
+          "activeDetail": "Entitlements enabled",
+          "paymentRequiredDetail": "Billing recovery needed",
+          "suspendedDetail": "Access disabled by billing"
+        },
+        "period": {
+          "renews": "Renews {{date}}",
+          "noRenewal": "No renewal",
+          "unavailable": "Renewal date unavailable",
+          "oneTimeDetail": "Lifetime / one-time access",
+          "recurringDetail": "Recurring billing period",
+          "unavailableDetail": "Stripe period end has not synced yet"
+        },
+        "risk": {
+          "healthy": "Healthy",
+          "stripePriceMissing": "Stripe price missing",
+          "planInactive": "Plan inactive",
+          "collectPayment": "Collect payment",
+          "reviewAccess": "Review access",
+          "tenantSuspended": "Tenant suspended",
+          "noRenewalRequired": "No renewal required",
+          "healthyDetail": "Recurring renewal is tracked",
+          "stripePriceMissingDetail": "Add a Stripe Price ID before checkout recovery",
+          "planInactiveDetail": "Review plan configuration before recovery",
+          "collectPaymentDetail": "Manual checkout or tenant payment recovery",
+          "reviewAccessDetail": "Billing access is suspended",
+          "tenantSuspendedDetail": "Billing may be active, but platform access is off",
+          "noRenewalDetail": "One-time access is active",
+          "renewalPendingDetail": "Active, renewal date pending sync"
+        },
+        "actions": {
+          "viewTenant": "View tenant",
+          "reviewRecovery": "Review recovery",
+          "openTenantTitle": "Open tenant management for {{organization}}"
         }
       },
       "plans": {
@@ -917,10 +1301,108 @@
             "title": "Plan policy editor",
             "description": "UI structure for the supervisor configuration workflow covering pricing, limits, and gated privileges."
           },
-          "subscriptions": {
-            "eyebrow": "Subscriptions",
-            "title": "Supervisor subscription watchlist",
-            "description": "Upcoming renewals and billing risk, kept entirely at the subscription layer."
+          "planPerformance": {
+            "eyebrow": "Plan Performance",
+            "title": "Plan readiness overview",
+            "description": "A plan-focused view of checkout readiness, active packaging, and API-enabled offers.",
+            "loading": "Loading plan readiness...",
+            "error": "Unable to load plan readiness.",
+            "empty": "No plans are available for readiness analysis yet.",
+            "activePlans": "Active plans",
+            "activePlansDetail": "Published plan packages available for assignment.",
+            "checkoutReady": "Checkout ready",
+            "checkoutReadyDetail": "Plans with a Stripe Price ID configured.",
+            "missingStripePrice": "Missing Stripe price",
+            "missingStripePriceDetail": "Plans that cannot launch checkout until configured.",
+            "apiAccess": "API access plans",
+            "apiAccessDetail": "Plans that include integration entitlement."
+          },
+          "planBusinessInsights": {
+            "eyebrow": "Business Insights",
+            "title": "Plan business insights",
+            "description": "See which SaaS plans drive adoption, recurring MRR, and one-time revenue across the platform.",
+            "loading": "Loading plan business insights...",
+            "error": "Unable to load plan business insights.",
+            "kpis": {
+              "mostAdoptedPlan": {
+                "label": "Most adopted plan",
+                "detail": "Based on ACTIVE subscriptions only."
+              },
+              "topRecurringRevenuePlan": {
+                "label": "Top recurring revenue plan",
+                "detail": "Sums active recurring MRR by plan."
+              },
+              "topOneTimeRevenuePlan": {
+                "label": "Top one-time revenue plan",
+                "detail": "Sums active one-time revenue by plan."
+              },
+              "checkoutReadyPlans": {
+                "label": "Checkout-ready plans",
+                "detail": "Active plans with a Stripe Price ID."
+              }
+            },
+            "charts": {
+              "adoption": {
+                "title": "Plan adoption"
+              },
+              "revenue": {
+                "title": "Revenue by plan"
+              },
+              "score": {
+                "title": "Plan business score",
+                "note": "Business score is a simple internal indicator based on active adoption, revenue, and plan readiness."
+              }
+            },
+            "labels": {
+              "activeTenant": "{{count}} active tenant",
+              "activeTenants": "{{count}} active tenants",
+              "pastDueTenant": "{{count}} past-due tenant",
+              "pastDueTenants": "{{count}} past-due tenants",
+              "recurringMrr": "Recurring MRR",
+              "oneTimeRevenue": "One-time revenue"
+            },
+            "empty": {
+              "noPlans": "No plans are available for business insights yet.",
+              "noActiveSubscriptions": "No active subscriptions yet",
+              "noRecurringMrr": "No recurring MRR yet",
+              "noOneTimeRevenue": "No one-time revenue yet",
+              "noRevenue": "No active recurring or one-time revenue yet",
+              "noScore": "No plan business score is available yet."
+            }
+          },
+          "planBenefitsMatrix": {
+            "eyebrow": "Plan Benefits",
+            "title": "Plan benefits matrix",
+            "description": "Compare limits, billing model, API access, support, and checkout readiness across published SaaS plans.",
+            "loading": "Loading plan benefits matrix...",
+            "error": "Unable to load plan benefits.",
+            "empty": "No plans are available for benefits comparison yet.",
+            "columns": {
+              "plan": "Plan",
+              "billing": "Billing",
+              "capacity": "Capacity",
+              "apiAccess": "API access",
+              "support": "Support",
+              "features": "Features",
+              "checkoutReadiness": "Checkout readiness"
+            },
+            "labels": {
+              "active": "Active",
+              "inactive": "Inactive",
+              "oneTime": "One-time",
+              "recurring": "Recurring",
+              "oneTimePrice": "{{price}} one-time",
+              "monthlyPrice": "{{price}} / month",
+              "hotelsLimit": "{{count}} hotels",
+              "usersLimit": "{{count}} users",
+              "included": "Included",
+              "notIncluded": "Not included",
+              "featureCount": "{{count}} features",
+              "moreFeatures": "+{{count}} more",
+              "noFeatures": "No feature notes yet",
+              "stripeMissing": "Stripe price missing",
+              "checkoutReady": "Checkout ready"
+            }
           }
         }
       },
@@ -1010,6 +1492,13 @@
               }
             }
           }
+        },
+        "pagination": {
+          "range": "Showing {{first}}-{{last}} of {{total}}",
+          "page": "Page {{page}} of {{totalPages}}",
+          "previous": "Previous",
+          "next": "Next",
+          "noLogs": "No logs found"
         }
       },
       "tenants": {
@@ -1227,6 +1716,183 @@
         "changeTo": "Change status to",
         "apply": "Apply"
       }
+    },
+    "rooms": {
+      "header": {
+        "kicker": "Hotel Setup",
+        "title": "Room Types",
+        "subtitle": "Define the hotel’s sellable room inventory."
+      }
+    },
+    "exchangeRates": {
+      "header": {
+        "eyebrow": "Financial Settings",
+        "title": "Exchange Rates",
+        "subtitle": "Manage currency pairs used for previews, PDF exports, and pricing calculations."
+      },
+      "emptyHotelTitle": "No hotel selected",
+      "emptyHotelSubtitle": "Choose a hotel before managing exchange rates.",
+      "deleteTitle": "Delete this exchange rate?",
+      "deleteDescription": "{{from}}_{{to}} = {{rate}} will be removed for {{date}}.",
+      "configuration": {
+        "eyebrow": "Configuration",
+        "title": "Currency setup",
+        "baseCurrency": "Base currency",
+        "supportedCurrencies": "Supported currencies",
+        "noCurrencies": "No currencies configured yet."
+      },
+      "helper": "Exchange rates configured here are used in contract previews, PDF exports, and pricing simulations.",
+      "addRate": "Add rate",
+      "table": {
+        "eyebrow": "Exchange rate table",
+        "title": "Active currency pairs",
+        "fromCurrency": "From currency",
+        "toCurrency": "To currency",
+        "rate": "Rate",
+        "meaning": "Meaning",
+        "effectiveDate": "Effective date",
+        "source": "Source",
+        "updatedBy": "Updated by",
+        "actions": "Actions"
+      },
+      "convention": "AAA_BBB = x means 1 AAA = x BBB.",
+      "emptyTitle": "No exchange rate configured.",
+      "emptySubtitle": "Add the first pair to enable currency conversion.",
+      "modal": {
+        "editTitle": "Edit exchange rate",
+        "createTitle": "Add exchange rate",
+        "meaningLabel": "Meaning",
+        "rule": "means 1 from-currency equals x to-currency."
+      },
+      "fields": {
+        "fromCurrency": "From currency",
+        "toCurrency": "To currency",
+        "rate": "Rate",
+        "effectiveDate": "Effective date",
+        "source": "Source"
+      },
+      "toast": {
+        "created": "Exchange rate added",
+        "createError": "Could not add exchange rate",
+        "updated": "Exchange rate updated",
+        "updateError": "Could not update exchange rate",
+        "deleted": "Exchange rate deleted",
+        "deleteError": "Could not delete exchange rate"
+      },
+      "source": {
+        "manual": "Manual",
+        "system": "System",
+        "imported": "Imported"
+      }
+    },
+    "profile": {
+      "title": "Profile",
+      "common": {
+        "notAssigned": "Not assigned",
+        "notAvailable": "Not available",
+        "notAvailableYet": "Not available yet",
+        "loading": "Loading..."
+      },
+      "errors": {
+        "loadFailed": "Profile details could not be loaded right now."
+      },
+      "roles": {
+        "admin": "Administrator with user, hotel, and organization access.",
+        "commercial": "Commercial user with access to assigned hotel operations.",
+        "agent": "Operational user focused on pricing tools.",
+        "default": "User profile."
+      },
+      "fields": {
+        "email": "Email",
+        "organization": "Organization",
+        "assignedHotel": "Assigned hotel",
+        "joined": "Joined",
+        "firstName": "First name",
+        "lastName": "Last name"
+      },
+      "personal": {
+        "eyebrow": "Personal information",
+        "title": "Edit profile",
+        "description": "You can update your visible name. Email, role, organization, and hotel access are controlled by administrators.",
+        "saving": "Saving...",
+        "save": "Save profile"
+      },
+      "security": {
+        "eyebrow": "Security",
+        "title": "Change password",
+        "description": "Use your current password to protect the account change.",
+        "currentPassword": "Current password",
+        "newPassword": "New password",
+        "confirmPassword": "Confirm password",
+        "passwordMismatch": "New password and confirmation do not match.",
+        "updating": "Updating...",
+        "submit": "Change password"
+      },
+      "admin": {
+        "eyebrow": "Admin controls",
+        "title": "Organization access",
+        "description": "Manage users and hotel information for the organization."
+      },
+      "commercial": {
+        "eyebrow": "Commercial workspace",
+        "title": "Assigned work area",
+        "description": "Your assigned hotel and shortcuts for the commercial workspace.",
+        "activeSeason": "Active season",
+        "recentSimulations": "Recent simulations",
+        "seasonsLoadError": "Could not load seasons",
+        "activityLoadError": "Could not load activity",
+        "activeSeasonValue": "{{label}} ({{count}} active contracts)",
+        "noActiveSeason": "No active season",
+        "recentProformas": "{{count}} issued proformas in 30 days",
+        "noRecentProformas": "No issued proformas in 30 days"
+      },
+      "agent": {
+        "eyebrow": "Agent access",
+        "title": "Permissions and modules",
+        "description": "This role is focused on the tools available to operational users.",
+        "accessibleModules": "Accessible modules",
+        "pricingSimulator": "Pricing simulator",
+        "contractAccess": "Contract access",
+        "limited": "Limited"
+      },
+      "quickActions": {
+        "manageUsers": {
+          "label": "Manage users",
+          "description": "Review users, pending invitations, and roles."
+        },
+        "inviteUsers": {
+          "label": "Invite users",
+          "description": "Add team members with the right access."
+        },
+        "manageHotels": {
+          "label": "Manage hotels",
+          "description": "Maintain hotel information and portfolio details."
+        },
+        "hotelProfile": {
+          "label": "Hotel Information",
+          "description": "Check assigned hotel details."
+        },
+        "roomTypes": {
+          "label": "Room Types",
+          "description": "Review sellable room inventory."
+        },
+        "arrangements": {
+          "label": "Arrangements",
+          "description": "Review hotel meal plans."
+        },
+        "exchangeRates": {
+          "label": "Exchange Rates",
+          "description": "Review configured currency pairs."
+        },
+        "openSimulator": {
+          "label": "Open simulator",
+          "description": "Run the pricing tool available to your role."
+        },
+        "reviewProfile": {
+          "label": "Review profile",
+          "description": "Keep your personal details current."
+        }
+      }
     }
   },
   "navigation": {
@@ -1271,7 +1937,7 @@
         },
         "portfolio": {
           "label": "Hotel Portfolio",
-          "description": "Property settings and exchange rates."
+          "description": "Hotel identity, contacts, and legal details."
         }
       },
       "commercialOps": {
@@ -1291,7 +1957,7 @@
       "primary": {
         "hotels": {
           "label": "Hotels",
-          "description": "Property setup and operating parameters."
+          "description": "Hotel setup and operating parameters."
         },
         "catalog": {
           "label": "Catalog",
@@ -1312,17 +1978,23 @@
       },
       "product": {
         "hotel": "Hotel",
-        "rooms": "Rooms",
+        "rooms": "Room Types",
         "arrangements": "Arrangements",
         "supplements": "Supplements",
         "spos": "SPOs",
         "reductions": "Reductions",
         "monoparental": "Monoparental",
         "earlyBooking": "Early Booking",
-        "cancellations": "Cancellations"
+        "cancellations": "Cancellations",
+        "hotelInformation": "Hotel Information",
+        "exchangeRates": "Exchange Rates",
+        "hotelInformationDescription": "Hotel identity, contacts, legal details, and operating metadata.",
+        "roomsDescription": "Room types and sellable inventory.",
+        "arrangementsDescription": "Meal plans used by contracts and rates.",
+        "exchangeRatesDescription": "Currency pairs used by previews, exports, and simulations."
       },
       "sections": {
-        "product": "My Product",
+        "product": "Hotel Setup",
         "partners": "My Partners",
         "contracts": "Contract Management",
         "administration": "Administration"
@@ -1366,7 +2038,8 @@
         "subtitle": "A focused calculation environment with instant pricing feedback.",
         "sectionTitle": "Tools"
       }
-    }
+    },
+    "profile": "Profile"
   },
   "auth": {
     "loginHint": "Sign in to your contracting workspace."
@@ -1620,7 +2293,7 @@
           },
           "userspage": {
             "111a62e5": "Active",
-            "ed1a9226": "Pending invite",
+            "ed1a9226": "Pending invitation",
             "title": {
               "8c6523e0": "Edit user",
               "6d534da0": "Suspend user"
@@ -1646,35 +2319,35 @@
           "usearrangements": {
             "toast": {
               "success": {
-                "7dd447e1": "Arrangement créé avec succès",
-                "059e6397": "Arrangement mis à jour",
-                "2875ad97": "Arrangement archivé avec succès",
-                "efd61953": "Arrangement restauré avec succès"
+                "7dd447e1": "Arrangement created successfully",
+                "059e6397": "Arrangement updated",
+                "2875ad97": "Arrangement archived successfully",
+                "efd61953": "Arrangement restored successfully"
               }
             }
           }
         },
         "pages": {
           "arrangementspage": {
-            "5abc4ade": "Plans repas proposés par l'hôtel",
+            "5abc4ade": "Meal plans offered by the hotel",
             "placeholder": {
-              "995686e5": "Rechercher un arrangement..."
+              "995686e5": "Search arrangements..."
             },
-            "c87031c2": "Aucun arrangement défini",
-            "5dcf7e80": "Cliquez sur « Nouvel Arrangement » pour commencer",
+            "c87031c2": "No arrangements defined yet",
+            "5dcf7e80": "Click “Add arrangement” to get started",
             "b33b394f": "Code",
-            "96ce3732": "Libellé",
-            "60d9e35d": "Niveau",
+            "96ce3732": "Label",
+            "60d9e35d": "Level",
             "b6c233f6": "Description",
             "3463121d": "Actions",
-            "b64ea579": "Aucune description",
+            "b64ea579": "No description",
             "title": {
-              "a2e2e4e7": "Modifier",
-              "ede43660": "Supprimer"
+              "a2e2e4e7": "Edit",
+              "ede43660": "Archive"
             },
-            "cbf4e9cf": "Nom",
+            "cbf4e9cf": "Name",
             "7d74144c": "Action",
-            "34b0529a": "Aucun arrangement archivé"
+            "34b0529a": "No archived arrangements"
           }
         }
       },
@@ -2603,35 +3276,35 @@
       "hotel": {
         "components": {
           "edithotelmodal": {
-            "43648523": "Nom de la Banque",
-            "243e2040": "Nom commercial de l'hôtel *",
+            "43648523": "Bank name",
+            "243e2040": "Hotel trade name *",
             "placeholder": {
-              "38cb0167": "Grand Hôtel Majestic",
-              "27c19c0c": "Nom Prénom",
+              "38cb0167": "Grand Hotel Majestic",
+              "27c19c0c": "First name Last name",
               "0d9f6dde": "Avenue Habib Bourguiba, 1001 Tunis",
               "8ac6dfd2": "email@hotel.com",
-              "1c4e4c18": "SARL Grand Hôtel…",
+              "1c4e4c18": "Grand Hotel LLC...",
               "cb2e3886": "0123456A/P/M/000",
-              "a712cdab": "BIAT, STB, Attijari…",
+              "a712cdab": "BIAT, STB, Attijari...",
               "5bc4d990": "BIATTNTT",
-              "150788b3": "TN59 …"
+              "150788b3": "TN59 ..."
             },
-            "b8343faf": "Représentant Légal *",
-            "2ca8c8ab": "Devise (ISO 4217) *",
-            "79a4a688": "— Devise —",
-            "7d0c40d0": "Adresse Complète *",
-            "637932f7": "Catégorie (Étoiles)",
-            "afc60cf6": "Téléphone *",
+            "b8343faf": "Legal representative *",
+            "2ca8c8ab": "Currency (ISO 4217) *",
+            "79a4a688": "— Currency —",
+            "7d0c40d0": "Full address *",
+            "637932f7": "Category (stars)",
+            "afc60cf6": "Phone *",
             "b2db8638": "Fax",
-            "6e775c60": "Adresses Email",
-            "3d3545d5": "Cliquez pour ajouter une adresse email...",
+            "6e775c60": "Email addresses",
+            "3d3545d5": "Click to add an email address...",
             "703a8973": "— Type —",
-            "607ae752": "Raison Sociale (Nom Fiscal)",
-            "9f31c75d": "Matricule Fiscal (VAT)",
-            "55810cf8": "Numéro de Compte (RIB)",
-            "5a2b4f15": "Code SWIFT / BIC",
-            "f56c06a7": "Code IBAN",
-            "dc2c01fd": "* Champs obligatoires"
+            "607ae752": "Legal name (tax name)",
+            "9f31c75d": "Tax ID / VAT number",
+            "55810cf8": "Account number (RIB)",
+            "5a2b4f15": "SWIFT / BIC",
+            "f56c06a7": "IBAN",
+            "dc2c01fd": "* Required fields"
           },
           "exchangeratessection": {
             "a7e8a083": "to"
@@ -2739,10 +3412,10 @@
           "useroomtypes": {
             "toast": {
               "success": {
-                "bd978808": "Chambre créée avec succès",
-                "94e7e417": "Chambre mise à jour",
-                "d36e3358": "Chambre archivée avec succès",
-                "55744ca1": "Chambre restaurée avec succès"
+                "bd978808": "Room type created successfully",
+                "94e7e417": "Room type updated",
+                "d36e3358": "Room type archived successfully",
+                "55744ca1": "Room type restored successfully"
               }
             }
           }
@@ -2750,24 +3423,24 @@
         "pages": {
           "roomtypespage": {
             "placeholder": {
-              "4f8e2e50": "Rechercher une chambre..."
+              "4f8e2e50": "Search room types..."
             },
-            "6d41bf0a": "Aucune chambre définie pour le moment",
-            "eea025ef": "Cliquez sur « Nouvelle Chambre » pour commencer",
+            "6d41bf0a": "No room types defined yet",
+            "eea025ef": "Click “Add room type” to get started",
             "60a25d6c": "Code",
-            "f530c0be": "Libellé",
+            "f530c0be": "Label",
             "b23ebeb0": "Occupancy",
-            "3033d562": "Adultes",
-            "8ebed994": "Enfants",
-            "b3557035": "Lit bébé",
-            "a78b3ab3": "Autorisé",
-            "dfd69bda": "Non",
+            "3033d562": "Adults",
+            "8ebed994": "Children",
+            "b3557035": "Cot",
+            "a78b3ab3": "Allowed",
+            "dfd69bda": "No",
             "title": {
-              "d44026b9": "Modifier",
-              "b7a64043": "Supprimer"
+              "d44026b9": "Edit",
+              "b7a64043": "Archive"
             },
             "ef856737": "Action",
-            "112be6b0": "Aucune chambre archivée"
+            "112be6b0": "No archived room types"
           }
         }
       },
@@ -2827,5 +3500,18 @@
     "pagination": {
       "summary": "Affichage de {{from}} ? {{to}} sur {{total}}"
     }
+  },
+  "fields": {
+    "pmsCode": "PMS code",
+    "roomName": "Room name",
+    "totalPax": "Total guests",
+    "min": "Min",
+    "max": "Max",
+    "adults": "Adults",
+    "children": "Children",
+    "uniqueCode": "Unique code",
+    "level": "Level",
+    "label": "Label",
+    "description": "Description"
   }
 }

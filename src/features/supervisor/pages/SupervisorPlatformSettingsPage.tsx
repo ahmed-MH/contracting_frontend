@@ -17,6 +17,7 @@ import {
     useUpdateSupervisorPlan,
     type CreateSupervisorPlanPayload,
     type SupervisorPlan,
+    type SupervisorSubscription,
     type UpdateSupervisorPlanPayload,
 } from '../hooks/useSupervisor';
 
@@ -24,6 +25,20 @@ interface PrivilegeRow {
     key: string;
     capability: string;
     values: Record<number, string>;
+}
+
+interface PlanBusinessInsight {
+    planId: number;
+    planName: string;
+    currency: string;
+    activeSubscriptionCount: number;
+    pastDueSubscriptionCount: number;
+    recurringMrr: number;
+    oneTimeRevenue: number;
+    checkoutReady: boolean;
+    apiAccess: boolean;
+    isActive: boolean;
+    businessScore: number;
 }
 
 interface PlanFormState {
@@ -369,6 +384,218 @@ function EmptyPanel({ label }: { label: string }) {
     );
 }
 
+function hasCheckoutReadiness(plan: SupervisorPlan): boolean {
+    return plan.isActive && Boolean(plan.stripePriceId);
+}
+
+function buildPlanBusinessInsights(plans: SupervisorPlan[], subscriptions: SupervisorSubscription[]): PlanBusinessInsight[] {
+    return plans.map((plan) => {
+        const matchingSubscriptions = subscriptions.filter((subscription) => subscription.planName === plan.name);
+        const activeSubscriptions = matchingSubscriptions.filter((subscription) => subscription.status === 'ACTIVE');
+        const recurringMrr = activeSubscriptions
+            .filter((subscription) => subscription.billingType === 'RECURRING')
+            .reduce((total, subscription) => total + subscription.monthlyRecurringRevenue, 0);
+        const oneTimeRevenue = activeSubscriptions
+            .filter((subscription) => subscription.billingType === 'ONE_TIME')
+            .reduce((total, subscription) => total + (subscription.oneTimeRevenue ?? 0), 0);
+        const checkoutReady = hasCheckoutReadiness(plan);
+        const businessScore =
+            (activeSubscriptions.length * 4)
+            + (recurringMrr / 10)
+            + (oneTimeRevenue / 20)
+            + (checkoutReady ? 5 : 0)
+            + (plan.apiAccess ? 2 : 0)
+            + (plan.isActive ? 2 : 0);
+
+        return {
+            planId: plan.id,
+            planName: plan.name,
+            currency: plan.currency,
+            activeSubscriptionCount: activeSubscriptions.length,
+            pastDueSubscriptionCount: matchingSubscriptions.filter((subscription) => subscription.status === 'PAST_DUE').length,
+            recurringMrr,
+            oneTimeRevenue,
+            checkoutReady,
+            apiAccess: plan.apiAccess,
+            isActive: plan.isActive,
+            businessScore,
+        };
+    });
+}
+
+function getTopInsightLabel(
+    insights: PlanBusinessInsight[],
+    getValue: (insight: PlanBusinessInsight) => number,
+    emptyLabel: string,
+): string {
+    const topValue = Math.max(0, ...insights.map(getValue));
+    if (topValue <= 0) return emptyLabel;
+
+    const winners = insights
+        .filter((insight) => getValue(insight) === topValue)
+        .map((insight) => insight.planName);
+
+    return winners.slice(0, 2).join(' / ') + (winners.length > 2 ? ` +${winners.length - 2}` : '');
+}
+
+function getInsightMax(insights: PlanBusinessInsight[], getValue: (insight: PlanBusinessInsight) => number): number {
+    return Math.max(0, ...insights.map(getValue));
+}
+
+function BusinessInsightKpiCard({ label, value, detail }: { label: string; value: string; detail: string }) {
+    return (
+        <div className="rounded-2xl border border-brand-slate/15 bg-white/75 p-4 shadow-sm shadow-brand-navy/5 dark:border-brand-light/10 dark:bg-brand-light/5 dark:shadow-none">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-brand-slate dark:text-brand-light/55">{label}</p>
+            <p className="mt-3 text-xl font-semibold text-brand-navy dark:text-brand-light">{value}</p>
+            <p className="mt-2 text-sm leading-5 text-brand-slate dark:text-brand-light/70">{detail}</p>
+        </div>
+    );
+}
+
+function BusinessInsightChartCard({ title, children }: { title: string; children: ReactNode }) {
+    return (
+        <div className="rounded-2xl border border-brand-slate/15 bg-white/75 p-5 shadow-sm shadow-brand-navy/5 dark:border-brand-light/10 dark:bg-brand-light/5 dark:shadow-none">
+            <h3 className="text-base font-semibold text-brand-navy dark:text-brand-light">{title}</h3>
+            <div className="mt-5">{children}</div>
+        </div>
+    );
+}
+
+function AdoptionChart({
+    insights,
+    activeLabel,
+    pastDueLabel,
+    emptyLabel,
+}: {
+    insights: PlanBusinessInsight[];
+    activeLabel: (count: number) => string;
+    pastDueLabel: (count: number) => string;
+    emptyLabel: string;
+}) {
+    const maxActiveSubscriptions = getInsightMax(insights, (insight) => insight.activeSubscriptionCount);
+
+    if (maxActiveSubscriptions <= 0) {
+        return <EmptyPanel label={emptyLabel} />;
+    }
+
+    return (
+        <div className="space-y-4">
+            {insights.map((insight) => {
+                const width = `${Math.max(5, (insight.activeSubscriptionCount / maxActiveSubscriptions) * 100)}%`;
+                const tooltip = `${insight.planName} - ${activeLabel(insight.activeSubscriptionCount)}${
+                    insight.pastDueSubscriptionCount > 0 ? `, ${pastDueLabel(insight.pastDueSubscriptionCount)}` : ''
+                }`;
+
+                return (
+                    <div key={insight.planId} title={tooltip} className="space-y-2">
+                        <div className="flex items-center justify-between gap-3 text-sm">
+                            <span className="font-semibold text-brand-navy dark:text-brand-light">{insight.planName}</span>
+                            <span className="shrink-0 text-brand-slate dark:text-brand-light/70">{activeLabel(insight.activeSubscriptionCount)}</span>
+                        </div>
+                        <div className="h-3 overflow-hidden rounded-full bg-brand-slate/10 dark:bg-brand-light/10">
+                            <div className="h-full rounded-full bg-brand-mint" style={{ width }} />
+                        </div>
+                        {insight.pastDueSubscriptionCount > 0 ? (
+                            <p className="text-xs font-medium text-amber-700 dark:text-amber-200">{pastDueLabel(insight.pastDueSubscriptionCount)}</p>
+                        ) : null}
+                    </div>
+                );
+            })}
+        </div>
+    );
+}
+
+function RevenueChart({
+    insights,
+    recurringLabel,
+    oneTimeLabel,
+    emptyLabel,
+}: {
+    insights: PlanBusinessInsight[];
+    recurringLabel: string;
+    oneTimeLabel: string;
+    emptyLabel: string;
+}) {
+    const maxRevenue = getInsightMax(insights, (insight) => Math.max(insight.recurringMrr, insight.oneTimeRevenue));
+
+    if (maxRevenue <= 0) {
+        return <EmptyPanel label={emptyLabel} />;
+    }
+
+    return (
+        <div className="space-y-5">
+            {insights.map((insight) => {
+                const recurringWidth = insight.recurringMrr > 0 ? `${Math.max(5, (insight.recurringMrr / maxRevenue) * 100)}%` : '0%';
+                const oneTimeWidth = insight.oneTimeRevenue > 0 ? `${Math.max(5, (insight.oneTimeRevenue / maxRevenue) * 100)}%` : '0%';
+
+                return (
+                    <div key={insight.planId} className="space-y-3">
+                        <div className="flex items-center justify-between gap-3 text-sm">
+                            <span className="font-semibold text-brand-navy dark:text-brand-light">{insight.planName}</span>
+                            <span className="shrink-0 text-brand-slate dark:text-brand-light/70">
+                                {formatMoney(insight.recurringMrr, insight.currency)} / {formatMoney(insight.oneTimeRevenue, insight.currency)}
+                            </span>
+                        </div>
+                        <div
+                            title={`${insight.planName} - ${recurringLabel}: ${formatMoney(insight.recurringMrr, insight.currency)}`}
+                            className="grid grid-cols-[6.5rem_minmax(0,1fr)] items-center gap-3 text-xs text-brand-slate dark:text-brand-light/65"
+                        >
+                            <span>{recurringLabel}</span>
+                            <div className="h-3 overflow-hidden rounded-full bg-brand-slate/10 dark:bg-brand-light/10">
+                                <div className="h-full rounded-full bg-brand-mint" style={{ width: recurringWidth }} />
+                            </div>
+                        </div>
+                        <div
+                            title={`${insight.planName} - ${oneTimeLabel}: ${formatMoney(insight.oneTimeRevenue, insight.currency)}`}
+                            className="grid grid-cols-[6.5rem_minmax(0,1fr)] items-center gap-3 text-xs text-brand-slate dark:text-brand-light/65"
+                        >
+                            <span>{oneTimeLabel}</span>
+                            <div className="h-3 overflow-hidden rounded-full bg-brand-slate/10 dark:bg-brand-light/10">
+                                <div className="h-full rounded-full bg-brand-navy dark:bg-brand-light" style={{ width: oneTimeWidth }} />
+                            </div>
+                        </div>
+                    </div>
+                );
+            })}
+        </div>
+    );
+}
+
+function BusinessScoreChart({
+    insights,
+    emptyLabel,
+}: {
+    insights: PlanBusinessInsight[];
+    emptyLabel: string;
+}) {
+    const rankedInsights = [...insights].sort((left, right) => right.businessScore - left.businessScore);
+    const maxScore = getInsightMax(rankedInsights, (insight) => insight.businessScore);
+
+    if (maxScore <= 0) {
+        return <EmptyPanel label={emptyLabel} />;
+    }
+
+    return (
+        <div className="space-y-4">
+            {rankedInsights.map((insight) => {
+                const width = `${Math.max(5, (insight.businessScore / maxScore) * 100)}%`;
+
+                return (
+                    <div key={insight.planId} title={`${insight.planName} - ${Math.round(insight.businessScore)} score`} className="space-y-2">
+                        <div className="flex items-center justify-between gap-3 text-sm">
+                            <span className="font-semibold text-brand-navy dark:text-brand-light">{insight.planName}</span>
+                            <span className="shrink-0 text-brand-slate dark:text-brand-light/70">{Math.round(insight.businessScore)}</span>
+                        </div>
+                        <div className="h-3 overflow-hidden rounded-full bg-brand-slate/10 dark:bg-brand-light/10">
+                            <div className="h-full rounded-full bg-brand-mint" style={{ width }} />
+                        </div>
+                    </div>
+                );
+            })}
+        </div>
+    );
+}
+
 export default function SupervisorPlatformSettingsPage() {
     const { t } = useTranslation('common');
     const plansQuery = useSupervisorPlans();
@@ -403,47 +630,21 @@ export default function SupervisorPlatformSettingsPage() {
     }, [selectedPlan]);
 
     const privilegeRows = useMemo(() => buildPrivilegeRows(plans), [plans]);
+    const planBusinessInsights = useMemo(() => buildPlanBusinessInsights(plans, subscriptions), [plans, subscriptions]);
     const activePlanCount = plans.filter((plan) => plan.isActive).length;
     const totalFeatureCount = plans.reduce((total, plan) => total + plan.features.length, 0);
+    const checkoutReadyPlans = plans.filter(hasCheckoutReadiness).length;
+    const missingStripePricePlans = plans.filter((plan) => !plan.stripePriceId).length;
+    const apiAccessPlans = plans.filter((plan) => plan.apiAccess).length;
     const paidAttachRate = summary && summary.totalSubscriptions > 0
         ? Math.round((summary.activeSubscriptions / summary.totalSubscriptions) * 100)
         : 0;
-
-    const subscriptionColumns: SupervisorTableColumn<(typeof subscriptions)[number]>[] = [
-        {
-            key: 'organization',
-            label: 'Organization',
-            render: (row) => (
-                <div>
-                    <p className="font-semibold text-brand-navy dark:text-brand-light">{row.organizationName}</p>
-                    <p className="mt-1 text-xs text-brand-slate dark:text-brand-light/60">{row.planName}</p>
-                </div>
-            ),
-        },
-        {
-            key: 'mrr',
-            label: 'Recurring MRR',
-            render: (row) => <span className="font-semibold text-brand-navy dark:text-brand-light">{formatMoney(row.monthlyRecurringRevenue, row.currency)}</span>,
-        },
-        {
-            key: 'renewalDate',
-            label: 'Period end',
-            render: (row) => <span className="text-brand-slate dark:text-brand-light/75">{row.renewalDate}</span>,
-        },
-        {
-            key: 'status',
-            label: 'Status',
-            render: (row) => (
-                <span className={`inline-flex rounded-full border px-3 py-1 text-xs font-semibold ${
-                    row.status === 'ACTIVE'
-                        ? 'border-brand-mint/20 bg-brand-mint/10 text-brand-mint'
-                        : 'border-brand-slate/20 bg-brand-slate/8 text-brand-slate dark:border-brand-light/10 dark:bg-brand-light/10 dark:text-brand-light/75'
-                }`}>
-                    {row.status.replace('_', ' ')}
-                </span>
-            ),
-        },
-    ];
+    const noActiveSubscriptionsLabel = t('pages.supervisor.plans.cards.planBusinessInsights.empty.noActiveSubscriptions', { defaultValue: 'No active subscriptions yet' });
+    const noRecurringMrrLabel = t('pages.supervisor.plans.cards.planBusinessInsights.empty.noRecurringMrr', { defaultValue: 'No recurring MRR yet' });
+    const noOneTimeRevenueLabel = t('pages.supervisor.plans.cards.planBusinessInsights.empty.noOneTimeRevenue', { defaultValue: 'No one-time revenue yet' });
+    const mostAdoptedPlan = getTopInsightLabel(planBusinessInsights, (insight) => insight.activeSubscriptionCount, noActiveSubscriptionsLabel);
+    const topRecurringRevenuePlan = getTopInsightLabel(planBusinessInsights, (insight) => insight.recurringMrr, noRecurringMrrLabel);
+    const topOneTimeRevenuePlan = getTopInsightLabel(planBusinessInsights, (insight) => insight.oneTimeRevenue, noOneTimeRevenueLabel);
 
     const privilegeColumns = useMemo<SupervisorTableColumn<PrivilegeRow>[]>(() => [
         {
@@ -687,6 +888,65 @@ export default function SupervisorPlatformSettingsPage() {
             </SupervisorSectionCard>
 
             <SupervisorSectionCard
+                eyebrow={t('pages.supervisor.plans.cards.planPerformance.eyebrow', { defaultValue: 'Plan Performance' })}
+                title={t('pages.supervisor.plans.cards.planPerformance.title', { defaultValue: 'Plan readiness overview' })}
+                description={t('pages.supervisor.plans.cards.planPerformance.description', { defaultValue: 'A plan-focused view of checkout readiness, active packaging, and API-enabled offers.' })}
+            >
+                {plansQuery.isLoading ? (
+                    <LoadingPanel label={t('pages.supervisor.plans.cards.planPerformance.loading', { defaultValue: 'Loading plan readiness...' })} />
+                ) : plansQuery.isError ? (
+                    <EmptyPanel label={t('pages.supervisor.plans.cards.planPerformance.error', { defaultValue: 'Unable to load plan readiness.' })} />
+                ) : plans.length === 0 ? (
+                    <EmptyPanel label={t('pages.supervisor.plans.cards.planPerformance.empty', { defaultValue: 'No plans are available for readiness analysis yet.' })} />
+                ) : (
+                    <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+                        {[
+                            {
+                                label: t('pages.supervisor.plans.cards.planPerformance.activePlans', { defaultValue: 'Active plans' }),
+                                value: activePlanCount,
+                                detail: t('pages.supervisor.plans.cards.planPerformance.activePlansDetail', { defaultValue: 'Published plan packages available for assignment.' }),
+                                tone: 'mint',
+                            },
+                            {
+                                label: t('pages.supervisor.plans.cards.planPerformance.checkoutReady', { defaultValue: 'Checkout ready' }),
+                                value: checkoutReadyPlans,
+                                detail: t('pages.supervisor.plans.cards.planPerformance.checkoutReadyDetail', { defaultValue: 'Plans with a Stripe Price ID configured.' }),
+                                tone: 'mint',
+                            },
+                            {
+                                label: t('pages.supervisor.plans.cards.planPerformance.missingStripePrice', { defaultValue: 'Missing Stripe price' }),
+                                value: missingStripePricePlans,
+                                detail: t('pages.supervisor.plans.cards.planPerformance.missingStripePriceDetail', { defaultValue: 'Plans that cannot launch checkout until configured.' }),
+                                tone: missingStripePricePlans > 0 ? 'amber' : 'navy',
+                            },
+                            {
+                                label: t('pages.supervisor.plans.cards.planPerformance.apiAccess', { defaultValue: 'API access plans' }),
+                                value: apiAccessPlans,
+                                detail: t('pages.supervisor.plans.cards.planPerformance.apiAccessDetail', { defaultValue: 'Plans that include integration entitlement.' }),
+                                tone: 'navy',
+                            },
+                        ].map((item) => (
+                            <div
+                                key={item.label}
+                                className={clsx(
+                                    'rounded-2xl border bg-white/70 p-5 shadow-sm shadow-brand-navy/5 dark:bg-brand-light/5 dark:shadow-none',
+                                    item.tone === 'amber'
+                                        ? 'border-amber-300/40 dark:border-amber-500/25'
+                                        : item.tone === 'mint'
+                                            ? 'border-brand-mint/25'
+                                            : 'border-brand-slate/15 dark:border-brand-light/10',
+                                )}
+                            >
+                                <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-brand-slate dark:text-brand-light/55">{item.label}</p>
+                                <p className="mt-3 text-3xl font-semibold text-brand-navy dark:text-brand-light">{item.value}</p>
+                                <p className="mt-2 text-sm leading-6 text-brand-slate dark:text-brand-light/70">{item.detail}</p>
+                            </div>
+                        ))}
+                    </div>
+                )}
+            </SupervisorSectionCard>
+
+            <SupervisorSectionCard
                 eyebrow={t('pages.supervisor.plans.cards.privilegeMatrix.eyebrow', { defaultValue: 'Privilege Matrix' })}
                 title={t('pages.supervisor.plans.cards.privilegeMatrix.title', { defaultValue: 'Limits and privileges by plan' })}
                 description={t('pages.supervisor.plans.cards.privilegeMatrix.description', { defaultValue: 'These rows define what each subscription tier is allowed to unlock across the SaaS platform.' })}
@@ -707,22 +967,75 @@ export default function SupervisorPlatformSettingsPage() {
             </SupervisorSectionCard>
 
             <SupervisorSectionCard
-                eyebrow={t('pages.supervisor.plans.cards.subscriptions.eyebrow', { defaultValue: 'Subscriptions' })}
-                title={t('pages.supervisor.plans.cards.subscriptions.title', { defaultValue: 'Supervisor subscription watchlist' })}
-                description={t('pages.supervisor.plans.cards.subscriptions.description', { defaultValue: 'Upcoming renewals and billing risk, kept entirely at the subscription layer.' })}
+                eyebrow={t('pages.supervisor.plans.cards.planBusinessInsights.eyebrow', { defaultValue: 'Business Insights' })}
+                title={t('pages.supervisor.plans.cards.planBusinessInsights.title', { defaultValue: 'Plan business insights' })}
+                description={t('pages.supervisor.plans.cards.planBusinessInsights.description', { defaultValue: 'See which SaaS plans drive adoption, recurring MRR, and one-time revenue across the platform.' })}
             >
-                {subscriptionsQuery.isLoading ? (
-                    <LoadingPanel label="Loading subscriptions..." />
-                ) : subscriptionsQuery.isError ? (
-                    <EmptyPanel label="Unable to load subscriptions from the supervisor API right now." />
-                ) : subscriptions.length === 0 ? (
-                    <EmptyPanel label="No subscriptions are available yet." />
+                {plansQuery.isLoading || subscriptionsQuery.isLoading ? (
+                    <LoadingPanel label={t('pages.supervisor.plans.cards.planBusinessInsights.loading', { defaultValue: 'Loading plan business insights...' })} />
+                ) : plansQuery.isError || subscriptionsQuery.isError ? (
+                    <EmptyPanel label={t('pages.supervisor.plans.cards.planBusinessInsights.error', { defaultValue: 'Unable to load plan business insights.' })} />
+                ) : plans.length === 0 ? (
+                    <EmptyPanel label={t('pages.supervisor.plans.cards.planBusinessInsights.empty.noPlans', { defaultValue: 'No plans are available for business insights yet.' })} />
                 ) : (
-                    <SupervisorDataTable
-                        columns={subscriptionColumns}
-                        rows={subscriptions}
-                        rowKey={(row) => String(row.id)}
-                    />
+                    <div className="space-y-6">
+                        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+                            <BusinessInsightKpiCard
+                                label={t('pages.supervisor.plans.cards.planBusinessInsights.kpis.mostAdoptedPlan.label', { defaultValue: 'Most adopted plan' })}
+                                value={mostAdoptedPlan}
+                                detail={t('pages.supervisor.plans.cards.planBusinessInsights.kpis.mostAdoptedPlan.detail', { defaultValue: 'Based on ACTIVE subscriptions only.' })}
+                            />
+                            <BusinessInsightKpiCard
+                                label={t('pages.supervisor.plans.cards.planBusinessInsights.kpis.topRecurringRevenuePlan.label', { defaultValue: 'Top recurring revenue plan' })}
+                                value={topRecurringRevenuePlan}
+                                detail={t('pages.supervisor.plans.cards.planBusinessInsights.kpis.topRecurringRevenuePlan.detail', { defaultValue: 'Sums active recurring MRR by plan.' })}
+                            />
+                            <BusinessInsightKpiCard
+                                label={t('pages.supervisor.plans.cards.planBusinessInsights.kpis.topOneTimeRevenuePlan.label', { defaultValue: 'Top one-time revenue plan' })}
+                                value={topOneTimeRevenuePlan}
+                                detail={t('pages.supervisor.plans.cards.planBusinessInsights.kpis.topOneTimeRevenuePlan.detail', { defaultValue: 'Sums active one-time revenue by plan.' })}
+                            />
+                            <BusinessInsightKpiCard
+                                label={t('pages.supervisor.plans.cards.planBusinessInsights.kpis.checkoutReadyPlans.label', { defaultValue: 'Checkout-ready plans' })}
+                                value={`${checkoutReadyPlans} / ${plans.length}`}
+                                detail={t('pages.supervisor.plans.cards.planBusinessInsights.kpis.checkoutReadyPlans.detail', { defaultValue: 'Active plans with a Stripe Price ID.' })}
+                            />
+                        </div>
+
+                        <div className="grid gap-4 xl:grid-cols-3">
+                            <BusinessInsightChartCard title={t('pages.supervisor.plans.cards.planBusinessInsights.charts.adoption.title', { defaultValue: 'Plan adoption' })}>
+                                <AdoptionChart
+                                    insights={planBusinessInsights}
+                                    activeLabel={(count) => count === 1
+                                        ? t('pages.supervisor.plans.cards.planBusinessInsights.labels.activeTenant', { defaultValue: '{{count}} active tenant', count })
+                                        : t('pages.supervisor.plans.cards.planBusinessInsights.labels.activeTenants', { defaultValue: '{{count}} active tenants', count })}
+                                    pastDueLabel={(count) => count === 1
+                                        ? t('pages.supervisor.plans.cards.planBusinessInsights.labels.pastDueTenant', { defaultValue: '{{count}} past-due tenant', count })
+                                        : t('pages.supervisor.plans.cards.planBusinessInsights.labels.pastDueTenants', { defaultValue: '{{count}} past-due tenants', count })}
+                                    emptyLabel={noActiveSubscriptionsLabel}
+                                />
+                            </BusinessInsightChartCard>
+
+                            <BusinessInsightChartCard title={t('pages.supervisor.plans.cards.planBusinessInsights.charts.revenue.title', { defaultValue: 'Revenue by plan' })}>
+                                <RevenueChart
+                                    insights={planBusinessInsights}
+                                    recurringLabel={t('pages.supervisor.plans.cards.planBusinessInsights.labels.recurringMrr', { defaultValue: 'Recurring MRR' })}
+                                    oneTimeLabel={t('pages.supervisor.plans.cards.planBusinessInsights.labels.oneTimeRevenue', { defaultValue: 'One-time revenue' })}
+                                    emptyLabel={t('pages.supervisor.plans.cards.planBusinessInsights.empty.noRevenue', { defaultValue: 'No active recurring or one-time revenue yet' })}
+                                />
+                            </BusinessInsightChartCard>
+
+                            <BusinessInsightChartCard title={t('pages.supervisor.plans.cards.planBusinessInsights.charts.score.title', { defaultValue: 'Plan business score' })}>
+                                <BusinessScoreChart
+                                    insights={planBusinessInsights}
+                                    emptyLabel={t('pages.supervisor.plans.cards.planBusinessInsights.empty.noScore', { defaultValue: 'No plan business score is available yet.' })}
+                                />
+                                <p className="mt-4 text-xs leading-5 text-brand-slate dark:text-brand-light/60">
+                                    {t('pages.supervisor.plans.cards.planBusinessInsights.charts.score.note', { defaultValue: 'Business score is a simple internal indicator based on active adoption, revenue, and plan readiness.' })}
+                                </p>
+                            </BusinessInsightChartCard>
+                        </div>
+                    </div>
                 )}
             </SupervisorSectionCard>
 

@@ -1,6 +1,6 @@
 import { Outlet, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { BarChart3, FileText, Calculator, Building2, Moon, Sun } from 'lucide-react';
+import { Moon, Sun } from 'lucide-react';
 import { Logo } from '../components/ui/Logo';
 import { LanguageSwitcher } from '../components/ui/LanguageSwitcher';
 import { useTheme } from '../hooks/useTheme';
@@ -46,10 +46,10 @@ export default function AuthLayout() {
                         })}
                     </p>
                     <a
-                        href="mailto:support@pricify.com"
+                        href="mailto:ahmed-mhenni@outlook.com"
                         className="text-[11px] font-medium text-brand-slate/65 dark:text-brand-light/45 hover:text-brand-mint transition-colors"
                     >
-                        support@pricify.com
+                        ahmed-mhenni@outlook.com
                     </a>
                 </div>
             </div>
@@ -98,56 +98,6 @@ export default function AuthLayout() {
                                 <p className="text-brand-light/70 text-[14px] xl:text-[16px] font-medium leading-relaxed max-w-[400px]">
                                     {t('authLayout.hero.subtitle', { defaultValue: 'Centralize tour-operator contracts, manage your rate grids, and drive arrangements from one interface.' })}
                                 </p>
-                            </div>
-
-                            <div className="grid grid-cols-1 gap-3 max-w-[480px] xl:grid-cols-2">
-                                <div className="group p-4 rounded-xl bg-brand-light/[0.03] border border-brand-light/[0.08] hover:border-brand-mint/30 hover:bg-brand-light/[0.055] backdrop-blur-sm transition-all duration-300">
-                                    <div className="w-8 h-8 rounded-xl bg-brand-mint/10 flex items-center justify-center mb-2.5">
-                                        <FileText size={15} className="text-brand-mint" />
-                                    </div>
-                                    <p className="text-[13px] font-bold text-brand-light mb-1 leading-tight">
-                                        {t('authLayout.cards.contracts.title', { defaultValue: 'Contract management' })}
-                                    </p>
-                                    <p className="text-[11.5px] text-brand-light/55 font-medium leading-snug">
-                                        {t('authLayout.cards.contracts.copy', { defaultValue: 'Periods, seasons, and conditions centralized.' })}
-                                    </p>
-                                </div>
-
-                                <div className="group p-4 rounded-xl bg-brand-light/[0.03] border border-brand-light/[0.08] hover:border-brand-mint/30 hover:bg-brand-light/[0.055] backdrop-blur-sm transition-all duration-300">
-                                    <div className="w-8 h-8 rounded-xl bg-brand-mint/10 flex items-center justify-center mb-2.5">
-                                        <BarChart3 size={15} className="text-brand-mint" />
-                                    </div>
-                                    <p className="text-[13px] font-bold text-brand-light mb-1 leading-tight">
-                                        {t('authLayout.cards.rates.title', { defaultValue: 'Rate grids' })}
-                                    </p>
-                                    <p className="text-[11.5px] text-brand-light/55 font-medium leading-snug">
-                                        {t('authLayout.cards.rates.copy', { defaultValue: 'By room, arrangement, and season.' })}
-                                    </p>
-                                </div>
-
-                                <div className="group p-4 rounded-xl bg-brand-light/[0.03] border border-brand-light/[0.08] hover:border-brand-mint/30 hover:bg-brand-light/[0.055] backdrop-blur-sm transition-all duration-300">
-                                    <div className="w-8 h-8 rounded-xl bg-brand-mint/10 flex items-center justify-center mb-2.5">
-                                        <Calculator size={15} className="text-brand-mint" />
-                                    </div>
-                                    <p className="text-[13px] font-bold text-brand-light mb-1 leading-tight">
-                                        {t('authLayout.cards.simulator.title', { defaultValue: 'Price simulator' })}
-                                    </p>
-                                    <p className="text-[11.5px] text-brand-light/55 font-medium leading-snug">
-                                        {t('authLayout.cards.simulator.copy', { defaultValue: 'Selling prices calculated in real time.' })}
-                                    </p>
-                                </div>
-
-                                <div className="group p-4 rounded-xl bg-brand-light/[0.03] border border-brand-light/[0.08] hover:border-brand-mint/30 hover:bg-brand-light/[0.055] backdrop-blur-sm transition-all duration-300">
-                                    <div className="w-8 h-8 rounded-xl bg-brand-mint/10 flex items-center justify-center mb-2.5">
-                                        <Building2 size={15} className="text-brand-mint" />
-                                    </div>
-                                    <p className="text-[13px] font-bold text-brand-light mb-1 leading-tight">
-                                        {t('authLayout.cards.multiHotel.title', { defaultValue: 'Multi-hotels' })}
-                                    </p>
-                                    <p className="text-[11.5px] text-brand-light/55 font-medium leading-snug">
-                                        {t('authLayout.cards.multiHotel.copy', { defaultValue: 'Rooms, supplements, and reductions.' })}
-                                    </p>
-                                </div>
                             </div>
                         </div>
 

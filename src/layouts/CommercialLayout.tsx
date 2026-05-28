@@ -115,7 +115,7 @@ export default function CommercialLayout() {
                                                         to={item.to}
                                                         role="menuitem"
                                                         className={clsx(
-                                                            'pricify-dropdown-item items-start gap-3 py-3',
+                                                            'pricify-dropdown-item !justify-start items-start gap-3 py-3',
                                                             isActive
                                                                 ? 'bg-brand-mint/12 text-brand-mint'
                                                                 : '',
@@ -123,7 +123,7 @@ export default function CommercialLayout() {
                                                         onClick={() => setOpenGroupTitle(null)}
                                                     >
                                                         <Icon size={17} className="mt-0.5 shrink-0" />
-                                                        <span className="min-w-0">
+                                                        <span className="min-w-0 flex-1">
                                                             <span className="block truncate text-sm font-semibold">
                                                                 {item.labelKey ? t(item.labelKey, { defaultValue: item.label }) : item.label}
                                                             </span>

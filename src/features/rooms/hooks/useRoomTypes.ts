@@ -74,7 +74,7 @@ export function useDeleteRoomType() {
             const hid = currentHotel?.id;
             qc.invalidateQueries({ queryKey: roomTypeKeys.all(hid) });
             qc.invalidateQueries({ queryKey: roomTypeKeys.archived(hid) });
-            toast.success(i18next.t('auto.features.rooms.hooks.useroomtypes.toast.success.d36e3358', { defaultValue: "Chambre archivée avec succès" }));
+            toast.success(i18next.t('auto.features.rooms.hooks.useroomtypes.toast.success.d36e3358', { defaultValue: "Room type archived successfully" }));
         },
     });
 }

@@ -11,7 +11,7 @@ export default function ProfileBillingCancelPage() {
                 <p className="mt-5 text-[11px] font-semibold uppercase tracking-[0.24em] text-brand-coral">Billing</p>
                 <h1 className="mt-3 text-2xl font-semibold tracking-tight text-brand-navy dark:text-brand-light">Payment was canceled.</h1>
                 <p className="mt-3 text-sm leading-6 text-brand-slate dark:text-brand-light/75">
-                    Your plan was not changed.
+                    Your billing status remains payment required.
                 </p>
                 <Link
                     to="/profile"

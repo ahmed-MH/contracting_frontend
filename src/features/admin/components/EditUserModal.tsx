@@ -12,14 +12,15 @@ interface EditUserModalProps {
     onClose: () => void;
     user: UserListItem | null;
     allHotels: Hotel[];
+    isCurrentUserOnlyAdmin?: boolean;
 }
 
-export default function EditUserModal({ isOpen, onClose, user, allHotels }: EditUserModalProps) {
+export default function EditUserModal({ isOpen, onClose, user, allHotels, isCurrentUserOnlyAdmin = false }: EditUserModalProps) {
     const { t } = useTranslation('common');
     const schema = useMemo(() => createEditUserSchema(t), [t]);
     const inputClassName = 'w-full rounded-2xl border border-brand-light/70 bg-brand-light/80 px-4 py-3 text-sm text-brand-navy shadow-sm outline-none transition focus:border-brand-mint focus:ring-2 focus:ring-brand-mint/20 dark:border-brand-light/10 dark:bg-brand-light/5 dark:text-brand-light';
     const disabledInputClassName = 'w-full rounded-2xl border border-brand-light/70 bg-brand-light px-4 py-3 text-sm text-brand-slate opacity-70 dark:border-brand-light/10 dark:bg-brand-light/5 dark:text-brand-light/75';
-    const { register, handleSubmit, reset, watch, setValue, formState: { errors } } = useForm<EditUserFormInput, unknown, EditUserFormValues>({
+    const { register, handleSubmit, reset, watch, setValue, setError, formState: { errors } } = useForm<EditUserFormInput, unknown, EditUserFormValues>({
         resolver: zodResolver(schema),
         defaultValues: {
             firstName: '',
@@ -63,6 +64,15 @@ export default function EditUserModal({ isOpen, onClose, user, allHotels }: Edit
 
     const onSubmit = (data: EditUserFormValues) => {
         if (!user) return;
+        if (isCurrentUserOnlyAdmin && data.role !== 'ADMIN') {
+            setError('role', {
+                type: 'manual',
+                message: t('pages.users.modals.edit.lastAdminRoleLocked', {
+                    defaultValue: 'You must keep at least one active administrator.',
+                }),
+            });
+            return;
+        }
 
         updateMutation.mutate({
             id: user.id,
@@ -123,11 +133,14 @@ export default function EditUserModal({ isOpen, onClose, user, allHotels }: Edit
                     </label>
                     <select {...register('role')} className={inputClassName}>
                         <option value="ADMIN">{t('pages.users.roles.admin', { defaultValue: 'Administrator' })}</option>
-                        <option value="COMMERCIAL">{t('pages.users.roles.commercial', { defaultValue: 'Commercial' })}</option>
-                        <option value="AGENT">{t('pages.users.roles.agent', { defaultValue: 'Agent' })}</option>
+                        <option value="COMMERCIAL" disabled={isCurrentUserOnlyAdmin}>{t('pages.users.roles.commercial', { defaultValue: 'Commercial' })}</option>
+                        <option value="AGENT" disabled={isCurrentUserOnlyAdmin}>{t('pages.users.roles.agent', { defaultValue: 'Agent' })}</option>
                     </select>
+                    {errors.role && <p className="mt-1 text-xs text-brand-slate">{errors.role.message}</p>}
                     <p className="mt-2 text-xs leading-5 text-brand-slate dark:text-brand-light/75">
-                        {selectedRole === 'ADMIN'
+                        {isCurrentUserOnlyAdmin
+                            ? t('pages.users.modals.edit.lastAdminRoleLocked', { defaultValue: 'You must keep at least one active administrator.' })
+                            : selectedRole === 'ADMIN'
                             ? t('pages.users.modals.roleHints.admin', { defaultValue: 'Global platform access (no hotel assignment required)' })
                             : selectedRole === 'AGENT'
                                 ? t('pages.users.modals.roleHints.agent', { defaultValue: 'Simulator-only user, must be assigned to at least one hotel' })

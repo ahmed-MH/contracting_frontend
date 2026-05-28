@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import type { TFunction } from 'i18next';
 import { clsx } from 'clsx';
 import {
     Briefcase,
@@ -23,6 +24,7 @@ import EditUserModal from '../components/EditUserModal';
 import { useUsers, useSuspendUser, useReactivateUser, useRemovePendingInvite, useTenantUsage, type UserListItem } from '../hooks/useUsers';
 import { useHotels } from '../../hotel/hooks/useHotels';
 import { useConfirm } from '../../../context/ConfirmContext';
+import { useAuth } from '../../auth/context/AuthContext';
 
 type RoleFilter = 'ALL' | 'ADMIN' | 'COMMERCIAL' | 'AGENT';
 type AccountStatus = 'ACTIVE' | 'PENDING_INVITE' | 'SUSPENDED';
@@ -30,6 +32,27 @@ type StatusFilter = 'ALL' | AccountStatus;
 
 function getUserAccountStatus(user: UserListItem): AccountStatus {
     return user.accountStatus ?? (user.isActive ? 'ACTIVE' : 'PENDING_INVITE');
+}
+
+function formatTeamCoverage(t: TFunction, count: number, hotels: number, role: 'commercial' | 'agent') {
+    const roleLabel = role === 'commercial'
+        ? t(count === 1 ? 'pages.users.commercials.unitSingular' : 'pages.users.commercials.unitPlural', {
+            defaultValue: count === 1 ? 'commercial user' : 'commercial users',
+        })
+        : t(count === 1 ? 'pages.users.agents.unitSingular' : 'pages.users.agents.unitPlural', {
+            defaultValue: count === 1 ? 'agent' : 'agents',
+        });
+    const hotelLabel = t(hotels === 1 ? 'pages.users.units.hotelSingular' : 'pages.users.units.hotelPlural', {
+        defaultValue: hotels === 1 ? 'hotel' : 'hotels',
+    });
+
+    return t('pages.users.teamCoverage', {
+        defaultValue: '{{count}} {{roleLabel}} across {{hotels}} {{hotelLabel}}',
+        count,
+        roleLabel,
+        hotels,
+        hotelLabel,
+    });
 }
 
 function MetricSkeletonGrid() {
@@ -75,25 +98,28 @@ function StatusBadge({ user }: { user: UserListItem }) {
 }
 
 function RoleBadge({ role }: { role: UserListItem['role'] }) {
+    const { t } = useTranslation('common');
     const isAdmin = role === 'ADMIN';
-    const isAgent = role === 'AGENT';
     return (
         <span
             className={clsx(
                 'premium-pill',
                 isAdmin
                     ? 'border-brand-navy/10 bg-brand-navy text-brand-light dark:border-brand-light/10 dark:bg-brand-light/8 dark:text-brand-light'
-                    : isAgent
-                        ? 'border-brand-slate/30 bg-brand-slate/10 text-brand-slate dark:border-brand-light/15 dark:bg-brand-light/8 dark:text-brand-light/75'
-                        : 'border-brand-mint/30 bg-brand-mint/10 text-brand-mint dark:border-brand-mint/30 dark:bg-brand-mint/20 dark:text-brand-light/75',
+                    : 'border-brand-mint/30 bg-brand-mint/10 text-brand-mint dark:border-brand-mint/30 dark:bg-brand-mint/20 dark:text-brand-light/75',
             )}
         >
-            {isAdmin ? 'Admin' : isAgent ? 'Agent' : 'Commercial'}
+            {isAdmin
+                ? t('pages.users.roles.admin', { defaultValue: 'Administrator' })
+                : role === 'AGENT'
+                    ? t('pages.users.roles.agent', { defaultValue: 'Agent' })
+                    : t('pages.users.roles.commercial', { defaultValue: 'Commercial' })}
         </span>
     );
 }
 
 function UserAvatar({ user }: { user: UserListItem }) {
+    const { t } = useTranslation('common');
     const initials = user.firstName
         ? `${user.firstName[0] ?? ''}${user.lastName?.[0] ?? ''}`.trim()
         : user.email.slice(0, 2).toUpperCase();
@@ -105,7 +131,9 @@ function UserAvatar({ user }: { user: UserListItem }) {
             </div>
             <div className="min-w-0">
                 <p className="truncate font-semibold text-brand-navy dark:text-brand-light">
-                    {user.firstName ? `${user.firstName} ${user.lastName ?? ''}`.trim() : 'Profile pending'}
+                    {user.firstName
+                        ? `${user.firstName} ${user.lastName ?? ''}`.trim()
+                        : t('pages.users.status.profilePending', { defaultValue: 'Profile pending' })}
                 </p>
                 <p className="mt-1 flex items-center gap-1.5 truncate text-xs text-brand-slate dark:text-brand-light/75">
                     <Mail size={12} />
@@ -118,6 +146,7 @@ function UserAvatar({ user }: { user: UserListItem }) {
 
 function ActionButtons({
     user,
+    currentUserId,
     onEdit,
     onSuspend,
     onReactivate,
@@ -125,6 +154,7 @@ function ActionButtons({
     isPending,
 }: {
     user: UserListItem;
+    currentUserId?: number;
     onEdit: (user: UserListItem) => void;
     onSuspend: (user: UserListItem) => void;
     onReactivate: (user: UserListItem) => void;
@@ -133,6 +163,10 @@ function ActionButtons({
 }) {
     const { t } = useTranslation('common');
     const status = getUserAccountStatus(user);
+    const isCurrentUser = currentUserId === user.id;
+    const suspendTitle = isCurrentUser
+        ? t('pages.users.actions.cannotSuspendSelf', { defaultValue: 'You cannot suspend your own account' })
+        : t('auto.features.admin.pages.userspage.title.6d534da0', { defaultValue: "Suspend user" });
 
     return (
         <div className="flex items-center justify-end gap-2">
@@ -150,10 +184,10 @@ function ActionButtons({
                 <button
                     type="button"
                     onClick={() => onSuspend(user)}
-                    disabled={isPending}
+                    disabled={isPending || isCurrentUser}
                     className="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-brand-slate/30 bg-brand-slate/10 text-brand-slate transition hover:border-brand-mint/25 hover:text-brand-navy disabled:pointer-events-none disabled:opacity-50 dark:border-brand-slate/30 dark:bg-brand-navy/80 dark:text-brand-light/75 dark:hover:text-brand-light"
-                    title={t('auto.features.admin.pages.userspage.title.6d534da0', { defaultValue: "Suspend user" })}
-                    aria-label={t('auto.features.admin.pages.userspage.title.6d534da0', { defaultValue: "Suspend user" })}
+                    title={suspendTitle}
+                    aria-label={suspendTitle}
                 >
                     <UserMinus size={16} />
                 </button>
@@ -275,6 +309,7 @@ function RosterToolbar({
 
 function UserTable({
     users,
+    currentUserId,
     emptyLabel,
     showHotels,
     onEdit,
@@ -284,6 +319,7 @@ function UserTable({
     isActionPending,
 }: {
     users: UserListItem[];
+    currentUserId?: number;
     emptyLabel: string;
     showHotels: boolean;
     onEdit: (user: UserListItem) => void;
@@ -309,7 +345,7 @@ function UserTable({
                     <article key={user.id} className="rounded-lg border border-brand-light/70 bg-brand-light/60 p-4 shadow-sm dark:border-brand-light/10 dark:bg-brand-light/5">
                         <div className="flex items-start justify-between gap-3">
                             <UserAvatar user={user} />
-                            <ActionButtons user={user} onEdit={onEdit} onSuspend={onSuspend} onReactivate={onReactivate} onRemoveInvite={onRemoveInvite} isPending={isActionPending} />
+                            <ActionButtons user={user} currentUserId={currentUserId} onEdit={onEdit} onSuspend={onSuspend} onReactivate={onReactivate} onRemoveInvite={onRemoveInvite} isPending={isActionPending} />
                         </div>
                         <div className="mt-4 flex flex-wrap gap-2">
                             <RoleBadge role={user.role} />
@@ -370,7 +406,7 @@ function UserTable({
                                     </td>
                                 )}
                                 <td className="px-5 py-4 align-top"><StatusBadge user={user} /></td>
-                                <td className="px-5 py-4 align-top text-right"><ActionButtons user={user} onEdit={onEdit} onSuspend={onSuspend} onReactivate={onReactivate} onRemoveInvite={onRemoveInvite} isPending={isActionPending} /></td>
+                                <td className="px-5 py-4 align-top text-right"><ActionButtons user={user} currentUserId={currentUserId} onEdit={onEdit} onSuspend={onSuspend} onReactivate={onReactivate} onRemoveInvite={onRemoveInvite} isPending={isActionPending} /></td>
                             </tr>
                         ))}
                     </tbody>
@@ -383,6 +419,7 @@ function UserTable({
 
 export default function UsersPage() {
     const { t } = useTranslation('common');
+    const { user: currentUser } = useAuth();
     const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
     const [editingUser, setEditingUser] = useState<UserListItem | null>(null);
     const [searchTerm, setSearchTerm] = useState('');
@@ -401,6 +438,7 @@ export default function UsersPage() {
     const admins = allUsers.filter((user) => user.role === 'ADMIN');
     const commercials = allUsers.filter((user) => user.role === 'COMMERCIAL');
     const agents = allUsers.filter((user) => user.role === 'AGENT');
+    const activeAdminCount = admins.filter((user) => getUserAccountStatus(user) === 'ACTIVE').length;
     const activeUsers = allUsers.filter((user) => getUserAccountStatus(user) === 'ACTIVE').length;
     const pendingUsers = allUsers.filter((user) => getUserAccountStatus(user) === 'PENDING_INVITE').length;
     const seatUsageLabel = tenantUsage
@@ -438,6 +476,10 @@ export default function UsersPage() {
     };
 
     const handleSuspend = async (user: UserListItem) => {
+        if (currentUser?.id === user.id) {
+            return;
+        }
+
         if (await confirm({
             title: t('pages.users.confirmSuspend.title', { defaultValue: 'Suspend {{name}}?', name: user.firstName || user.email }),
             description: t('pages.users.confirmSuspend.description', { defaultValue: 'This account will lose access to the workspace until it is re-enabled.' }),
@@ -561,6 +603,7 @@ export default function UsersPage() {
                     >
                         <UserTable
                             users={filteredAdmins}
+                            currentUserId={currentUser?.id}
                             emptyLabel={activeFilterCount > 0
                                 ? t('pages.users.admins.emptyFiltered', { defaultValue: 'No admin users match the current filters.' })
                                 : t('pages.users.admins.empty', { defaultValue: 'No admin seats are active yet.' })}
@@ -582,12 +625,13 @@ export default function UsersPage() {
                                 <Building2 size={16} />
                                 {activeFilterCount > 0
                                     ? t('pages.users.commercials.filteredCount', { defaultValue: '{{shown}}/{{total}} commercial seats', shown: filteredCommercials.length, total: commercials.length })
-                                    : t('pages.users.commercials.count', { defaultValue: '{{count}} commercial seats across {{hotels}} hotels', count: commercials.length, hotels: allHotels.length })}
+                                    : formatTeamCoverage(t, commercials.length, allHotels.length, 'commercial')}
                             </div>
                         )}
                     >
                         <UserTable
                             users={filteredCommercials}
+                            currentUserId={currentUser?.id}
                             emptyLabel={activeFilterCount > 0
                                 ? t('pages.users.commercials.emptyFiltered', { defaultValue: 'No commercial users match the current filters.' })
                                 : t('pages.users.commercials.empty', { defaultValue: 'No commercial users have been assigned yet.' })}
@@ -605,16 +649,17 @@ export default function UsersPage() {
                         title={t('pages.users.agents.title', { defaultValue: 'Agent team' })}
                         description={t('pages.users.agents.description', { defaultValue: 'Agents can run simulator quotes and print ticket-style summaries for operational follow-up.' })}
                         actions={(
-                            <div className="inline-flex items-center gap-2 rounded-full border border-brand-slate/20 bg-brand-slate/10 px-4 py-2 text-sm font-medium text-brand-slate dark:border-brand-light/15 dark:bg-brand-light/8 dark:text-brand-light/75">
+                            <div className="inline-flex items-center gap-2 rounded-full border border-brand-mint/20 bg-brand-mint/8 px-4 py-2 text-sm font-medium text-brand-mint">
                                 <UserCog size={16} />
                                 {activeFilterCount > 0
                                     ? t('pages.users.agents.filteredCount', { defaultValue: '{{shown}}/{{total}} agent seats', shown: filteredAgents.length, total: agents.length })
-                                    : t('pages.users.agents.count', { defaultValue: '{{count}} agent seats', count: agents.length })}
+                                    : formatTeamCoverage(t, agents.length, allHotels.length, 'agent')}
                             </div>
                         )}
                     >
                         <UserTable
                             users={filteredAgents}
+                            currentUserId={currentUser?.id}
                             emptyLabel={activeFilterCount > 0
                                 ? t('pages.users.agents.emptyFiltered', { defaultValue: 'No agent users match the current filters.' })
                                 : t('pages.users.agents.empty', { defaultValue: 'No simulator-only agents have been invited yet.' })}
@@ -668,7 +713,18 @@ export default function UsersPage() {
             )}
 
             <InviteUserModal isOpen={isInviteModalOpen} onClose={() => setIsInviteModalOpen(false)} />
-            <EditUserModal isOpen={!!editingUser} onClose={() => setEditingUser(null)} user={editingUser} allHotels={allHotels} />
+            <EditUserModal
+                isOpen={!!editingUser}
+                onClose={() => setEditingUser(null)}
+                user={editingUser}
+                allHotels={allHotels}
+                isCurrentUserOnlyAdmin={Boolean(
+                    editingUser
+                    && editingUser.id === currentUser?.id
+                    && editingUser.role === 'ADMIN'
+                    && activeAdminCount <= 1,
+                )}
+            />
         </div>
     );
 }

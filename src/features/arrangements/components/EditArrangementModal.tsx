@@ -84,7 +84,7 @@ export default function EditArrangementModal({
             onClose={onClose}
             title={editing
                 ? t('pages.arrangements.modal.editTitle', { defaultValue: 'Edit arrangement' })
-                : t('pages.arrangements.modal.createTitle', { defaultValue: 'New arrangement' })}
+                : t('pages.arrangements.modal.createTitle', { defaultValue: 'Add arrangement' })}
             subtitle={t('pages.arrangements.modal.subtitle', { defaultValue: 'Meal plan and board type' })}
             icon={<UtensilsCrossed size={20} />}
             iconBg="bg-brand-mint/10 dark:bg-brand-mint/5 text-brand-mint"

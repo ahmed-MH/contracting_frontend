@@ -3,16 +3,25 @@
   "save": "Enregistrer",
   "actions": {
     "newContract": "Nouveau contrat",
-    "manageTeam": "Gerer l'equipe",
-    "toggleTheme": "Basculer le theme",
-    "logOut": "Se deconnecter",
+    "manageTeam": "Gérer l’équipe",
+    "toggleTheme": "Changer de thème",
+    "logOut": "Se déconnecter",
     "confirm": "Confirmer",
     "cancel": "Annuler",
     "save": "Enregistrer",
-    "copy": "Copier"
+    "copy": "Copier",
+    "add": "Ajouter",
+    "edit": "Modifier",
+    "archive": "Archiver",
+    "restore": "Restaurer",
+    "delete": "Supprimer",
+    "close": "Fermer",
+    "select": "Sélectionner",
+    "selectHotel": "Sélectionner un hôtel",
+    "language": "Langue"
   },
   "entities": {
-    "hotel": "Hotel"
+    "hotel": "Hôtel"
   },
   "layouts": {
     "commercial": {
@@ -67,32 +76,35 @@
   "pages": {
     "hotel": {
       "header": {
-        "title": "Configuration hotel",
-        "subtitle": "Gerez vos etablissements et parametres financiers",
-        "newHotel": "Nouvel hotel",
-        "emptyTitle": "Aucun hotel selectionne",
-        "emptySubtitle": "Veuillez choisir un etablissement pour continuer."
+        "title": "Informations de l’hôtel",
+        "subtitle": "Gérez l’identité, les contacts, les informations légales et les paramètres financiers de l’hôtel.",
+        "newHotel": "Ajouter un hôtel",
+        "emptyTitle": "Aucun hôtel sélectionné",
+        "emptySubtitle": "Choisissez un hôtel pour continuer.",
+        "eyebrow": "Hôtel"
       },
       "bankAccounts": {
         "title": "Comptes bancaires",
-        "helper": "Ajoutez tous les comptes utilisables. Un seul compte actif doit etre marque comme principal.",
+        "helper": "Ajoutez tous les comptes utilisables. Un seul compte actif doit être marqué comme principal.",
         "add": "Ajouter un compte",
-        "empty": "Ajouter le premier compte bancaire",
+        "empty": "Ajouter le premier compte bancaire de l’hôtel",
         "principal": "Principal",
-        "makePrincipal": "Definir principal",
+        "makePrincipal": "Définir comme principal",
         "active": "Actif",
         "remove": "Supprimer le compte",
-        "label": "Libelle du compte",
+        "label": "Libellé du compte",
         "labelPlaceholder": "Compte TND principal",
-        "rib": "RIB / numero de compte",
-        "accountNumber": "Numero de compte",
-        "accountPlaceholder": "Numero interne optionnel",
+        "rib": "RIB / numéro de compte",
+        "accountNumber": "Numéro de compte",
+        "accountPlaceholder": "Numéro interne optionnel",
         "currency": "Devise",
         "currencyPlaceholder": "Devise",
         "country": "Pays"
       },
       "validation": {
-        "onePrincipalBankAccount": "Choisissez exactement un compte bancaire principal."
+        "onePrincipalBankAccount": "Choisissez exactement un compte bancaire principal.",
+        "themeColor": "Utilisez une couleur hexadécimale comme #0D9488",
+        "currencyLength": "Utilisez un code devise à 3 lettres"
       },
       "exchangeRates": {
         "deleteTitle": "Supprimer ce taux de change ?",
@@ -115,6 +127,119 @@
           "expired": "Expire",
           "scheduled": "Planifie"
         }
+      },
+      "confirmArchive": {
+        "title": "Archiver {{name}} ?",
+        "description": "Cet hôtel sera déplacé dans les archives et n’apparaîtra plus dans la liste des hôtels actifs.",
+        "confirmLabel": "Archiver l’hôtel"
+      },
+      "confirmRestore": {
+        "title": "Restaurer {{name}} ?",
+        "description": "Cet hôtel reviendra dans la liste des hôtels actifs.",
+        "confirmLabel": "Restaurer l’hôtel"
+      },
+      "actions": {
+        "archive": "Archiver l’hôtel",
+        "restore": "Restaurer l’hôtel",
+        "email": "Contacter par e-mail"
+      },
+      "metrics": {
+        "activeProperties": "Hôtels utilisés",
+        "contactEmails": "E-mails de contact",
+        "defaultCurrency": "Devise par défaut",
+        "branding": "Branding PDF"
+      },
+      "portfolio": {
+        "eyebrow": "Hôtels",
+        "title": "Hôtels actifs",
+        "columns": {
+          "hotel": "Hôtel",
+          "currency": "Devise",
+          "updatedBy": "Mis à jour par",
+          "actions": "Actions"
+        },
+        "current": "Actuel",
+        "currentHelper": "Ouvrir dans l’espace de travail",
+        "open": "Ouvrir l’hôtel"
+      },
+      "cards": {
+        "branding": {
+          "eyebrow": "Documents",
+          "title": "Branding PDF"
+        },
+        "location": {
+          "eyebrow": "Localisation",
+          "title": "Adresse de l’hôtel"
+        },
+        "contacts": {
+          "eyebrow": "Contacts",
+          "title": "E-mails opérationnels",
+          "empty": "Aucun e-mail de contact n’a encore été configuré."
+        },
+        "banking": {
+          "eyebrow": "Finance",
+          "title": "Profil fiscal et bancaire"
+        }
+      },
+      "fields": {
+        "logoStatus": "Statut du logo",
+        "themeColor": "Couleur du thème",
+        "address": "Adresse",
+        "phone": "Téléphone",
+        "fax": "Fax",
+        "legalRepresentative": "Représentant légal",
+        "vatNumber": "Matricule fiscal",
+        "ibanSwift": "IBAN / SWIFT"
+      },
+      "archives": {
+        "eyebrow": "Archive",
+        "title": "Hôtels archivés",
+        "hide": "Masquer les archives",
+        "show": "Afficher les archives"
+      },
+      "logoUpload": {
+        "fieldLabel": "Logo des documents",
+        "title": "Importer le logo de l’hôtel",
+        "subtitle": "Élément de branding pour les aperçus, contrats et proformas",
+        "status": {
+          "ready": "Logo configuré",
+          "empty": "Aucun logo importé",
+          "description": "Importez un logo soigné pour les aperçus, contrats et proformas liés à l’hôtel.",
+          "createFirst": "Créez d’abord l’hôtel pour activer l’import local du logo."
+        },
+        "source": {
+          "empty": "Importez un logo pour personnaliser les aperçus et les exports PDF."
+        },
+        "actions": {
+          "change": "Modifier le logo",
+          "upload": "Importer un logo",
+          "helper": "Les fichiers PNG et JPG sont importés directement. Les fichiers WebP sont convertis automatiquement pour rester compatibles avec les PDF."
+        },
+        "validation": {
+          "fileTooLarge": "Le logo est trop volumineux. Choisissez une image de moins de 5 Mo.",
+          "generic": "Impossible d’utiliser ce fichier.",
+          "hotelRequired": "Enregistrez d’abord l’hôtel avant d’importer son logo.",
+          "fileRequired": "Choisissez un fichier logo avant d’enregistrer."
+        },
+        "notice": {
+          "webpConverted": "Les fichiers WebP sont convertis en PNG afin que les aperçus et PDF s’affichent correctement."
+        },
+        "dropzone": {
+          "title": "Glissez-déposez un logo ici",
+          "subtitle": "Ou cliquez pour parcourir vos fichiers. Les PNG et JPG sont stockés directement ; les WebP sont convertis automatiquement pour les documents.",
+          "maxSize": "Max. 5 Mo"
+        },
+        "preview": {
+          "selected": "Logo sélectionné",
+          "current": "Logo actuel",
+          "replaceHint": "L’enregistrement remplacera le chemin du logo par l’URL locale stockée.",
+          "clear": "Retirer la sélection",
+          "currentHint": "Les URL distantes et les anciens chemins locaux restent pris en charge.",
+          "emptyHint": "Aucun logo n’est encore enregistré. Importez-en un pour personnaliser les contrats et proformas."
+        },
+        "toast": {
+          "success": "Logo de l’hôtel mis à jour"
+        }
       }
     },
     "contracts": {
@@ -126,41 +251,163 @@
     },
     "users": {
       "header": {
-        "title": "Gestion des utilisateurs",
-        "subtitle": "Invitez et gerez les comptes utilisateurs",
-        "inviteUser": "Inviter un utilisateur"
+        "title": "Utilisateurs",
+        "subtitle": "Invitez des utilisateurs, attribuez les rôles et gérez les accès aux hôtels.",
+        "inviteUser": "Inviter un utilisateur",
+        "eyebrow": "Utilisateurs",
+        "loadingBadge": "Chargement des utilisateurs",
+        "badge": "{{count}} utilisateurs"
       },
       "roles": {
         "admin": "Administrateur",
-        "commercial": "Commercial"
+        "commercial": "Commercial",
+        "agent": "Agent"
       },
+      "units": {
+        "hotelSingular": "hôtel",
+        "hotelPlural": "hôtels"
+      },
+      "teamCoverage": "{{count}} {{roleLabel}} sur {{hotels}} {{hotelLabel}}",
       "modals": {
         "roleHints": {
-          "admin": "Acces global a la plateforme (pas d'hotel requis)",
-          "commercial": "Employe local, doit etre affecte a au moins un hotel"
+          "admin": "Accès complet à la plateforme ; aucun hôtel requis.",
+          "commercial": "Utilisateur opérationnel hôtel ; assignez au moins un hôtel.",
+          "agent": "Utilisateur de l’outil de tarification ; assignez au moins un hôtel."
         },
         "edit": {
-          "title": "Modifier {{email}}",
-          "pendingActivationHint": "Cet utilisateur n'a pas encore active son compte. Le prenom et le nom seront renseignes lors de l'acceptation de l'invitation.",
-          "firstName": "Prenom",
+          "title": "Modifier un utilisateur",
+          "pendingActivationHint": "Cet utilisateur n’a pas encore activé son compte. Son prénom et son nom seront renseignés lors de l’acceptation de l’invitation.",
+          "firstName": "Prénom",
           "lastName": "Nom",
-          "role": "Role",
-          "assignedHotels": "Hotels assignes",
-          "saving": "Enregistrement..."
+          "role": "Rôle",
+          "assignedHotels": "Hôtels assignés",
+          "saving": "Enregistrement...",
+          "lastAdminRoleLocked": "Vous devez conserver au moins un administrateur actif."
         },
         "invite": {
           "title": "Inviter un utilisateur",
-          "email": "Email",
+          "email": "E-mail",
           "emailPlaceholder": "nouveau@exemple.com",
-          "role": "Role",
-          "assignedHotels": "Hotels assignes",
+          "role": "Rôle",
+          "assignedHotels": "Hôtels assignés",
           "sending": "Envoi...",
-          "submit": "Envoyer l'invitation",
+          "submit": "Envoyer l’invitation",
           "validation": {
-            "emailRequired": "Email requis",
-            "hotelRequired": "Au moins un hotel est requis"
-          }
+            "emailRequired": "L’e-mail est obligatoire",
+            "hotelRequired": "Au moins un hôtel est requis"
+          },
+          "noHotelsForLocalRoles": "Créez au moins un hôtel avant d’inviter des utilisateurs Commercial ou Agent. Les invitations Administrateur peuvent être envoyées maintenant.",
+          "noHotelsAvailable": "Aucun hôtel n’est encore disponible pour l’assignation.",
+          "selectHotelHint": "Sélectionnez au moins un hôtel pour envoyer cette invitation."
         }
+      },
+      "status": {
+        "active": "Actif",
+        "pendingInvite": "Invitation en attente",
+        "suspended": "Suspendu",
+        "profilePending": "Profil en attente"
+      },
+      "actions": {
+        "edit": "Modifier un utilisateur",
+        "suspend": "Suspendre un utilisateur",
+        "cannotSuspendSelf": "Vous ne pouvez pas suspendre votre propre compte",
+        "reactivate": "Réactiver un utilisateur",
+        "removeInvite": "Supprimer l’invitation"
+      },
+      "filters": {
+        "eyebrow": "Filtres",
+        "title": "Trouver un utilisateur",
+        "description": "Filtrez par nom, e-mail, rôle, statut ou hôtel assigné.",
+        "clear": "Effacer les filtres",
+        "ready": "Prêt à filtrer",
+        "search": "Rechercher des utilisateurs",
+        "searchPlaceholder": "Rechercher par nom ou e-mail",
+        "roles": {
+          "all": "Tous les rôles"
+        },
+        "status": {
+          "all": "Tous les statuts"
+        },
+        "hotels": {
+          "all": "Tous les hôtels"
+        }
+      },
+      "confirmSuspend": {
+        "title": "Suspendre {{name}} ?",
+        "description": "Cet utilisateur perdra l’accès à l’espace de travail jusqu’à sa réactivation.",
+        "confirmLabel": "Suspendre un utilisateur"
+      },
+      "confirmReactivate": {
+        "title": "Réactiver {{name}} ?",
+        "description": "Cet utilisateur récupérera l’accès avec le même rôle et les mêmes hôtels assignés.",
+        "confirmLabel": "Réactiver un utilisateur"
+      },
+      "confirmRemoveInvite": {
+        "title": "Supprimer l’invitation en attente ?",
+        "description": "Le lien d’invitation ne fonctionnera plus et le siège redeviendra disponible.",
+        "confirmLabel": "Supprimer l’invitation"
+      },
+      "metrics": {
+        "totalSeats": "Sièges utilisés",
+        "activeUsers": "Utilisateurs actifs",
+        "pendingInvites": "Invitations en attente",
+        "hotelUsage": "Hôtels utilisés"
+      },
+      "errors": {
+        "loadFailed": "Impossible de charger les utilisateurs pour le moment."
+      },
+      "admins": {
+        "eyebrow": "Administrateurs",
+        "title": "Administrateurs",
+        "description": "Les administrateurs gèrent les utilisateurs, les hôtels et les paramètres de l’organisation.",
+        "filteredCount": "{{shown}}/{{total}} administrateurs",
+        "count": "{{count}} administrateurs",
+        "emptyFiltered": "Aucun administrateur ne correspond aux filtres actuels.",
+        "empty": "Aucun administrateur pour le moment."
+      },
+      "commercials": {
+        "eyebrow": "Utilisateurs commerciaux",
+        "title": "Équipe commerciale",
+        "description": "Les utilisateurs commerciaux gèrent la configuration hôtel et les workflows de contracting.",
+        "unitSingular": "utilisateur commercial",
+        "unitPlural": "utilisateurs commerciaux",
+        "filteredCount": "{{shown}}/{{total}} utilisateurs commerciaux",
+        "count": "{{count}} utilisateurs commerciaux sur {{hotels}} hôtels",
+        "emptyFiltered": "Aucun utilisateur commercial ne correspond aux filtres actuels.",
+        "empty": "Aucun utilisateur commercial n’a encore été assigné."
+      },
+      "agents": {
+        "eyebrow": "Agents",
+        "title": "Équipe agents",
+        "description": "Les agents peuvent utiliser les outils de tarification opérationnelle pour les hôtels assignés.",
+        "unitSingular": "agent",
+        "unitPlural": "agents",
+        "filteredCount": "{{shown}}/{{total}} agents",
+        "count": "{{count}} agents",
+        "emptyFiltered": "Aucun agent ne correspond aux filtres actuels.",
+        "empty": "Aucun agent n’a encore été invité."
+      },
+      "guidance": {
+        "eyebrow": "Gestion des accès",
+        "title": "Gardez les accès utilisateurs alignés avec les opérations hôtel.",
+        "items": {
+          "reviewPending": "Vérifiez les invitations en attente avant d’en envoyer de nouvelles.",
+          "auditAdmins": "Réservez l’accès administrateur aux utilisateurs responsables de la gouvernance.",
+          "alignHotels": "Alignez les hôtels assignés avec le périmètre opérationnel de chaque utilisateur."
+        }
+      },
+      "summary": {
+        "eyebrow": "Résumé",
+        "title": "Répartition des sièges",
+        "adminCoverage": "Administrateurs",
+        "commercialCoverage": "Utilisateurs commerciaux",
+        "agentAccess": "Agents",
+        "hotelAssignments": "Hôtels assignés"
+      },
+      "toast": {
+        "reactivated": "Utilisateur réactivé avec succès",
+        "reactivateFailed": "Impossible de réactiver l’utilisateur",
+        "removeInviteFailed": "Impossible de supprimer l’invitation en attente"
       }
     },
     "integrations": {
@@ -645,8 +892,42 @@
     },
     "arrangements": {
       "header": {
-        "title": "Arrangements"
-      }
+        "title": "Arrangements",
+        "kicker": "Configuration hôtel",
+        "subtitle": "Définissez les formules de repas proposées par l’hôtel."
+      },
+      "table": {
+        "updatedBy": "Mis à jour par"
+      },
+      "modal": {
+        "saveChanges": "Enregistrer",
+        "create": "Ajouter l’arrangement",
+        "editTitle": "Modifier l’arrangement",
+        "createTitle": "Ajouter un arrangement",
+        "subtitle": "Formule de repas et type de pension",
+        "levelHint": "0 = base, 1+ = supérieur",
+        "namePlaceholder": "ex. Chambre et petit-déjeuner",
+        "descriptionPlaceholder": "Décrivez les repas inclus dans cet arrangement...",
+        "levelLogicTitle": "Logique de niveau",
+        "levelLogicBody": "Une formule de repas est disponible en option lorsque son niveau est supérieur à la pension de base du contrat."
+      },
+      "confirmArchive": {
+        "title": "Archiver l’arrangement \"{{code}} - {{name}}\" ?",
+        "description": "Cet arrangement sera archivé et pourra être restauré plus tard.",
+        "confirmLabel": "Archiver"
+      },
+      "confirmRestore": {
+        "title": "Restaurer l’arrangement \"{{code}} - {{name}}\" ?",
+        "description": "Cet arrangement redeviendra actif.",
+        "confirmLabel": "Restaurer"
+      },
+      "archived": {
+        "toggle": "Arrangements archivés {{count}}",
+        "restore": "Restaurer",
+        "empty": "Aucun arrangement archivé"
+      },
+      "emptySearch": "Aucun arrangement trouvé pour \"{{search}}\"",
+      "errorLoad": "Impossible de charger les arrangements."
     },
     "affiliates": {
       "table": {
@@ -671,8 +952,43 @@
     },
     "roomTypes": {
       "table": {
-        "actions": "Actions"
-      }
+        "actions": "Actions",
+        "inventoryType": "Type",
+        "updatedBy": "Mis à jour par"
+      },
+      "inventory": {
+        "promo": "Promo",
+        "standard": "Standard"
+      },
+      "modal": {
+        "update": "Enregistrer",
+        "create": "Ajouter le type de chambre",
+        "editTitle": "Modifier le type de chambre",
+        "createTitle": "Ajouter un type de chambre",
+        "subtitle": "Configuration technique et capacité",
+        "namePlaceholder": "ex. Chambre double standard",
+        "inventoryType": "Type d’inventaire",
+        "capacityTitle": "Capacité et occupation",
+        "cotTitle": "Lit bébé",
+        "cotDescription": "Autoriser l’ajout d’un lit bébé au-delà de la capacité maximale."
+      },
+      "confirmArchive": {
+        "title": "Archiver le type de chambre \"{{code}} - {{name}}\" ?",
+        "description": "Ce type de chambre sera archivé et pourra être restauré plus tard.",
+        "confirmLabel": "Archiver"
+      },
+      "confirmRestore": {
+        "title": "Restaurer le type de chambre \"{{code}} - {{name}}\" ?",
+        "description": "Ce type de chambre redeviendra actif.",
+        "confirmLabel": "Restaurer"
+      },
+      "archived": {
+        "toggle": "Types de chambres archivés {{count}}",
+        "restore": "Restaurer",
+        "empty": "Aucun type de chambre archivé"
+      },
+      "emptySearch": "Aucun type de chambre trouvé pour \"{{search}}\"",
+      "errorLoad": "Impossible de charger les types de chambres."
     },
     "simulator": {
       "roomingList": {
@@ -833,10 +1149,78 @@
             }
           },
           "subscriptionWatch": {
-            "eyebrow": "Surveillance abonnements",
-            "title": "Comptes a suivre par le superviseur",
-            "description": "File de suivi orientee facturation pour les organisations proches d'un risque suspension ou renouvellement."
+            "eyebrow": "Suivi de facturation",
+            "title": "Suivi de facturation",
+            "description": "Suivez les paiements requis, les renouvellements et l'acces actif aux plans sur toute la plateforme."
           }
+        }
+      },
+      "billingWatchlist": {
+        "loading": "Chargement du suivi de facturation...",
+        "error": "Impossible de charger le suivi de facturation.",
+        "empty": "Aucun abonnement pour le moment.",
+        "planPrefix": "Plan {{plan}}",
+        "columns": {
+          "organization": "Organisation",
+          "revenue": "Revenu",
+          "access": "Facturation / acces",
+          "period": "Periode",
+          "risk": "Risque / prochaine action",
+          "action": "Action"
+        },
+        "summary": {
+          "paymentRequired": "Paiement requis",
+          "activeAccess": "Acces actif",
+          "oneTimeAccess": "Acces one-time",
+          "recurring": "Recurrent"
+        },
+        "billingType": {
+          "oneTime": "One-time",
+          "recurring": "Recurrent"
+        },
+        "revenue": {
+          "oneTime": "One-time {{amount}}",
+          "mrr": "MRR {{amount}}",
+          "noRecurringMrr": "Pas de MRR recurrent",
+          "recurringDetail": "Abonnement recurrent"
+        },
+        "access": {
+          "active": "Acces actif",
+          "paymentRequired": "Paiement requis",
+          "suspended": "Suspendu",
+          "activeDetail": "Droits actifs",
+          "paymentRequiredDetail": "Recouvrement facturation requis",
+          "suspendedDetail": "Acces desactive par la facturation"
+        },
+        "period": {
+          "renews": "Renouvelle le {{date}}",
+          "noRenewal": "Pas de renouvellement",
+          "unavailable": "Date de renouvellement indisponible",
+          "oneTimeDetail": "Acces a vie / paiement one-time",
+          "recurringDetail": "Periode de facturation recurrente",
+          "unavailableDetail": "La fin de periode Stripe n'est pas encore synchronisee"
+        },
+        "risk": {
+          "healthy": "Sain",
+          "stripePriceMissing": "Stripe Price ID manquant",
+          "planInactive": "Plan inactif",
+          "collectPayment": "Collecter le paiement",
+          "reviewAccess": "Revoir l'acces",
+          "tenantSuspended": "Tenant suspendu",
+          "noRenewalRequired": "Aucun renouvellement requis",
+          "healthyDetail": "Le renouvellement recurrent est suivi",
+          "stripePriceMissingDetail": "Ajoutez un Stripe Price ID avant la recuperation du paiement",
+          "planInactiveDetail": "Revoyez la configuration du plan avant recuperation",
+          "collectPaymentDetail": "Checkout manuel ou recuperation de paiement tenant",
+          "reviewAccessDetail": "L'acces facturation est suspendu",
+          "tenantSuspendedDetail": "La facturation peut etre active, mais l'acces plateforme est coupe",
+          "noRenewalDetail": "L'acces one-time est actif",
+          "renewalPendingDetail": "Actif, date de renouvellement en attente de synchronisation"
+        },
+        "actions": {
+          "viewTenant": "Voir tenant",
+          "reviewRecovery": "Revoir recuperation",
+          "openTenantTitle": "Ouvrir la gestion tenant pour {{organization}}"
         }
       },
       "plans": {
@@ -917,10 +1301,108 @@
             "title": "Editeur de politique de plan",
             "description": "Structure UI du workflow superviseur couvrant pricing, limites et privileges restreints."
           },
-          "subscriptions": {
-            "eyebrow": "Abonnements",
-            "title": "Watchlist des abonnements superviseur",
-            "description": "Renouvellements a venir et risque facturation, conserves au niveau abonnement."
+          "planPerformance": {
+            "eyebrow": "Performance des plans",
+            "title": "Vue readiness des plans",
+            "description": "Une vue centree plan sur la disponibilite checkout, le packaging actif et les offres avec acces API.",
+            "loading": "Chargement de la readiness des plans...",
+            "error": "Impossible de charger la readiness des plans.",
+            "empty": "Aucun plan disponible pour l'analyse readiness.",
+            "activePlans": "Plans actifs",
+            "activePlansDetail": "Packages publies disponibles pour assignation.",
+            "checkoutReady": "Checkout pret",
+            "checkoutReadyDetail": "Plans avec Stripe Price ID configure.",
+            "missingStripePrice": "Prix Stripe manquant",
+            "missingStripePriceDetail": "Plans qui ne peuvent pas lancer checkout avant configuration.",
+            "apiAccess": "Plans avec acces API",
+            "apiAccessDetail": "Plans incluant le droit d'integration."
+          },
+          "planBusinessInsights": {
+            "eyebrow": "Insights business",
+            "title": "Insights business des plans",
+            "description": "Visualisez quels plans SaaS génèrent le plus d’adoption, de MRR récurrent et de revenus ponctuels sur la plateforme.",
+            "loading": "Chargement des insights business des plans...",
+            "error": "Impossible de charger les insights business des plans.",
+            "kpis": {
+              "mostAdoptedPlan": {
+                "label": "Plan le plus adopté",
+                "detail": "Basé uniquement sur les abonnements ACTIVE."
+              },
+              "topRecurringRevenuePlan": {
+                "label": "Meilleur plan MRR",
+                "detail": "Somme le MRR récurrent actif par plan."
+              },
+              "topOneTimeRevenuePlan": {
+                "label": "Meilleur revenu ponctuel",
+                "detail": "Somme les revenus ponctuels actifs par plan."
+              },
+              "checkoutReadyPlans": {
+                "label": "Plans prêts checkout",
+                "detail": "Plans actifs avec un Stripe Price ID."
+              }
+            },
+            "charts": {
+              "adoption": {
+                "title": "Adoption des plans"
+              },
+              "revenue": {
+                "title": "Revenus par plan"
+              },
+              "score": {
+                "title": "Score business des plans",
+                "note": "Le score business est un indicateur interne simple basé sur l’adoption active, les revenus et la préparation du plan."
+              }
+            },
+            "labels": {
+              "activeTenant": "{{count}} tenant actif",
+              "activeTenants": "{{count}} tenants actifs",
+              "pastDueTenant": "{{count}} tenant en retard",
+              "pastDueTenants": "{{count}} tenants en retard",
+              "recurringMrr": "MRR récurrent",
+              "oneTimeRevenue": "Revenu ponctuel"
+            },
+            "empty": {
+              "noPlans": "Aucun plan disponible pour les insights business.",
+              "noActiveSubscriptions": "Aucun abonnement actif pour le moment",
+              "noRecurringMrr": "Aucun MRR récurrent pour le moment",
+              "noOneTimeRevenue": "Aucun revenu ponctuel pour le moment",
+              "noRevenue": "Aucun revenu actif récurrent ou ponctuel pour le moment",
+              "noScore": "Aucun score business de plan disponible pour le moment."
+            }
+          },
+          "planBenefitsMatrix": {
+            "eyebrow": "Avantages des plans",
+            "title": "Matrice des avantages des plans",
+            "description": "Comparez les limites, le modele de facturation, l'acces API, le support et la preparation au paiement des plans SaaS.",
+            "loading": "Chargement de la matrice des avantages...",
+            "error": "Impossible de charger les avantages des plans.",
+            "empty": "Aucun plan disponible pour comparer les avantages.",
+            "columns": {
+              "plan": "Plan",
+              "billing": "Facturation",
+              "capacity": "Capacite",
+              "apiAccess": "Acces API",
+              "support": "Support",
+              "features": "Fonctionnalites",
+              "checkoutReadiness": "Preparation checkout"
+            },
+            "labels": {
+              "active": "Actif",
+              "inactive": "Inactif",
+              "oneTime": "Paiement unique",
+              "recurring": "Abonnement",
+              "oneTimePrice": "{{price}} en paiement unique",
+              "monthlyPrice": "{{price}} / mois",
+              "hotelsLimit": "{{count}} hotels",
+              "usersLimit": "{{count}} utilisateurs",
+              "included": "Inclus",
+              "notIncluded": "Non inclus",
+              "featureCount": "{{count}} fonctionnalites",
+              "moreFeatures": "+{{count}} autres",
+              "noFeatures": "Aucune note de fonctionnalite",
+              "stripeMissing": "Prix Stripe manquant",
+              "checkoutReady": "Checkout pret"
+            }
           }
         }
       },
@@ -1010,6 +1492,13 @@
               }
             }
           }
+        },
+        "pagination": {
+          "range": "Affichage {{first}}-{{last}} sur {{total}}",
+          "page": "Page {{page}} sur {{totalPages}}",
+          "previous": "Precedent",
+          "next": "Suivant",
+          "noLogs": "Aucun log trouve"
         }
       },
       "tenants": {
@@ -1227,6 +1716,183 @@
         "changeTo": "Changer le statut vers",
         "apply": "Appliquer"
       }
+    },
+    "rooms": {
+      "header": {
+        "kicker": "Configuration hôtel",
+        "title": "Types de chambres",
+        "subtitle": "Définissez les types de chambres vendables de l’hôtel."
+      }
+    },
+    "exchangeRates": {
+      "header": {
+        "eyebrow": "Paramètres financiers",
+        "title": "Taux de change",
+        "subtitle": "Gérez les paires de devises utilisées pour les aperçus, les exports PDF et les calculs tarifaires."
+      },
+      "emptyHotelTitle": "Aucun hôtel sélectionné",
+      "emptyHotelSubtitle": "Choisissez un hôtel avant de gérer les taux de change.",
+      "deleteTitle": "Supprimer ce taux de change ?",
+      "deleteDescription": "{{from}}_{{to}} = {{rate}} sera supprimé pour le {{date}}.",
+      "configuration": {
+        "eyebrow": "Configuration",
+        "title": "Paramétrage des devises",
+        "baseCurrency": "Devise de base",
+        "supportedCurrencies": "Devises prises en charge",
+        "noCurrencies": "Aucune devise configurée pour le moment."
+      },
+      "helper": "Les taux de change configurés ici sont utilisés dans les aperçus de contrats, les exports PDF et les simulations tarifaires.",
+      "addRate": "Ajouter un taux",
+      "table": {
+        "eyebrow": "Table des taux de change",
+        "title": "Paires de devises actives",
+        "fromCurrency": "Devise source",
+        "toCurrency": "Devise cible",
+        "rate": "Taux",
+        "meaning": "Signification",
+        "effectiveDate": "Date d’effet",
+        "source": "Source",
+        "updatedBy": "Mis à jour par",
+        "actions": "Actions"
+      },
+      "convention": "AAA_BBB = x signifie 1 AAA = x BBB.",
+      "emptyTitle": "Aucun taux de change configuré.",
+      "emptySubtitle": "Ajoutez une première paire pour activer la conversion de devises.",
+      "modal": {
+        "editTitle": "Modifier le taux de change",
+        "createTitle": "Ajouter un taux de change",
+        "meaningLabel": "Signification",
+        "rule": "signifie que 1 devise source vaut x devise cible."
+      },
+      "fields": {
+        "fromCurrency": "Devise source",
+        "toCurrency": "Devise cible",
+        "rate": "Taux",
+        "effectiveDate": "Date d’effet",
+        "source": "Source"
+      },
+      "toast": {
+        "created": "Taux de change ajouté",
+        "createError": "Impossible d’ajouter le taux de change",
+        "updated": "Taux de change mis à jour",
+        "updateError": "Impossible de mettre à jour le taux de change",
+        "deleted": "Taux de change supprimé",
+        "deleteError": "Impossible de supprimer le taux de change"
+      },
+      "source": {
+        "manual": "Manuel",
+        "system": "Système",
+        "imported": "Importé"
+      }
+    },
+    "profile": {
+      "title": "Profil",
+      "common": {
+        "notAssigned": "Non assign?",
+        "notAvailable": "Non disponible",
+        "notAvailableYet": "Pas encore disponible",
+        "loading": "Chargement..."
+      },
+      "errors": {
+        "loadFailed": "Impossible de charger les informations du profil pour le moment."
+      },
+      "roles": {
+        "admin": "Administrateur avec acc?s aux utilisateurs, aux h?tels et ? l?organisation.",
+        "commercial": "Utilisateur commercial avec acc?s aux op?rations des h?tels assign?s.",
+        "agent": "Utilisateur op?rationnel centr? sur les outils de tarification.",
+        "default": "Profil utilisateur."
+      },
+      "fields": {
+        "email": "E-mail",
+        "organization": "Organisation",
+        "assignedHotel": "H?tel assign?",
+        "joined": "Date d?arriv?e",
+        "firstName": "Pr?nom",
+        "lastName": "Nom"
+      },
+      "personal": {
+        "eyebrow": "Informations personnelles",
+        "title": "Modifier le profil",
+        "description": "Vous pouvez modifier votre nom visible. L?e-mail, le r?le, l?organisation et les acc?s h?tel sont g?r?s par les administrateurs.",
+        "saving": "Enregistrement...",
+        "save": "Enregistrer le profil"
+      },
+      "security": {
+        "eyebrow": "S?curit?",
+        "title": "Modifier le mot de passe",
+        "description": "Utilisez votre mot de passe actuel pour s?curiser cette modification.",
+        "currentPassword": "Mot de passe actuel",
+        "newPassword": "Nouveau mot de passe",
+        "confirmPassword": "Confirmer le mot de passe",
+        "passwordMismatch": "Le nouveau mot de passe et la confirmation ne correspondent pas.",
+        "updating": "Mise ? jour...",
+        "submit": "Modifier le mot de passe"
+      },
+      "admin": {
+        "eyebrow": "Contr?les administrateur",
+        "title": "Acc?s organisation",
+        "description": "G?rez les utilisateurs et les informations de l?h?tel pour l?organisation."
+      },
+      "commercial": {
+        "eyebrow": "Espace commercial",
+        "title": "P?rim?tre assign?",
+        "description": "Votre h?tel assign? et les raccourcis de l?espace commercial.",
+        "activeSeason": "Saison active",
+        "recentSimulations": "Simulations r?centes",
+        "seasonsLoadError": "Impossible de charger les saisons",
+        "activityLoadError": "Impossible de charger l?activit?",
+        "activeSeasonValue": "{{label}} ({{count}} contrats actifs)",
+        "noActiveSeason": "Aucune saison active",
+        "recentProformas": "{{count}} proformas ?mises sur 30 jours",
+        "noRecentProformas": "Aucune proforma ?mise sur 30 jours"
+      },
+      "agent": {
+        "eyebrow": "Acc?s agent",
+        "title": "Permissions et modules",
+        "description": "Ce r?le est centr? sur les outils disponibles pour les utilisateurs op?rationnels.",
+        "accessibleModules": "Modules accessibles",
+        "pricingSimulator": "Simulateur de tarification",
+        "contractAccess": "Acc?s contrats",
+        "limited": "Limit?"
+      },
+      "quickActions": {
+        "manageUsers": {
+          "label": "G?rer les utilisateurs",
+          "description": "V?rifier les utilisateurs, invitations en attente et r?les."
+        },
+        "inviteUsers": {
+          "label": "Inviter des utilisateurs",
+          "description": "Ajouter des membres avec le bon acc?s."
+        },
+        "manageHotels": {
+          "label": "G?rer les h?tels",
+          "description": "Maintenir les informations de l?h?tel et du portefeuille."
+        },
+        "hotelProfile": {
+          "label": "Informations de l?h?tel",
+          "description": "V?rifier les d?tails de l?h?tel assign?."
+        },
+        "roomTypes": {
+          "label": "Types de chambres",
+          "description": "Consulter l?inventaire vendable."
+        },
+        "arrangements": {
+          "label": "Arrangements",
+          "description": "Consulter les formules de repas de l?h?tel."
+        },
+        "exchangeRates": {
+          "label": "Taux de change",
+          "description": "Consulter les paires de devises configur?es."
+        },
+        "openSimulator": {
+          "label": "Ouvrir le simulateur",
+          "description": "Lancer l?outil de tarification disponible pour votre r?le."
+        },
+        "reviewProfile": {
+          "label": "Consulter le profil",
+          "description": "Maintenir vos informations personnelles ? jour."
+        }
+      }
     }
   },
   "navigation": {
@@ -1271,7 +1937,7 @@
         },
         "portfolio": {
           "label": "Parc hotelier",
-          "description": "Parametres etablissements et taux de change."
+          "description": "Identité, contacts et informations légales de l’hôtel."
         }
       },
       "commercialOps": {
@@ -1291,7 +1957,7 @@
       "primary": {
         "hotels": {
           "label": "Hotels",
-          "description": "Configuration etablissements et parametres operationnels."
+          "description": "Configuration hôtel et paramètres opérationnels."
         },
         "catalog": {
           "label": "Catalogue",
@@ -1311,18 +1977,24 @@
         }
       },
       "product": {
-        "hotel": "Hotel",
-        "rooms": "Chambres",
+        "hotel": "Hôtel",
+        "rooms": "Types de chambres",
         "arrangements": "Arrangements",
         "supplements": "Supplements",
         "spos": "SPOs",
         "reductions": "Reductions",
         "monoparental": "Monoparental",
         "earlyBooking": "Early Booking",
-        "cancellations": "Annulations"
+        "cancellations": "Annulations",
+        "hotelInformation": "Informations de l’hôtel",
+        "exchangeRates": "Taux de change",
+        "hotelInformationDescription": "Identité, contacts, informations légales et métadonnées opérationnelles de l’hôtel.",
+        "roomsDescription": "Types de chambres et inventaire vendable.",
+        "arrangementsDescription": "Formules de repas utilisées par les contrats et les tarifs.",
+        "exchangeRatesDescription": "Paires de devises utilisées par les aperçus, exports et simulations."
       },
       "sections": {
-        "product": "Mon produit",
+        "product": "Configuration hôtel",
         "partners": "Mes partenaires",
         "contracts": "Gestion contrats",
         "administration": "Administration"
@@ -1366,7 +2038,8 @@
         "subtitle": "Un environnement de calcul focalise avec retour prix instantane.",
         "sectionTitle": "Outils"
       }
-    }
+    },
+    "profile": "Profil"
   },
   "auth": {
     "loginHint": "Connectez-vous a votre espace de contracting."
@@ -1586,7 +2259,7 @@
     }
   },
   "common": {
-    "notAvailable": "N/D"
+    "notAvailable": "N/A"
   },
   "components": {
     "navbar": {
@@ -1605,11 +2278,11 @@
           "useusers": {
             "toast": {
               "success": {
-                "8691680c": "User updated successfully",
-                "ea6f670a": "User suspended successfully"
+                "8691680c": "Utilisateur mis à jour avec succès",
+                "ea6f670a": "Utilisateur suspendu avec succès"
               },
               "error": {
-                "4c3aa2d2": "Unable to suspend the user"
+                "4c3aa2d2": "Impossible de suspendre l’utilisateur"
               }
             }
           }
@@ -1619,18 +2292,18 @@
             "fb3c2467": "14 Apr"
           },
           "userspage": {
-            "111a62e5": "Active",
-            "ed1a9226": "Pending invite",
+            "111a62e5": "Actif",
+            "ed1a9226": "Invitation en attente",
             "title": {
-              "8c6523e0": "Edit user",
-              "6d534da0": "Suspend user"
+              "8c6523e0": "Modifier un utilisateur",
+              "6d534da0": "Suspendre un utilisateur"
             },
-            "a9bbbbe0": "User",
-            "0d3e32fc": "Role",
-            "7b43cd72": "Assigned hotels",
-            "e63e6e31": "Status",
+            "a9bbbbe0": "Utilisateur",
+            "0d3e32fc": "Rôle",
+            "7b43cd72": "Hôtels assignés",
+            "e63e6e31": "Statut",
             "77eb292a": "Actions",
-            "28e3c5ef": "No hotel assigned"
+            "28e3c5ef": "Aucun hôtel assigné"
           }
         }
       },
@@ -1656,12 +2329,12 @@
         },
         "pages": {
           "arrangementspage": {
-            "5abc4ade": "Plans repas proposés par l'hôtel",
+            "5abc4ade": "Formules de repas proposées par l’hôtel",
             "placeholder": {
               "995686e5": "Rechercher un arrangement..."
             },
             "c87031c2": "Aucun arrangement défini",
-            "5dcf7e80": "Cliquez sur « Nouvel Arrangement » pour commencer",
+            "5dcf7e80": "Cliquez sur « Ajouter un arrangement » pour commencer",
             "b33b394f": "Code",
             "96ce3732": "Libellé",
             "60d9e35d": "Niveau",
@@ -1670,7 +2343,7 @@
             "b64ea579": "Aucune description",
             "title": {
               "a2e2e4e7": "Modifier",
-              "ede43660": "Supprimer"
+              "ede43660": "Archiver"
             },
             "cbf4e9cf": "Nom",
             "7d74144c": "Action",
@@ -2603,34 +3276,34 @@
       "hotel": {
         "components": {
           "edithotelmodal": {
-            "43648523": "Nom de la Banque",
-            "243e2040": "Nom commercial de l'hôtel *",
+            "43648523": "Nom de la banque",
+            "243e2040": "Nom commercial de l’hôtel *",
             "placeholder": {
               "38cb0167": "Grand Hôtel Majestic",
-              "27c19c0c": "Nom Prénom",
+              "27c19c0c": "Prénom Nom",
               "0d9f6dde": "Avenue Habib Bourguiba, 1001 Tunis",
               "8ac6dfd2": "email@hotel.com",
-              "1c4e4c18": "SARL Grand Hôtel…",
+              "1c4e4c18": "SARL Grand Hôtel...",
               "cb2e3886": "0123456A/P/M/000",
-              "a712cdab": "BIAT, STB, Attijari…",
+              "a712cdab": "BIAT, STB, Attijari...",
               "5bc4d990": "BIATTNTT",
-              "150788b3": "TN59 …"
+              "150788b3": "TN59 ..."
             },
-            "b8343faf": "Représentant Légal *",
+            "b8343faf": "Représentant légal *",
             "2ca8c8ab": "Devise (ISO 4217) *",
             "79a4a688": "— Devise —",
-            "7d0c40d0": "Adresse Complète *",
-            "637932f7": "Catégorie (Étoiles)",
+            "7d0c40d0": "Adresse complète *",
+            "637932f7": "Catégorie (étoiles)",
             "afc60cf6": "Téléphone *",
             "b2db8638": "Fax",
-            "6e775c60": "Adresses Email",
-            "3d3545d5": "Cliquez pour ajouter une adresse email...",
+            "6e775c60": "Adresses e-mail",
+            "3d3545d5": "Cliquez pour ajouter une adresse e-mail...",
             "703a8973": "— Type —",
-            "607ae752": "Raison Sociale (Nom Fiscal)",
-            "9f31c75d": "Matricule Fiscal (VAT)",
-            "55810cf8": "Numéro de Compte (RIB)",
-            "5a2b4f15": "Code SWIFT / BIC",
-            "f56c06a7": "Code IBAN",
+            "607ae752": "Raison sociale (nom fiscal)",
+            "9f31c75d": "Matricule fiscal / TVA",
+            "55810cf8": "Numéro de compte (RIB)",
+            "5a2b4f15": "SWIFT / BIC",
+            "f56c06a7": "IBAN",
             "dc2c01fd": "* Champs obligatoires"
           },
           "exchangeratessection": {
@@ -2739,10 +3412,10 @@
           "useroomtypes": {
             "toast": {
               "success": {
-                "bd978808": "Chambre créée avec succès",
-                "94e7e417": "Chambre mise à jour",
-                "d36e3358": "Chambre archivée avec succès",
-                "55744ca1": "Chambre restaurée avec succès"
+                "bd978808": "Type de chambre créé avec succès",
+                "94e7e417": "Type de chambre mis à jour",
+                "d36e3358": "Type de chambre archivé avec succès",
+                "55744ca1": "Type de chambre restauré avec succès"
               }
             }
           }
@@ -2750,13 +3423,13 @@
         "pages": {
           "roomtypespage": {
             "placeholder": {
-              "4f8e2e50": "Rechercher une chambre..."
+              "4f8e2e50": "Rechercher un type de chambre..."
             },
-            "6d41bf0a": "Aucune chambre définie pour le moment",
-            "eea025ef": "Cliquez sur « Nouvelle Chambre » pour commencer",
+            "6d41bf0a": "Aucun type de chambre défini pour le moment",
+            "eea025ef": "Cliquez sur « Ajouter un type de chambre » pour commencer",
             "60a25d6c": "Code",
             "f530c0be": "Libellé",
-            "b23ebeb0": "Occupancy",
+            "b23ebeb0": "Occupation",
             "3033d562": "Adultes",
             "8ebed994": "Enfants",
             "b3557035": "Lit bébé",
@@ -2764,10 +3437,10 @@
             "dfd69bda": "Non",
             "title": {
               "d44026b9": "Modifier",
-              "b7a64043": "Supprimer"
+              "b7a64043": "Archiver"
             },
             "ef856737": "Action",
-            "112be6b0": "Aucune chambre archivée"
+            "112be6b0": "Aucun type de chambre archivé"
           }
         }
       },
@@ -2827,5 +3500,18 @@
     "pagination": {
       "summary": "Affichage de {{from}} ? {{to}} sur {{total}}"
     }
+  },
+  "fields": {
+    "pmsCode": "Code PMS",
+    "roomName": "Nom de la chambre",
+    "totalPax": "Capacité totale",
+    "min": "Min.",
+    "max": "Max.",
+    "adults": "Adultes",
+    "children": "Enfants",
+    "uniqueCode": "Code unique",
+    "level": "Niveau",
+    "label": "Libellé",
+    "description": "Description"
   }
 }

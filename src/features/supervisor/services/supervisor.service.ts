@@ -95,6 +95,30 @@ export interface SupervisorPublicSignup {
     tenantId: number | null;
     adminUserId: number | null;
     subscriptionId: number | null;
+    tenant: {
+        id: number;
+        name: string;
+        isActive: boolean;
+    } | null;
+    adminUser: {
+        id: number;
+        name: string;
+        email: string;
+        isActive: boolean;
+    } | null;
+    subscription: {
+        id: number;
+        status: SupervisorSubscriptionStatus;
+        planName: string;
+    } | null;
+    checkout: {
+        sessionIdPreview: string | null;
+        hasSession: boolean;
+    };
+    provisioningState: 'AWAITING_PAYMENT' | 'PAYMENT_RECEIVED' | 'PROVISIONED' | 'INCOMPLETE' | 'FAILED' | 'EXPIRED';
+    isProvisioningIncomplete: boolean;
+    provisioningIssues: string[];
+    provisioningWarnings: string[];
     completedAt: string | null;
     createdAt: string;
     updatedAt: string;
@@ -107,8 +131,14 @@ export interface ListSupervisorPublicSignupsParams {
 }
 
 export interface SupervisorCheckoutSession {
-    checkoutUrl: string;
-    sessionId: string;
+    checkoutUrl?: string;
+    sessionId?: string;
+    alreadyProcessed?: boolean;
+    requiresSync?: boolean;
+    resolved?: boolean;
+    canRetry?: boolean;
+    billingStatus?: SupervisorSubscriptionStatus;
+    message?: string;
 }
 
 export type SupervisorAuditLogCategory =
