@@ -33,7 +33,7 @@ export function useImportSupplement(contractId: number) {
             qc.invalidateQueries({
                 queryKey: CONTRACT_SUPPLEMENT_KEYS.byContract(contractId),
             });
-            toast.success(i18next.t('auto.features.contracts.hooks.usecontractsupplements.toast.success.e9bd8145', { defaultValue: "Supplément importé" }));
+            toast.success(i18next.t('auto.features.contracts.hooks.usecontractsupplements.toast.success.e9bd8145', { defaultValue: 'Supplement imported' }));
         },
     });
 }
@@ -66,7 +66,7 @@ export function useDeleteContractSupplement(contractId: number) {
             qc.invalidateQueries({
                 queryKey: CONTRACT_SUPPLEMENT_KEYS.byContract(contractId),
             });
-            toast.success(i18next.t('auto.features.contracts.hooks.usecontractsupplements.toast.success.a0cb2f2b', { defaultValue: "Supplément supprimé" }));
+            toast.success(i18next.t('auto.features.contracts.hooks.usecontractsupplements.toast.success.a0cb2f2b', { defaultValue: 'Supplement removed' }));
         },
     });
 }

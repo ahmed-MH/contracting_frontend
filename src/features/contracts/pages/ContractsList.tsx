@@ -27,16 +27,23 @@ const pageSize = 10;
 function PaginationControls({
     meta,
     onPageChange,
+    t,
 }: {
     meta?: PageMeta;
     onPageChange: (page: number) => void;
+    t: (key: string, options?: Record<string, unknown>) => string;
 }) {
     if (!meta || meta.lastPage <= 1) return null;
 
     return (
         <div className="flex items-center justify-between gap-3 border-t border-brand-light/70 px-5 py-4 text-sm text-brand-slate dark:border-brand-light/10 dark:text-brand-light/70">
             <span>
-                Page {meta.page} of {meta.lastPage} - {meta.total} total
+                {t('pages.contracts.pagination.summary', {
+                    defaultValue: 'Page {{page}} of {{lastPage}} - {{total}} total',
+                    page: meta.page,
+                    lastPage: meta.lastPage,
+                    total: meta.total,
+                })}
             </span>
             <div className="flex items-center gap-2">
                 <button
@@ -46,7 +53,7 @@ function PaginationControls({
                     className="inline-flex h-9 items-center gap-1 rounded-lg border border-brand-light/70 bg-brand-light/70 px-3 font-semibold text-brand-navy transition hover:border-brand-mint hover:text-brand-mint disabled:cursor-not-allowed disabled:opacity-50 dark:border-brand-light/10 dark:bg-brand-light/5 dark:text-brand-light"
                 >
                     <ChevronLeft size={14} />
-                    Previous
+                    {t('pages.contracts.pagination.previous', { defaultValue: 'Previous' })}
                 </button>
                 <button
                     type="button"
@@ -54,7 +61,7 @@ function PaginationControls({
                     onClick={() => onPageChange(meta.page + 1)}
                     className="inline-flex h-9 items-center gap-1 rounded-lg border border-brand-light/70 bg-brand-light/70 px-3 font-semibold text-brand-navy transition hover:border-brand-mint hover:text-brand-mint disabled:cursor-not-allowed disabled:opacity-50 dark:border-brand-light/10 dark:bg-brand-light/5 dark:text-brand-light"
                 >
-                    Next
+                    {t('pages.contracts.pagination.next', { defaultValue: 'Next' })}
                     <ChevronRight size={14} />
                 </button>
             </div>
@@ -138,9 +145,14 @@ export default function ContractsList() {
 
     const handleArchive = async (contract: typeof contracts[number]) => {
         if (await confirm({
-            title: `Archive contract "${contract.name}"?`,
-            description: 'This contract will move out of the active roster until it is restored.',
-            confirmLabel: 'Archive',
+            title: t('pages.contracts.confirmArchive.title', {
+                defaultValue: 'Archive contract "{{name}}"?',
+                name: contract.name,
+            }),
+            description: t('pages.contracts.confirmArchive.description', {
+                defaultValue: 'This contract will move out of the active roster until it is restored.',
+            }),
+            confirmLabel: t('pages.contracts.confirmArchive.confirmLabel', { defaultValue: 'Archive' }),
             variant: 'danger',
         })) {
             archiveMutation.mutate(contract.id);
@@ -149,9 +161,14 @@ export default function ContractsList() {
 
     const handleRestore = async (contract: typeof contracts[number]) => {
         if (await confirm({
-            title: `Restore contract "${contract.name}"?`,
-            description: 'This contract will return to the active roster.',
-            confirmLabel: 'Restore',
+            title: t('pages.contracts.confirmRestore.title', {
+                defaultValue: 'Restore contract "{{name}}"?',
+                name: contract.name,
+            }),
+            description: t('pages.contracts.confirmRestore.description', {
+                defaultValue: 'This contract will return to the active roster.',
+            }),
+            confirmLabel: t('pages.contracts.confirmRestore.confirmLabel', { defaultValue: 'Restore' }),
             variant: 'info',
         })) {
             restoreMutation.mutate(contract.id);
@@ -236,7 +253,7 @@ export default function ContractsList() {
                         <input
                             value={search}
                             onChange={(event) => setSearch(event.target.value)}
-                            placeholder="Search contract, reference, or partner"
+                            placeholder={t('pages.contracts.search.placeholder', { defaultValue: 'Search contracts by name, reference, or partner' })}
                             className="h-11 w-full rounded-lg border border-brand-light/70 bg-brand-light/80 pl-10 pr-4 text-sm text-brand-navy shadow-sm outline-none transition focus:border-brand-mint focus:ring-2 focus:ring-brand-mint/20 dark:border-brand-light/10 dark:bg-brand-light/5 dark:text-brand-light"
                         />
                     </label>
@@ -331,7 +348,7 @@ export default function ContractsList() {
                                                         disabled={archiveMutation.isPending}
                                                         onClick={() => handleArchive(contract)}
                                                         className="ml-2 inline-flex h-10 w-10 items-center justify-center rounded-lg border border-brand-light/70 bg-brand-light/70 text-brand-slate transition hover:border-brand-mint hover:text-brand-mint disabled:cursor-not-allowed disabled:opacity-60 dark:border-brand-light/10 dark:bg-brand-light/5 dark:text-brand-light"
-                                                        aria-label="Archive contract"
+                                                        aria-label={t('pages.contracts.table.archiveContract', { defaultValue: 'Archive contract' })}
                                                     >
                                                         <Archive size={14} />
                                                     </button>
@@ -342,7 +359,7 @@ export default function ContractsList() {
                                 </tbody>
                             </table>
                         </div>
-                        <PaginationControls meta={contractsPage?.meta} onPageChange={setPage} />
+                        <PaginationControls meta={contractsPage?.meta} onPageChange={setPage} t={t} />
                     </div>
                 </SectionCard>
             )}
@@ -356,12 +373,12 @@ export default function ContractsList() {
                     >
                         {showArchived ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
                         <Archive size={16} />
-                        Archived contracts {showArchived ? `(${archivedContractsPage?.meta.total ?? archivedContracts.length})` : ''}
+                        {t('pages.contracts.archived.title', { defaultValue: 'Archived contracts' })} {showArchived ? `(${archivedContractsPage?.meta.total ?? archivedContracts.length})` : ''}
                     </button>
 
                     {showArchived && archivedContracts.length === 0 && (
                         <div className="rounded-lg border border-dashed border-brand-slate/20 px-6 py-10 text-center text-sm text-brand-slate dark:border-brand-light/10 dark:text-brand-light/70">
-                            No archived contracts match these filters.
+                            {t('pages.contracts.archived.empty', { defaultValue: 'No archived contracts match these filters.' })}
                         </div>
                     )}
 
@@ -371,11 +388,11 @@ export default function ContractsList() {
                                 <table className="min-w-full text-left text-sm">
                                     <thead className="bg-brand-light/70 text-brand-slate dark:bg-brand-light/5">
                                         <tr>
-                                            <th className="px-5 py-4 font-semibold uppercase tracking-[0.18em]">Contract</th>
-                                            <th className="px-5 py-4 font-semibold uppercase tracking-[0.18em]">Partners</th>
-                                            <th className="px-5 py-4 text-center font-semibold uppercase tracking-[0.18em]">Window</th>
-                                            <th className="px-5 py-4 text-center font-semibold uppercase tracking-[0.18em]">Status</th>
-                                            <th className="px-5 py-4 text-right font-semibold uppercase tracking-[0.18em]">Actions</th>
+                                            <th className="px-5 py-4 font-semibold uppercase tracking-[0.18em]">{t('pages.contracts.table.name', { defaultValue: 'Contract' })}</th>
+                                            <th className="px-5 py-4 font-semibold uppercase tracking-[0.18em]">{t('pages.contracts.table.partner', { defaultValue: 'Partners' })}</th>
+                                            <th className="px-5 py-4 text-center font-semibold uppercase tracking-[0.18em]">{t('pages.contracts.table.window', { defaultValue: 'Window' })}</th>
+                                            <th className="px-5 py-4 text-center font-semibold uppercase tracking-[0.18em]">{t('pages.contracts.table.status', { defaultValue: 'Status' })}</th>
+                                            <th className="px-5 py-4 text-right font-semibold uppercase tracking-[0.18em]">{t('pages.contracts.table.actions', { defaultValue: 'Actions' })}</th>
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-brand-light/60 dark:divide-brand-light/10">
@@ -394,7 +411,11 @@ export default function ContractsList() {
                                                         {shownAffiliates || t('common.notAvailable', { defaultValue: 'N/A' })}
                                                     </td>
                                                     <td className="px-5 py-4 align-top text-center">
-                                                        {formatDate(contract.startDate, locale)} - {formatDate(contract.endDate, locale)}
+                                                        {t('pages.contractDetails.header.dateRange', {
+                                                            defaultValue: '{{start}} - {{end}}',
+                                                            start: formatDate(contract.startDate, locale),
+                                                            end: formatDate(contract.endDate, locale),
+                                                        })}
                                                     </td>
                                                     <td className="px-5 py-4 align-top text-center">
                                                         <span className={clsx('premium-pill', status.className)}>{status.label}</span>
@@ -407,7 +428,7 @@ export default function ContractsList() {
                                                             className="inline-flex h-10 items-center gap-2 rounded-lg bg-brand-mint/10 px-4 text-sm font-semibold text-brand-mint transition hover:bg-brand-mint hover:text-brand-light disabled:cursor-not-allowed disabled:opacity-60"
                                                         >
                                                             <RotateCcw size={14} />
-                                                            Restore
+                                                            {t('actions.restore', { defaultValue: 'Restore' })}
                                                         </button>
                                                     </td>
                                                 </tr>
@@ -416,7 +437,7 @@ export default function ContractsList() {
                                     </tbody>
                                 </table>
                             </div>
-                            <PaginationControls meta={archivedContractsPage?.meta} onPageChange={setArchivedPage} />
+                            <PaginationControls meta={archivedContractsPage?.meta} onPageChange={setArchivedPage} t={t} />
                         </div>
                     )}
                 </SectionCard>

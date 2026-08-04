@@ -14,6 +14,7 @@
     "edit": "Modifier",
     "archive": "Archiver",
     "restore": "Restaurer",
+    "open": "Ouvrir",
     "delete": "Supprimer",
     "close": "Fermer",
     "select": "Sélectionner",
@@ -32,45 +33,11 @@
       "organizationFocus": {
         "eyebrow": "Focus organisation",
         "title": "Pilotez la couche business.",
-        "subtitle": "La facturation, les acces et la readiness des hotels restent visibles pendant les operations."
-      },
-      "billingGuardrails": {
-        "title": "Garde-fous facturation",
-        "renewals": "3 renouvellements demandent une attention avant la prochaine cloture.",
-        "subtitle": "Gardez les attributions de sieges, les invitations et la propriete des hotels synchronisees."
+        "subtitle": "L acces, la couverture des roles et la preparation des hotels restent visibles pendant les operations."
       }
     },
     "agent": {
       "runPricing": "Lancer la tarification"
-    },
-    "supervisor": {
-      "workspace": "Espace superviseur",
-      "platformOverview": "Vue plateforme",
-      "managePlans": "Gerer les plans",
-      "logs": {
-        "0": "Reconciliation des abonnements terminee sur 48 tenants actifs.",
-        "1": "Workflow de suspension execute pour deux comptes en retard.",
-        "2": "Ingestion d'audit recuperee apres une nouvelle tentative stockage."
-      },
-      "sidebar": {
-        "supervisor": "Superviseur",
-        "platformControlsOnly": "Controles plateforme uniquement",
-        "systemHealth": "Sante systeme",
-        "liveLogs": "Logs en direct",
-        "environmentStatus": "Statut environnement",
-        "runtime": "Execution",
-        "localRuntime": "Local",
-        "productionRuntime": "Production",
-        "apiHost": "API",
-        "stripeWebhook": "Webhook Stripe",
-        "webhookChecking": "Verification",
-        "webhookUnavailable": "Indisponible",
-        "webhookRecent": "Recent",
-        "webhookQuiet": "Calme",
-        "webhookNoEvents": "Aucun event",
-        "expandSidebar": "Etendre la barre laterale",
-        "collapseSidebar": "Reduire la barre laterale"
-      }
     }
   },
   "pages": {
@@ -200,11 +167,11 @@
       "logoUpload": {
         "fieldLabel": "Logo des documents",
         "title": "Importer le logo de l’hôtel",
-        "subtitle": "Élément de branding pour les aperçus, contrats et proformas",
+        "subtitle": "Élément de branding pour les aperçus, contrats et factures",
         "status": {
           "ready": "Logo configuré",
           "empty": "Aucun logo importé",
-          "description": "Importez un logo soigné pour les aperçus, contrats et proformas liés à l’hôtel.",
+          "description": "Importez un logo soigné pour les aperçus, contrats et factures liés à l’hôtel.",
           "createFirst": "Créez d’abord l’hôtel pour activer l’import local du logo."
         },
         "source": {
@@ -235,7 +202,7 @@
           "replaceHint": "L’enregistrement remplacera le chemin du logo par l’URL locale stockée.",
           "clear": "Retirer la sélection",
           "currentHint": "Les URL distantes et les anciens chemins locaux restent pris en charge.",
-          "emptyHint": "Aucun logo n’est encore enregistré. Importez-en un pour personnaliser les contrats et proformas."
+          "emptyHint": "Aucun logo n’est encore enregistré. Importez-en un pour personnaliser les contrats et factures."
         },
         "toast": {
           "success": "Logo de l’hôtel mis à jour"
@@ -244,9 +211,73 @@
     },
     "contracts": {
       "header": {
-        "title": "Gestion des contrats",
-        "subtitle": "Creez et gerez vos contrats partenaires",
-        "newContract": "Nouveau contrat"
+        "eyebrow": "Contrats commerciaux",
+        "title": "Contrats",
+        "subtitle": "Gérez les contrats conclus avec vos partenaires commerciaux.",
+        "newContract": "Créer un contrat"
+      },
+      "errors": {
+        "loadFailed": "Impossible de charger les contrats pour le moment."
+      },
+      "empty": {
+        "title": "Aucun contrat pour le moment",
+        "subtitle": "Créez votre premier contrat pour commencer à construire vos règles tarifaires."
+      },
+      "search": {
+        "placeholder": "Rechercher par nom, référence ou partenaire commercial"
+      },
+      "table": {
+        "title": "Liste des contrats",
+        "eyebrow": "Portefeuille",
+        "count": "{{count}} contrat",
+        "count_plural": "{{count}} contrats",
+        "name": "Contrat",
+        "partner": "Partenaires commerciaux",
+        "window": "Période",
+        "status": "Statut",
+        "updatedBy": "Mis à jour par",
+        "actions": "Actions",
+        "openContract": "Ouvrir {{name}}",
+        "archiveContract": "Archiver le contrat"
+      },
+      "archived": {
+        "title": "Contrats archivés",
+        "empty": "Aucun contrat archivé ne correspond à ces filtres."
+      },
+      "pagination": {
+        "summary": "Page {{page}} sur {{lastPage}} - {{total}} au total",
+        "previous": "Précédent",
+        "next": "Suivant"
+      },
+      "confirmArchive": {
+        "title": "Archiver le contrat « {{name}} » ?",
+        "description": "Ce contrat sera retiré de la liste active jusqu’à sa restauration.",
+        "confirmLabel": "Archiver"
+      },
+      "confirmRestore": {
+        "title": "Restaurer le contrat « {{name}} » ?",
+        "description": "Ce contrat sera de nouveau visible dans la liste active.",
+        "confirmLabel": "Restaurer"
+      },
+      "modal": {
+        "title": "Créer un contrat",
+        "currency": "Devise",
+        "currencyPlaceholder": "TND",
+        "baseArrangement": "Formule de base",
+        "noArrangement": "Aucune, toutes les formules sont autorisées",
+        "name": "Nom du contrat",
+        "namePlaceholder": "Été 2026 - Contrat partenaire",
+        "partners": "Partenaires commerciaux",
+        "noPartners": "Aucun partenaire commercial disponible",
+        "startDate": "Date de début",
+        "endDate": "Date de fin",
+        "creating": "Création...",
+        "submit": "Créer le contrat",
+        "error": "Impossible de créer le contrat. Vérifiez les données saisies.",
+        "validation": {
+          "nameRequired": "Le nom du contrat est obligatoire",
+          "partnerRequired": "Sélectionnez au moins un partenaire commercial"
+        }
       }
     },
     "users": {
@@ -413,92 +444,92 @@
     "integrations": {
       "common": {
         "emptyValue": "N/A",
-        "updatedBy": "Mis a jour par"
+        "updatedBy": "Mis à jour par"
       },
       "tabs": {
-        "overview": "Overview",
+        "overview": "Vue d’ensemble",
         "users": "Utilisateurs API",
-        "keys": "Cles API",
+        "keys": "Clés API",
         "endpoints": "Endpoints",
-        "playground": "API Playground",
+        "playground": "Playground API",
         "logs": "Logs d'utilisation",
-        "docs": "Docs developpeur"
+        "docs": "Documentation API"
       },
       "status": {
         "active": "Actif",
         "inactive": "Inactif"
       },
       "permissions": {
-        "reservationsQuote": "Reservation quote"
+        "reservationsQuote": "API de quotation"
       },
       "users": {
         "header": {
-          "eyebrow": "Acces integration",
-          "title": "Controlez quels systemes externes peuvent demander un pricing.",
-          "subtitle": "Creez des utilisateurs API scopes, gardez l'acces hotel strict et n'accordez que les permissions utiles au quote reservation.",
-          "badge": "{{count}} utilisateurs API configures",
-          "cta": "Creer un utilisateur API"
+          "eyebrow": "Accès intégration",
+          "title": "Contrôlez les systèmes externes autorisés à demander une quotation.",
+          "subtitle": "Créez des utilisateurs API à périmètre limité, gardez l’accès hôtel strict et n’accordez que les permissions nécessaires à l’API de quotation.",
+          "badge": "{{count}} utilisateurs API configurés",
+          "cta": "Créer un utilisateur API"
         },
         "section": {
-          "eyebrow": "Identites scopees",
-          "title": "Utilisateurs API et acces hotel",
-          "description": "Chaque utilisateur integration reste lie aux hotels autorises et a des permissions explicites."
+          "eyebrow": "Identités API",
+          "title": "Utilisateurs API et accès hôtel",
+          "description": "Chaque utilisateur API reste lié aux hôtels autorisés et à des permissions explicites."
         },
         "table": {
           "name": "Utilisateur API",
           "permissions": "Permissions",
-          "hotels": "Hotels autorises",
+          "hotels": "Hôtels autorisés",
           "status": "Statut",
           "actions": "Actions",
-          "empty": "Aucun utilisateur API integration n'a encore ete configure.",
+          "empty": "Aucun utilisateur API n’a encore été configuré.",
           "noDescription": "Aucune description"
         },
         "actions": {
           "edit": "Modifier l'utilisateur API",
-          "activate": "Activer l'utilisateur API",
-          "deactivate": "Desactiver l'utilisateur API"
+          "activate": "Activer l’utilisateur API",
+          "deactivate": "Désactiver l’utilisateur API"
         },
         "details": {
-          "title": "Details de l'utilisateur API"
+          "title": "Détails de l’utilisateur API"
         },
         "modal": {
-          "createTitle": "Creer un utilisateur API",
+          "createTitle": "Créer un utilisateur API",
           "editTitle": "Modifier l'utilisateur API",
           "name": "Nom",
           "description": "Description",
           "status": "Statut",
           "permissions": "Permissions",
-          "allowedHotels": "Hotels autorises"
+          "allowedHotels": "Hôtels autorisés"
         },
         "toasts": {
-          "created": "Utilisateur API cree avec succes",
-          "updated": "Utilisateur API mis a jour avec succes"
+          "created": "Utilisateur API créé avec succès",
+          "updated": "Utilisateur API mis à jour avec succès"
         }
       },
       "keys": {
         "header": {
-          "eyebrow": "Coffre credentials",
-          "title": "Emettez et revoquez des cles API a usage controle.",
-          "subtitle": "Les cles sont affichees une seule fois, stockees hachees dans le backend et reliees a un utilisateur integration scope.",
-          "badge": "{{count}} cles API enregistrees",
-          "cta": "Creer une cle API"
+          "eyebrow": "Coffre des clés",
+          "title": "Émettez et révoquez des clés API à usage contrôlé.",
+          "subtitle": "Les clés sont affichées une seule fois, stockées hachées dans le backend et reliées à un utilisateur API à périmètre limité.",
+          "badge": "{{count}} clés API enregistrées",
+          "cta": "Créer une clé API"
         },
         "section": {
-          "eyebrow": "Secrets geres",
-          "title": "Inventaire des cles",
-          "description": "Suivez chaque prefixe, revoquez les acces obsoletes et controlez la derniere utilisation sans reexposer le secret."
+          "eyebrow": "Secrets gérés",
+          "title": "Inventaire des clés",
+          "description": "Suivez chaque préfixe, révoquez les accès obsolètes et contrôlez la dernière utilisation sans réexposer le secret."
         },
         "table": {
-          "prefix": "Prefixe",
+          "prefix": "Préfixe",
           "apiUser": "Utilisateur API",
           "environment": "Environnement",
           "status": "Statut",
           "expiresAt": "Expire le",
-          "lastUsedAt": "Derniere utilisation",
-          "allowedIps": "IPs autorisees",
+          "lastUsedAt": "Dernière utilisation",
+          "allowedIps": "IP autorisées",
           "rotation": "Rotation",
           "actions": "Actions",
-          "empty": "Aucune cle API n'a encore ete creee.",
+          "empty": "Aucune clé API n’a encore été créée.",
           "unrestricted": "Sans restriction",
           "rotatedFrom": "Depuis {{prefix}}",
           "rotatedTo": "Vers {{prefix}}"
@@ -509,223 +540,223 @@
         },
         "status": {
           "active": "Active",
-          "revoked": "Revoquee",
-          "expired": "Expiree"
+          "revoked": "Révoquée",
+          "expired": "Expirée"
         },
         "actions": {
-          "revoke": "Revoquer la cle API",
-          "edit": "Modifier la cle API",
-          "rotate": "Rotation de cle API"
+          "revoke": "Révoquer la clé API",
+          "edit": "Modifier la clé API",
+          "rotate": "Renouveler la clé API"
         },
         "details": {
-          "title": "Details de la cle API"
+          "title": "Détails de la clé API"
         },
         "confirmRevoke": {
-          "title": "Revoquer cette cle API ?",
-          "description": "Le systeme de reservation connecte ne pourra plus s'authentifier immediatement.",
-          "confirmLabel": "Revoquer la cle"
+          "title": "Révoquer cette clé API ?",
+          "description": "Le système de réservation connecté ne pourra plus s’authentifier immédiatement.",
+          "confirmLabel": "Révoquer la clé"
         },
         "confirmRotate": {
-          "title": "Creer une cle de remplacement ?",
-          "description": "La nouvelle cle sera affichee une seule fois. La cle actuelle reste active jusqu'a revocation.",
-          "confirmLabel": "Creer le remplacement"
+          "title": "Créer une clé de remplacement ?",
+          "description": "La nouvelle clé sera affichée une seule fois. La clé actuelle reste active jusqu’à révocation.",
+          "confirmLabel": "Créer le remplacement"
         },
         "modal": {
-          "createTitle": "Creer une cle API",
-          "editTitle": "Modifier la cle API",
+          "createTitle": "Créer une clé API",
+          "editTitle": "Modifier la clé API",
           "apiUser": "Utilisateur API",
           "environment": "Environnement",
-          "name": "Nom de la cle",
-          "expiresAt": "Date d'expiration",
+          "name": "Nom de la clé",
+          "expiresAt": "Date d’expiration",
           "allowedIps": "Allowlist IP",
           "allowedIpsPlaceholder": "Une IP ou un CIDR par ligne",
-          "allowedIpsHint": "Laissez vide pour autoriser toutes les IPs. IPv4, IPv6 et CIDR IPv4 sont acceptes."
+          "allowedIpsHint": "Laissez vide pour autoriser toutes les IP. IPv4, IPv6 et CIDR IPv4 sont acceptés."
         },
         "rawKey": {
-          "title": "Cle API brute",
-          "description": "Ce secret n'est affiche qu'une seule fois. Stockez-le dans le systeme de reservation externe avant de fermer cette fenetre.",
-          "hint": "Apres cette etape, seul le prefixe de la cle restera visible dans Pricify.",
-          "copyNow": "Copiez maintenant, affiche une seule fois"
+          "title": "Clé API brute",
+          "description": "Ce secret n’est affiché qu’une seule fois. Stockez-le dans le système de réservation externe avant de fermer cette fenêtre.",
+          "hint": "Après cette étape, seul le préfixe de la clé restera visible dans Pricify.",
+          "copyNow": "Copiez maintenant, affichage unique"
         },
         "toasts": {
-          "created": "Cle API creee avec succes",
-          "updated": "Cle API mise a jour avec succes",
-          "rotated": "Cle API de remplacement creee",
-          "revoked": "Cle API revoquee avec succes"
+          "created": "Clé API créée avec succès",
+          "updated": "Clé API mise à jour avec succès",
+          "rotated": "Clé API de remplacement créée",
+          "revoked": "Clé API révoquée avec succès"
         }
       },
       "endpoints": {
         "header": {
-          "eyebrow": "Registry endpoints",
-          "title": "Gerez la surface d'integration approuvee.",
-          "subtitle": "Seuls les endpoints predefinis peuvent etre actives. La V1 demarre avec le reservation quote et un rate limit configurable.",
-          "badge": "{{count}} endpoints enregistres"
+          "eyebrow": "Registre des endpoints",
+          "title": "Gérez la surface d’intégration approuvée.",
+          "subtitle": "Seuls les endpoints prédéfinis peuvent être activés. La V1 démarre avec l’API de quotation et une limite de débit configurable.",
+          "badge": "{{count}} endpoints enregistrés"
         },
         "section": {
-          "eyebrow": "Endpoints predefinis",
-          "title": "Controles du registry",
-          "description": "Les definitions restent fixes tandis que les admins peuvent activer, desactiver et regler les parametres d'usage.",
-          "predefinedOnly": "Les admins gerent uniquement les parametres des endpoints approuves. Ce registry ne cree pas de nouvelles routes publiques."
+          "eyebrow": "Endpoints prédéfinis",
+          "title": "Contrôles du registre",
+          "description": "Les définitions restent fixes tandis que les administrateurs peuvent activer, désactiver et régler les paramètres d’usage.",
+          "predefinedOnly": "Les administrateurs gèrent uniquement les paramètres des endpoints approuvés. Ce registre ne crée pas de nouvelles routes publiques."
         },
         "table": {
           "code": "Code",
-          "method": "Methode",
-          "path": "Path",
+          "method": "Méthode",
+          "path": "Chemin",
           "version": "Version",
           "status": "Statut",
-          "rateLimit": "Debit / min",
-          "rateLimitValue": "{{value}} requetes/min",
-          "requiresApiKey": "Cle API requise",
+          "rateLimit": "Débit / min",
+          "rateLimitValue": "{{value}} requêtes/min",
+          "requiresApiKey": "Clé API requise",
           "requiresApiKeyYes": "Requise",
           "requiresApiKeyNo": "Non requise",
-          "predefined": "Route predefinie",
-          "updated": "Mis a jour",
+          "predefined": "Route prédéfinie",
+          "updated": "Mis à jour",
           "actions": "Actions",
-          "empty": "Aucun endpoint integration n'est disponible."
+          "empty": "Aucun endpoint d’intégration n’est disponible."
         },
         "actions": {
           "edit": "Modifier l'endpoint"
         },
         "details": {
-          "title": "Details de l'endpoint"
+          "title": "Détails de l’endpoint"
         },
         "modal": {
-          "title": "Modifier les parametres endpoint",
+          "title": "Modifier les paramètres de l’endpoint",
           "status": "Statut",
-          "rateLimit": "Rate limit par minute",
-          "requiresApiKey": "Exiger une authentification par cle API",
-          "requiresApiKeyLocked": "Les reservation quotes exigent toujours une authentification par cle API en V1."
+          "rateLimit": "Limite de débit par minute",
+          "requiresApiKey": "Exiger une authentification par clé API",
+          "requiresApiKeyLocked": "L’API de quotation exige toujours une authentification par clé API en V1."
         },
         "toasts": {
-          "updated": "Parametres endpoint mis a jour avec succes"
+          "updated": "Paramètres de l’endpoint mis à jour avec succès"
         }
       },
       "logs": {
         "header": {
-          "eyebrow": "Trace operationnelle",
-          "title": "Revoyez chaque requete quote passee par le hub.",
-          "subtitle": "Filtrez par endpoint, utilisateur API, hotel ou resultat pour diagnostiquer les echecs et comprendre l'usage.",
-          "badge": "{{count}} lignes chargees"
+          "eyebrow": "Trace opérationnelle",
+          "title": "Consultez chaque requête de quotation passée par le hub.",
+          "subtitle": "Filtrez par endpoint, utilisateur API, hôtel ou résultat pour diagnostiquer les échecs et comprendre l’usage.",
+          "badge": "{{count}} lignes chargées"
         },
         "filters": {
           "eyebrow": "Jeu de filtres",
-          "title": "Restreindre le flux de requetes",
-          "description": "Utilisez des filtres legers pour inspecter des consommateurs, hotels ou fenetres d'echec specifiques.",
+          "title": "Restreindre le flux de requêtes",
+          "description": "Utilisez des filtres légers pour inspecter des consommateurs, hôtels ou fenêtres d’échec spécifiques.",
           "allEndpoints": "Tous les endpoints",
           "allUsers": "Tous les utilisateurs API",
-          "allHotels": "Tous les hotels",
-          "allResults": "Tous les resultats",
-          "successOnly": "Succes uniquement",
-          "failureOnly": "Echecs uniquement"
+          "allHotels": "Tous les hôtels",
+          "allResults": "Tous les résultats",
+          "successOnly": "Succès uniquement",
+          "failureOnly": "Échecs uniquement"
         },
         "table": {
-          "eyebrow": "Log d'execution",
-          "title": "Requetes recentes",
-          "description": "Les derniers appels reservation quote, avec statut, duree et identifiants externes.",
+          "eyebrow": "Log d’exécution",
+          "title": "Requêtes récentes",
+          "description": "Les derniers appels de quotation, avec statut, durée et identifiants externes.",
           "date": "Date",
           "endpoint": "Endpoint",
           "apiUser": "Utilisateur API",
-          "hotel": "Hotel",
+          "hotel": "Hôtel",
           "requestId": "Request ID",
-          "reservationCode": "Code reservation",
-          "result": "Resultat",
-          "success": "Succes",
-          "rateLimited": "Rate limite",
-          "failure": "Echec",
+          "reservationCode": "Code réservation",
+          "result": "Résultat",
+          "success": "Succès",
+          "rateLimited": "Limite atteinte",
+          "failure": "Échec",
           "statusCode": "HTTP",
-          "duration": "Duree",
+          "duration": "Durée",
           "errorCode": "Code erreur",
-          "empty": "Aucun log d'utilisation ne correspond aux filtres.",
+          "empty": "Aucun log d’utilisation ne correspond aux filtres.",
           "durationValue": "{{value}} ms"
         },
         "drawer": {
-          "title": "Details du log d'utilisation",
+          "title": "Détails du log d’utilisation",
           "sections": {
-            "requestMetadata": "Metadonnees requete",
-            "securityContext": "Contexte securite",
+            "requestMetadata": "Métadonnées de requête",
+            "securityContext": "Contexte de sécurité",
             "timing": "Timing"
           },
           "endpointCode": "Code endpoint",
           "apiUser": "Utilisateur API",
-          "apiKeyPrefix": "Prefixe cle API",
+          "apiKeyPrefix": "Préfixe de clé API",
           "environment": "Environnement",
-          "hotel": "Hotel",
+          "hotel": "Hôtel",
           "requestId": "Request ID",
-          "reservationCode": "Code reservation",
+          "reservationCode": "Code réservation",
           "statusCode": "Code statut",
-          "result": "Resultat",
+          "result": "Résultat",
           "errorCode": "Code erreur",
-          "durationMs": "Duree",
+          "durationMs": "Durée",
           "ipAddress": "Adresse IP",
           "source": "Source",
-          "createdAt": "Cree le",
-          "requestJson": "JSON requete sanitise",
-          "responseJson": "JSON reponse sanitise",
-          "openInPlayground": "Ouvrir dans le Playground"
+          "createdAt": "Créé le",
+          "requestJson": "JSON de requête nettoyé",
+          "responseJson": "JSON de réponse nettoyé",
+          "openInPlayground": "Ouvrir dans le playground"
         }
       },
       "overview": {
         "header": {
-          "eyebrow": "Integration Hub",
-          "title": "Vue operationnelle des reservation quotes.",
-          "subtitle": "Suivez le trafic quote V1, la sante endpoint, les alertes et l'usage recent sans exposer les secrets."
+          "eyebrow": "Hub d’intégration",
+          "title": "Vue opérationnelle de l’API de quotation.",
+          "subtitle": "Suivez le trafic de quotation V1, la santé des endpoints, les alertes et l’usage récent sans exposer les secrets."
         },
         "metrics": {
-          "requestsToday": "Requetes aujourd'hui",
-          "successRate": "Taux de succes",
-          "averageDuration": "Duree moyenne",
-          "failedQuotes": "Quotes echoues",
-          "rateLimited": "Rate limits",
+          "requestsToday": "Requêtes aujourd’hui",
+          "successRate": "Taux de succès",
+          "averageDuration": "Durée moyenne",
+          "failedQuotes": "Quotations échouées",
+          "rateLimited": "Limites atteintes",
           "activeUsers": "Utilisateurs API actifs",
-          "activeKeys": "Cles API actives",
+          "activeKeys": "Clés API actives",
           "endpointStatus": "Statut endpoint"
         },
         "alerts": {
           "eyebrow": "Alertes",
-          "title": "Alertes integration",
-          "description": "Signaux operationnels calcules depuis les cles, l'etat endpoint et les logs du jour.",
-          "empty": "Aucune alerte integration pour le moment."
+          "title": "Alertes d’intégration",
+          "description": "Signaux opérationnels calculés depuis les clés, l’état des endpoints et les logs du jour.",
+          "empty": "Aucune alerte d’intégration pour le moment."
         },
         "health": {
-          "eyebrow": "Sante endpoint",
+          "eyebrow": "Santé endpoint",
           "title": "reservations.quote",
-          "description": "Statut, taux de succes, duree, rate limits et derniers appels.",
+          "description": "Statut, taux de succès, durée, limites de débit et derniers appels.",
           "endpoint": "Endpoint",
           "status": "Statut",
-          "successRate": "Taux de succes",
-          "averageDuration": "Duree moyenne",
-          "rateLimitHits": "Rate limits",
+          "successRate": "Taux de succès",
+          "averageDuration": "Durée moyenne",
+          "rateLimitHits": "Limites atteintes",
           "rateLimit": "Limite / min",
-          "lastSuccess": "Dernier succes",
-          "lastFailure": "Dernier echec"
+          "lastSuccess": "Dernier succès",
+          "lastFailure": "Dernier échec"
         },
         "errors": {
-          "eyebrow": "Top erreurs",
+          "eyebrow": "Erreurs principales",
           "title": "Codes erreur du jour",
-          "description": "Codes erreur stables les plus frequents aujourd'hui.",
-          "empty": "Aucune erreur enregistree aujourd'hui."
+          "description": "Codes erreur stables les plus fréquents aujourd’hui.",
+          "empty": "Aucune erreur enregistrée aujourd’hui."
         },
-        "lastSuccess": "Dernier quote reussi",
-        "lastFailure": "Dernier quote echoue",
+        "lastSuccess": "Dernière quotation réussie",
+        "lastFailure": "Dernière quotation échouée",
         "quote": {
-          "eyebrow": "Quote",
+          "eyebrow": "Quotation",
           "requestId": "Request ID",
           "http": "HTTP",
-          "created": "Cree le",
+          "created": "Créé le",
           "error": "Erreur"
         },
         "recent": {
-          "eyebrow": "Usage recent",
+          "eyebrow": "Usage récent",
           "title": "10 derniers logs",
-          "description": "Derniere activite quote depuis l'API publique et le playground."
+          "description": "Dernière activité de quotation depuis l’API publique et le playground."
         }
       },
       "docs": {
-        "copied": "Copie",
+        "copied": "Copié",
         "header": {
-          "eyebrow": "Docs developpeur",
-          "title": "API reservation quote V1.",
-          "subtitle": "Le seul endpoint public business actuellement supporte par l'Integration Hub."
+          "eyebrow": "Documentation API",
+          "title": "API de quotation V1.",
+          "subtitle": "Le seul endpoint métier public actuellement supporté par le hub d’intégration."
         },
         "endpoint": {
           "eyebrow": "Endpoint",
@@ -733,26 +764,26 @@
         },
         "purpose": {
           "eyebrow": "Contrat",
-          "title": "Role de cet endpoint"
+          "title": "Rôle de cet endpoint"
         },
         "notes": {
-          "purpose": "POST /api/v1/reservations/quote retourne un devis base sur les contrats pour une seule demande room-stay.",
-          "noReservation": "/quote ne cree ni reservation, ni blocage inventaire, ni proforma, ni booking.",
-          "oneRoomStay": "Chaque requete represente une reservation room-stay. Envoyez des requetes separees pour plusieurs chambres.",
-          "reservationDate": "reservationDate est la date de booking utilisee par les regles early booking et release days.",
-          "currency": "Si la devise contrat differe de la devise demandee, Pricify utilise les taux configures et retourne un warning.",
-          "zeroTax": "Les taxes ne sont pas configurees en V1; taxAmount vaut 0 et pricing.taxes est vide.",
-          "traceability": "requestId est renvoye dans les reponses succes/echec et visible dans les logs admin.",
+          "purpose": "POST /api/v1/reservations/quote retourne une quotation basée sur les contrats pour une demande de séjour en chambre.",
+          "noReservation": "/quote ne crée ni réservation, ni blocage d’inventaire, ni facture, ni booking.",
+          "oneRoomStay": "Chaque requête représente une demande de séjour en chambre. Envoyez des requêtes séparées pour plusieurs chambres.",
+          "reservationDate": "reservationDate est la date de réservation utilisée par les règles early booking et release days.",
+          "currency": "Si la devise du contrat diffère de la devise demandée, Pricify utilise les taux configurés et retourne un avertissement.",
+          "zeroTax": "Les taxes ne sont pas configurées en V1 ; taxAmount vaut 0 et pricing.taxes est vide.",
+          "traceability": "requestId est renvoyé dans les réponses de succès ou d’échec et visible dans les logs admin.",
           "versioning": "/api/v1 est stable. Tout changement incompatible passera par une future version API.",
-          "rateLimit": "Un depassement de limite retourne RATE_LIMIT_EXCEEDED avec HTTP 429 et est logge."
+          "rateLimit": "Un dépassement de limite retourne RATE_LIMIT_EXCEEDED avec HTTP 429 et est journalisé."
         },
         "blocks": {
-          "endpoint": "URL endpoint",
-          "headers": "Headers requis",
+          "endpoint": "URL de l’endpoint",
+          "headers": "En-têtes requis",
           "curl": "Exemple curl",
-          "request": "JSON requete",
-          "success": "JSON succes",
-          "failure": "JSON echec",
+          "request": "JSON de requête",
+          "success": "JSON de succès",
+          "failure": "JSON d’échec",
           "versionEyebrow": "V1"
         },
         "errors": {
@@ -762,31 +793,31 @@
           "meaning": "Signification"
         },
         "errorMeanings": {
-          "INVALID_API_KEY": "Cle API absente, mal formee, invalide, revoquee ou expiree.",
-          "API_USER_INACTIVE": "L'utilisateur API lie a la cle est inactif.",
-          "PERMISSION_DENIED": "L'utilisateur API n'a pas la permission reservation quote.",
-          "IP_NOT_ALLOWED": "L'IP source ne correspond pas a l'allowlist de la cle.",
-          "RATE_LIMIT_EXCEEDED": "La cle a depasse le rate limit endpoint.",
-          "ENDPOINT_DISABLED": "L'endpoint quote predefini est inactif.",
-          "INVALID_PAYLOAD": "Le body de requete est invalide.",
-          "HOTEL_NOT_ALLOWED": "L'utilisateur API ou le contexte admin n'a pas acces a l'hotel.",
-          "HOTEL_NOT_FOUND": "Aucun hotel ne correspond a hotelCode.",
-          "PARTNER_NOT_FOUND": "Aucun partenaire ne correspond a partnerCode pour l'hotel.",
-          "ROOM_TYPE_NOT_FOUND": "Aucun type de chambre ne correspond a roomTypeCode.",
+          "INVALID_API_KEY": "Clé API absente, mal formée, invalide, révoquée ou expirée.",
+          "API_USER_INACTIVE": "L’utilisateur API lié à la clé est inactif.",
+          "PERMISSION_DENIED": "L’utilisateur API n’a pas la permission d’utiliser l’API de quotation.",
+          "IP_NOT_ALLOWED": "L’IP source ne correspond pas à l’allowlist de la clé.",
+          "RATE_LIMIT_EXCEEDED": "La clé a dépassé la limite de débit de l’endpoint.",
+          "ENDPOINT_DISABLED": "L’endpoint de quotation prédéfini est inactif.",
+          "INVALID_PAYLOAD": "Le corps de requête est invalide.",
+          "HOTEL_NOT_ALLOWED": "L’utilisateur API ou le contexte admin n’a pas accès à l’hôtel.",
+          "HOTEL_NOT_FOUND": "Aucun hôtel ne correspond à hotelCode.",
+          "PARTNER_NOT_FOUND": "Aucun partenaire ne correspond à partnerCode pour l’hôtel.",
+          "ROOM_TYPE_NOT_FOUND": "Aucun type de chambre ne correspond à roomTypeCode.",
           "BOARD_NOT_FOUND": "Aucune pension ou arrangement ne correspond a boardCode.",
           "NO_ACTIVE_CONTRACT": "Aucun contrat actif ne couvre la demande.",
-          "MISSING_RATE": "Une ligne de tarif ou disponibilite requise est absente.",
-          "MIN_STAY_NOT_SATISFIED": "Le sejour viole les regles minimum stay.",
+          "MISSING_RATE": "Une ligne de tarif ou de disponibilité requise est absente.",
+          "MIN_STAY_NOT_SATISFIED": "Le séjour ne respecte pas les règles de minimum stay.",
           "RELEASE_DAYS_NOT_SATISFIED": "reservationDate viole le lead time release days.",
-          "CURRENCY_CONVERSION_MISSING": "Aucun taux de change n'est configure pour la devise demandee.",
+          "CURRENCY_CONVERSION_MISSING": "Aucun taux de change n’est configuré pour la devise demandée.",
           "INTERNAL_ERROR": "Erreur serveur inattendue."
         }
       },
       "playground": {
         "header": {
           "eyebrow": "Console de test",
-          "title": "Lancez des reservation quotes sans exposer de cles API.",
-          "subtitle": "Utilisez la meme forme de requete V1 en mode formulaire ou JSON, inspectez la reponse publique et consultez une trace d'execution legere.",
+          "title": "Lancez des quotations de test sans exposer de clés API.",
+          "subtitle": "Utilisez le même format de requête V1 en mode formulaire ou JSON, inspectez la réponse publique et consultez une trace d’exécution légère.",
           "badge": "POST /api/v1/reservations/quote"
         },
         "modes": {
@@ -794,99 +825,99 @@
           "json": "Mode JSON"
         },
         "editor": {
-          "eyebrow": "Construction de requete",
-          "title": "Composer une requete reservation quote",
-          "description": "Choisissez un contexte hotel, renseignez les donnees de sejour, ou collez un payload JSON brut pour l'endpoint existant.",
-          "helper": "Le playground admin reutilise le chemin de calcul existant et n'envoie jamais de cle API brute depuis le navigateur."
+          "eyebrow": "Construction de requête",
+          "title": "Composer une requête de quotation",
+          "description": "Choisissez un contexte hôtel, renseignez les données de séjour ou collez un payload JSON brut pour l’endpoint existant.",
+          "helper": "Le playground admin réutilise le chemin de calcul existant et n’envoie jamais de clé API brute depuis le navigateur."
         },
         "fields": {
-          "hotel": "Hotel",
-          "hotelCode": "Code hotel",
+          "hotel": "Hôtel",
+          "hotelCode": "Code hôtel",
           "requestId": "Request ID",
           "partner": "Partenaire",
-          "reservationDate": "Date de reservation",
-          "checkIn": "Check-in",
-          "checkOut": "Check-out",
+          "reservationDate": "Date de réservation",
+          "checkIn": "Arrivée",
+          "checkOut": "Départ",
           "currency": "Devise",
           "roomType": "Type de chambre",
           "board": "Pension / arrangement",
           "adults": "Adultes",
-          "childrenAges": "Ages enfants"
+          "childrenAges": "Âges des enfants"
         },
         "placeholders": {
-          "selectHotel": "Selectionner un hotel",
-          "selectPartner": "Selectionner un partenaire",
-          "selectRoomType": "Selectionner un type de chambre",
-          "selectBoard": "Selectionner un arrangement"
+          "selectHotel": "Sélectionner un hôtel",
+          "selectPartner": "Sélectionner un partenaire",
+          "selectRoomType": "Sélectionner un type de chambre",
+          "selectBoard": "Sélectionner un arrangement"
         },
         "children": {
-          "description": "Ajoutez des ages uniquement si le sejour comprend des enfants. Laissez la liste vide pour une reservation adultes uniquement.",
-          "empty": "Aucun age enfant ajoute pour cette reservation."
+          "description": "Ajoutez des âges uniquement si le séjour comprend des enfants. Laissez la liste vide pour une réservation adultes uniquement.",
+          "empty": "Aucun âge enfant ajouté pour cette réservation."
         },
         "actions": {
-          "runQuote": "Lancer le quote",
-          "runningQuote": "Execution du quote...",
-          "addChildAge": "Ajouter un age enfant",
-          "removeChildAge": "Retirer l'age enfant",
-          "copyRequest": "Copier le JSON requete",
-          "copyResponse": "Copier le JSON reponse"
+          "runQuote": "Lancer la quotation",
+          "runningQuote": "Exécution de la quotation...",
+          "addChildAge": "Ajouter un âge enfant",
+          "removeChildAge": "Retirer l’âge enfant",
+          "copyRequest": "Copier le JSON de requête",
+          "copyResponse": "Copier le JSON de réponse"
         },
         "json": {
-          "invalid": "Le payload JSON est invalide. Corrigez la syntaxe avant d'envoyer la requete.",
-          "editorLabel": "JSON de requete du reservation quote"
+          "invalid": "Le payload JSON est invalide. Corrigez la syntaxe avant d’envoyer la requête.",
+          "editorLabel": "JSON de requête de quotation"
         },
         "response": {
           "eyebrow": "Reponse",
-          "title": "Sortie du quote",
-          "description": "Consultez le payload de reponse exact renvoye par le chemin partage de calcul du quote.",
-          "empty": "Lancez un quote pour inspecter le corps de reponse.",
-          "loading": "Execution du chemin partage du quote...",
-          "success": "Succes",
-          "failure": "Echec",
+          "title": "Résultat de quotation",
+          "description": "Consultez le payload de réponse exact renvoyé par le chemin partagé de calcul de quotation.",
+          "empty": "Lancez une quotation pour inspecter le corps de réponse.",
+          "loading": "Exécution du chemin partagé de quotation...",
+          "success": "Succès",
+          "failure": "Échec",
           "httpStatus": "HTTP {{value}}",
-          "summaryGrandTotal": "Total general",
+          "summaryGrandTotal": "Total général",
           "summaryBeforeTax": "Total avant taxe",
           "summaryNights": "Nuits",
-          "warnings": "Warnings",
-          "noWarnings": "Aucun warning n'a ete renvoye."
+          "warnings": "Avertissements",
+          "noWarnings": "Aucun avertissement n’a été renvoyé."
         },
         "trace": {
           "eyebrow": "Trace / Logs",
-          "title": "Metadonnees d'execution",
-          "description": "Donnees de trace legeres capturees avec la reponse du quote.",
-          "empty": "Les metadonnees d'execution apparaitront ici apres un lancement.",
+          "title": "Métadonnées d’exécution",
+          "description": "Données de trace légères capturées avec la réponse de quotation.",
+          "empty": "Les métadonnées d’exécution apparaîtront ici après un lancement.",
           "requestId": "Request ID",
-          "durationMs": "Duree (ms)",
+          "durationMs": "Durée (ms)",
           "endpointCode": "Code endpoint",
           "source": "Source du log",
-          "apiContext": "Contexte utilisateur / cle API",
-          "apiContextValue": "Playground admin (sans cle API)",
+          "apiContext": "Contexte utilisateur / clé API",
+          "apiContextValue": "Playground admin (sans clé API)",
           "errorCode": "Code erreur",
           "notApplicable": "Non applicable"
         },
         "validation": {
-          "hotelRequired": "Selectionnez un hotel avant de lancer le quote.",
+          "hotelRequired": "Sélectionnez un hôtel avant de lancer la quotation.",
           "requestIdRequired": "Le Request ID est requis.",
-          "hotelCodeRequired": "Le code hotel est requis.",
+          "hotelCodeRequired": "Le code hôtel est requis.",
           "partnerRequired": "Le partenaire est requis.",
-          "reservationDateRequired": "La date de reservation est requise.",
-          "reservationDateInvalid": "La date de reservation doit etre une date ISO valide.",
-          "checkInRequired": "Le check-in est requis.",
-          "checkInInvalid": "Le check-in doit etre une date ISO valide.",
-          "checkOutRequired": "Le check-out est requis.",
-          "checkOutInvalid": "Le check-out doit etre une date ISO valide.",
-          "checkOutAfterCheckIn": "Le check-out doit etre apres le check-in.",
+          "reservationDateRequired": "La date de réservation est requise.",
+          "reservationDateInvalid": "La date de réservation doit être une date ISO valide.",
+          "checkInRequired": "La date d’arrivée est requise.",
+          "checkInInvalid": "La date d’arrivée doit être une date ISO valide.",
+          "checkOutRequired": "La date de départ est requise.",
+          "checkOutInvalid": "La date de départ doit être une date ISO valide.",
+          "checkOutAfterCheckIn": "La date de départ doit être postérieure à la date d’arrivée.",
           "currencyRequired": "La devise est requise.",
-          "currencyInvalid": "La devise doit etre un code ISO a 3 lettres.",
+          "currencyInvalid": "La devise doit être un code ISO à 3 lettres.",
           "roomTypeRequired": "Le type de chambre est requis.",
           "boardRequired": "La pension / arrangement est requise.",
           "adultsInvalid": "Le nombre d'adultes doit etre au moins 1.",
-          "childrenAgesInvalid": "Les ages enfants doivent etre superieurs ou egaux a zero."
+          "childrenAgesInvalid": "Les âges des enfants doivent être supérieurs ou égaux à zéro."
         },
         "toasts": {
-          "requestCopied": "JSON requete copie",
-          "responseCopied": "JSON reponse copie",
-          "copyFailed": "La copie a echoue. Selectionnez le JSON manuellement."
+          "requestCopied": "JSON de requête copié",
+          "responseCopied": "JSON de réponse copié",
+          "copyFailed": "La copie a échoué. Sélectionnez le JSON manuellement."
         }
       }
     },
@@ -931,22 +962,152 @@
     },
     "affiliates": {
       "table": {
-        "actions": "Actions"
+        "actions": "Actions",
+        "updatedBy": "Mis à jour par"
       },
       "contractsModal": {
         "title": "Contrats de {{name}}",
-        "empty": "Aucun contrat associe a ce partenaire pour le moment.",
+        "empty": "Aucun contrat n’est encore associé à ce partenaire.",
         "table": {
           "name": "Nom",
           "dates": "Dates",
           "status": "Statut"
         },
         "status": {
-          "terminated": "Resilie",
+          "terminated": "Résilié",
           "draft": "Brouillon",
-          "expired": "Expire",
+          "expired": "Expiré",
           "active": "Actif",
-          "upcoming": "A venir"
+          "upcoming": "À venir"
+        }
+      },
+      "header": {
+        "kicker": "Partenaires commerciaux",
+        "title": "Partenaires commerciaux",
+        "subtitle": "Gérez les partenaires commerciaux et les informations des tour-opérateurs.",
+        "newPartner": "Ajouter un partenaire"
+      },
+      "confirmArchive": {
+        "title": "Archiver le partenaire \"{{name}}\" ?",
+        "description": "Ce partenaire sera archivé et masqué de la liste des partenaires actifs.",
+        "confirmLabel": "Archiver"
+      },
+      "confirmRestore": {
+        "title": "Restaurer le partenaire \"{{name}}\" ?",
+        "description": "Ce partenaire redeviendra actif.",
+        "confirmLabel": "Restaurer"
+      },
+      "archived": {
+        "toggle": "Partenaires archivés {{count}}",
+        "restore": "Restaurer",
+        "empty": "Aucun partenaire archivé"
+      },
+      "modal": {
+        "createTitle": "Ajouter un partenaire",
+        "editTitle": "Modifier {{name}}",
+        "addEmail": "Ajouter un e-mail",
+        "cancel": "Annuler",
+        "create": "Ajouter le partenaire",
+        "save": "Enregistrer",
+        "saving": "Enregistrement..."
+      },
+      "state": {
+        "loadError": "Impossible de charger les partenaires.",
+        "emptyTitle": "Aucun partenaire trouvé",
+        "emptySubtitle": "Ajoutez un partenaire pour commencer."
+      },
+      "emailSpo": {
+        "status": {
+          "active": "Actif",
+          "inactive": "Inactif"
+        },
+        "stackMode": {
+          "rolling": "Glissant",
+          "cumulative": "Cumulatif"
+        },
+        "applicationStep": {
+          "afterBaseRate": "Après le tarif de base",
+          "afterBoardSupplement": "Après le supplément de pension",
+          "afterSupplement": "Après les suppléments",
+          "afterReduction": "Après les réductions",
+          "afterMonoparental": "Après la règle monoparentale",
+          "afterEarlyBooking": "Après l’early booking",
+          "afterContractSpo": "Après la SPO du contrat"
+        },
+        "modal": {
+          "createTitle": "Créer un Email SPO",
+          "editTitle": "Modifier l’Email SPO",
+          "createHelper": "Créez un Email SPO temporaire pour {{partner}} sans modifier le contrat signé.",
+          "editHelper": "Mettez à jour l’Email SPO temporaire de {{partner}} et gardez les règles du simulateur cohérentes.",
+          "editingPeriod": "Période actuelle : {{period}}"
+        },
+        "actions": {
+          "create": "Créer un Email SPO",
+          "saveChanges": "Enregistrer",
+          "saving": "Enregistrement...",
+          "deleting": "Suppression...",
+          "disable": "Désactiver",
+          "activate": "Activer",
+          "editItem": "Modifier l’Email SPO {{name}}",
+          "disableItem": "Désactiver l’Email SPO {{name}}",
+          "activateItem": "Activer l’Email SPO {{name}}",
+          "deleteItem": "Supprimer l’Email SPO {{name}}",
+          "selectVisiblePartners": "Sélectionner les visibles",
+          "clearVisiblePartners": "Effacer les visibles"
+        },
+        "fields": {
+          "targetPartners": "Partenaires ciblés",
+          "targetPartnersHelper": "{{count}} sélectionné(s)",
+          "noPartnersSelected": "Aucun partenaire sélectionné",
+          "searchPartners": "Rechercher des partenaires",
+          "name": "Nom",
+          "discountPercent": "Taux de réduction (%)",
+          "status": "Statut",
+          "applicationFrom": "Application du",
+          "applicationTo": "Application au",
+          "stackMode": "Mode de cumul",
+          "applicationStep": "Position de calcul",
+          "note": "Note",
+          "currentPartner": "Actuel"
+        },
+        "errors": {
+          "selectPartners": "Sélectionnez au moins un partenaire.",
+          "create": "Impossible de créer l’Email SPO pour le moment.",
+          "update": "Impossible de mettre à jour l’Email SPO pour le moment."
+        },
+        "confirm": {
+          "disableTitle": "Désactiver \"{{name}}\" ?",
+          "disableDescription": "Cet Email SPO ne s’appliquera plus dans les simulations.",
+          "activateTitle": "Activer \"{{name}}\" ?",
+          "activateDescription": "Cet Email SPO pourra de nouveau s’appliquer dans les simulations.",
+          "deleteTitle": "Supprimer \"{{name}}\" ?",
+          "deleteDescription": "Cet Email SPO sera supprimé définitivement."
+        },
+        "manager": {
+          "title": "Email SPO du partenaire",
+          "heading": "Offres temporaires du partenaire",
+          "helper": "Configurez des Email SPO temporaires applicables dans le simulateur pour ce partenaire, sans modifier le contrat signé.",
+          "count": "{{count}} Email SPO configuré(s)"
+        },
+        "state": {
+          "loading": "Chargement des Email SPO...",
+          "error": "Impossible de charger les Email SPO.",
+          "emptyTitle": "Aucun Email SPO n’est encore configuré pour ce partenaire.",
+          "emptyDescription": "Créez un Email SPO temporaire pour une période de séjour précise."
+        },
+        "card": {
+          "label": "Email SPO",
+          "discount": "Réduction",
+          "period": "Période d’application",
+          "position": "Position de calcul",
+          "updated": "Mis à jour"
+        },
+        "toast": {
+          "create": "Email SPO créé",
+          "bulkCreate": "{{count}} Email SPO créé(s)",
+          "bulkSkipped": "{{count}} partenaire(s) ignoré(s), car un Email SPO actif chevauche déjà cette période.",
+          "update": "Email SPO mis à jour",
+          "delete": "Email SPO supprimé"
         }
       }
     },
@@ -998,544 +1159,435 @@
     "catalog": {
       "cancellation": {
         "header": {
-          "title": "Catalogue annulations",
-          "subtitle": "Gerez les politiques d'annulation (templates)",
-          "searchPlaceholder": "Rechercher une politique..."
+          "title": "Modèles de conditions d’annulation",
+          "subtitle": "Gérez les modèles de conditions d’annulation.",
+          "searchPlaceholder": "Rechercher une condition d’annulation...",
+          "kicker": "Conditions d’annulation",
+          "totalLabel": "modèles",
+          "new": "Ajouter un modèle de condition d’annulation"
         },
         "states": {
-          "loadError": "Impossible de charger le catalogue d'annulations."
+          "loadError": "Impossible de charger les modèles de conditions d’annulation.",
+          "empty": "Aucun modèle de condition d’annulation trouvé"
+        },
+        "table": {
+          "updatedBy": "Mis à jour par",
+          "actions": "Actions"
+        },
+        "archived": {
+          "toggle": "Modèles de conditions d’annulation archivés {{count}}",
+          "restore": "Restaurer",
+          "empty": "Aucun modèle de condition d’annulation archivé"
+        },
+        "confirmArchive": {
+          "title": "Archiver le modèle de condition d’annulation \"{{name}}\" ?",
+          "description": "Ce modèle de condition d’annulation sera archivé et masqué du catalogue commercial.",
+          "confirmLabel": "Archiver"
+        },
+        "confirmRestore": {
+          "title": "Restaurer le modèle de condition d’annulation \"{{name}}\" ?",
+          "description": "Ce modèle de condition d’annulation sera de nouveau disponible dans le catalogue commercial.",
+          "confirmLabel": "Restaurer"
         }
       },
       "earlyBookings": {
         "header": {
-          "title": "Catalogue Early Booking",
-          "searchPlaceholder": "Rechercher un template..."
+          "title": "Modèles d’early booking",
+          "searchPlaceholder": "Rechercher un modèle d’early booking...",
+          "kicker": "Early booking",
+          "totalLabel": "modèles",
+          "new": "Ajouter un modèle d’early booking"
         },
         "states": {
-          "loadError": "Impossible de charger le catalogue Early Booking."
+          "loadError": "Impossible de charger les modèles d’early booking.",
+          "empty": "Aucun modèle d’early booking trouvé"
+        },
+        "table": {
+          "updatedBy": "Mis à jour par",
+          "actions": "Actions"
+        },
+        "archived": {
+          "toggle": "Modèles d’early booking archivés {{count}}",
+          "restore": "Restaurer",
+          "empty": "Aucun modèle d’early booking archivé"
+        },
+        "confirmArchive": {
+          "title": "Archiver le modèle d’early booking \"{{name}}\" ?",
+          "description": "Ce modèle d’early booking sera archivé et masqué du catalogue commercial.",
+          "confirmLabel": "Archiver"
+        },
+        "confirmRestore": {
+          "title": "Restaurer le modèle d’early booking \"{{name}}\" ?",
+          "description": "Ce modèle d’early booking sera de nouveau disponible dans le catalogue commercial.",
+          "confirmLabel": "Restaurer"
         }
       },
       "monoparental": {
         "header": {
-          "title": "Catalogue monoparental"
+          "title": "Modèles de règles monoparentales",
+          "kicker": "Règles monoparentales",
+          "searchPlaceholder": "Rechercher une règle monoparentale...",
+          "totalLabel": "modèles",
+          "new": "Ajouter un modèle de règle monoparentale"
+        },
+        "table": {
+          "updatedBy": "Mis à jour par",
+          "actions": "Actions"
+        },
+        "states": {
+          "loadError": "Impossible de charger les modèles de règles monoparentales.",
+          "empty": "Aucun modèle de règle monoparentale trouvé"
+        },
+        "archived": {
+          "toggle": "Modèles de règles monoparentales archivés {{count}}",
+          "restore": "Restaurer",
+          "empty": "Aucun modèle de règle monoparentale archivé"
+        },
+        "confirmArchive": {
+          "title": "Archiver le modèle de règle monoparentale \"{{name}}\" ?",
+          "description": "Ce modèle de règle monoparentale sera archivé et masqué du catalogue commercial.",
+          "confirmLabel": "Archiver"
+        },
+        "confirmRestore": {
+          "title": "Restaurer le modèle de règle monoparentale \"{{name}}\" ?",
+          "description": "Ce modèle de règle monoparentale sera de nouveau disponible dans le catalogue commercial.",
+          "confirmLabel": "Restaurer"
         }
       },
       "reductions": {
         "table": {
-          "actions": "Actions"
+          "actions": "Actions",
+          "updatedBy": "Mis à jour par"
+        },
+        "header": {
+          "kicker": "Réductions",
+          "title": "Modèles de réductions",
+          "searchPlaceholder": "Rechercher un modèle de réduction...",
+          "totalLabel": "modèles",
+          "new": "Ajouter un modèle de réduction"
+        },
+        "states": {
+          "loadError": "Impossible de charger les modèles de réductions.",
+          "empty": "Aucun modèle de réduction trouvé"
+        },
+        "archived": {
+          "toggle": "Modèles de réductions archivés {{count}}",
+          "restore": "Restaurer",
+          "empty": "Aucun modèle de réduction archivé"
+        },
+        "confirmArchive": {
+          "title": "Archiver le modèle de réduction \"{{name}}\" ?",
+          "description": "Ce modèle de réduction sera archivé et masqué du catalogue commercial.",
+          "confirmLabel": "Archiver"
+        },
+        "confirmRestore": {
+          "title": "Restaurer le modèle de réduction \"{{name}}\" ?",
+          "description": "Ce modèle de réduction sera de nouveau disponible dans le catalogue commercial.",
+          "confirmLabel": "Restaurer"
         }
       },
       "spo": {
         "header": {
-          "title": "Catalogue SPO",
-          "searchPlaceholder": "Rechercher une SPO..."
+          "title": "Modèles d’offres spéciales",
+          "searchPlaceholder": "Rechercher un modèle d’offre spéciale...",
+          "kicker": "Offres spéciales",
+          "totalLabel": "modèles",
+          "new": "Ajouter un modèle d’offre spéciale"
         },
         "states": {
-          "loadError": "Impossible de charger le catalogue SPO."
+          "loadError": "Impossible de charger les modèles d’offres spéciales.",
+          "empty": "Aucun modèle d’offre spéciale trouvé"
+        },
+        "table": {
+          "updatedBy": "Mis à jour par",
+          "actions": "Actions",
+          "rule": "Règle"
+        },
+        "archived": {
+          "toggle": "Modèles d’offres spéciales archivés {{count}}",
+          "restore": "Restaurer",
+          "empty": "Aucun modèle d’offre spéciale archivé"
+        },
+        "confirmArchive": {
+          "title": "Archiver le modèle d’offre spéciale \"{{name}}\" ?",
+          "description": "Ce modèle d’offre spéciale sera archivé et masqué du catalogue commercial.",
+          "confirmLabel": "Archiver"
+        },
+        "confirmRestore": {
+          "title": "Restaurer le modèle d’offre spéciale \"{{name}}\" ?",
+          "description": "Ce modèle d’offre spéciale sera de nouveau disponible pour l’importation.",
+          "confirmLabel": "Restaurer"
         }
       },
       "supplements": {
         "table": {
-          "actions": "Actions"
+          "actions": "Actions",
+          "updatedBy": "Mis à jour par"
+        },
+        "header": {
+          "kicker": "Suppléments",
+          "title": "Modèles de suppléments",
+          "searchPlaceholder": "Rechercher un modèle de supplément...",
+          "totalLabel": "modèles",
+          "new": "Ajouter un modèle de supplément"
+        },
+        "states": {
+          "loadError": "Impossible de charger les modèles de suppléments.",
+          "empty": "Aucun modèle de supplément trouvé",
+          "emptySearch": "Aucun modèle de supplément ne correspond à votre recherche."
+        },
+        "archived": {
+          "toggle": "Modèles de suppléments archivés {{count}}",
+          "restore": "Restaurer",
+          "empty": "Aucun modèle de supplément archivé"
+        },
+        "confirmArchive": {
+          "title": "Archiver le modèle de supplément \"{{name}}\" ?",
+          "description": "Ce modèle de supplément sera archivé et masqué du catalogue commercial.",
+          "confirmLabel": "Archiver"
+        },
+        "confirmRestore": {
+          "title": "Restaurer le modèle de supplément \"{{name}}\" ?",
+          "description": "Ce modèle de supplément sera de nouveau disponible dans le catalogue commercial.",
+          "confirmLabel": "Restaurer"
+        }
+      },
+      "labels": {
+        "type": {
+          "fixed": "Fixe",
+          "percentage": "Pourcentage",
+          "formula": "Formule",
+          "free": "Gratuit"
+        },
+        "application": {
+          "perNightPerPerson": "Par personne / nuit",
+          "perNightPerRoom": "Par chambre / nuit",
+          "flatRatePerStay": "Forfait / séjour"
+        },
+        "boolean": {
+          "yes": "Oui",
+          "no": "Non"
+        },
+        "event": "Événement",
+        "adultShort": "Ad",
+        "childShort": "Enf.",
+        "years": "ans",
+        "percentage": "Pourcentage",
+        "fixed": "Fixe",
+        "noValue": "-",
+        "pax": {
+          "firstChild": "1er enfant",
+          "secondChild": "2e enfant",
+          "thirdChild": "3e enfant",
+          "thirdAdult": "3e adulte"
+        },
+        "penalty": {
+          "nights": "Nuits",
+          "percentage": "Pourcentage",
+          "fixedAmount": "Montant fixe"
+        },
+        "spoCondition": {
+          "minNights": "Min. {{count}} nuits",
+          "earlyBird": "Réservé {{count}} j. à l’avance",
+          "longStay": "Long séjour (> {{count}} nuits)",
+          "age": "Âge min. {{count}} ans",
+          "honeymooner": "Voyage de noces",
+          "none": "Automatique"
+        },
+        "spoBenefit": {
+          "percentageDiscount": "{{value}} % de réduction",
+          "fixedDiscount": "{{value}} de réduction fixe",
+          "freeNights": "{{value}} nuit(s) offerte(s)",
+          "freeRoomUpgrade": "Surclassement chambre",
+          "freeBoardUpgrade": "Surclassement pension",
+          "kidsGoFree": "Enfants gratuits"
+        },
+        "baseRate": {
+          "single": "Single",
+          "double": "Double"
+        },
+        "surchargeBase": {
+          "single": "Chambre single",
+          "double": "Chambre double",
+          "halfSingle": "Demi-single",
+          "halfDouble": "Demi-double"
+        }
+      },
+      "modal": {
+        "common": {
+          "cancel": "Annuler",
+          "save": "Enregistrer",
+          "create": "Créer",
+          "update": "Mise à jour...",
+          "creating": "Création...",
+          "selectionNone": "Aucune sélection",
+          "catalogEmpty": "Le catalogue est vide",
+          "noSearchMatch": "Aucun élément ne correspond à votre recherche."
+        },
+        "supplements": {
+          "modal": {
+            "createTitle": "Ajouter un modèle de supplément",
+            "editTitle": "Modifier {{name}}",
+            "create": "Créer le modèle de supplément",
+            "mandatoryDefault": "Supplément obligatoire par défaut",
+            "contractAdjustmentTip": "Les modèles de suppléments du catalogue sont réutilisables. Après import dans un contrat, leurs prix peuvent être ajustés par période.",
+            "defaultValue": "Valeur par défaut",
+            "eventDate": "Date de l’événement",
+            "eventDateHint": "Si elle est renseignée, ce supplément sera disponible uniquement pour les contrats couvrant cette date précise."
+          },
+          "import": {
+            "noneAvailable": "Aucun supplément disponible pour les dates du contrat",
+            "configureFirst": "Configurez d’abord vos modèles de suppléments dans le catalogue commercial.",
+            "selected": "{{count}} supplément(s) sélectionné(s)"
+          }
+        },
+        "reductions": {
+          "modal": {
+            "createTitle": "Ajouter un modèle de réduction",
+            "editTitle": "Modifier {{name}}",
+            "create": "Créer le modèle de réduction",
+            "engineTip": "Ces règles alimentent le moteur de calcul. Vérifiez que le comportement cible le bon type de client.",
+            "position": "Position",
+            "positionChild": "Enfant",
+            "positionAdult": "Adulte",
+            "positionHintChild": "Exemple : 1 pour le 1er enfant",
+            "positionHintAdult": "Exemple : 3 pour le 3e adulte",
+            "discountValue": "Valeur de la réduction"
+          },
+          "import": {
+            "noneAvailable": "Aucune réduction disponible",
+            "configureFirst": "Configurez d’abord vos modèles de réductions dans le catalogue commercial.",
+            "selected": "{{count}} réduction(s) sélectionnée(s)"
+          }
+        },
+        "spo": {
+          "modal": {
+            "createTitle": "Ajouter un modèle d’offre spéciale",
+            "editTitle": "Modifier {{name}}",
+            "create": "Créer le modèle d’offre spéciale",
+            "save": "Enregistrer",
+            "logic": "2. Logique de la règle (déclencheur et avantage)",
+            "percentage": "Pourcentage (%)",
+            "fixedDiscount": "Réduction fixe",
+            "freeNights": "Nuits gratuites"
+          }
+        },
+        "earlyBookings": {
+          "modal": {
+            "createTitle": "Ajouter un modèle d’early booking",
+            "editTitle": "Modifier {{name}}",
+            "create": "Créer le modèle d’early booking",
+            "save": "Enregistrer",
+            "value": "Valeur {{suffix}}",
+            "prepayment": "% prépaiement"
+          },
+          "import": {
+            "allImported": "Tous les modèles d’early booking ont déjà été importés",
+            "configureFirst": "Configurez d’abord vos modèles d’early booking dans le catalogue commercial.",
+            "selected": "{{count}} offre(s) sélectionnée(s)"
+          }
+        },
+        "cancellation": {
+          "modal": {
+            "createTitle": "Ajouter un modèle de condition d’annulation",
+            "editTitle": "Modifier {{name}}",
+            "create": "Créer le modèle de condition d’annulation",
+            "releaseWindow": "2. Fenêtre de désengagement"
+          }
+        },
+        "monoparental": {
+          "modal": {
+            "createTitle": "Ajouter un modèle de règle monoparentale",
+            "editTitle": "Modifier {{name}}",
+            "create": "Créer le modèle de règle",
+            "summary": "Si la chambre contient {{adults}} adulte(s) et {{children}} enfant(s) (de {{minAge}} à {{maxAge}} ans), le prix sera : base {{base}}",
+            "surcharge": "+ {{value}} % de {{base}}",
+            "defaultName": "1 adulte + 1 enfant",
+            "adultSingular": "adulte",
+            "adultPlural": "adultes",
+            "childSingular": "enfant",
+            "childPlural": "enfants"
+          },
+          "import": {
+            "noneAvailable": "Aucune règle monoparentale disponible",
+            "configureFirst": "Configurez d’abord vos modèles de règles monoparentales dans le catalogue commercial.",
+            "selected": "{{count}} règle(s) sélectionnée(s)",
+            "importedNotice": "{{count}} règle(s) déjà importée(s) restent disponibles pour une nouvelle affectation."
+          }
         }
       }
     },
     "adminOverview": {
       "header": {
-        "eyebrow": "Apercu organisation",
-        "title": "Gardez la couche business stable et prete.",
-        "subtitle": "Ce cockpit est concu pour piloter les sieges, la facturation, les permissions et la sante du portefeuille hotelier."
+        "eyebrow": "Vue admin",
+        "title": "Un poste de controle clair pour l organisation.",
+        "subtitle": "Suivez l essentiel du travail admin : acces, affectation des hotels, integrations et outils commerciaux.",
+        "loadingBadge": "Chargement de l espace",
+        "badge": "{{count}} sieges workspace"
       },
       "metrics": {
         "activeUsers": "Utilisateurs actifs",
-        "pendingInvites": "Invitations en attente",
-        "liveHotels": "Hotels actifs",
-        "adminSeats": "Sieges admin"
+        "activeUsersDetail": "{{count}} invitations en attente dans la file d acces.",
+        "adminSeats": "Sieges admin",
+        "adminSeatsDetail": "{{count}} utilisateurs commerciaux gerent la production.",
+        "hotels": "Hotels actifs",
+        "hotelsDetail": "{{count}} hotels sont affectes aux commerciaux.",
+        "coverage": "Couverture hotels",
+        "coverageDetail": "{{count}} hotels attendent encore un responsable."
       },
-      "billing": {
-        "eyebrow": "Controle facturation",
-        "title": "Posture renouvellement",
-        "nextInvoice": "Prochaine fenetre de facturation",
-        "invoiceHint": "Toutes les licences actuelles respectent les limites du plan.",
-        "highlights": {
-          "seatAllocation": "La repartition des sieges correspond a l'equipe actuelle.",
-          "hotelLaunches": "Deux nouveaux hotels sont prets pour l'onboarding.",
-          "noDisputes": "Aucun litige de facturation en cours sur ce cycle."
-        }
+      "errors": {
+        "loadFailed": "Certaines donnees de la vue admin ne peuvent pas etre chargees pour le moment."
       },
-      "team": {
-        "eyebrow": "Repartition equipe",
-        "title": "Modele operationnel actuel",
-        "totalUsers": "{{count}} utilisateurs au total",
-        "admins": {
-          "title": "Admins",
-          "subtitle": "Gouvernance, facturation et operations plateforme."
-        },
-        "commercials": {
-          "title": "Commerciaux",
-          "subtitle": "Utilisateurs production gerant produit, partenaires et contrats."
-        }
+      "health": {
+        "eyebrow": "Sante workspace",
+        "title": "Signaux operationnels cles",
+        "description": "Lecture rapide de la disponibilite des acces et de l affectation des hotels.",
+        "activation": "Activation des sieges",
+        "activationDetail": "{{active}} utilisateurs actifs sur {{total}}.",
+        "hotelCoverage": "Affectation hotels",
+        "hotelCoverageDetail": "{{assigned}} hotels couverts sur {{total}}.",
+        "adminPresence": "Presence admin",
+        "adminPresenceDetail": "{{admins}} sieges admin sur {{total}} utilisateurs."
       },
-      "priorities": {
-        "title": "Priorites immediates",
-        "items": {
-          "validateInvites": "Valider les invitations en attente avant le prochain batch d'onboarding.",
-          "reviewOwnership": "Revoir la propriete des hotels avant le prochain cycle contrat.",
-          "confirmContacts": "Confirmer les contacts facturation pour finance et operations."
-        }
-      }
-    },
-    "supervisor": {
-      "overview": {
-        "header": {
-          "eyebrow": "Vue d'ensemble / MRR",
-          "title": "Centre de commande plateforme pour revenu et sante tenants.",
-          "description": "Ce tableau reste au niveau plateforme: performance abonnement, statut organisation et signaux superviseur.",
-          "badge": "Surface superviseur zero-trust"
-        },
-        "metrics": {
-          "0": {
-            "label": "MRR plateforme",
-            "delta": "+8.1% mois sur mois",
-            "description": "Revenu recurrent sur tous les paliers d'abonnement actifs."
-          },
-          "1": {
-            "label": "Organisations actives",
-            "delta": "+3 ce trimestre",
-            "description": "Portefeuilles tenants actuellement factures sur la plateforme."
-          },
-          "2": {
-            "label": "File de suspension",
-            "delta": "Requiert revue",
-            "description": "Organisations signalees pour impaye ou intervention manuelle."
-          },
-          "3": {
-            "label": "Debit audit",
-            "delta": "Evenements sur 24h",
-            "description": "Evenements plateforme et facturation visibles superviseur captures aujourd'hui."
-          }
-        },
-        "cards": {
-          "mrrComposition": {
-            "eyebrow": "Composition MRR",
-            "title": "Repartition du revenu par plan",
-            "description": "Lecture macro de la concentration du revenu recurrent sur la plateforme.",
-            "ofMrr": "{{share}} du MRR plateforme",
-            "segments": {
-              "0": {
-                "name": "Enterprise",
-                "detail": "Portefeuilles multi-entites avec API et support premium."
-              },
-              "1": {
-                "name": "Pro",
-                "detail": "Tenants en croissance gerant plusieurs hotels sous une organisation."
-              },
-              "2": {
-                "name": "Free",
-                "detail": "Pool de conversion alimente par onboarding et campagnes d'usage."
-              }
-            }
-          },
-          "executivePulse": {
-            "eyebrow": "Pulse executif",
-            "title": "Flux de statut securise gouvernance",
-            "description": "Signaux utiles au superviseur sans exposition des contrats, chambres, catalogues ou simulateurs.",
-            "readinessLabel": "Preparation plateforme",
-            "readinessDescription": "Score composite sur facturation, retention audit, onboarding tenant et reprise incident.",
-            "items": {
-              "0": "Aucun superviseur n'a acces aux enregistrements contrats, simulateur, chambres, catalogue ou affilies.",
-              "1": "Les retries facturation se sont stabilises apres la derniere fenetre de replay webhook.",
-              "2": "La vitesse d'activation tenant reste au-dessus du plan trimestriel."
-            }
-          },
-          "subscriptionWatch": {
-            "eyebrow": "Suivi de facturation",
-            "title": "Suivi de facturation",
-            "description": "Suivez les paiements requis, les renouvellements et l'acces actif aux plans sur toute la plateforme."
-          }
-        }
+      "attention": {
+        "eyebrow": "File d attention",
+        "title": "A verifier en premier",
+        "description": "Petits controles de gouvernance avant l acceleration du travail commercial.",
+        "reviewTeam": "Verifier l equipe",
+        "pendingInvites": "{{count}} invitation en attente doit etre revue.",
+        "noPendingInvites": "Aucune invitation en attente dans l equipe.",
+        "unassignedHotels": "{{count}} hotel attend un responsable commercial.",
+        "allHotelsAssigned": "Chaque hotel actif a une couverture commerciale.",
+        "noAdmins": "Ajoutez au moins un siege admin pour la continuite de gouvernance.",
+        "adminCoverage": "{{count}} siege admin maintient la gouvernance disponible."
       },
-      "billingWatchlist": {
-        "loading": "Chargement du suivi de facturation...",
-        "error": "Impossible de charger le suivi de facturation.",
-        "empty": "Aucun abonnement pour le moment.",
-        "planPrefix": "Plan {{plan}}",
-        "columns": {
-          "organization": "Organisation",
-          "revenue": "Revenu",
-          "access": "Facturation / acces",
-          "period": "Periode",
-          "risk": "Risque / prochaine action",
-          "action": "Action"
+      "workAreas": {
+        "eyebrow": "Espaces admin",
+        "title": "Aller vers la bonne surface",
+        "description": "Carte compacte des pages utilisees par les admins pour piloter l organisation et l activite de production.",
+        "team": {
+          "title": "Acces equipe",
+          "description": "Invitez les utilisateurs, ajustez les roles et affectez les commerciaux aux hotels."
         },
-        "summary": {
-          "paymentRequired": "Paiement requis",
-          "activeAccess": "Acces actif",
-          "oneTimeAccess": "Acces one-time",
-          "recurring": "Recurrent"
+        "integrations": {
+          "title": "Integrations",
+          "description": "Gerez les utilisateurs API, les cles, les politiques d endpoints et les journaux de requetes."
         },
-        "billingType": {
-          "oneTime": "One-time",
-          "recurring": "Recurrent"
+        "hotels": {
+          "title": "Informations hotel",
+          "description": "Maintenez l identite, les contacts, les donnees legales et la marque de l hotel."
         },
-        "revenue": {
-          "oneTime": "One-time {{amount}}",
-          "mrr": "MRR {{amount}}",
-          "noRecurringMrr": "Pas de MRR recurrent",
-          "recurringDetail": "Abonnement recurrent"
+        "exchangeRates": {
+          "title": "Taux de change",
+          "description": "Controlez les paires de devises utilisees dans les apercus, exports et simulations."
         },
-        "access": {
-          "active": "Acces actif",
-          "paymentRequired": "Paiement requis",
-          "suspended": "Suspendu",
-          "activeDetail": "Droits actifs",
-          "paymentRequiredDetail": "Recouvrement facturation requis",
-          "suspendedDetail": "Acces desactive par la facturation"
+        "contracts": {
+          "title": "Contrats",
+          "description": "Revoyez les conditions commerciales, le cycle de vie et les points de preparation."
         },
-        "period": {
-          "renews": "Renouvelle le {{date}}",
-          "noRenewal": "Pas de renouvellement",
-          "unavailable": "Date de renouvellement indisponible",
-          "oneTimeDetail": "Acces a vie / paiement one-time",
-          "recurringDetail": "Periode de facturation recurrente",
-          "unavailableDetail": "La fin de periode Stripe n'est pas encore synchronisee"
-        },
-        "risk": {
-          "healthy": "Sain",
-          "stripePriceMissing": "Stripe Price ID manquant",
-          "planInactive": "Plan inactif",
-          "collectPayment": "Collecter le paiement",
-          "reviewAccess": "Revoir l'acces",
-          "tenantSuspended": "Tenant suspendu",
-          "noRenewalRequired": "Aucun renouvellement requis",
-          "healthyDetail": "Le renouvellement recurrent est suivi",
-          "stripePriceMissingDetail": "Ajoutez un Stripe Price ID avant la recuperation du paiement",
-          "planInactiveDetail": "Revoyez la configuration du plan avant recuperation",
-          "collectPaymentDetail": "Checkout manuel ou recuperation de paiement tenant",
-          "reviewAccessDetail": "L'acces facturation est suspendu",
-          "tenantSuspendedDetail": "La facturation peut etre active, mais l'acces plateforme est coupe",
-          "noRenewalDetail": "L'acces one-time est actif",
-          "renewalPendingDetail": "Actif, date de renouvellement en attente de synchronisation"
-        },
-        "actions": {
-          "viewTenant": "Voir tenant",
-          "reviewRecovery": "Revoir recuperation",
-          "openTenantTitle": "Ouvrir la gestion tenant pour {{organization}}"
-        }
-      },
-      "plans": {
-        "header": {
-          "eyebrow": "Plans SaaS et pricing",
-          "title": "Parametres plateforme superviseur pour plans, privileges et abonnements.",
-          "description": "Surface dediee a la gestion plateforme pour packager l'offre SaaS.",
-          "badge": "Parametres plateforme",
-          "publish": "Publier les changements de plan"
-        },
-        "metrics": {
-          "activePlans": {
-            "label": "Plans actifs",
-            "delta": "Free, Pro, Enterprise",
-            "description": "Packaging commercial actuellement propose sur la plateforme."
-          },
-          "planAttachRate": {
-            "label": "Taux d'adoption plan",
-            "delta": "Paliers payants",
-            "description": "Part des organisations actives sur des plans payants."
-          },
-          "privilegesUpdated": {
-            "label": "Privileges mis a jour",
-            "delta": "Ce trimestre",
-            "description": "Modifications de limites et droits publiees par les ops plateforme."
-          },
-          "expansionUpsell": {
-            "label": "Upsell expansion",
-            "delta": "MRR pipeline",
-            "description": "Revenu attendu des upgrades de plans deja en cours."
-          }
-        },
-        "cards": {
-          "planCatalog": {
-            "eyebrow": "Catalogue des plans",
-            "title": "Gamme des plans SaaS",
-            "description": "Les cartes resument le packaging client tandis que le formulaire pilote les privileges reels.",
-            "plans": {
-              "0": {
-                "name": "Free",
-                "summary": "Plan d'entree pour les nouvelles organisations validant l'adoption.",
-                "limits": {
-                  "0": "1 hotel",
-                  "1": "5 utilisateurs",
-                  "2": "Pas d'acces API",
-                  "3": "Support communautaire"
-                }
-              },
-              "1": {
-                "name": "Pro",
-                "summary": "Palier croissance avec gestion multi-etablissements et automatisation.",
-                "limits": {
-                  "0": "10 hotels",
-                  "1": "50 utilisateurs",
-                  "2": "Acces API",
-                  "3": "Support prioritaire"
-                }
-              },
-              "2": {
-                "name": "Enterprise",
-                "summary": "Scale illimite, controles gouvernance et onboarding premium.",
-                "limits": {
-                  "0": "Hotels illimites",
-                  "1": "Utilisateurs illimites",
-                  "2": "Debit API dedie",
-                  "3": "Success manager"
-                }
-              }
-            }
-          },
-          "privilegeMatrix": {
-            "eyebrow": "Matrice des privileges",
-            "title": "Limites et privileges par plan",
-            "description": "Ces lignes definissent ce que chaque palier d'abonnement peut debloquer sur la plateforme SaaS."
-          },
-          "settingsForm": {
-            "eyebrow": "Formulaire parametres plateforme",
-            "title": "Editeur de politique de plan",
-            "description": "Structure UI du workflow superviseur couvrant pricing, limites et privileges restreints."
-          },
-          "planPerformance": {
-            "eyebrow": "Performance des plans",
-            "title": "Vue readiness des plans",
-            "description": "Une vue centree plan sur la disponibilite checkout, le packaging actif et les offres avec acces API.",
-            "loading": "Chargement de la readiness des plans...",
-            "error": "Impossible de charger la readiness des plans.",
-            "empty": "Aucun plan disponible pour l'analyse readiness.",
-            "activePlans": "Plans actifs",
-            "activePlansDetail": "Packages publies disponibles pour assignation.",
-            "checkoutReady": "Checkout pret",
-            "checkoutReadyDetail": "Plans avec Stripe Price ID configure.",
-            "missingStripePrice": "Prix Stripe manquant",
-            "missingStripePriceDetail": "Plans qui ne peuvent pas lancer checkout avant configuration.",
-            "apiAccess": "Plans avec acces API",
-            "apiAccessDetail": "Plans incluant le droit d'integration."
-          },
-          "planBusinessInsights": {
-            "eyebrow": "Insights business",
-            "title": "Insights business des plans",
-            "description": "Visualisez quels plans SaaS génèrent le plus d’adoption, de MRR récurrent et de revenus ponctuels sur la plateforme.",
-            "loading": "Chargement des insights business des plans...",
-            "error": "Impossible de charger les insights business des plans.",
-            "kpis": {
-              "mostAdoptedPlan": {
-                "label": "Plan le plus adopté",
-                "detail": "Basé uniquement sur les abonnements ACTIVE."
-              },
-              "topRecurringRevenuePlan": {
-                "label": "Meilleur plan MRR",
-                "detail": "Somme le MRR récurrent actif par plan."
-              },
-              "topOneTimeRevenuePlan": {
-                "label": "Meilleur revenu ponctuel",
-                "detail": "Somme les revenus ponctuels actifs par plan."
-              },
-              "checkoutReadyPlans": {
-                "label": "Plans prêts checkout",
-                "detail": "Plans actifs avec un Stripe Price ID."
-              }
-            },
-            "charts": {
-              "adoption": {
-                "title": "Adoption des plans"
-              },
-              "revenue": {
-                "title": "Revenus par plan"
-              },
-              "score": {
-                "title": "Score business des plans",
-                "note": "Le score business est un indicateur interne simple basé sur l’adoption active, les revenus et la préparation du plan."
-              }
-            },
-            "labels": {
-              "activeTenant": "{{count}} tenant actif",
-              "activeTenants": "{{count}} tenants actifs",
-              "pastDueTenant": "{{count}} tenant en retard",
-              "pastDueTenants": "{{count}} tenants en retard",
-              "recurringMrr": "MRR récurrent",
-              "oneTimeRevenue": "Revenu ponctuel"
-            },
-            "empty": {
-              "noPlans": "Aucun plan disponible pour les insights business.",
-              "noActiveSubscriptions": "Aucun abonnement actif pour le moment",
-              "noRecurringMrr": "Aucun MRR récurrent pour le moment",
-              "noOneTimeRevenue": "Aucun revenu ponctuel pour le moment",
-              "noRevenue": "Aucun revenu actif récurrent ou ponctuel pour le moment",
-              "noScore": "Aucun score business de plan disponible pour le moment."
-            }
-          },
-          "planBenefitsMatrix": {
-            "eyebrow": "Avantages des plans",
-            "title": "Matrice des avantages des plans",
-            "description": "Comparez les limites, le modele de facturation, l'acces API, le support et la preparation au paiement des plans SaaS.",
-            "loading": "Chargement de la matrice des avantages...",
-            "error": "Impossible de charger les avantages des plans.",
-            "empty": "Aucun plan disponible pour comparer les avantages.",
-            "columns": {
-              "plan": "Plan",
-              "billing": "Facturation",
-              "capacity": "Capacite",
-              "apiAccess": "Acces API",
-              "support": "Support",
-              "features": "Fonctionnalites",
-              "checkoutReadiness": "Preparation checkout"
-            },
-            "labels": {
-              "active": "Actif",
-              "inactive": "Inactif",
-              "oneTime": "Paiement unique",
-              "recurring": "Abonnement",
-              "oneTimePrice": "{{price}} en paiement unique",
-              "monthlyPrice": "{{price}} / mois",
-              "hotelsLimit": "{{count}} hotels",
-              "usersLimit": "{{count}} utilisateurs",
-              "included": "Inclus",
-              "notIncluded": "Non inclus",
-              "featureCount": "{{count}} fonctionnalites",
-              "moreFeatures": "+{{count}} autres",
-              "noFeatures": "Aucune note de fonctionnalite",
-              "stripeMissing": "Prix Stripe manquant",
-              "checkoutReady": "Checkout pret"
-            }
-          }
-        }
-      },
-      "logs": {
-        "header": {
-          "eyebrow": "Logs systeme",
-          "title": "Flux audit et fiabilite plateforme pour superviseurs.",
-          "description": "Le superviseur peut inspecter les evenements plateforme, la facturation et la retention audit sans entrer dans un espace operationnel tenant.",
-          "badge": "Visibilite audit securisee"
-        },
-        "metrics": {
-          "criticalAlerts": {
-            "label": "Alertes critiques",
-            "delta": "Sur les 24 dernieres heures",
-            "description": "Evenements de type incident ouverts necessitant une attention plateforme."
-          },
-          "auditRetention": {
-            "label": "Retention audit",
-            "delta": "Couverture politique",
-            "description": "Part des evenements visibles superviseur conserves selon les objectifs de politique."
-          },
-          "replayJobs": {
-            "label": "Jobs replay",
-            "delta": "En file",
-            "description": "Taches de replay webhook et evenements en attente dans la file de reprise."
-          },
-          "storageHeadroom": {
-            "label": "Marge stockage",
-            "delta": "Disponible",
-            "description": "Capacite restante pour les logs centralises et sinks d'audit."
-          }
-        },
-        "cards": {
-          "liveEventStream": {
-            "eyebrow": "Flux d'evenements en direct",
-            "title": "Evenements plateforme recents",
-            "description": "Activite systeme visible superviseur organisee par severite et surface de controle.",
-            "events": {
-              "0": {
-                "scope": "Facturation",
-                "severity": "Avertissement",
-                "title": "Retry webhook facturation en file",
-                "detail": "Livraison Stripe invoice.updated retardee pour 2 organisations; replay planifie."
-              },
-              "1": {
-                "scope": "Tenants",
-                "severity": "Info",
-                "title": "Execution suspension tenant terminee",
-                "detail": "Deux organisations en retard passees en posture facturation restreinte sans exposition de donnees operationnelles."
-              },
-              "2": {
-                "scope": "Observabilite",
-                "severity": "Critique",
-                "title": "Seuil stockage sink audit atteint",
-                "detail": "La retention a purge des evenements debug basse priorite pour conserver les logs de conformite ecrits."
-              }
-            }
-          },
-          "auditTrail": {
-            "eyebrow": "Piste d'audit",
-            "title": "Historique configuration et enforcement",
-            "description": "Chronologie compacte des actions administratives superviseur.",
-            "columns": {
-              "actor": "Acteur",
-              "action": "Action",
-              "target": "Cible",
-              "timestamp": "Horodatage"
-            },
-            "rows": {
-              "0": {
-                "actor": "Console superviseur",
-                "severity": "Configuration",
-                "action": "Limites du plan Pro mises a jour",
-                "target": "Configuration du plan"
-              },
-              "1": {
-                "actor": "Daemon de facturation",
-                "severity": "Application",
-                "action": "Organisation en retard suspendue",
-                "target": "Blue Dune Collection"
-              },
-              "2": {
-                "actor": "Pipeline audit",
-                "severity": "Fiabilite",
-                "action": "Pression stockage recuperee",
-                "target": "Logs centralises"
-              }
-            }
-          }
-        },
-        "pagination": {
-          "range": "Affichage {{first}}-{{last}} sur {{total}}",
-          "page": "Page {{page}} sur {{totalPages}}",
-          "previous": "Precedent",
-          "next": "Suivant",
-          "noLogs": "Aucun log trouve"
-        }
-      },
-      "tenants": {
-        "header": {
-          "eyebrow": "Tenants / Organisations",
-          "title": "Vue portefeuille orientee facturation pour chaque organisation.",
-          "description": "Les superviseurs suivent le cycle de vie tenant et le risque de suspension sans ouvrir les espaces operationnels.",
-          "badge": "48 organisations"
-        },
-        "metrics": {
-          "activeOrganizations": {
-            "label": "Organisations actives",
-            "delta": "A l'echelle flotte",
-            "description": "Organisations actuellement actives sur la plateforme."
-          },
-          "regionsCovered": {
-            "label": "Regions couvertes",
-            "delta": "Empreinte globale",
-            "description": "Portee commerciale representee sur le portefeuille actuel."
-          },
-          "platformUsers": {
-            "label": "Utilisateurs plateforme",
-            "delta": "Sieges provisionnes",
-            "description": "Total des utilisateurs licences sur tous les abonnements tenants."
-          },
-          "watchlist": {
-            "label": "Watchlist",
-            "delta": "Revue facturation requise",
-            "description": "Organisations approchant une suspension ou action de downgrade."
-          }
-        },
-        "cards": {
-          "organizationRoster": {
-            "eyebrow": "Roster organisations",
-            "title": "Table de gestion tenant",
-            "description": "Utilisez cette table superviseur pour revoir allocation des plans, posture facturation et taille globale flotte."
-          }
+        "simulator": {
+          "title": "Simulateur",
+          "description": "Verifiez les prix de vente contractes avant usage operationnel."
         }
       }
     },
@@ -1544,68 +1596,68 @@
         "backToContracts": "Retour aux contrats"
       },
       "tabs": {
-        "general": "General",
+        "general": "Général",
         "ratesGrid": "Grille tarifaire",
-        "supplements": "Supplements",
-        "reductions": "Reductions",
+        "supplements": "Suppléments",
+        "reductions": "Réductions",
         "monoparental": "Monoparental",
         "earlyBookings": "Early Booking",
-        "spos": "Offres speciales",
+        "spos": "Offres spéciales",
         "cancellation": "Annulations"
       },
       "cancellation": {
-        "deleteTitle": "Supprimer la regle d'annulation ?",
+        "deleteTitle": "Supprimer la règle d'annulation ?",
         "deleteDescription": "La regle \"{{name}}\" sera supprimee definitivement de ce contrat.",
         "deleteConfirm": "Supprimer",
-        "loadError": "Impossible de charger les regles d'annulation.",
-        "title": "Regles d'annulation",
+        "loadError": "Impossible de charger les règles d'annulation.",
+        "title": "Règles d'annulation",
         "importFromCatalog": "Importer depuis le catalogue",
-        "emptyTitle": "Aucune regle d'annulation dans ce contrat",
+        "emptyTitle": "Aucune règle d'annulation dans ce contrat",
         "emptySubtitle": "Importez depuis le catalogue pour commencer"
       },
       "spos": {
-        "deleteTitle": "Supprimer l'offre speciale ?",
+        "deleteTitle": "Supprimer l'offre spéciale ?",
         "deleteDescription": "L'offre speciale \"{{name}}\" sera supprimee definitivement de ce contrat.",
         "deleteConfirm": "Supprimer",
-        "loadError": "Impossible de charger les offres speciales.",
-        "title": "Offres speciales (SPO)",
+        "loadError": "Impossible de charger les offres spéciales.",
+        "title": "Offres spéciales (SPO)",
         "importFromCatalog": "Importer depuis le catalogue",
-        "emptyTitle": "Aucune offre speciale dans ce contrat",
+        "emptyTitle": "Aucune offre spéciale dans ce contrat",
         "emptySubtitle": "Importez depuis le catalogue pour commencer"
       },
       "loadError": "Impossible de charger le contrat.",
       "earlyBookings": {
         "deleteTitle": "Supprimer l'Early Booking \"{{name}}\" ?",
-        "deleteDescription": "Cet Early Booking sera supprime definitivement de ce contrat.",
+        "deleteDescription": "Cet Early Booking sera supprimé définitivement de ce contrat.",
         "deleteConfirm": "Supprimer",
         "title": "Early Bookings",
         "importFromCatalog": "Importer depuis le catalogue",
-        "emptyTitle": "Aucun Early Booking configure",
-        "emptySubtitle": "Importez des offres depuis le catalogue hotelier pour les appliquer sur ce contrat."
+        "emptyTitle": "Aucun Early Booking configuré",
+        "emptySubtitle": "Importez des offres depuis le catalogue hôtelier pour les appliquer sur ce contrat."
       },
       "monoparental": {
-        "deleteTitle": "Supprimer la regle \"{{name}}\" ?",
-        "deleteDescription": "La regle sera supprimee definitivement de ce contrat.",
+        "deleteTitle": "Supprimer la règle \"{{name}}\" ?",
+        "deleteDescription": "La règle sera supprimée définitivement de ce contrat.",
         "deleteConfirm": "Supprimer",
-        "title": "Regles monoparentales",
+        "title": "Règles monoparentales",
         "importFromCatalog": "Importer depuis le catalogue",
-        "emptyTitle": "Aucune regle monoparentale",
+        "emptyTitle": "Aucune règle monoparentale",
         "emptySubtitle": "Importez depuis le catalogue pour commencer"
       },
       "reductions": {
-        "deleteTitle": "Supprimer la reduction \"{{name}}\" ?",
-        "deleteDescription": "La reduction sera supprimee definitivement de ce contrat.",
+        "deleteTitle": "Supprimer la réduction \"{{name}}\" ?",
+        "deleteDescription": "La réduction sera supprimée définitivement de ce contrat.",
         "deleteConfirm": "Supprimer",
-        "title": "Reductions",
+        "title": "Réductions",
         "importFromCatalog": "Importer depuis le catalogue",
-        "emptyTitle": "Aucune reduction dans ce contrat",
+        "emptyTitle": "Aucune réduction dans ce contrat",
         "emptySubtitle": "Importez depuis le catalogue pour commencer"
       },
       "supplements": {
-        "deleteTitle": "Supprimer le supplement \"{{name}}\" ?",
+        "deleteTitle": "Supprimer le supplément \"{{name}}\" ?",
         "deleteDescription": "Le supplement sera supprime definitivement de ce contrat.",
         "deleteConfirm": "Supprimer",
-        "title": "Supplements",
+        "title": "Suppléments",
         "importFromCatalog": "Importer depuis le catalogue",
         "emptyTitle": "Aucun supplement dans ce contrat",
         "emptySubtitle": "Importez depuis le catalogue pour commencer"
@@ -1751,7 +1803,6 @@
         "rate": "Taux",
         "meaning": "Signification",
         "effectiveDate": "Date d’effet",
-        "source": "Source",
         "updatedBy": "Mis à jour par",
         "actions": "Actions"
       },
@@ -1768,8 +1819,7 @@
         "fromCurrency": "Devise source",
         "toCurrency": "Devise cible",
         "rate": "Taux",
-        "effectiveDate": "Date d’effet",
-        "source": "Source"
+        "effectiveDate": "Date d’effet"
       },
       "toast": {
         "created": "Taux de change ajouté",
@@ -1778,17 +1828,12 @@
         "updateError": "Impossible de mettre à jour le taux de change",
         "deleted": "Taux de change supprimé",
         "deleteError": "Impossible de supprimer le taux de change"
-      },
-      "source": {
-        "manual": "Manuel",
-        "system": "Système",
-        "imported": "Importé"
       }
     },
     "profile": {
       "title": "Profil",
       "common": {
-        "notAssigned": "Non assign?",
+        "notAssigned": "Non assigné",
         "notAvailable": "Non disponible",
         "notAvailableYet": "Pas encore disponible",
         "loading": "Chargement..."
@@ -1797,146 +1842,122 @@
         "loadFailed": "Impossible de charger les informations du profil pour le moment."
       },
       "roles": {
-        "admin": "Administrateur avec acc?s aux utilisateurs, aux h?tels et ? l?organisation.",
-        "commercial": "Utilisateur commercial avec acc?s aux op?rations des h?tels assign?s.",
-        "agent": "Utilisateur op?rationnel centr? sur les outils de tarification.",
+        "admin": "Administrateur avec accès aux utilisateurs, aux hôtels et à l’organisation.",
+        "commercial": "Utilisateur commercial avec accès aux opérations des hôtels assignés.",
+        "agent": "Utilisateur opérationnel centré sur les outils de tarification.",
         "default": "Profil utilisateur."
       },
       "fields": {
         "email": "E-mail",
         "organization": "Organisation",
-        "assignedHotel": "H?tel assign?",
-        "joined": "Date d?arriv?e",
-        "firstName": "Pr?nom",
+        "assignedHotel": "Hôtel assigné",
+        "joined": "Date d’arrivée",
+        "firstName": "Prénom",
         "lastName": "Nom"
       },
       "personal": {
         "eyebrow": "Informations personnelles",
         "title": "Modifier le profil",
-        "description": "Vous pouvez modifier votre nom visible. L?e-mail, le r?le, l?organisation et les acc?s h?tel sont g?r?s par les administrateurs.",
+        "description": "Vous pouvez modifier votre nom visible. L’e-mail, le rôle, l’organisation et les accès hôtel sont gérés par les administrateurs.",
         "saving": "Enregistrement...",
         "save": "Enregistrer le profil"
       },
       "security": {
-        "eyebrow": "S?curit?",
+        "eyebrow": "Sécurité",
         "title": "Modifier le mot de passe",
-        "description": "Utilisez votre mot de passe actuel pour s?curiser cette modification.",
+        "description": "Utilisez votre mot de passe actuel pour sécuriser cette modification.",
         "currentPassword": "Mot de passe actuel",
         "newPassword": "Nouveau mot de passe",
         "confirmPassword": "Confirmer le mot de passe",
         "passwordMismatch": "Le nouveau mot de passe et la confirmation ne correspondent pas.",
-        "updating": "Mise ? jour...",
+        "updating": "Mise à jour...",
         "submit": "Modifier le mot de passe"
       },
       "admin": {
-        "eyebrow": "Contr?les administrateur",
-        "title": "Acc?s organisation",
-        "description": "G?rez les utilisateurs et les informations de l?h?tel pour l?organisation."
+        "eyebrow": "Contrôles administrateur",
+        "title": "Accès organisation",
+        "description": "Gérez les utilisateurs et les informations de l’hôtel pour l’organisation."
       },
       "commercial": {
         "eyebrow": "Espace commercial",
-        "title": "P?rim?tre assign?",
-        "description": "Votre h?tel assign? et les raccourcis de l?espace commercial.",
+        "title": "Périmètre assigné",
+        "description": "Votre hôtel assigné et les raccourcis de l’espace commercial.",
         "activeSeason": "Saison active",
-        "recentSimulations": "Simulations r?centes",
+        "recentSimulations": "Simulations récentes",
         "seasonsLoadError": "Impossible de charger les saisons",
-        "activityLoadError": "Impossible de charger l?activit?",
+        "activityLoadError": "Impossible de charger l’activité",
         "activeSeasonValue": "{{label}} ({{count}} contrats actifs)",
         "noActiveSeason": "Aucune saison active",
-        "recentProformas": "{{count}} proformas ?mises sur 30 jours",
-        "noRecentProformas": "Aucune proforma ?mise sur 30 jours"
+        "recentProformas": "{{count}} factures émises sur 30 jours",
+        "noRecentProformas": "Aucune facture émise sur 30 jours"
       },
       "agent": {
-        "eyebrow": "Acc?s agent",
+        "eyebrow": "Accès agent",
         "title": "Permissions et modules",
-        "description": "Ce r?le est centr? sur les outils disponibles pour les utilisateurs op?rationnels.",
+        "description": "Ce rôle est centré sur les outils disponibles pour les utilisateurs opérationnels.",
         "accessibleModules": "Modules accessibles",
         "pricingSimulator": "Simulateur de tarification",
-        "contractAccess": "Acc?s contrats",
-        "limited": "Limit?"
+        "contractAccess": "Accès contrats",
+        "limited": "Limité"
       },
       "quickActions": {
         "manageUsers": {
-          "label": "G?rer les utilisateurs",
-          "description": "V?rifier les utilisateurs, invitations en attente et r?les."
+          "label": "Gérer les utilisateurs",
+          "description": "Vérifier les utilisateurs, invitations en attente et rôles."
         },
         "inviteUsers": {
           "label": "Inviter des utilisateurs",
-          "description": "Ajouter des membres avec le bon acc?s."
+          "description": "Ajouter des membres avec le bon accès."
         },
         "manageHotels": {
-          "label": "G?rer les h?tels",
-          "description": "Maintenir les informations de l?h?tel et du portefeuille."
+          "label": "Gérer les hôtels",
+          "description": "Maintenir les informations de l’hôtel et du portefeuille."
         },
         "hotelProfile": {
-          "label": "Informations de l?h?tel",
-          "description": "V?rifier les d?tails de l?h?tel assign?."
+          "label": "Informations de l’hôtel",
+          "description": "Vérifier les détails de l’hôtel assigné."
         },
         "roomTypes": {
           "label": "Types de chambres",
-          "description": "Consulter l?inventaire vendable."
+          "description": "Consulter l’inventaire vendable."
         },
         "arrangements": {
           "label": "Arrangements",
-          "description": "Consulter les formules de repas de l?h?tel."
+          "description": "Consulter les formules de repas de l’hôtel."
         },
         "exchangeRates": {
           "label": "Taux de change",
-          "description": "Consulter les paires de devises configur?es."
+          "description": "Consulter les paires de devises configurées."
         },
         "openSimulator": {
           "label": "Ouvrir le simulateur",
-          "description": "Lancer l?outil de tarification disponible pour votre r?le."
+          "description": "Lancer l’outil de tarification disponible pour votre rôle."
         },
         "reviewProfile": {
           "label": "Consulter le profil",
-          "description": "Maintenir vos informations personnelles ? jour."
+          "description": "Maintenir vos informations personnelles à jour."
         }
       }
     }
   },
   "navigation": {
-    "supervisor": {
-      "sectionTitle": "Centre de commande",
-      "overview": {
-        "label": "Vue d'ensemble / MRR",
-        "description": "MRR, croissance, churn et preparation plateforme."
-      },
-      "tenants": {
-        "label": "Tenants / Organisations",
-        "description": "Portefeuille clients, statut de facturation et controles compte."
-      },
-      "plans": {
-        "label": "Plans SaaS et pricing",
-        "description": "Plans, limites, privileges et packaging abonnement."
-      },
-      "logs": {
-        "label": "Logs systeme",
-        "description": "Flux d'audit, alertes et evenements infrastructure."
-      },
-      "signals": {
-        "apiLatency": "Latence API",
-        "billingWebhooks": "Webhooks de facturation",
-        "platformAlerts": "Alertes plateforme"
-      }
-    },
     "admin": {
       "overview": {
         "title": "Vue d'ensemble",
         "organization": {
           "label": "Organisation",
-          "description": "Posture de facturation, dynamique equipe et hotels."
+          "description": "Acces equipe, activite et hotels."
         },
         "team": {
           "label": "Equipe",
-          "description": "Invitations, roles et hygiene des acces."
+          "description": "Invitations, rôles et hygiène des accès."
         },
         "integrations": {
           "label": "Integrations",
-          "description": "Utilisateurs API, cles, controles endpoint et logs de requetes."
+          "description": "Utilisateurs API, clés, contrôles endpoint et logs de requêtes."
         },
         "portfolio": {
-          "label": "Parc hotelier",
+          "label": "Parc hôtelier",
           "description": "Identité, contacts et informations légales de l’hôtel."
         }
       },
@@ -1948,24 +1969,28 @@
         },
         "simulator": {
           "label": "Simulateur",
-          "description": "Controle rapide des prix de vente contractes."
+          "description": "Contrôle rapide des prix de vente contractés."
         }
       },
       "users": "Utilisateurs"
     },
     "commercial": {
       "primary": {
+        "overview": {
+          "label": "Accueil",
+          "description": "Vue d’ensemble commerciale."
+        },
         "hotels": {
-          "label": "Hotels",
+          "label": "Hôtels",
           "description": "Configuration hôtel et paramètres opérationnels."
         },
         "catalog": {
-          "label": "Catalogue",
-          "description": "Chambres, arrangements, extras et regles tarifaires."
+          "label": "Catalogue commercial",
+          "description": "Catalogue commercial, partenaires et modèles de règles tarifaires."
         },
         "partners": {
-          "label": "Partenaires",
-          "description": "Partenaires de distribution et tour-operateurs."
+          "label": "Partenaires commerciaux",
+          "description": "Partenaires commerciaux et tour-opérateurs."
         },
         "contracts": {
           "label": "Contrats",
@@ -1974,18 +1999,22 @@
         "simulator": {
           "label": "Simulateur",
           "description": "Calculez instantanement les prix clients."
+        },
+        "invoices": {
+          "label": "Factures",
+          "description": "Archive des factures émises."
         }
       },
       "product": {
         "hotel": "Hôtel",
         "rooms": "Types de chambres",
         "arrangements": "Arrangements",
-        "supplements": "Supplements",
-        "spos": "SPOs",
-        "reductions": "Reductions",
-        "monoparental": "Monoparental",
-        "earlyBooking": "Early Booking",
-        "cancellations": "Annulations",
+        "supplements": "Modèles de suppléments",
+        "spos": "Modèles d'offres spéciales",
+        "reductions": "Modèles de réductions",
+        "monoparental": "Modèles de règles monoparentales",
+        "earlyBooking": "Modèles d'early booking",
+        "cancellations": "Modèles de conditions d'annulation",
         "hotelInformation": "Informations de l’hôtel",
         "exchangeRates": "Taux de change",
         "hotelInformationDescription": "Identité, contacts, informations légales et métadonnées opérationnelles de l’hôtel.",
@@ -1998,6 +2027,11 @@
         "partners": "Mes partenaires",
         "contracts": "Gestion contrats",
         "administration": "Administration"
+      },
+      "workspace": {
+        "hotelSetup": "Hôtel",
+        "catalog": "Catalogue",
+        "partners": "Partenaires"
       }
     },
     "agent": {
@@ -2011,18 +2045,11 @@
       }
     },
     "roles": {
-      "supervisor": {
-        "label": "Superviseur",
-        "eyebrow": "Moteur plateforme",
-        "title": "Plateforme Pricify",
-        "subtitle": "Pilotez abonnements, sante tenants et fiabilite plateforme sans toucher aux donnees operationnelles.",
-        "sectionTitle": "Centre de commande"
-      },
       "admin": {
         "label": "Admin",
         "eyebrow": "Pilotage organisation",
         "title": "Cockpit organisation",
-        "subtitle": "Gardez facturation, acces equipe et portefeuille hotelier alignes."
+        "subtitle": "Gardez les acces equipe et le portefeuille hotels alignes."
       },
       "commercial": {
         "label": "Commercial",
@@ -2070,7 +2097,7 @@
         "copy": "Chambres, supplements et reductions."
       }
     },
-    "brandline": "Pricify - Plateforme de contracting hotelier",
+    "brandline": "Pricify - Plateforme de contracting hôtelier",
     "footer": {
       "copyright": "© {{year}} Pricify B2B - Tous droits reserves."
     }
@@ -2080,7 +2107,7 @@
       "overview": "Apercu",
       "features": "Fonctionnalites",
       "roles": "Roles",
-      "control": "Controle"
+      "control": "Contrôle"
     },
     "actions": {
       "login": "Connexion",
@@ -2088,36 +2115,36 @@
       "signIn": "Se connecter"
     },
     "hero": {
-      "badge": "Concu pour les operations commerciales hotellerie",
-      "title": "Le contracting hotelier, enfin sous controle.",
-      "subtitle": "Offrez aux directeurs, equipes contracting et agents front-desk un espace unique pour gerer contrats, regles tarifaires, partenaires et devis.",
+      "badge": "Conçu pour les opérations commerciales hôtelières",
+      "title": "Le contracting hôtelier, enfin sous contrôle.",
+      "subtitle": "Offrez aux directeurs, équipes contracting et agents front-desk un espace unique pour gérer contrats, règles tarifaires, partenaires et devis.",
       "explore": "Explorer la plateforme",
-      "validatedQuote": "Chaque devis est valide avant envoi",
+      "validatedQuote": "Chaque devis est validé avant envoi",
       "pills": {
-        "multiProperty": "Pilotage multi-etablissements",
-        "quote": "Precision instantanee des devis"
+        "multiProperty": "Pilotage multi-établissements",
+        "quote": "Précision instantanée des devis"
       },
       "highlights": {
-        "multiHotel": "Controle multi-hotel",
-        "contract": "Logique contractuelle avancee",
-        "quote": "Precision immediate des devis"
+        "multiHotel": "Contrôle multi-hôtel",
+        "contract": "Logique contractuelle avancée",
+        "quote": "Précision immédiate des devis"
       }
     },
     "trust": {
-      "badge": "Concu pour les operations hotellerie modernes",
-      "groups": "Groupes hoteliers multi-etablissements",
-      "contracting": "Equipes contracting commerciales",
-      "tour": "Equipes tour-operateurs",
+      "badge": "Conçu pour les opérations hôtelières modernes",
+      "groups": "Groupes hôteliers multi-établissements",
+      "contracting": "Équipes contracting commerciales",
+      "tour": "Équipes tour-opérateurs",
       "pricing": "Agents tarification",
-      "ops": "Operations plateforme"
+      "ops": "Opérations plateforme"
     },
     "platform": {
       "eyebrow": "Proposition de valeur",
-      "title": "Pricify aide les hotels a centraliser contracting, pricing et devis.",
-      "subtitle": "Le message produit est simple: gerer chaque hotel, chaque regle contractuelle, chaque partenaire B2B et chaque devis depuis un seul espace commercial connecte.",
+      "title": "Pricify aide les hôtels à centraliser contracting, pricing et devis.",
+      "subtitle": "Le message produit est simple : gérer chaque hôtel, chaque règle contractuelle, chaque partenaire B2B et chaque devis depuis un seul espace commercial connecté.",
       "cards": {
         "0": {
-          "title": "Pilotage multi-etablissements",
+          "title": "Pilotage multi-établissements",
           "copy": "Les directeurs peuvent superviser hotels, equipes et structure commerciale depuis un espace operationnel unique."
         },
         "1": {
@@ -2125,7 +2152,7 @@
           "copy": "Les equipes contracting pilotent un moteur tarifaire B2B complet avec grilles, SPO, supplements, reductions, early booking et annulations."
         },
         "2": {
-          "title": "Precision instantanee des devis",
+          "title": "Précision instantanée des devis",
           "copy": "Les agents front-desk simulent des totaux conformes au contrat avant emission, avec moins de risques et de reprises."
         }
       }
@@ -2133,13 +2160,13 @@
     "features": {
       "eyebrow": "Bento fonctionnalites",
       "title": "Tout ce que fait la plateforme est visible dans la premiere histoire racontee a vos clients.",
-      "subtitle": "De la configuration hoteliere aux contrats partenaires et a la simulation instantanee, chaque section traduit le produit en valeur operationnelle."
+      "subtitle": "De la configuration hôtelière aux contrats partenaires et à la simulation instantanée, chaque section traduit le produit en valeur opérationnelle."
     },
     "bento": {
-      "badge": "Valeur hoteliere",
+      "badge": "Valeur hôtelière",
       "cards": {
         "0": {
-          "title": "Controle multi-etablissements",
+          "title": "Contrôle multi-établissements",
           "description": "Gerez plusieurs hotels depuis un espace centralise, avec une visibilite portefeuille claire et un meilleur controle des operations contracting.",
           "bullets": {
             "0": "Supervision multi-hotel centralisee",
@@ -2178,7 +2205,7 @@
           "title": "Supervision direction et acces",
           "description": "Offrez aux directeurs une vision globale des hotels, equipes et permissions tout en gardant chaque utilisateur focalise sur son role.",
           "bullets": {
-            "0": "Controle des acces et des roles",
+            "0": "Contrôle des accès et des rôles",
             "1": "Visibilite portefeuille complete",
             "2": "Coordination simplifiee entre directions et operations"
           }
@@ -2187,75 +2214,75 @@
           "title": "Fondation hotel et catalogues",
           "description": "Modelez hotels, chambres, arrangements, affilies et catalogues tarifaires dans un flux connecte qui alimente contrats et simulations.",
           "bullets": {
-            "0": "Portefeuille hotelier et changes",
+            "0": "Portefeuille hôtelier et changes",
             "1": "Catalogues chambres et arrangements",
-            "2": "Supplements, SPO, reductions et plus"
+            "2": "Suppléments, SPO, réductions et plus"
           }
         }
       }
     },
     "roles": {
-      "eyebrow": "Valeur par role",
-      "title": "Chaque equipe hoteliere obtient exactement l'espace dont elle a besoin.",
-      "subtitle": "Directeurs, equipes contracting et front-desk travaillent differemment. Pricify garde chaque role rapide, clair et aligne.",
+      "eyebrow": "Valeur par rôle",
+      "title": "Chaque équipe hôtelière obtient exactement l’espace dont elle a besoin.",
+      "subtitle": "Directeurs, équipes contracting et front-desk travaillent différemment. Pricify garde chaque rôle rapide, clair et aligné.",
       "cards": {
         "0": {
           "title": "Directeurs",
-          "subtitle": "Gardez une vision globale sur tous les hotels geres.",
+          "subtitle": "Gardez une vision globale sur tous les hôtels gérés.",
           "points": {
-            "0": "Obtenez une vue unifiee du portefeuille hotelier, de la structure operationnelle et des equipes.",
-            "1": "Controlez utilisateurs, permissions et acces hotel sans ralentir l'activite commerciale.",
-            "2": "Alignez performance multi-hotel et collaboration a mesure que votre perimetre grandit."
+            "0": "Obtenez une vue unifiée du portefeuille hôtelier, de la structure opérationnelle et des équipes.",
+            "1": "Contrôlez utilisateurs, permissions et accès hôtel sans ralentir l’activité commerciale.",
+            "2": "Alignez performance multi-hôtel et collaboration à mesure que votre périmètre grandit."
           }
         },
         "1": {
-          "title": "Equipes Contracting",
+          "title": "Équipes Contracting",
           "subtitle": "Configurez une tarification B2B complexe sans friction.",
           "points": {
-            "0": "Gerez hotels, chambres, arrangements, affilies et conditions contractuelles dans un flux unique.",
-            "1": "Parametrez grilles, SPO, supplements, reductions, early booking et annulations en toute confiance.",
-            "2": "Passez de la configuration partenaire a la publication contrat sans dependre des fichiers disperses."
+            "0": "Gérez hôtels, chambres, arrangements, affiliés et conditions contractuelles dans un flux unique.",
+            "1": "Paramétrez grilles, SPO, suppléments, réductions, early booking et annulations en toute confiance.",
+            "2": "Passez de la configuration partenaire à la publication contrat sans dépendre des fichiers dispersés."
           }
         },
         "2": {
           "title": "Front-Desk",
-          "subtitle": "Generez des devis fiables en quelques secondes.",
+          "subtitle": "Générez des devis fiables en quelques secondes.",
           "points": {
-            "0": "Utilisez le simulateur comme poste de pricing dedie respectant contrats actifs, dates et rooming.",
-            "1": "Generez des devis instantanes avec totaux valides avant partage client ou partenaire.",
-            "2": "Travaillez plus vite avec une interface claire orientee precision des prix."
+            "0": "Utilisez le simulateur comme poste de pricing dédié respectant contrats actifs, dates et rooming.",
+            "1": "Générez des devis instantanés avec totaux validés avant partage client ou partenaire.",
+            "2": "Travaillez plus vite avec une interface claire orientée précision des prix."
           }
         }
       }
     },
     "security": {
-      "eyebrow": "Controle operationnel",
-      "title": "Le controle evolue avec votre groupe hotelier, pas contre lui.",
-      "subtitle": "Quand vos equipes, votre portefeuille et vos partenaires grandissent, Pricify maintient l'acces, la visibilite et la logique tarifaire organises.",
+      "eyebrow": "Contrôle opérationnel",
+      "title": "Le contrôle évolue avec votre groupe hôtelier, pas contre lui.",
+      "subtitle": "Quand vos équipes, votre portefeuille et vos partenaires grandissent, Pricify maintient l’accès, la visibilité et la logique tarifaire organisés.",
       "cards": {
         "0": {
-          "title": "Controle des acces",
-          "copy": "Donnez a chaque collaborateur le bon espace pour garder directeurs, contracting et front-desk concentres."
+          "title": "Contrôle des accès",
+          "copy": "Donnez à chaque collaborateur le bon espace pour garder directeurs, contracting et front-desk concentrés."
         },
         "1": {
-          "title": "Visibilite multi-etablissements",
-          "copy": "Gerez plusieurs hotels avec une structure plus claire et une vue centralisee de l'environnement commercial."
+          "title": "Visibilité multi-établissements",
+          "copy": "Gérez plusieurs hôtels avec une structure plus claire et une vue centralisée de l’environnement commercial."
         },
         "2": {
-          "title": "Execution tarifaire fiable",
-          "copy": "Gardez contrats, conditions partenaires et simulations alignes pour que chaque devis reflète les regles negociees."
+          "title": "Exécution tarifaire fiable",
+          "copy": "Gardez contrats, conditions partenaires et simulations alignés pour que chaque devis reflète les règles négociées."
         }
       }
     },
     "cta": {
       "eyebrow": "CTA final",
-      "title": "Pret a moderniser votre contracting hotelier ?",
+      "title": "Prêt à moderniser votre contracting hôtelier ?",
       "subtitle": "Remplacez les feuilles de calcul, les erreurs de pricing et la coordination fragmentee par un espace commercial unique.",
-      "reviewWorkflow": "Voir le workflow hotelier"
+      "reviewWorkflow": "Voir le workflow hôtelier"
     },
     "footer": {
-      "subtitle": "Pricify connecte pilotage multi-etablissements, contracting hotelier, gestion partenaires et validation tarifaire dans un espace moderne.",
-      "copyright": "© {{year}} Pricify. Contracting hotelier, pricing partenaires et controle instantane des devis."
+      "subtitle": "Pricify connecte pilotage multi-établissements, contracting hôtelier, gestion partenaires et validation tarifaire dans un espace moderne.",
+      "copyright": "© {{year}} Pricify. Contracting hôtelier, pricing partenaires et contrôle instantané des devis."
     }
   },
   "common": {
@@ -2846,16 +2873,17 @@
                   "title": {
                     "e6a64ab5": "Activer cette cellule",
                     "9467c3e9": "Désactiver cette cellule",
-                    "5e3ea50e": "Prix / Nuit",
+                    "5e3ea50e": "Prix par nuit",
                     "267b30e9": "Allotement",
-                    "964f35b8": "Minimum Stay",
-                    "dfcf1f0e": "Surcharge Min Stay (laissez vide pour hériter de la période)",
-                    "4731f333": "Release Days",
-                    "2483b63e": "Surcharge Release Days (laissez vide pour hériter de la période)"
+                    "964f35b8": "Durée minimale de séjour",
+                    "dfcf1f0e": "Durée minimale de séjour spécifique (laisser vide pour hériter de la période)",
+                    "4731f333": "Délai de release",
+                    "2483b63e": "Délai de release spécifique (laisser vide pour hériter de la période)"
                   },
                   "34f9fd4a": "Ch.",
-                  "d82876f6": "🌙 Min",
-                  "d2396715": "⏳ Rel"
+                  "d82876f6": "Min",
+                  "d2396715": "Rel.",
+                  "notContracted": "Non contracté"
                 },
                 "smartratesgrid": {
                   "toast": {
@@ -3025,7 +3053,7 @@
               "d2306576": "Enfants",
               "a981a557": "Âge min.",
               "6828e695": "Âge max.",
-              "f962b9e5": "Zone B : Formule de facturation",
+              "f962b9e5": "Zone B : formule de prix",
               "2b9ac690": "Base adulte",
               "d9b9596d": "Single",
               "1ee5cabd": "Double",
@@ -3447,52 +3475,34 @@
       "simulator": {
         "pages": {
           "simulatorpage": {
-            "10642227": "Select a room",
-            "dde75327": "Rooms",
-            "155e9de1": "Adults",
-            "29ca0350": "Kids",
-            "de15aed4": "Valid until",
-            "f9fa769d": "No active contract",
-            "8fcd76c5": "Check-in",
-            "a1bdbe16": "Check-out",
-            "8773864b": "Select arrangement",
+            "10642227": "Sélectionner une chambre",
+            "dde75327": "Chambres",
+            "155e9de1": "Adultes",
+            "29ca0350": "Enfants",
+            "de15aed4": "Valide jusqu’au",
+            "f9fa769d": "Aucun contrat actif",
+            "8fcd76c5": "Arrivée",
+            "a1bdbe16": "Départ",
+            "8773864b": "Sélectionner un arrangement",
             "title": {
-              "a4dfb77a": "Remove room"
+              "a4dfb77a": "Retirer la chambre"
             },
-            "35b620e0": "Room type",
-            "1b108074": "Age",
-            "1c1e22af": "years",
-            "1ccd64b6": "A room needs at least one occupant.",
-            "3e7dbe1c": "Quote detail",
-            "52b26439": "Complete the rooming list to reveal the final net price.",
+            "35b620e0": "Type de chambre",
+            "1b108074": "Âge",
+            "1c1e22af": "ans",
+            "1ccd64b6": "Une chambre doit contenir au moins un occupant.",
+            "3e7dbe1c": "Détails de simulation",
+            "52b26439": "Complétez la rooming list pour afficher le prix net final.",
             "a59a3b70": "N/A",
-            "afc48449": "Base / occupancy",
-            "5af1a6ca": "Net for this night",
-            "0b6d0510": "Stay of -- nights",
-            "ba95b01b": "Total gross",
-            "556bee2a": "Global discounts",
-            "2f0651d6": "Stay modifiers",
-            "a7cbe69d": "Final net total",
-            "d729c3d7": "Simulator unavailable",
-            "11e77796": "Select a partner"
-          }
-        }
-      },
-      "supervisor": {
-        "pages": {
-          "supervisorplatformsettingspage": {
-            "0c4fc109": "Plan name",
-            "d6837f37": "Monthly price",
-            "6ccec319": "Max hotels",
-            "be35581d": "Max users",
-            "53862b3a": "API access",
-            "a7cae788": "Enabled",
-            "24b15b5f": "Disabled",
-            "0b64cd63": "Support tier",
-            "499e68ec": "Priority",
-            "9a0ed073": "Standard",
-            "ff6ca35f": "Dedicated",
-            "f5b37b70": "Privilege notes"
+            "afc48449": "Base / occupation",
+            "5af1a6ca": "Net pour cette nuit",
+            "0b6d0510": "Séjour de -- nuits",
+            "ba95b01b": "Total brut",
+            "556bee2a": "Remises globales",
+            "2f0651d6": "Ajustements du séjour",
+            "a7cbe69d": "Total net final",
+            "d729c3d7": "Simulateur indisponible",
+            "11e77796": "Sélectionner un partenaire"
           }
         }
       }

@@ -80,10 +80,10 @@ export function useCreateContract() {
         mutationFn: (payload: CreateContractPayload) => contractService.createContract(payload),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: contractKeys.all(currentHotel?.id) });
-            toast.success(i18next.t('auto.features.contracts.hooks.usecontracts.toast.success.b9325d34', { defaultValue: 'Contrat cree avec succes' }));
+            toast.success(i18next.t('auto.features.contracts.hooks.usecontracts.toast.success.b9325d34', { defaultValue: 'Contract created successfully' }));
         },
         onError: (error: any) => {
-            toast.error(getErrorMessage(error, 'Erreur lors de la creation du contrat'));
+            toast.error(getErrorMessage(error, 'Unable to create the contract'));
         },
     });
 }
@@ -125,10 +125,10 @@ export function useUpdateContract(contractId: number, onSuccess?: () => void) {
         onSuccess: () => {
             qc.invalidateQueries({ queryKey: contractKeys.detail(hotelId, contractId) });
             qc.invalidateQueries({ queryKey: contractKeys.all(hotelId) });
-            toast.success(i18next.t('auto.features.contracts.hooks.usecontracts.toast.success.5bfb7f2b', { defaultValue: 'Contrat mis a jour' }));
+            toast.success(i18next.t('auto.features.contracts.hooks.usecontracts.toast.success.5bfb7f2b', { defaultValue: 'Contract updated' }));
             onSuccess?.();
         },
-        onError: (error: any) => toast.error(getErrorMessage(error, 'Erreur lors de la mise a jour du contrat')),
+        onError: (error: any) => toast.error(getErrorMessage(error, 'Unable to update the contract')),
     });
 }
 
@@ -150,10 +150,10 @@ export function useAddPeriod(contractId: number, onSuccess?: () => void) {
                 }
                 : current);
             qc.invalidateQueries({ queryKey: detailKey });
-            toast.success(i18next.t('auto.features.contracts.hooks.usecontracts.toast.success.2cc43dfd', { defaultValue: 'Periode ajoutee' }));
+            toast.success(i18next.t('auto.features.contracts.hooks.usecontracts.toast.success.2cc43dfd', { defaultValue: 'Pricing period added' }));
             onSuccess?.();
         },
-        onError: (error: any) => toast.error(getErrorMessage(error, "Erreur lors de l'ajout de la periode")),
+        onError: (error: any) => toast.error(getErrorMessage(error, 'Unable to add the pricing period')),
     });
 }
 
@@ -172,9 +172,9 @@ export function useDeletePeriod(contractId: number) {
                 }
                 : current);
             qc.invalidateQueries({ queryKey: detailKey });
-            toast.success(i18next.t('auto.features.contracts.hooks.usecontracts.toast.success.0d13dae8', { defaultValue: 'Periode supprimee' }));
+            toast.success(i18next.t('auto.features.contracts.hooks.usecontracts.toast.success.0d13dae8', { defaultValue: 'Pricing period deleted' }));
         },
-        onError: (error: any) => toast.error(getErrorMessage(error, 'Impossible de supprimer cette periode. Elle est probablement ciblee par une regle active.')),
+        onError: (error: any) => toast.error(getErrorMessage(error, 'Unable to delete this pricing period. It is probably used by an active rule.')),
     });
 }
 
@@ -196,10 +196,10 @@ export function useAddContractRoom(contractId: number, onSuccess?: () => void) {
                 }
                 : current);
             qc.invalidateQueries({ queryKey: detailKey });
-            toast.success(i18next.t('auto.features.contracts.hooks.usecontracts.toast.success.7ddb5960', { defaultValue: 'Chambre ajoutee au contrat' }));
+            toast.success(i18next.t('auto.features.contracts.hooks.usecontracts.toast.success.7ddb5960', { defaultValue: 'Contract room added' }));
             onSuccess?.();
         },
-        onError: (error: any) => toast.error(getErrorMessage(error, "Erreur lors de l'ajout de la chambre")),
+        onError: (error: any) => toast.error(getErrorMessage(error, 'Unable to add the contract room')),
     });
 }
 
@@ -218,8 +218,8 @@ export function useDeleteContractRoom(contractId: number) {
                 }
                 : current);
             qc.invalidateQueries({ queryKey: detailKey });
-            toast.success(i18next.t('auto.features.contracts.hooks.usecontracts.toast.success.ea857a1e', { defaultValue: 'Chambre retiree du contrat' }));
+            toast.success(i18next.t('auto.features.contracts.hooks.usecontracts.toast.success.ea857a1e', { defaultValue: 'Contract room removed' }));
         },
-        onError: (error: any) => toast.error(getErrorMessage(error, 'Impossible de supprimer cette chambre. Elle est probablement attachee a des regles.')),
+        onError: (error: any) => toast.error(getErrorMessage(error, 'Unable to remove this room. It is probably linked to active rules.')),
     });
 }

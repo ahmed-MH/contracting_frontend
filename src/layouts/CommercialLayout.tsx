@@ -52,7 +52,7 @@ export default function CommercialLayout() {
     return (
         <div className="min-h-screen bg-brand-light text-brand-navy dark:bg-brand-navy dark:text-brand-light">
             <header className="sticky top-0 z-40 border-b border-brand-slate/15 bg-brand-light/92 shadow-sm backdrop-blur-xl dark:border-brand-light/10 dark:bg-brand-navy/92">
-                <div className="mx-auto flex max-w-[1680px] items-center gap-4 px-4 py-3 sm:px-6 lg:px-8">
+                <div className="mx-auto flex max-w-[1680px] items-center gap-3 px-4 py-3 sm:px-6 lg:px-8">
                     <Link to="/contracts" className="shrink-0 rounded-lg border border-brand-slate/10 bg-brand-light px-3 py-2 shadow-sm dark:border-brand-light/10 dark:bg-brand-light/5">
                         <Logo className="scale-90" />
                     </Link>
@@ -80,7 +80,7 @@ export default function CommercialLayout() {
                                             }
                                         }}
                                         className={clsx(
-                                            'inline-flex h-10 items-center gap-2 rounded-lg px-3 text-sm font-semibold transition-colors',
+                                            'inline-flex h-10 items-center gap-1.5 whitespace-nowrap rounded-lg px-3 text-sm font-semibold transition-colors',
                                             isActiveGroup
                                                 ? 'bg-brand-mint/12 text-brand-mint'
                                                 : 'text-brand-slate hover:bg-brand-mint/8 hover:text-brand-navy dark:text-brand-light/70 dark:hover:text-brand-light',
@@ -150,7 +150,7 @@ export default function CommercialLayout() {
                                     key={item.to}
                                     to={item.to}
                                     className={clsx(
-                                        'inline-flex h-10 items-center rounded-lg px-3 text-sm font-semibold transition-colors',
+                                        'inline-flex h-10 items-center whitespace-nowrap rounded-lg px-3 text-sm font-semibold transition-colors',
                                         isActive
                                             ? 'bg-brand-mint/12 text-brand-mint'
                                             : 'text-brand-slate hover:bg-brand-mint/8 hover:text-brand-navy dark:text-brand-light/70 dark:hover:text-brand-light',

@@ -211,7 +211,6 @@ export default function ExchangeRatesSection() {
                                                 t('pages.exchangeRates.table.rate', { defaultValue: 'Rate' }),
                                                 t('pages.exchangeRates.table.meaning', { defaultValue: 'Meaning' }),
                                                 t('pages.exchangeRates.table.effectiveDate', { defaultValue: 'Effective date' }),
-                                                t('pages.exchangeRates.table.source', { defaultValue: 'Source' }),
                                                 t('pages.exchangeRates.table.updatedBy', { defaultValue: 'Updated by' }),
                                             ].map((header) => (
                                                 <th key={header} className="px-5 py-4 font-semibold uppercase tracking-[0.18em]">
@@ -251,11 +250,6 @@ export default function ExchangeRatesSection() {
                                                         <Calendar size={13} className="text-brand-mint" />
                                                         <span>{formatDate(rate.effectiveDate)}</span>
                                                     </div>
-                                                </td>
-                                                <td className="px-5 py-4 align-top">
-                                                    <span className="premium-pill border-brand-slate/20 bg-brand-light text-brand-slate dark:border-brand-light/10 dark:bg-brand-light/5 dark:text-brand-light/75">
-                                                        {rate.source ?? 'manual'}
-                                                    </span>
                                                 </td>
                                                 <td className="px-5 py-4 align-top">
                                                     <UpdatedByCell

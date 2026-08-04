@@ -352,7 +352,7 @@ function EmailSpoFormModal({
                                                 </span>
                                                 {item.id === currentAffiliateId && (
                                                     <span className="rounded-full bg-brand-mint/10 px-2 py-1 text-[10px] font-bold uppercase tracking-[0.16em] text-brand-mint">
-                                                        Current
+                                                        {t('pages.affiliates.emailSpo.fields.currentPartner', { defaultValue: 'Current' })}
                                                     </span>
                                                 )}
                                             </label>

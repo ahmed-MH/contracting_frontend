@@ -12,12 +12,7 @@ import { useTranslation } from 'react-i18next';
 import { useTheme } from './hooks/useTheme';
 import type { UserRole } from './features/auth/types/auth.types';
 import AppErrorBoundary from './features/errors/components/AppErrorBoundary';
-import IntegrationPlanAccessGate from './features/integrations/components/IntegrationPlanAccessGate';
 
-const LandingPage = lazy(() => import('./features/public/LandingPage'));
-const OnboardingPage = lazy(() => import('./features/public/OnboardingPage'));
-const OnboardingSuccessPage = lazy(() => import('./features/public/OnboardingSuccessPage'));
-const OnboardingCancelPage = lazy(() => import('./features/public/OnboardingCancelPage'));
 const LoginPage = lazy(() => import('./features/auth/pages/LoginPage'));
 const AcceptInvitePage = lazy(() => import('./features/auth/pages/AcceptInvitePage'));
 const ForgotPasswordPage = lazy(() => import('./features/auth/pages/ForgotPasswordPage'));
@@ -51,8 +46,6 @@ const CommercialOverviewPage = lazy(() => import('./features/commercial/pages/Co
 const UsersPage = lazy(() => import('./features/admin/pages/UsersPage'));
 const AdminOverviewPage = lazy(() => import('./features/admin/pages/AdminOverviewPage'));
 const ProfilePage = lazy(() => import('./features/profile/pages/ProfilePage'));
-const ProfileBillingSuccessPage = lazy(() => import('./features/profile/pages/ProfileBillingSuccessPage'));
-const ProfileBillingCancelPage = lazy(() => import('./features/profile/pages/ProfileBillingCancelPage'));
 const IntegrationOverviewPage = lazy(() => import('./features/integrations/pages/IntegrationOverviewPage'));
 const IntegrationApiUsersPage = lazy(() => import('./features/integrations/pages/IntegrationApiUsersPage'));
 const IntegrationApiKeysPage = lazy(() => import('./features/integrations/pages/IntegrationApiKeysPage'));
@@ -60,16 +53,11 @@ const IntegrationEndpointsPage = lazy(() => import('./features/integrations/page
 const IntegrationPlaygroundPage = lazy(() => import('./features/integrations/pages/IntegrationPlaygroundPage'));
 const IntegrationUsageLogsPage = lazy(() => import('./features/integrations/pages/IntegrationUsageLogsPage'));
 const IntegrationDeveloperDocsPage = lazy(() => import('./features/integrations/pages/IntegrationDeveloperDocsPage'));
-const SupervisorOverviewPage = lazy(() => import('./features/supervisor/pages/SupervisorOverviewPage'));
-const SupervisorPlatformSettingsPage = lazy(() => import('./features/supervisor/pages/SupervisorPlatformSettingsPage'));
-const SupervisorSystemLogsPage = lazy(() => import('./features/supervisor/pages/SupervisorSystemLogsPage'));
-const SupervisorTenantsPage = lazy(() => import('./features/supervisor/pages/SupervisorTenantsPage'));
 const NotFoundPage = lazy(() => import('./features/errors/pages/NotFoundPage'));
 
-const supervisorOnlyRoles: UserRole[] = ['SUPERVISOR'];
 const adminOnlyRoles: UserRole[] = ['ADMIN'];
 const commercialOnlyRoles: UserRole[] = ['COMMERCIAL'];
-const authenticatedRoles: UserRole[] = ['SUPERVISOR', 'ADMIN', 'COMMERCIAL', 'AGENT'];
+const authenticatedRoles: UserRole[] = ['ADMIN', 'COMMERCIAL', 'AGENT'];
 const tenantOperatorRoles: UserRole[] = ['ADMIN', 'COMMERCIAL'];
 const contractAccessRoles: UserRole[] = ['ADMIN', 'COMMERCIAL'];
 const simulatorAccessRoles: UserRole[] = ['ADMIN', 'COMMERCIAL', 'AGENT'];
@@ -126,10 +114,7 @@ function App() {
                 <AppErrorBoundary>
                     <Suspense fallback={<GlobalLoader />}>
                         <Routes>
-                            <Route path="/" element={<LandingPage />} />
-                            <Route path="/onboarding" element={<OnboardingPage />} />
-                            <Route path="/onboarding/success" element={<OnboardingSuccessPage />} />
-                            <Route path="/onboarding/cancel" element={<OnboardingCancelPage />} />
+                            <Route path="/" element={<Navigate to="/login" replace />} />
 
                         <Route element={<GuestRoute><AuthLayout /></GuestRoute>}>
                             <Route path="/login" element={<LoginPage />} />
@@ -156,14 +141,6 @@ function App() {
                             />
                             <Route path="commercial" element={<Navigate to="/overview" replace />} />
 
-                            <Route
-                                path="platform"
-                                element={
-                                    <ProtectedRoute allowedRoles={supervisorOnlyRoles}>
-                                        <SupervisorOverviewPage />
-                                    </ProtectedRoute>
-                                }
-                            />
                             <Route
                                 path="organization"
                                 element={
@@ -341,22 +318,6 @@ function App() {
                                 }
                             />
                             <Route
-                                path="profile/billing/success"
-                                element={
-                                    <ProtectedRoute allowedRoles={['ADMIN', 'COMMERCIAL', 'AGENT']}>
-                                        <ProfileBillingSuccessPage />
-                                    </ProtectedRoute>
-                                }
-                            />
-                            <Route
-                                path="profile/billing/cancel"
-                                element={
-                                    <ProtectedRoute allowedRoles={['ADMIN', 'COMMERCIAL', 'AGENT']}>
-                                        <ProfileBillingCancelPage />
-                                    </ProtectedRoute>
-                                }
-                            />
-                            <Route
                                 path="admin/integrations"
                                 element={
                                     <ProtectedRoute allowedRoles={adminOnlyRoles}>
@@ -368,9 +329,7 @@ function App() {
                                 path="admin/integrations/overview"
                                 element={
                                     <ProtectedRoute allowedRoles={adminOnlyRoles}>
-                                        <IntegrationPlanAccessGate>
-                                            <IntegrationOverviewPage />
-                                        </IntegrationPlanAccessGate>
+                                        <IntegrationOverviewPage />
                                     </ProtectedRoute>
                                 }
                             />
@@ -378,9 +337,7 @@ function App() {
                                 path="admin/integrations/users"
                                 element={
                                     <ProtectedRoute allowedRoles={adminOnlyRoles}>
-                                        <IntegrationPlanAccessGate>
-                                            <IntegrationApiUsersPage />
-                                        </IntegrationPlanAccessGate>
+                                        <IntegrationApiUsersPage />
                                     </ProtectedRoute>
                                 }
                             />
@@ -388,9 +345,7 @@ function App() {
                                 path="admin/integrations/keys"
                                 element={
                                     <ProtectedRoute allowedRoles={adminOnlyRoles}>
-                                        <IntegrationPlanAccessGate>
-                                            <IntegrationApiKeysPage />
-                                        </IntegrationPlanAccessGate>
+                                        <IntegrationApiKeysPage />
                                     </ProtectedRoute>
                                 }
                             />
@@ -398,9 +353,7 @@ function App() {
                                 path="admin/integrations/endpoints"
                                 element={
                                     <ProtectedRoute allowedRoles={adminOnlyRoles}>
-                                        <IntegrationPlanAccessGate>
-                                            <IntegrationEndpointsPage />
-                                        </IntegrationPlanAccessGate>
+                                        <IntegrationEndpointsPage />
                                     </ProtectedRoute>
                                 }
                             />
@@ -408,9 +361,7 @@ function App() {
                                 path="admin/integrations/playground"
                                 element={
                                     <ProtectedRoute allowedRoles={adminOnlyRoles}>
-                                        <IntegrationPlanAccessGate>
-                                            <IntegrationPlaygroundPage />
-                                        </IntegrationPlanAccessGate>
+                                        <IntegrationPlaygroundPage />
                                     </ProtectedRoute>
                                 }
                             />
@@ -418,9 +369,7 @@ function App() {
                                 path="admin/integrations/logs"
                                 element={
                                     <ProtectedRoute allowedRoles={adminOnlyRoles}>
-                                        <IntegrationPlanAccessGate>
-                                            <IntegrationUsageLogsPage />
-                                        </IntegrationPlanAccessGate>
+                                        <IntegrationUsageLogsPage />
                                     </ProtectedRoute>
                                 }
                             />
@@ -428,33 +377,7 @@ function App() {
                                 path="admin/integrations/docs"
                                 element={
                                     <ProtectedRoute allowedRoles={adminOnlyRoles}>
-                                        <IntegrationPlanAccessGate>
-                                            <IntegrationDeveloperDocsPage />
-                                        </IntegrationPlanAccessGate>
-                                    </ProtectedRoute>
-                                }
-                            />
-                            <Route
-                                path="tenants"
-                                element={
-                                    <ProtectedRoute allowedRoles={supervisorOnlyRoles}>
-                                        <SupervisorTenantsPage />
-                                    </ProtectedRoute>
-                                }
-                            />
-                            <Route
-                                path="plans"
-                                element={
-                                    <ProtectedRoute allowedRoles={supervisorOnlyRoles}>
-                                        <SupervisorPlatformSettingsPage />
-                                    </ProtectedRoute>
-                                }
-                            />
-                            <Route
-                                path="system-logs"
-                                element={
-                                    <ProtectedRoute allowedRoles={supervisorOnlyRoles}>
-                                        <SupervisorSystemLogsPage />
+                                        <IntegrationDeveloperDocsPage />
                                     </ProtectedRoute>
                                 }
                             />

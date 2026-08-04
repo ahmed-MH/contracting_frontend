@@ -70,9 +70,9 @@ export default function EarlyBookingsCatalogPage() {
 
     const handleDelete = async (eb: TemplateEarlyBooking) => {
         if (await confirm({
-            title: `Archiver l'Early Booking "${eb.name}" ?`,
-            description: "L'Early Booking sera archivé et ne sera plus visible dans le catalogue.",
-            confirmLabel: "Archiver",
+            title: t('pages.catalog.earlyBookings.confirmArchive.title', { name: eb.name }),
+            description: t('pages.catalog.earlyBookings.confirmArchive.description'),
+            confirmLabel: t('pages.catalog.earlyBookings.confirmArchive.confirmLabel'),
             variant: "danger",
         })) {
             deleteMutation.mutate(eb.id);
@@ -81,9 +81,9 @@ export default function EarlyBookingsCatalogPage() {
 
     const handleRestore = async (eb: TemplateEarlyBooking) => {
         if (await confirm({
-            title: `Restaurer l'Early Booking "${eb.name}" ?`,
-            description: "L'Early Booking sera de nouveau disponible dans le catalogue.",
-            confirmLabel: "Restaurer",
+            title: t('pages.catalog.earlyBookings.confirmRestore.title', { name: eb.name }),
+            description: t('pages.catalog.earlyBookings.confirmRestore.description'),
+            confirmLabel: t('pages.catalog.earlyBookings.confirmRestore.confirmLabel'),
             variant: "info",
         })) {
             restoreMutation.mutate(eb.id);
@@ -120,7 +120,7 @@ export default function EarlyBookingsCatalogPage() {
                     </div>
                     <button onClick={openCreate}
                         className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl bg-brand-mint px-4 text-sm font-semibold text-brand-light shadow-md transition hover:-translate-y-0.5 hover:bg-brand-mint cursor-pointer border-none outline-none lg:mt-9">
-                        <Plus size={16} /> Nouvel Early Booking
+                        <Plus size={16} /> {t('pages.catalog.earlyBookings.header.new')}
                     </button>
                 </div>
                 <div className="relative mt-5 flex flex-col gap-3 border-t border-brand-slate/10 pt-5 dark:border-brand-light/10 md:flex-row md:items-center md:justify-between">
@@ -177,7 +177,7 @@ export default function EarlyBookingsCatalogPage() {
                         className="inline-flex items-center gap-2 rounded-lg border border-brand-light/70 bg-brand-light/70 px-4 py-2 text-sm font-semibold text-brand-navy transition hover:border-brand-mint hover:text-brand-mint dark:border-brand-light/10 dark:bg-brand-light/5 dark:text-brand-light">
                         {showArchived ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
                         <Archive size={16} />
-                        Templates archivés {archivedEarlyBookings ? `(${archivedEarlyBookings.length})` : ''}
+                        {t('pages.catalog.earlyBookings.archived.toggle', { count: archivedEarlyBookings ? `(${archivedEarlyBookings.length})` : '' })}
                     </button>
 
                     {showArchived && archivedEarlyBookings && archivedEarlyBookings.length > 0 && (
@@ -195,7 +195,7 @@ export default function EarlyBookingsCatalogPage() {
                     )}
                     {showArchived && archivedEarlyBookings && archivedEarlyBookings.length === 0 && (
                         <div className="rounded-lg border border-dashed border-brand-slate/20 px-6 py-10 text-center text-sm text-brand-slate dark:border-brand-light/10 dark:text-brand-light/70">
-                            Aucun template archivé
+                            {t('pages.catalog.earlyBookings.archived.empty')}
                         </div>
                     )}
                 </div>

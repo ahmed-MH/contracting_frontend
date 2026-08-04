@@ -122,8 +122,8 @@ export default function EditContractSupplementModal({
         <ModalShell
             isOpen={isOpen}
             onClose={onClose}
-            title={t('auto.features.contracts.details.modals.editcontractsupplementmodal.title.b85d7f23', { defaultValue: "Modifier le supplément" })}
-            subtitle={t('auto.features.contracts.details.modals.editcontractsupplementmodal.subtitle.87d322ba', { defaultValue: "Configuration de base · Coquille" })}
+            title={t('auto.features.contracts.details.modals.editcontractsupplementmodal.title.b85d7f23', { defaultValue: 'Edit supplement' })}
+            subtitle={t('auto.features.contracts.details.modals.editcontractsupplementmodal.subtitle.87d322ba', { defaultValue: 'Base configuration' })}
             onSubmit={handleSubmit(onSubmit)}
             submitLabel={t('auto.features.contracts.details.modals.editcontractsupplementmodal.submitLabel.c5b38dcb', { defaultValue: "Mettre à jour" })}
             isSubmitting={updateMutation.isPending}
@@ -135,7 +135,7 @@ export default function EditContractSupplementModal({
                         {/* Info Alert */}
                         <div className="bg-brand-mint/5 border border-brand-mint/20 rounded-xl p-4 flex gap-3 text-brand-slate shadow-sm">
                             <p className="text-xs leading-relaxed font-medium">
-                                💡 <span className="font-bold text-brand-navy dark:text-brand-light">{t('auto.features.contracts.details.modals.editcontractsupplementmodal.9ac766fa', { defaultValue: "Architecture Matrice :" })}</span> {t('auto.features.contracts.details.modals.editcontractsupplementmodal.b5c85b39', { defaultValue: "L'activation par période et les surcharges se gèrent directement dans la" })} <span className="text-brand-mint font-bold">{t('auto.features.contracts.details.modals.editcontractsupplementmodal.38dce286', { defaultValue: "Grille Suppléments" })}</span> principale.
+                                <span className="font-bold text-brand-navy dark:text-brand-light">{t('auto.features.contracts.details.modals.editcontractsupplementmodal.9ac766fa', { defaultValue: 'Matrix workflow:' })}</span> {t('auto.features.contracts.details.modals.editcontractsupplementmodal.b5c85b39', { defaultValue: 'Activation by period and overrides are managed directly in the' })} <span className="text-brand-mint font-bold">{t('auto.features.contracts.details.modals.editcontractsupplementmodal.38dce286', { defaultValue: 'Supplements grid' })}</span>.
                             </p>
                         </div>
 
@@ -147,9 +147,9 @@ export default function EditContractSupplementModal({
                                     className="w-full px-4 py-2.5 bg-brand-light dark:bg-brand-slate/10 border border-brand-slate/20 rounded-xl focus:ring-2 focus:ring-brand-mint transition-all text-sm font-bold text-brand-navy dark:text-brand-light outline-none"
                                 >
                                     <option value="CUSTOM">{t('auto.features.contracts.details.modals.editcontractsupplementmodal.a8d0bd95', { defaultValue: "Autre / Standard" })}</option>
-                                    <option value="SINGLE_OCCUPANCY">{t('auto.features.contracts.details.modals.editcontractsupplementmodal.c5ed0310', { defaultValue: "Supplément Single" })}</option>
+                                    <option value="SINGLE_OCCUPANCY">{t('auto.features.contracts.details.modals.editcontractsupplementmodal.c5ed0310', { defaultValue: 'Single supplement' })}</option>
                                     <option value="GALA_DINNER">{t('auto.features.contracts.details.modals.editcontractsupplementmodal.c170138a', { defaultValue: "Dîner de Gala" })}</option>
-                                    <option value="MEAL_PLAN">{t('auto.features.contracts.details.modals.editcontractsupplementmodal.d30e9413', { defaultValue: "Supplément de Pension (Repas)" })}</option>
+                                    <option value="MEAL_PLAN">{t('auto.features.contracts.details.modals.editcontractsupplementmodal.d30e9413', { defaultValue: 'Board supplement (meal)' })}</option>
                                 </select>
                             </div>
 
@@ -159,7 +159,7 @@ export default function EditContractSupplementModal({
                                 <input
                                     {...register('name')}
                                     className="w-full px-4 py-2.5 bg-brand-light dark:bg-brand-slate/10 border border-brand-slate/20 rounded-xl focus:ring-2 focus:ring-brand-mint transition-all text-sm font-medium text-brand-navy dark:text-brand-light outline-none"
-                                    placeholder={t('auto.features.contracts.details.modals.editcontractsupplementmodal.placeholder.7885ed9e', { defaultValue: "ex: Supplément Vue Mer" })}
+                                    placeholder={t('auto.features.contracts.details.modals.editcontractsupplementmodal.placeholder.7885ed9e', { defaultValue: 'e.g. Sea view supplement' })}
                                 />
                                 {errors.name && <p className="mt-1.5 text-xs font-bold text-brand-slate">{errors.name.message}</p>}
                             </div>
@@ -210,7 +210,7 @@ export default function EditContractSupplementModal({
                                     </select>
                                     {errors.targetArrangementId && <p className="mt-1.5 text-xs font-bold text-brand-slate">{errors.targetArrangementId.message}</p>}
                                     <p className="mt-2 text-[11px] font-medium text-brand-slate/70">
-                                        Ce supplement sera applique lorsque cette pension est selectionnee dans la simulation. Les valeurs par periode restent gerees dans la grille Supplements.
+                                        This supplement applies when this board arrangement is selected in the simulation. Period values remain managed in the Supplements grid.
                                     </p>
                                 </div>
                             )}
@@ -236,7 +236,7 @@ export default function EditContractSupplementModal({
                                         className="w-full px-4 py-2.5 bg-brand-light dark:bg-brand-slate/10 border border-brand-slate/20 rounded-xl focus:ring-2 focus:ring-brand-mint focus:bg-brand-light transition-all text-sm font-bold cursor-pointer text-brand-navy dark:text-brand-light outline-none"
                                     >
                                         <option value="PER_NIGHT_PER_PERSON">{t('auto.features.contracts.details.modals.editcontractsupplementmodal.e9a36374', { defaultValue: "Par Nuit et Par Personne" })}</option>
-                                        <option value="PER_NIGHT_PER_ROOM">{t('auto.features.contracts.details.modals.editcontractsupplementmodal.6493e268', { defaultValue: "Par Chambre et Par Nuit" })}</option>
+                                        <option value="PER_NIGHT_PER_ROOM">{t('auto.features.contracts.details.modals.editcontractsupplementmodal.6493e268', { defaultValue: 'Per room / night' })}</option>
                                         <option value="FLAT_RATE_PER_STAY">{t('auto.features.contracts.details.modals.editcontractsupplementmodal.0fd98736', { defaultValue: "Forfait Unique par Séjour" })}</option>
                                     </select>
                                 </div>
@@ -277,7 +277,7 @@ export default function EditContractSupplementModal({
                             <div className="flex items-center gap-3 p-3.5 bg-brand-light dark:bg-brand-slate/10 rounded-xl border border-brand-slate/20">
                                 <input type="checkbox" id="editIsMandatory" {...register('isMandatory')}
                                     className="w-4 h-4 text-brand-mint border-brand-slate/30 rounded-xl focus:ring-brand-mint cursor-pointer" />
-                                <label htmlFor="editIsMandatory" className="text-xs font-bold text-brand-navy dark:text-brand-light uppercase tracking-wider cursor-pointer">{t('auto.features.contracts.details.modals.editcontractsupplementmodal.53080039', { defaultValue: "Supplément Obligatoire" })}</label>
+                                <label htmlFor="editIsMandatory" className="text-xs font-bold text-brand-navy dark:text-brand-light uppercase tracking-wider cursor-pointer">{t('auto.features.contracts.details.modals.editcontractsupplementmodal.53080039', { defaultValue: 'Mandatory supplement' })}</label>
                             </div>
 
                             {/* Specific Event Date */}
@@ -301,7 +301,7 @@ export default function EditContractSupplementModal({
                             {/* Room Targeting */}
                             {contractRooms.length > 0 && (
                                 <div className="pt-4 border-t border-brand-slate/15 dark:border-brand-slate/20">
-                                    <label className="block text-xs font-bold text-brand-navy dark:text-brand-light uppercase tracking-wider mb-4 text-center">{t('auto.features.contracts.details.modals.editcontractsupplementmodal.75cec2bc', { defaultValue: "Chambres concernées" })}</label>
+                                    <label className="block text-xs font-bold text-brand-navy dark:text-brand-light uppercase tracking-wider mb-4 text-center">{t('auto.features.contracts.details.modals.editcontractsupplementmodal.75cec2bc', { defaultValue: 'Target rooms' })}</label>
                                     <div className="grid grid-cols-2 gap-3">
                                         {contractRooms.map((room) => (
                                             <label key={room.id} className="flex items-center gap-3 p-3 bg-brand-light dark:bg-brand-slate/10 rounded-xl border border-brand-slate/20 hover:border-brand-mint transition-all cursor-pointer group has-checked:bg-brand-mint/5 has-checked:border-brand-mint/40">
@@ -321,7 +321,7 @@ export default function EditContractSupplementModal({
                             <div className="bg-brand-slate/10 rounded-xl p-4 border border-brand-slate/30 flex items-center gap-3">
                                 <span className="text-lg">💡</span>
                                 <p className="text-[11px] font-bold text-brand-slate italic">
-                                    💡 L'activation par période et les surcharges se gèrent directement dans la Grille.
+                                    Activation by period and overrides are managed directly in the grid.
                                 </p>
                             </div>
                         </div>

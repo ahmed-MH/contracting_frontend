@@ -262,7 +262,7 @@ export default function SmartRatesGrid({ contract }: Props) {
                     <div className="flex flex-wrap items-center gap-2">
                         <button
                             onClick={loadData}
-                            title={t('auto.features.contracts.details.components.rates.grid.smartratesgrid.title.4b61b345', { defaultValue: "Recharger" })}
+                            title={t('auto.features.contracts.details.components.rates.grid.smartratesgrid.title.4b61b345', { defaultValue: 'Reload' })}
                             aria-label={t('auto.features.contracts.details.components.rates.grid.smartratesgrid.title.4b61b345', { defaultValue: "Reload" })}
                             className="rounded-lg p-2 text-brand-slate transition-colors hover:bg-brand-mint/10 hover:text-brand-mint"
                         >
@@ -315,7 +315,7 @@ export default function SmartRatesGrid({ contract }: Props) {
                         </div>
                     </div>
                 )}
-                <div className="rounded-lg border border-brand-mint/20 bg-brand-mint/10 px-4 py-3 text-sm text-brand-navy dark:text-brand-light">
+                <div className="rounded-lg border border-brand-mint/20 bg-brand-mint/10 px-4 py-3 text-sm text-brand-navy dark:border-brand-mint/25 dark:bg-brand-mint/10 dark:text-brand-light">
                     <p className="font-bold">
                         Base board: {contract.baseArrangement ? `${contract.baseArrangement.code} - ${contract.baseArrangement.name}` : 'Not specified'}
                     </p>
@@ -324,19 +324,20 @@ export default function SmartRatesGrid({ contract }: Props) {
                     </p>
                 </div>
 
-                <div className="contract-matrix-surface overflow-x-auto">
-                    <table className="w-full text-left whitespace-nowrap border-collapse">
-                        <thead className="bg-brand-light/80 border-b border-brand-slate/10">
+                <div className="contract-matrix-surface overflow-hidden">
+                    <div className="overflow-x-auto">
+                    <table className="min-w-full w-max text-left border-collapse">
+                        <thead className="bg-brand-light/80 border-b border-brand-slate/10 dark:bg-brand-light/5 dark:border-brand-light/10">
                             <tr>
-                                <th className="px-6 py-5 font-bold text-brand-navy text-sm border-r border-brand-slate/10 sticky left-0 z-10 min-w-[200px] w-64 shadow-sm" >
+                                <th className="sticky left-0 z-20 min-w-[300px] w-[300px] border-r border-brand-slate/10 bg-brand-light/95 px-6 py-5 text-sm font-bold text-brand-navy shadow-sm dark:border-brand-light/10 dark:bg-brand-navy/95 dark:text-brand-light" >
                                     {t('auto.features.contracts.details.components.rates.grid.smartratesgrid.roomType', { defaultValue: 'Room type' })}
                                 </th>
                                 {sortedPeriods.map(period => (
-                                    <th key={period.id} className="px-6 py-4 font-semibold border-r border-brand-slate/10 min-w-[220px] align-middle">
-                                        <div className="flex items-start justify-between">
-                                            <div>
-                                                <div className="text-brand-navy font-bold text-[15px]">{period.name}</div>
-                                                <div className="text-[11px] text-brand-slate/70 font-medium uppercase mt-1 tracking-wider">
+                                    <th key={period.id} className="min-w-[248px] w-[248px] border-r border-brand-slate/10 px-5 py-4 font-semibold align-middle dark:border-brand-light/10">
+                                        <div className="flex items-start justify-between gap-3">
+                                            <div className="min-w-0">
+                                                <div className="max-w-[178px] whitespace-normal text-[15px] font-bold leading-5 text-brand-navy dark:text-brand-light">{period.name}</div>
+                                                <div className="mt-1 whitespace-nowrap text-[11px] font-medium uppercase tracking-wider text-brand-slate/70 dark:text-brand-light/60">
                                                     {new Date(period.startDate).toLocaleDateString('en-GB', { day: '2-digit', month: 'short' }).toUpperCase()}
                                                     {' - '}
                                                     {new Date(period.endDate).toLocaleDateString('en-GB', { day: '2-digit', month: 'short' }).toUpperCase()}
@@ -344,7 +345,7 @@ export default function SmartRatesGrid({ contract }: Props) {
                                             </div>
                                             <button
                                                 onClick={() => handleDeletePeriod(period.id, period.name)}
-                                                className="p-1.5 -mr-2 text-brand-slate/45 hover:text-brand-navy hover:bg-brand-slate/10 rounded transition-colors cursor-pointer"
+                                                className="-mr-1 shrink-0 rounded p-1.5 text-brand-slate/45 transition-colors hover:bg-brand-slate/10 hover:text-brand-navy dark:text-brand-light/45 dark:hover:bg-brand-light/10 dark:hover:text-brand-light"
                                                 title={t('auto.features.contracts.details.components.rates.grid.smartratesgrid.title.c0957662', { defaultValue: "Delete period" })}
                                                 aria-label={t('auto.features.contracts.details.components.rates.grid.smartratesgrid.title.c0957662', { defaultValue: "Delete period" })}
                                             >
@@ -354,32 +355,32 @@ export default function SmartRatesGrid({ contract }: Props) {
                                     </th>
                                 ))}
                                 {/* Add Period Column Header */}
-                                <th className="px-6 py-4 min-w-[140px] align-middle bg-brand-light/70 border-l border-dashed border-brand-slate/15 w-32">
+                                <th className="min-w-[170px] w-[170px] border-l border-dashed border-brand-slate/15 bg-brand-light/70 px-5 py-4 align-middle dark:border-brand-light/10 dark:bg-brand-light/5">
                                     <button
                                         onClick={() => setShowPeriodModal(true)}
-                                        className="flex items-center gap-2 text-sm font-semibold text-brand-mint hover:text-brand-mint/80 transition-colors cursor-pointer w-full"
+                                        className="flex w-full items-center gap-2 whitespace-nowrap text-sm font-semibold text-brand-mint transition-colors hover:text-brand-mint/80"
                                     >
                                         <PlusCircle size={16} /> {t('auto.features.contracts.details.components.rates.grid.smartratesgrid.addPeriod', { defaultValue: 'Add period' })}
                                     </button>
                                 </th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-brand-slate/10">
+                        <tbody className="divide-y divide-brand-slate/10 dark:divide-brand-light/10">
                             {contract.contractRooms.map((room, idx) => (
                                 <tr key={room.id} className={idx % 2 === 0 ? 'bg-brand-light dark:bg-brand-navy group/row' : 'bg-brand-light/60 dark:bg-brand-navy/80 group/row'}>
-                                    <td className="px-6 py-4 border-r border-brand-slate/10 sticky left-0 z-10 shadow-sm align-middle" >
-                                        <div className="flex justify-between items-start gap-2">
-                                            <div title={room.roomType?.name ?? undefined}>
-                                                <div className="font-bold text-brand-navy text-[15px]">{roomMatrixName(room)}</div>
+                                    <td className="sticky left-0 z-10 min-w-[300px] w-[300px] border-r border-brand-slate/10 bg-brand-light/95 px-6 py-4 align-middle shadow-sm dark:border-brand-light/10 dark:bg-brand-navy/95" >
+                                        <div className="flex items-start justify-between gap-3">
+                                            <div className="min-w-0 flex-1" title={room.roomType?.name ?? undefined}>
+                                                <div className="whitespace-normal break-words text-[15px] font-bold leading-5 text-brand-navy dark:text-brand-light">{roomMatrixName(room)}</div>
                                                 {room.roomType?.code && (
-                                                    <div className="mt-1.5 inline-flex px-1.5 py-0.5 bg-brand-slate/10 rounded text-[11px] font-bold text-brand-slate uppercase tracking-wider shrink-0 shadow-sm border border-brand-slate/15">
+                                                    <div className="mt-2 inline-flex max-w-full shrink-0 rounded border border-brand-slate/15 bg-brand-slate/10 px-2 py-0.5 text-[11px] font-bold uppercase tracking-wider text-brand-slate shadow-sm dark:border-brand-light/10 dark:bg-brand-light/10 dark:text-brand-light/70">
                                                         {room.roomType.code}
                                                     </div>
                                                 )}
                                             </div>
                                             <button
                                                 onClick={() => handleDeleteRoom(room.id, roomDisplayCode(room))}
-                                                className="p-1.5 text-brand-slate/45 hover:text-brand-navy hover:bg-brand-slate/10 rounded transition-colors opacity-0 group-hover/row:opacity-100 cursor-pointer shrink-0"
+                                                className="shrink-0 rounded p-1.5 text-brand-slate/45 opacity-0 transition-colors hover:bg-brand-slate/10 hover:text-brand-navy group-hover/row:opacity-100 dark:text-brand-light/45 dark:hover:bg-brand-light/10 dark:hover:text-brand-light"
                                                 title={t('auto.features.contracts.details.components.rates.grid.smartratesgrid.title.a45947a0', { defaultValue: "Remove room" })}
                                                 aria-label={t('auto.features.contracts.details.components.rates.grid.smartratesgrid.title.a45947a0', { defaultValue: "Remove room" })}
                                             >
@@ -394,7 +395,7 @@ export default function SmartRatesGrid({ contract }: Props) {
                                             prices: {},
                                         };
                                         return (
-                                            <td key={period.id} className={`p-0 border-r border-brand-slate/10 min-w-[220px] align-top bg-transparent ${!cell.isContracted ? 'bg-brand-light dark:bg-brand-navy' : 'hover:bg-brand-mint/10'}`}>
+                                            <td key={period.id} className={`min-w-[248px] w-[248px] border-r border-brand-slate/10 p-0 align-top transition-colors dark:border-brand-light/10 ${!cell.isContracted ? 'bg-brand-light dark:bg-brand-navy' : 'bg-transparent hover:bg-brand-light/60 dark:hover:bg-brand-light/5'}`}>
                                                 <RateCell
                                                     key={`${room.id}-${period.id}-${BASE_PRICE_ID}`}
                                                     roomId={room.id}
@@ -410,49 +411,61 @@ export default function SmartRatesGrid({ contract }: Props) {
                                         );
                                     })}
                                     {/* Empty cell under Add Period */}
-                                    <td className="border-l border-dashed border-brand-slate/15 bg-brand-light/70"></td>
+                                    <td className="min-w-[170px] w-[170px] border-l border-dashed border-brand-slate/15 bg-brand-light/70 dark:border-brand-light/10 dark:bg-brand-light/5"></td>
                                 </tr>
                             ))}
                         </tbody>
                         <tfoot>
                             {/* Period Defaults Row: MinStay & Release */}
-                            <tr className="bg-brand-mint/5 border-t-2 border-brand-mint/20">
-                                <td className="px-6 py-3 sticky left-0 z-10 bg-brand-mint/5 shadow-sm">
-                                    <div className="text-[10px] font-bold text-brand-mint uppercase tracking-widest">{t('auto.features.contracts.details.components.rates.grid.smartratesgrid.8711b328', { defaultValue: "Period defaults" })}</div>
-                                    <div className="text-[10px] text-brand-slate/70 mt-0.5">{t('auto.features.contracts.details.components.rates.grid.smartratesgrid.f9b3c277', { defaultValue: "Min Stay / Release (nuits / jours)" })}</div>
+                            <tr className="border-t-2 border-brand-mint/20 bg-brand-mint/5 dark:border-brand-mint/25 dark:bg-brand-mint/8">
+                                <td className="sticky left-0 z-20 min-w-[300px] w-[300px] border-r border-brand-slate/10 bg-brand-light px-4 py-3 shadow-sm dark:border-brand-light/10 dark:bg-brand-navy">
+                                    <div className="rounded-lg bg-brand-mint/8 px-3 py-2 dark:bg-brand-mint/10">
+                                        <div className="whitespace-nowrap text-[10px] font-bold uppercase tracking-widest text-brand-mint">{t('auto.features.contracts.details.components.rates.grid.smartratesgrid.8711b328', { defaultValue: 'Period defaults' })}</div>
+                                        <div className="mt-1 max-w-[220px] text-[10px] leading-4 text-brand-slate/70 dark:text-brand-light/60">{t('auto.features.contracts.details.components.rates.grid.smartratesgrid.f9b3c277', { defaultValue: 'Minimum stay / release deadline (nights / days)' })}</div>
+                                    </div>
                                 </td>
                                 {sortedPeriods.map(period => (
-                                    <td key={period.id} className="px-4 py-3 border-r border-brand-slate/10">
-                                        <div className="flex items-center gap-2">
-                                            <input
-                                                type="number"
-                                                min="0"
-                                                value={periodDefaults[period.id]?.minStay ?? ''}
-                                                onChange={(e) => handlePeriodDefaultChange(period.id, 'minStay', e.target.value)}
-                                                className="block w-full px-2 py-1 text-xs font-medium text-brand-navy bg-brand-light dark:bg-brand-navy border border-brand-mint/20 rounded-xl focus:ring-1 focus:ring-brand-mint focus:border-brand-mint placeholder:text-brand-slate/45 text-right"
-                                                placeholder={t('auto.features.contracts.details.components.rates.grid.smartratesgrid.placeholder.8ab5b0bc', { defaultValue: "Min Stay" })}
-                                                title={t('auto.features.contracts.details.components.rates.grid.smartratesgrid.title.85c0082d', { defaultValue: "Default min stay for the full period" })}
-                                            />
-                                            <input
-                                                type="number"
-                                                min="0"
-                                                value={periodDefaults[period.id]?.releaseDays ?? ''}
-                                                onChange={(e) => handlePeriodDefaultChange(period.id, 'releaseDays', e.target.value)}
-                                                className="block w-full px-2 py-1 text-xs font-medium text-brand-navy bg-brand-light dark:bg-brand-navy border border-brand-mint/20 rounded-xl focus:ring-1 focus:ring-brand-mint focus:border-brand-mint placeholder:text-brand-slate/45 text-right"
-                                                placeholder={t('auto.features.contracts.details.components.rates.grid.smartratesgrid.placeholder.1025cc59', { defaultValue: "Release" })}
-                                                title={t('auto.features.contracts.details.components.rates.grid.smartratesgrid.title.f302b4c5', { defaultValue: "Default release days for the full period" })}
-                                            />
+                                    <td key={period.id} className="min-w-[248px] w-[248px] border-r border-brand-slate/10 px-4 py-4 dark:border-brand-light/10">
+                                        <div className="grid grid-cols-2 gap-3">
+                                            <label className="min-w-0 space-y-1">
+                                                <span className="block whitespace-nowrap text-[10px] font-semibold uppercase tracking-wider text-brand-slate/70 dark:text-brand-light/60">
+                                                    {t('auto.features.contracts.details.components.rates.grid.ratecell.d82876f6', { defaultValue: 'Min' })}
+                                                </span>
+                                                <input
+                                                    type="number"
+                                                    min="0"
+                                                    value={periodDefaults[period.id]?.minStay ?? ''}
+                                                    onChange={(e) => handlePeriodDefaultChange(period.id, 'minStay', e.target.value)}
+                                                    className="block h-9 w-full rounded-lg border border-brand-mint/20 bg-brand-light/90 px-3 text-right text-xs font-medium text-brand-navy placeholder:text-brand-slate/40 focus:border-brand-mint focus:ring-2 focus:ring-brand-mint/15 dark:bg-brand-navy/70 dark:text-brand-light"
+                                                    placeholder={t('auto.features.contracts.details.components.rates.grid.smartratesgrid.placeholder.8ab5b0bc', { defaultValue: "Min Stay" })}
+                                                    title={t('auto.features.contracts.details.components.rates.grid.smartratesgrid.title.85c0082d', { defaultValue: "Default min stay for the full period" })}
+                                                />
+                                            </label>
+                                            <label className="min-w-0 space-y-1">
+                                                <span className="block whitespace-nowrap text-[10px] font-semibold uppercase tracking-wider text-brand-slate/70 dark:text-brand-light/60">
+                                                    {t('auto.features.contracts.details.components.rates.grid.ratecell.d2396715', { defaultValue: 'Rel.' })}
+                                                </span>
+                                                <input
+                                                    type="number"
+                                                    min="0"
+                                                    value={periodDefaults[period.id]?.releaseDays ?? ''}
+                                                    onChange={(e) => handlePeriodDefaultChange(period.id, 'releaseDays', e.target.value)}
+                                                    className="block h-9 w-full rounded-lg border border-brand-mint/20 bg-brand-light/90 px-3 text-right text-xs font-medium text-brand-navy placeholder:text-brand-slate/40 focus:border-brand-mint focus:ring-2 focus:ring-brand-mint/15 dark:bg-brand-navy/70 dark:text-brand-light"
+                                                    placeholder={t('auto.features.contracts.details.components.rates.grid.smartratesgrid.placeholder.1025cc59', { defaultValue: "Release" })}
+                                                    title={t('auto.features.contracts.details.components.rates.grid.smartratesgrid.title.f302b4c5', { defaultValue: "Default release days for the full period" })}
+                                                />
+                                            </label>
                                         </div>
                                     </td>
                                 ))}
-                                <td className="bg-brand-light/70 border-l border-dashed border-brand-slate/15" />
+                                <td className="min-w-[170px] w-[170px] border-l border-dashed border-brand-slate/15 bg-brand-light/70 dark:border-brand-light/10 dark:bg-brand-light/5" />
                             </tr>
                             {/* Add Room Row */}
                             <tr>
-                                <td colSpan={sortedPeriods.length + 2} className="px-6 py-4 bg-brand-light/70 border-t border-brand-slate/10">
+                                <td colSpan={sortedPeriods.length + 2} className="border-t border-brand-slate/10 bg-brand-light/70 px-6 py-4 dark:border-brand-light/10 dark:bg-brand-light/5">
                                     <button
                                         onClick={() => setShowRoomModal(true)}
-                                        className="w-full py-3 flex justify-center items-center gap-2 border border-brand-mint/20 rounded-xl text-brand-mint font-semibold text-sm hover:bg-brand-mint/10 transition-colors cursor-pointer"
+                                        className="flex w-full items-center justify-center gap-2 rounded-xl border border-brand-mint/20 py-3 text-sm font-semibold text-brand-mint transition-colors hover:bg-brand-mint/10"
                                     >
                                         <PlusSquare size={16} /> {t('auto.features.contracts.details.components.rates.grid.smartratesgrid.addRoomFromInventory', { defaultValue: 'Add room category from master inventory' })}
                                     </button>
@@ -460,6 +473,7 @@ export default function SmartRatesGrid({ contract }: Props) {
                             </tr>
                         </tfoot>
                     </table>
+                    </div>
                 </div>
 
                 {/* ── Period Form Modal ────────────────────────────────────── */}

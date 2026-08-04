@@ -66,20 +66,20 @@ export default function CreatePeriodModal({ isOpen, onClose, onSubmit, isPending
     const finalMaxEnd = (maxEndLimit < rawContractEnd) ? maxEndLimit : rawContractEnd;
 
     return (
-        <Modal isOpen={isOpen} onClose={handleClose} title={t('auto.features.contracts.details.modals.createperiodmodal.title.4807876c', { defaultValue: "Nouvelle Période" })}>
+        <Modal isOpen={isOpen} onClose={handleClose} title={t('auto.features.contracts.details.modals.createperiodmodal.title.4807876c', { defaultValue: 'New pricing period' })}>
             <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4">
                 <div>
-                    <label className="block text-xs font-bold text-brand-navy dark:text-brand-light uppercase tracking-wider mb-1.5">{t('auto.features.contracts.details.modals.createperiodmodal.32ba110d', { defaultValue: "Nom de la période" })}</label>
+                    <label className="block text-xs font-bold text-brand-navy dark:text-brand-light uppercase tracking-wider mb-1.5">{t('auto.features.contracts.details.modals.createperiodmodal.32ba110d', { defaultValue: 'Period name' })}</label>
                     <input
                         type="text"
                         {...register('name')}
                         readOnly
                         className="w-full px-3 py-2 border border-brand-slate/10 bg-brand-light dark:bg-brand-slate/10 text-brand-slate rounded-xl text-sm outline-none cursor-not-allowed"
                     />
-                    <p className="text-xs text-brand-slate/60 mt-1">{t('auto.features.contracts.details.modals.createperiodmodal.e8af1339', { defaultValue: "Généré automatiquement (ordre croissant)." })}</p>
+                    <p className="text-xs text-brand-slate/60 mt-1">{t('auto.features.contracts.details.modals.createperiodmodal.e8af1339', { defaultValue: 'Generated automatically in chronological order.' })}</p>
                 </div>
                 <div>
-                    <label className="block text-xs font-bold text-brand-navy dark:text-brand-light uppercase tracking-wider mb-1.5">{t('auto.features.contracts.details.modals.createperiodmodal.68d84d59', { defaultValue: "Date de début" })}</label>
+                    <label className="block text-xs font-bold text-brand-navy dark:text-brand-light uppercase tracking-wider mb-1.5">{t('auto.features.contracts.details.modals.createperiodmodal.68d84d59', { defaultValue: 'Start date' })}</label>
                     <input
                         type="date"
                         {...register('startDate')}
@@ -89,7 +89,7 @@ export default function CreatePeriodModal({ isOpen, onClose, onSubmit, isPending
                     />
                 </div>
                 <div>
-                    <label className="block text-xs font-bold text-brand-navy dark:text-brand-light uppercase tracking-wider mb-1.5">{t('auto.features.contracts.details.modals.createperiodmodal.ae467c20', { defaultValue: "Date de fin" })}</label>
+                    <label className="block text-xs font-bold text-brand-navy dark:text-brand-light uppercase tracking-wider mb-1.5">{t('auto.features.contracts.details.modals.createperiodmodal.ae467c20', { defaultValue: 'End date' })}</label>
                     <input
                         type="date"
                         {...register('endDate')}
@@ -111,11 +111,11 @@ export default function CreatePeriodModal({ isOpen, onClose, onSubmit, isPending
                 <div className="mt-6 pt-4 border-t border-brand-slate/15 dark:border-brand-slate/20 flex justify-end gap-3">
                     <button type="button" onClick={handleClose}
                         className="px-4 py-2 text-sm font-medium text-brand-slate hover:text-brand-navy dark:hover:text-brand-light bg-brand-slate/10 hover:bg-brand-slate/20 rounded-xl transition-colors cursor-pointer">
-                        Annuler
+                        Cancel
                     </button>
                     <button type="submit" disabled={isPending}
                         className="px-4 py-2 text-sm font-medium text-brand-light bg-brand-mint rounded-xl hover:bg-brand-mint/90 transition-colors disabled:opacity-50 cursor-pointer">
-                        {isPending ? 'Ajout...' : 'Ajouter'}
+                        {isPending ? 'Adding...' : 'Add'}
                     </button>
                 </div>
             </form>

@@ -28,13 +28,6 @@ import EditReductionTemplateModal from '../components/EditReductionTemplateModal
 import UpdatedByCell from '../../../../components/audit/UpdatedByCell';
 import PaginationControls, { createClientPageMeta, getPageItems } from '../../../../components/ui/PaginationControls';
 
-const PAX_TYPE_LABELS: Record<string, string> = {
-    FIRST_CHILD: '1er Enfant',
-    SECOND_CHILD: '2ème Enfant',
-    THIRD_CHILD: '3ème Enfant',
-    THIRD_ADULT: '3ème Adulte',
-};
-
 const CALC_TYPE_COLORS: Record<string, string> = {
     PERCENTAGE: 'bg-brand-slate/10 text-brand-slate border-brand-slate/30',
     FIXED: 'bg-brand-mint/10 text-brand-mint border-brand-mint/30',
@@ -43,6 +36,12 @@ const CALC_TYPE_COLORS: Record<string, string> = {
 
 export default function ReductionsCatalogPage() {
     const { t } = useTranslation('common');
+    const paxTypeLabels: Record<string, string> = {
+        FIRST_CHILD: t('pages.catalog.labels.pax.firstChild'),
+        SECOND_CHILD: t('pages.catalog.labels.pax.secondChild'),
+        THIRD_CHILD: t('pages.catalog.labels.pax.thirdChild'),
+        THIRD_ADULT: t('pages.catalog.labels.pax.thirdAdult'),
+    };
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editing, setEditing] = useState<TemplateReduction | null>(null);
     const [showArchived, setShowArchived] = useState(false);
@@ -83,9 +82,9 @@ export default function ReductionsCatalogPage() {
 
     const handleDelete = async (r: TemplateReduction) => {
         if (await confirm({
-            title: `Archiver la réduction "${r.name}" ?`,
-            description: "La réduction sera archivée et ne sera plus visible dans le catalogue.",
-            confirmLabel: "Archiver",
+            title: t('pages.catalog.reductions.confirmArchive.title', { name: r.name }),
+            description: t('pages.catalog.reductions.confirmArchive.description'),
+            confirmLabel: t('pages.catalog.reductions.confirmArchive.confirmLabel'),
             variant: "danger",
         })) {
             deleteMutation.mutate(r.id);
@@ -94,9 +93,9 @@ export default function ReductionsCatalogPage() {
 
     const handleRestore = async (r: TemplateReduction) => {
         if (await confirm({
-            title: `Restaurer la réduction "${r.name}" ?`,
-            description: "La réduction sera de nouveau disponible dans le catalogue.",
-            confirmLabel: "Restaurer",
+            title: t('pages.catalog.reductions.confirmRestore.title', { name: r.name }),
+            description: t('pages.catalog.reductions.confirmRestore.description'),
+            confirmLabel: t('pages.catalog.reductions.confirmRestore.confirmLabel'),
             variant: "info",
         })) {
             restoreMutation.mutate(r.id);
@@ -124,13 +123,13 @@ export default function ReductionsCatalogPage() {
                             <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-brand-mint/10 text-brand-mint">
                                 <Percent size={24} />
                             </span>
-                            Catalogue Réductions
+                            {t('pages.catalog.reductions.header.title')}
                         </h1>
                         <p className="mt-3 max-w-3xl text-sm leading-6 text-brand-slate dark:text-brand-light/75">{t('auto.features.catalog.reductions.pages.reductionscatalogpage.b89de9fd', { defaultValue: "Définitions des réductions réutilisables (templates)" })}</p>
                     </div>
                     <button onClick={openCreate}
                         className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl bg-brand-mint px-4 text-sm font-semibold text-brand-light shadow-md transition hover:-translate-y-0.5 hover:bg-brand-mint cursor-pointer border-none outline-none lg:mt-9">
-                        <Plus size={16} /> Nouvelle Réduction
+                        <Plus size={16} /> {t('pages.catalog.reductions.header.new')}
                     </button>
                 </div>
                 <div className="relative mt-5 flex flex-col gap-3 border-t border-brand-slate/10 pt-5 dark:border-brand-light/10 md:flex-row md:items-center md:justify-between">
@@ -160,7 +159,7 @@ export default function ReductionsCatalogPage() {
 
             {isError && (
                 <div className="premium-surface border-brand-slate/20 p-6 text-sm font-semibold text-brand-slate dark:text-brand-light/75">
-                    Impossible de charger les réductions.
+                    {t('pages.catalog.reductions.states.loadError')}
                 </div>
             )}
 
@@ -198,15 +197,15 @@ export default function ReductionsCatalogPage() {
                                     <td className="px-5 py-4 shrink-0">
                                         <div className="flex items-center gap-1.5 text-xs text-brand-mint font-bold bg-brand-mint/10 px-2 py-0.5 rounded-xl border border-brand-mint/30 w-fit">
                                             <Users size={12} />
-                                            {PAX_TYPE_LABELS[r.paxType]}
+                                            {paxTypeLabels[r.paxType]}
                                         </div>
                                     </td>
                                     <td className="px-5 py-4 text-brand-slate text-xs font-bold font-mono">
-                                        {r.minAge} — {r.maxAge} ans
+                                        {r.minAge} — {r.maxAge} {t('pages.catalog.labels.years')}
                                     </td>
                                     <td className="px-5 py-4 text-right">
                                         <span className={`inline-flex items-center px-2 py-0.5 rounded-xl text-xs font-bold border ${CALC_TYPE_COLORS[r.calculationType]}`}>
-                                            {r.calculationType === 'FREE' ? 'Gratuit' : r.calculationType === 'PERCENTAGE' ? `-${r.value}%` : `-${r.value} €`}
+                                            {r.calculationType === 'FREE' ? t('pages.catalog.labels.type.free') : r.calculationType === 'PERCENTAGE' ? `-${r.value}%` : `-${r.value} TND`}
                                         </span>
                                     </td>
                                     <td className="px-5 py-4 align-top">
@@ -239,7 +238,7 @@ export default function ReductionsCatalogPage() {
                         className="inline-flex items-center gap-2 rounded-lg border border-brand-light/70 bg-brand-light/70 px-4 py-2 text-sm font-semibold text-brand-navy transition hover:border-brand-mint hover:text-brand-mint dark:border-brand-light/10 dark:bg-brand-light/5 dark:text-brand-light">
                         {showArchived ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
                         <Archive size={16} />
-                        Réductions archivées {archivedReductions ? `(${archivedReductions.length})` : ''}
+                        {t('pages.catalog.reductions.archived.toggle', { count: archivedReductions ? `(${archivedReductions.length})` : '' })}
                     </button>
 
                     {showArchived && archivedReductions && archivedReductions.length > 0 && (
@@ -263,7 +262,7 @@ export default function ReductionsCatalogPage() {
                                             <td className="px-5 py-3 text-right">
                                                 <button onClick={() => handleRestore(r)}
                                                     className="inline-flex h-10 items-center gap-2 rounded-lg bg-brand-mint/10 px-4 text-sm font-semibold text-brand-mint transition hover:bg-brand-mint hover:text-brand-light disabled:cursor-not-allowed disabled:opacity-60">
-                                                    <RotateCcw size={14} /> Restaurer
+                                                    <RotateCcw size={14} /> {t('pages.catalog.reductions.archived.restore')}
                                                 </button>
                                             </td>
                                         </tr>

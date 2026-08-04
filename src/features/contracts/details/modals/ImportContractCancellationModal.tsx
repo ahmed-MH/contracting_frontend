@@ -86,8 +86,8 @@ export default function ImportContractCancellationModal({ isOpen, onClose, contr
                 {/* ─── Header ──────────────────────────────────────────── */}
                 <div className="px-6 py-4 border-b border-brand-slate/15 dark:border-brand-slate/20 flex items-center justify-between">
                     <div>
-                        <h3 className="text-lg font-bold text-brand-navy dark:text-brand-light">{t('auto.features.contracts.details.modals.importcontractcancellationmodal.7204a209', { defaultValue: "Catalogue des Annulations" })}</h3>
-                        <p className="text-xs text-brand-slate font-medium tracking-wide mt-0.5 uppercase">{t('auto.features.contracts.details.modals.importcontractcancellationmodal.ee91a588', { defaultValue: "Sélectionnez les règles à importer dans le contrat" })}</p>
+                        <h3 className="text-lg font-bold text-brand-navy dark:text-brand-light">{t('auto.features.contracts.details.modals.importcontractcancellationmodal.7204a209', { defaultValue: 'Cancellation rules catalog' })}</h3>
+                        <p className="text-xs text-brand-slate font-medium tracking-wide mt-0.5 uppercase">{t('auto.features.contracts.details.modals.importcontractcancellationmodal.ee91a588', { defaultValue: 'Select the rules to import into this contract' })}</p>
                     </div>
                     <button onClick={handleClose} className="p-2 rounded-full transition-colors cursor-pointer text-brand-slate hover:text-brand-navy hover:bg-brand-slate/10 dark:hover:text-brand-light dark:hover:bg-brand-slate/20">
                         <X size={20} />
@@ -108,7 +108,7 @@ export default function ImportContractCancellationModal({ isOpen, onClose, contr
                     </div>
                     {importedTemplateIds.size > 0 && (
                         <p className="text-[10px] text-brand-mint font-bold mt-2 flex items-center gap-1">
-                            ✓ {importedTemplateIds.size} règle(s) déjà importée(s) dans ce contrat sont masquées.
+                            {importedTemplateIds.size} rule(s) already imported into this contract are hidden.
                         </p>
                     )}
                 </div>
@@ -118,18 +118,18 @@ export default function ImportContractCancellationModal({ isOpen, onClose, contr
                     {isLoading ? (
                         <div className="flex flex-col items-center justify-center py-20 gap-3 grayscale opacity-50">
                             <div className="w-8 h-8 border-2 border-brand-mint border-t-transparent rounded-full animate-spin" />
-                            <p className="text-xs font-bold text-brand-slate uppercase tracking-widest">{t('auto.features.contracts.details.modals.importcontractcancellationmodal.ddd6603d', { defaultValue: "Chargement du catalogue..." })}</p>
+                            <p className="text-xs font-bold text-brand-slate uppercase tracking-widest">{t('auto.features.contracts.details.modals.importcontractcancellationmodal.ddd6603d', { defaultValue: 'Loading catalog...' })}</p>
                         </div>
                     ) : availableTemplates.length === 0 ? (
                         <div className="text-center py-16">
                             <AlertCircle className="mx-auto text-brand-slate/30 mb-4" size={48} />
                             <p className="text-brand-navy dark:text-brand-light font-bold tracking-tight">
-                                {(allTemplates?.length ?? 0) > 0 ? 'Toutes les règles ont déjà été importées' : 'Le catalogue est vide'}
+                                {(allTemplates?.length ?? 0) > 0 ? 'All rules have already been imported' : 'The catalog is empty'}
                             </p>
                             <p className="text-xs text-brand-slate/60 mt-1 max-w-[260px] mx-auto">
                                 {(allTemplates?.length ?? 0) > 0
-                                    ? 'Toutes les politiques disponibles sont déjà présentes dans ce contrat.'
-                                    : 'Veuillez d\'abord configurer vos politiques dans les paramètres de l\'hôtel.'}
+                                    ? 'All available policies are already included in this contract.'
+                                    : 'Configure your cancellation policies in the hotel settings first.'}
                             </p>
                         </div>
                     ) : (
@@ -165,9 +165,9 @@ export default function ImportContractCancellationModal({ isOpen, onClose, contr
                                             {template.name}
                                         </h4>
                                         <p className="text-xs text-brand-slate mt-1 flex items-center gap-2 flex-wrap">
-                                            <span className="font-bold text-brand-mint bg-brand-mint/10 px-1.5 py-0.5 rounded border border-brand-mint/20">≤ {template.daysBeforeArrival} j</span>
+                                            <span className="font-bold text-brand-mint bg-brand-mint/10 px-1.5 py-0.5 rounded border border-brand-mint/20">≤ {template.daysBeforeArrival} days</span>
                                             <span>•</span>
-                                            <span>{t('auto.features.contracts.details.modals.importcontractcancellationmodal.9b42cf78', { defaultValue: "Pénalité:" })} <span className="font-bold text-brand-navy dark:text-brand-light">{template.baseValue} {template.penaltyType === 'NIGHTS' ? 'Nuits' : template.penaltyType === 'PERCENTAGE' ? '%' : 'TND'}</span></span>
+                                            <span>{t('auto.features.contracts.details.modals.importcontractcancellationmodal.9b42cf78', { defaultValue: 'Penalty:' })} <span className="font-bold text-brand-navy dark:text-brand-light">{template.baseValue} {template.penaltyType === 'NIGHTS' ? 'nights' : template.penaltyType === 'PERCENTAGE' ? '%' : 'TND'}</span></span>
                                             {template.appliesToNoShow && (
                                                 <>
                                                     <span>•</span>
@@ -184,11 +184,11 @@ export default function ImportContractCancellationModal({ isOpen, onClose, contr
 
                 <div className="p-6 bg-brand-light/50 dark:bg-brand-navy/50 border-t border-brand-slate/15 dark:border-brand-slate/20 flex items-center justify-between gap-3">
                     <p className="text-[10px] text-brand-slate font-bold uppercase tracking-wider">
-                        {selectedIds.size > 0 ? `${selectedIds.size} règle(s) sélectionnée(s)` : 'Aucune sélection'}
+                        {selectedIds.size > 0 ? `${selectedIds.size} rule(s) selected` : 'No selection'}
                     </p>
                     <div className="flex gap-3">
                         <button type="button" onClick={handleClose} className="px-6 py-2.5 text-sm font-bold text-brand-slate hover:text-brand-navy dark:hover:text-brand-light transition-colors cursor-pointer">
-                            Annuler
+                            Cancel
                         </button>
                         <button
                             onClick={handleImport}
@@ -198,7 +198,7 @@ export default function ImportContractCancellationModal({ isOpen, onClose, contr
                             {importMutation.isPending
                                 ? <div className="w-4 h-4 border-2 border-brand-light border-t-transparent rounded-full animate-spin" />
                                 : <Plus size={16} />}
-                            Importer {selectedIds.size > 0 ? `(${selectedIds.size})` : ''}
+                            Import {selectedIds.size > 0 ? `(${selectedIds.size})` : ''}
                         </button>
                     </div>
                 </div>

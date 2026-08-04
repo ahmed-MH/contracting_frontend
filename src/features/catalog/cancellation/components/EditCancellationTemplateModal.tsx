@@ -75,7 +75,7 @@ export default function EditCancellationTemplateModal({
     const footer = (
         <>
             <button type="button" onClick={onClose} className="px-6 py-2.5 text-sm font-bold text-brand-slate hover:text-brand-navy dark:hover:text-brand-light transition-colors cursor-pointer">
-                Annuler
+                {t('pages.catalog.modal.common.cancel')}
             </button>
             <button
                 form="cancellation-template-form"
@@ -88,7 +88,7 @@ export default function EditCancellationTemplateModal({
                 ) : (
                     <Save size={16} />
                 )}
-                {editItem ? 'Enregistrer' : 'Créer le Template'}
+                {editItem ? t('pages.catalog.modal.common.save') : t('pages.catalog.modal.cancellation.modal.create')}
             </button>
         </>
     );
@@ -97,7 +97,7 @@ export default function EditCancellationTemplateModal({
         <ModalShell
             isOpen={isOpen}
             onClose={onClose}
-            title={editItem ? `Modifier – ${editItem.name}` : 'Nouveau Template Annulation'}
+            title={editItem ? t('pages.catalog.modal.cancellation.modal.editTitle', { name: editItem.name }) : t('pages.catalog.modal.cancellation.modal.createTitle')}
             subtitle={t('auto.features.catalog.cancellation.components.editcancellationtemplatemodal.subtitle.5b9996bf', { defaultValue: "Politique de désengagement Catalogue" })}
             icon={<ShieldAlert size={20} />}
             iconBg="bg-brand-slate/10 dark:bg-brand-navy/80 text-brand-slate"
@@ -121,7 +121,7 @@ export default function EditCancellationTemplateModal({
                 {/* Section 2 */}
                 <div className="space-y-4">
                     <h4 className="text-[10px] font-bold text-brand-slate uppercase tracking-[0.2em] border-b border-brand-slate/15 dark:border-brand-slate/20 pb-2 flex items-center gap-2">
-                        <Clock size={12} /> 2. Fenêtre de désengagement
+                        <Clock size={12} /> {t('pages.catalog.modal.cancellation.modal.releaseWindow')}
                     </h4>
                     <div className="grid grid-cols-2 gap-6">
                         <div>

@@ -7,18 +7,14 @@ export interface ExchangeRate extends AuditMetadata {
     toCurrency: string;
     rate: number;
     effectiveDate: string;
-    source: ExchangeRateSource;
     updatedBy?: string | null;
 }
-
-export type ExchangeRateSource = 'manual' | 'system' | 'imported';
 
 export interface CreateExchangeRatePayload {
     fromCurrency: string;
     toCurrency: string;
     rate: number;
     effectiveDate: string;
-    source?: ExchangeRateSource;
 }
 
 export interface UpdateExchangeRatePayload extends Partial<CreateExchangeRatePayload> {}

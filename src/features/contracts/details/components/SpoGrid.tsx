@@ -28,15 +28,15 @@ interface CellData {
 type Matrix = Record<number, Record<number, CellData>>;
 
 const BENEFIT_LABELS: Record<string, string> = {
-    PERCENTAGE_DISCOUNT: '% Remise',
-    FIXED_DISCOUNT: 'Montant Fixe',
-    FREE_NIGHTS: 'Nuits Gratuites',
+    PERCENTAGE_DISCOUNT: 'Discount %',
+    FIXED_DISCOUNT: 'Fixed amount',
+    FREE_NIGHTS: 'Free nights',
 };
 
 const APP_LABELS: Record<string, string> = {
-    PER_NIGHT_PER_PERSON: 'Pr pers./nuit',
-    PER_NIGHT_PER_ROOM: 'Pr ch./nuit',
-    FLAT_RATE_PER_STAY: 'Forfait séjour',
+    PER_NIGHT_PER_PERSON: 'Per person/night',
+    PER_NIGHT_PER_ROOM: 'Per room/night',
+    FLAT_RATE_PER_STAY: 'Flat rate/stay',
 };
 
 function buildInitialMatrix(spos: ContractSpo[]): Matrix {
@@ -109,7 +109,7 @@ export default function SpoGrid({
                 .filter(spoId => !isEqual(initialMatrix[spoId], editedMatrix[spoId]));
 
             if (modifiedSpoIds.length === 0) {
-                toast.info(i18next.t('auto.features.contracts.details.components.spogrid.toast.info.148acb8b', { defaultValue: "Aucune modification à enregistrer." }));
+                toast.info(i18next.t('auto.features.contracts.details.components.spogrid.toast.info.148acb8b', { defaultValue: 'No changes to save.' }));
                 return;
             }
 
@@ -135,10 +135,10 @@ export default function SpoGrid({
 
             setInitialMatrix(editedMatrix);
             onSaved();
-            toast.success(`${modifiedSpoIds.length} offre(s) spéciale(s) sauvegardée(s)`);
+            toast.success(`${modifiedSpoIds.length} special offer(s) saved`);
         } catch (err: any) {
             const msg = err?.response?.data?.message;
-            toast.error(Array.isArray(msg) ? msg.join(', ') : (msg ?? 'Erreur lors de la sauvegarde'));
+            toast.error(Array.isArray(msg) ? msg.join(', ') : (msg ?? 'Error saving changes'));
         } finally {
             setIsSaving(false);
         }
@@ -155,14 +155,14 @@ export default function SpoGrid({
                         <Gift size={14} />
                     </span>
                     <span className="text-xs font-bold uppercase tracking-widest text-brand-navy">
-                        Matrice d'Offres Spéciales (SPO)
+                        Special Offers Matrix (SPO)
                     </span>
                 </div>
                 <div className='flex flex-wrap items-center gap-3'>
                     <div className="flex items-center gap-2 group cursor-help">
                         <Info size={14} className="text-brand-mint group-hover:text-brand-mint transition-colors" />
                         <span className="text-[10px] text-brand-slate font-medium">
-                            Activez par période & surchargez la remise si nécessaire
+                            Enable by period and override the discount when needed
                         </span>
                     </div>
 
@@ -173,7 +173,7 @@ export default function SpoGrid({
                         className="inline-flex items-center gap-1.5 rounded-lg bg-brand-mint px-4 py-2 text-xs font-bold text-brand-light transition-colors hover:bg-brand-mint/90 disabled:cursor-not-allowed disabled:opacity-50"
                     >
                         <Save size={13} />
-                        {isSaving ? 'Enregistrement...' : 'Enregistrer les modifications'}
+                        {isSaving ? 'Saving...' : 'Save changes'}
                     </button>
                 </div>
             </div>
@@ -183,7 +183,7 @@ export default function SpoGrid({
                     <thead>
                         <tr className="bg-brand-light border-b-2 border-brand-slate/20">
                             <th className="px-4 py-3 text-xs font-bold text-brand-slate uppercase sticky left-0 bg-brand-light z-10 shadow-md min-w-[240px]">
-                                Offre Spéciale
+                                Special offer
                             </th>
                             <th className="px-4 py-3 text-xs font-bold text-brand-slate uppercase min-w-[140px]">
                                 Configuration
@@ -217,14 +217,14 @@ export default function SpoGrid({
                                         <div className="flex flex-col gap-1.5">
                                             <div className="flex items-center gap-2">
                                                 <span className="font-bold text-brand-navy text-sm leading-none">{spo.name}</span>
-                                                {isRowDirty && <span className='w-2 h-2 rounded-full bg-brand-slate/20' title='Modifications non enregistrées'></span>}
+                                                {isRowDirty && <span className='w-2 h-2 rounded-full bg-brand-slate/20' title='Unsaved changes'></span>}
                                             </div>
                                             <div className="flex flex-wrap gap-1 mt-1">
                                                 {roomCodes.length > 0 ? (
                                                     <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-brand-light text-[10px] font-mono font-bold text-brand-slate border border-brand-slate/20 uppercase">
                                                         🏨 {roomCodes.join(', ')}
                                                     </span>
-                                                ) : <span className="text-[10px] text-brand-slate italic">{t('auto.features.contracts.details.components.spogrid.3f2fb0bf', { defaultValue: "Toutes chambres" })}</span>}
+                                                ) : <span className="text-[10px] text-brand-slate italic">{t('auto.features.contracts.details.components.spogrid.3f2fb0bf', { defaultValue: 'All rooms' })}</span>}
                                                 {boardCodes.length > 0 && (
                                                     <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-brand-slate/10 text-[10px] font-mono font-bold text-brand-slate border border-brand-slate/30 uppercase">
                                                         🍽️ {boardCodes.join(', ')}
@@ -280,10 +280,10 @@ export default function SpoGrid({
 
                                     <td className="px-4 py-4 border-l border-brand-slate/20 text-center sticky right-0 bg-brand-light group-hover:bg-brand-light transition-colors shadow-md">
                                         <div className="flex items-center justify-center gap-1 opacity-60 group-hover:opacity-100 transition-opacity">
-                                            <button type="button" onClick={() => onEdit(spo)} className="p-1 px-1.5 rounded-xl text-brand-slate hover:text-brand-mint hover:bg-brand-mint/10 transition-colors cursor-pointer" title={t('auto.features.contracts.details.components.spogrid.title.be88e85a', { defaultValue: "Modifier la coquille" })} aria-label={t('auto.features.contracts.details.components.spogrid.title.be88e85a', { defaultValue: "Edit template" })}>
+                                            <button type="button" onClick={() => onEdit(spo)} className="p-1 px-1.5 rounded-xl text-brand-slate hover:text-brand-mint hover:bg-brand-mint/10 transition-colors cursor-pointer" title={t('auto.features.contracts.details.components.spogrid.title.be88e85a', { defaultValue: 'Edit template' })} aria-label={t('auto.features.contracts.details.components.spogrid.title.be88e85a', { defaultValue: 'Edit template' })}>
                                                 <Pencil size={12} />
                                             </button>
-                                            <button type="button" onClick={() => onDelete(spo)} disabled={isDeleting} className="p-1 px-1.5 rounded-xl text-brand-slate hover:text-brand-slate hover:bg-brand-slate/10 transition-colors cursor-pointer disabled:opacity-50" title={t('auto.features.contracts.details.components.spogrid.title.32f0bf50', { defaultValue: "Supprimer l'offre" })} aria-label={t('auto.features.contracts.details.components.spogrid.title.32f0bf50', { defaultValue: "Remove offer" })}>
+                                            <button type="button" onClick={() => onDelete(spo)} disabled={isDeleting} className="p-1 px-1.5 rounded-xl text-brand-slate hover:text-brand-slate hover:bg-brand-slate/10 transition-colors cursor-pointer disabled:opacity-50" title={t('auto.features.contracts.details.components.spogrid.title.32f0bf50', { defaultValue: 'Remove offer' })} aria-label={t('auto.features.contracts.details.components.spogrid.title.32f0bf50', { defaultValue: 'Remove offer' })}>
                                                 <Trash2 size={12} />
                                             </button>
                                         </div>
@@ -298,19 +298,19 @@ export default function SpoGrid({
             <div className="px-5 py-3 bg-brand-light border-t border-brand-slate/20 flex items-center gap-6 text-[10px] text-brand-slate font-medium">
                 <span className="flex items-center gap-2">
                     <span className="w-2.5 h-2.5 rounded-full bg-brand-slate/10" />
-                    Non appliqué
+                    Not applied
                 </span>
                 <span className="flex items-center gap-2">
                     <span className="w-2.5 h-2.5 rounded-full bg-brand-mint" />
-                    Valeur par défaut héritée
+                    Default inherited
                 </span>
                 <span className="flex items-center gap-2">
-                    <span className="w-2.5 h-2.5 rounded-full bg-brand-mint ring-4 ring-brand-mint" />
-                    Valeur surchargée
+                    <span className="w-2.5 h-2.5 rounded-full bg-brand-mint ring-4 ring-brand-mint/25" />
+                    Value overridden
                 </span>
                  <span className="flex items-center gap-2 font-bold">
                     <span className="w-2.5 h-2.5 rounded-full bg-brand-slate/20" />
-                    Modification non enregistrée
+                    Unsaved change
                 </span>
             </div>
         </div>

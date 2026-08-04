@@ -23,7 +23,7 @@ export function useImportMonoparentalRule(contractId: number) {
             contractMonoparentalService.importFromTemplate(contractId, templateId),
         onSuccess: () => {
             qc.invalidateQueries({ queryKey: contractMonoparentalKeys.all(contractId) });
-            toast.success(i18next.t('auto.features.contracts.hooks.usecontractmonoparentalrules.toast.success.e9253375', { defaultValue: "Règle importée avec succès" }));
+            toast.success(i18next.t('auto.features.contracts.hooks.usecontractmonoparentalrules.toast.success.e9253375', { defaultValue: 'Monoparental rule imported successfully' }));
         },
     });
 }
@@ -46,7 +46,7 @@ export function useDeleteContractMonoparentalRule(contractId: number) {
         mutationFn: (ruleId: number) => contractMonoparentalService.delete(contractId, ruleId),
         onSuccess: () => {
             qc.invalidateQueries({ queryKey: contractMonoparentalKeys.all(contractId) });
-            toast.success(i18next.t('auto.features.contracts.hooks.usecontractmonoparentalrules.toast.success.99c23aee', { defaultValue: "Règle supprimée du contrat" }));
+            toast.success(i18next.t('auto.features.contracts.hooks.usecontractmonoparentalrules.toast.success.99c23aee', { defaultValue: 'Monoparental rule removed from the contract' }));
         },
     });
 }

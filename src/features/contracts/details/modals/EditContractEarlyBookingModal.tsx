@@ -96,8 +96,8 @@ export default function EditContractEarlyBookingModal({
         <ModalShell
             isOpen={isOpen}
             onClose={onClose}
-            title={t('auto.features.contracts.details.modals.editcontractearlybookingmodal.title.ba6e41ad', { defaultValue: "Modifier l'Early Booking" })}
-            subtitle={t('auto.features.contracts.details.modals.editcontractearlybookingmodal.subtitle.db23e114', { defaultValue: "Configuration de base · Coquille" })}
+            title={t('auto.features.contracts.details.modals.editcontractearlybookingmodal.title.ba6e41ad', { defaultValue: 'Edit Early Booking' })}
+            subtitle={t('auto.features.contracts.details.modals.editcontractearlybookingmodal.subtitle.db23e114', { defaultValue: 'Base configuration' })}
             onSubmit={handleSubmit(onSubmit)}
             submitLabel={t('auto.features.contracts.details.modals.editcontractearlybookingmodal.submitLabel.dde4da7b', { defaultValue: "Sauvegarder la Coquille" })}
             isSubmitting={updateMutation.isPending}
@@ -108,7 +108,7 @@ export default function EditContractEarlyBookingModal({
                         {/* Info Alert */}
                         <div className="bg-brand-mint/5 border border-brand-mint/20 rounded-xl p-4 flex gap-3 text-brand-slate shadow-sm">
                             <p className="text-xs leading-relaxed font-medium">
-                                💡 <span className="font-bold text-brand-navy dark:text-brand-light">{t('auto.features.contracts.details.modals.editcontractearlybookingmodal.a763840e', { defaultValue: "Architecture Matrice :" })}</span> {t('auto.features.contracts.details.modals.editcontractearlybookingmodal.8bb670f6', { defaultValue: "L'activation par période et les surcharges se gèrent directement dans la" })} <span className="text-brand-mint font-bold">{t('auto.features.contracts.details.modals.editcontractearlybookingmodal.2abd761e', { defaultValue: "Grille Early Bookings" })}</span>. Cette modale définit les paramètres globaux de la "Coquille".
+                                <span className="font-bold text-brand-navy dark:text-brand-light">{t('auto.features.contracts.details.modals.editcontractearlybookingmodal.a763840e', { defaultValue: 'Matrix workflow:' })}</span> {t('auto.features.contracts.details.modals.editcontractearlybookingmodal.8bb670f6', { defaultValue: 'Activation by period and overrides are managed directly in the' })} <span className="text-brand-mint font-bold">{t('auto.features.contracts.details.modals.editcontractearlybookingmodal.2abd761e', { defaultValue: 'Early Booking grid' })}</span>. This modal defines the global settings.
                             </p>
                         </div>
 
@@ -143,7 +143,7 @@ export default function EditContractEarlyBookingModal({
                                         className="px-3 py-2.5 bg-brand-mint/5 border border-brand-mint/20 rounded-xl text-[10px] text-brand-mint font-bold outline-none focus:ring-2 focus:ring-brand-mint cursor-pointer"
                                     >
                                         <option value="PER_NIGHT_PER_PERSON">{t('auto.features.contracts.details.modals.editcontractearlybookingmodal.391bb95e', { defaultValue: "Par Nuit & Pers." })}</option>
-                                        <option value="PER_NIGHT_PER_ROOM">{t('auto.features.contracts.details.modals.editcontractearlybookingmodal.31b2075b', { defaultValue: "Par Chambre & Nuit" })}</option>
+                                        <option value="PER_NIGHT_PER_ROOM">{t('auto.features.contracts.details.modals.editcontractearlybookingmodal.31b2075b', { defaultValue: 'Per room / night' })}</option>
                                         <option value="FLAT_RATE_PER_STAY">{t('auto.features.contracts.details.modals.editcontractearlybookingmodal.4a65af00', { defaultValue: "Forfait / Séjour" })}</option>
                                     </select>
                                 </div>
@@ -241,7 +241,7 @@ export default function EditContractEarlyBookingModal({
                         {/* Room Targeting */}
                         {contractRooms.length > 0 && (
                             <div className="pt-4 border-t border-brand-slate/15 dark:border-brand-slate/20">
-                                <label className="block text-xs font-bold text-brand-navy dark:text-brand-light uppercase tracking-wider mb-4 text-center">{t('auto.features.contracts.details.modals.editcontractearlybookingmodal.04248244', { defaultValue: "Chambres concernées" })}</label>
+                                <label className="block text-xs font-bold text-brand-navy dark:text-brand-light uppercase tracking-wider mb-4 text-center">{t('auto.features.contracts.details.modals.editcontractearlybookingmodal.04248244', { defaultValue: 'Target rooms' })}</label>
                                 <div className="grid grid-cols-2 gap-3">
                                     {contractRooms.map((room) => (
                                         <label key={room.id} className="flex items-center gap-3 p-3 bg-brand-light dark:bg-brand-slate/10 rounded-xl border border-brand-slate/20 hover:border-brand-mint transition-all cursor-pointer group has-checked:bg-brand-mint/5 has-checked:border-brand-mint/40">

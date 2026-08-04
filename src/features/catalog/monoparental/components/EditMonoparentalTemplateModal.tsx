@@ -20,18 +20,6 @@ interface EditMonoparentalTemplateModalProps {
     isPending: boolean;
 }
 
-const BASE_RATE_LABELS: Record<BaseRateType, string> = {
-    SINGLE: 'Single',
-    DOUBLE: 'Double',
-};
-
-const CHILD_SURCHARGE_BASE_LABELS: Record<ChildSurchargeBase, string> = {
-    SINGLE: 'Chambre Single',
-    DOUBLE: 'Chambre Double',
-    HALF_SINGLE: 'Demi-Single',
-    HALF_DOUBLE: 'Demi-Double',
-};
-
 export default function EditMonoparentalTemplateModal({
     isOpen,
     onClose,
@@ -41,6 +29,16 @@ export default function EditMonoparentalTemplateModal({
 }: EditMonoparentalTemplateModalProps) {
     const { t } = useTranslation('common');
     const schema = useMemo(() => createMonoparentalTemplateSchema(t), [t]);
+    const baseRateLabels: Record<BaseRateType, string> = {
+        SINGLE: t('pages.catalog.labels.baseRate.single'),
+        DOUBLE: t('pages.catalog.labels.baseRate.double'),
+    };
+    const childSurchargeBaseLabels: Record<ChildSurchargeBase, string> = {
+        SINGLE: t('pages.catalog.labels.surchargeBase.single'),
+        DOUBLE: t('pages.catalog.labels.surchargeBase.double'),
+        HALF_SINGLE: t('pages.catalog.labels.surchargeBase.halfSingle'),
+        HALF_DOUBLE: t('pages.catalog.labels.surchargeBase.halfDouble'),
+    };
     const {
         register,
         handleSubmit,
@@ -71,9 +69,11 @@ export default function EditMonoparentalTemplateModal({
     const childSurchargePercentage = watch('childSurchargePercentage') ?? 0;
 
     useEffect(() => {
-        const name = `${adultCount} Adulte${adultCount > 1 ? 's' : ''} + ${childCount} Enfant${childCount > 1 ? 's' : ''}`;
+        const adultLabel = t(`pages.catalog.modal.monoparental.modal.${adultCount > 1 ? 'adultPlural' : 'adultSingular'}`);
+        const childLabel = t(`pages.catalog.modal.monoparental.modal.${childCount > 1 ? 'childPlural' : 'childSingular'}`);
+        const name = `${adultCount} ${adultLabel} + ${childCount} ${childLabel}`;
         setValue('name', name);
-    }, [adultCount, childCount, setValue]);
+    }, [adultCount, childCount, setValue, t]);
 
     useEffect(() => {
         if (editItem) {
@@ -89,7 +89,7 @@ export default function EditMonoparentalTemplateModal({
             });
         } else {
             reset({
-                name: '1 Adulte + 1 Enfant',
+                name: t('pages.catalog.modal.monoparental.modal.defaultName'),
                 adultCount: 1,
                 childCount: 1,
                 minAge: 0,
@@ -99,7 +99,7 @@ export default function EditMonoparentalTemplateModal({
                 childSurchargePercentage: 50,
             });
         }
-    }, [editItem, reset, isOpen]);
+    }, [editItem, reset, isOpen, t]);
 
     const Stepper = ({ value, onChange, min, max }: { value: number, onChange: (v: number) => void, min: number, max?: number }) => (
         <div className="flex items-center border border-brand-slate/20 rounded-xl overflow-hidden bg-brand-light dark:bg-brand-navy w-full h-10 shadow-sm">
@@ -118,7 +118,7 @@ export default function EditMonoparentalTemplateModal({
     const footer = (
         <>
             <button type="button" onClick={onClose} className="px-6 py-2.5 text-sm font-bold text-brand-slate hover:text-brand-navy dark:hover:text-brand-light transition-colors cursor-pointer">
-                Annuler
+                {t('pages.catalog.modal.common.cancel')}
             </button>
             <button
                 form="monoparental-template-form"
@@ -131,7 +131,7 @@ export default function EditMonoparentalTemplateModal({
                 ) : (
                     <Save size={16} />
                 )}
-                {editItem ? 'Enregistrer' : 'Créer la règle'}
+                {editItem ? t('pages.catalog.modal.common.save') : t('pages.catalog.modal.monoparental.modal.create')}
             </button>
         </>
     );
@@ -140,7 +140,7 @@ export default function EditMonoparentalTemplateModal({
         <ModalShell
             isOpen={isOpen}
             onClose={onClose}
-            title={editItem ? `Modifier – ${editItem.name}` : 'Nouvelle Règle Monoparentale'}
+            title={editItem ? t('pages.catalog.modal.monoparental.modal.editTitle', { name: editItem.name }) : t('pages.catalog.modal.monoparental.modal.createTitle')}
             subtitle={t('auto.features.catalog.monoparental.components.editmonoparentaltemplatemodal.subtitle.f2e2ab54', { defaultValue: "Définition Catalogue" })}
             footer={footer}
             maxWidth="max-w-2xl"
@@ -153,9 +153,22 @@ export default function EditMonoparentalTemplateModal({
                     </div>
                     <div className="text-xs leading-relaxed">
                         <span className="block font-bold text-sm mb-1 uppercase tracking-tight">{t('auto.features.catalog.monoparental.components.editmonoparentaltemplatemodal.c777c589', { defaultValue: "Résumé de la règle :" })}</span>
-                        Si la chambre contient <span className="font-bold underline">{adultCount} Adulte{adultCount > 1 ? 's' : ''}</span> {t('auto.features.catalog.monoparental.components.editmonoparentaltemplatemodal.f2393017', { defaultValue: "et" })} <span className="font-bold underline">{childCount} Enfant{childCount > 1 ? 's' : ''}</span> (de {minAge} à {maxAge} ans), le prix sera : base <span className="font-bold">{BASE_RATE_LABELS[baseRateType]}</span>
+                        <span className="block">
+                            {t('pages.catalog.modal.monoparental.modal.summary', {
+                                adults: adultCount,
+                                children: childCount,
+                                minAge,
+                                maxAge,
+                                base: baseRateLabels[baseRateType],
+                            })}
+                        </span>
                         {childSurchargePercentage > 0 ? (
-                            <> + <span className="font-bold">{childSurchargePercentage}%</span> {t('auto.features.catalog.monoparental.components.editmonoparentaltemplatemodal.73325097', { defaultValue: "de la" })} <span className="font-bold">{CHILD_SURCHARGE_BASE_LABELS[childSurchargeBase]}</span>.</>
+                            <span className="block mt-1 font-medium">
+                                {t('pages.catalog.modal.monoparental.modal.surcharge', {
+                                    value: childSurchargePercentage,
+                                    base: childSurchargeBaseLabels[childSurchargeBase],
+                                })}
+                            </span>
                         ) : (
                             <> {t('auto.features.catalog.monoparental.components.editmonoparentaltemplatemodal.8754f5fe', { defaultValue: "(Enfant gratuit)." })}</>
                         )}
@@ -197,8 +210,8 @@ export default function EditMonoparentalTemplateModal({
                                 </div>
                                 <select {...register('baseRateType')}
                                     className="w-full pl-10 pr-4 py-2.5 bg-brand-light dark:bg-brand-slate/10 border border-brand-slate/20 rounded-xl focus:ring-2 focus:ring-brand-mint transition-all text-sm font-bold appearance-none cursor-pointer text-brand-navy dark:text-brand-light">
-                                    <option value="SINGLE">{t('auto.features.catalog.monoparental.components.editmonoparentaltemplatemodal.58b0a79b', { defaultValue: "Chambre Single" })}</option>
-                                    <option value="DOUBLE">{t('auto.features.catalog.monoparental.components.editmonoparentaltemplatemodal.f7b3d936', { defaultValue: "Chambre Double" })}</option>
+                                    <option value="SINGLE">{t('pages.catalog.labels.surchargeBase.single')}</option>
+                                    <option value="DOUBLE">{t('pages.catalog.labels.surchargeBase.double')}</option>
                                 </select>
                             </div>
                         </div>
@@ -217,10 +230,10 @@ export default function EditMonoparentalTemplateModal({
                                 <label className="block text-xs font-bold text-brand-navy dark:text-brand-light uppercase tracking-wider mb-2">{t('auto.features.catalog.monoparental.components.editmonoparentaltemplatemodal.a53562c2', { defaultValue: "Base de calcul majoration" })}</label>
                                 <select {...register('childSurchargeBase')}
                                     className="w-full px-4 py-2.5 bg-brand-light dark:bg-brand-slate/10 border border-brand-slate/20 rounded-xl focus:ring-2 focus:ring-brand-mint transition-all text-sm font-bold cursor-pointer appearance-none text-brand-navy dark:text-brand-light">
-                                    <option value="SINGLE">{t('auto.features.catalog.monoparental.components.editmonoparentaltemplatemodal.58b0a79b', { defaultValue: "Chambre Single" })}</option>
-                                    <option value="DOUBLE">{t('auto.features.catalog.monoparental.components.editmonoparentaltemplatemodal.fbbbc351', { defaultValue: "Chambre Double (Entière)" })}</option>
-                                    <option value="HALF_SINGLE">{t('auto.features.catalog.monoparental.components.editmonoparentaltemplatemodal.96a80d6c', { defaultValue: "Demi-Single (50%)" })}</option>
-                                    <option value="HALF_DOUBLE">{t('auto.features.catalog.monoparental.components.editmonoparentaltemplatemodal.6b208c3f', { defaultValue: "Demi-Double (50%)" })}</option>
+                                    <option value="SINGLE">{t('pages.catalog.labels.surchargeBase.single')}</option>
+                                    <option value="DOUBLE">{t('pages.catalog.labels.surchargeBase.double')}</option>
+                                    <option value="HALF_SINGLE">{t('pages.catalog.labels.surchargeBase.halfSingle')}</option>
+                                    <option value="HALF_DOUBLE">{t('pages.catalog.labels.surchargeBase.halfDouble')}</option>
                                 </select>
                             </div>
                         </div>

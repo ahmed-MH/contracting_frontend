@@ -330,19 +330,19 @@ export default function SimulatorPage() {
         <div className="space-y-6 p-4 md:p-6">
             <GuidedPageHeader
                 icon={Calculator}
-                kicker={t('pages.simulator.header.eyebrow', { defaultValue: 'Pricing Simulator' })}
-                title={t('pages.simulator.header.title', { defaultValue: 'Quote a stay with contract precision.' })}
-                description={t('pages.simulator.header.subtitle', { defaultValue: 'Select a partner, compose a rooming list, and calculate a detailed net quote against the active contract.' })}
+                kicker={t('pages.simulator.header.eyebrow', { defaultValue: 'Rate Simulation' })}
+                title={t('pages.simulator.header.title', { defaultValue: 'Simulate a stay with contract precision.' })}
+                description={t('pages.simulator.header.subtitle', { defaultValue: 'Select a partner, compose a rooming list, and calculate a detailed net rate against the active contract.' })}
                 actions={(
                 <div className="hidden">
                         <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-brand-slate">
-                            {t('pages.simulator.header.eyebrow', { defaultValue: 'Pricing Simulator' })}
+                            {t('pages.simulator.header.eyebrow', { defaultValue: 'Rate Simulation' })}
                         </p>
                         <h1 className="mt-3 text-3xl font-semibold tracking-tight text-brand-navy dark:text-brand-light">
-                            {t('pages.simulator.header.title', { defaultValue: 'Quote a stay with contract precision.' })}
+                            {t('pages.simulator.header.title', { defaultValue: 'Simulate a stay with contract precision.' })}
                         </h1>
                         <p className="mt-3 max-w-3xl text-sm leading-6 text-brand-slate dark:text-brand-light/75">
-                            {t('pages.simulator.header.subtitle', { defaultValue: 'Select a partner, compose a rooming list, and calculate a detailed net quote against the active contract.' })}
+                            {t('pages.simulator.header.subtitle', { defaultValue: 'Select a partner, compose a rooming list, and calculate a detailed net rate against the active contract.' })}
                         </p>
                     <div className="grid grid-cols-3 gap-3 rounded-2xl border border-brand-light/70 bg-brand-light/65 p-3 shadow-sm dark:border-brand-light/10 dark:bg-brand-light/5">
                         <div className="rounded-2xl bg-brand-navy px-4 py-3 text-brand-light">
@@ -366,7 +366,7 @@ export default function SimulatorPage() {
                 <div className="mb-4 flex flex-col gap-3 border-b border-brand-light/60 pb-4 dark:border-brand-light/10 lg:flex-row lg:items-center lg:justify-between">
                     <h2 className="flex items-center gap-2 text-base font-semibold text-brand-navy dark:text-brand-light">
                         <Calendar size={17} className="text-brand-mint" />
-                        Booking criteria
+                        Simulation criteria
                     </h2>
 
                     <div className="flex flex-wrap gap-2 text-[11px] font-semibold">
@@ -816,7 +816,7 @@ export default function SimulatorPage() {
                                         </div>
                                     ) : (
                                         <div>
-                                            <h3 className="text-xl font-bold">{t('auto.features.simulator.pages.simulatorpage.3e7dbe1c', { defaultValue: "Quote detail" })}</h3>
+                                            <h3 className="text-xl font-bold">{t('auto.features.simulator.pages.simulatorpage.3e7dbe1c', { defaultValue: "Simulation details" })}</h3>
                                             <p className="mt-2 text-sm text-brand-light/60">{t('auto.features.simulator.pages.simulatorpage.52b26439', { defaultValue: "Complete the rooming list to reveal the final net price." })}</p>
                                         </div>
                                     )}
@@ -1050,7 +1050,7 @@ export default function SimulatorPage() {
                                                 <div className="mt-4 flex gap-3 rounded-2xl border border-brand-mint/20 bg-brand-mint/8 p-3 animate-in slide-in-from-bottom-2">
                                                     <CheckCircle2 size={16} className="mt-0.5 shrink-0 text-brand-mint" />
                                                     <p className="text-[11px] font-medium leading-relaxed text-brand-navy dark:text-brand-light">
-                                                        Price validated against the conditions of <strong>{activeContract.name}</strong>.
+                                                        Rate validated against the conditions of <strong>{activeContract.name}</strong>.
                                                     </p>
                                                 </div>
 
@@ -1088,12 +1088,12 @@ export default function SimulatorPage() {
                                                                 : t('pages.simulator.ticket.download', { defaultValue: 'Download ticket PDF' })}
                                                         </button>
                                                         <p className="text-center text-[11px] font-medium leading-5 text-brand-slate dark:text-brand-light/70">
-                                                            {t('pages.simulator.ticket.helper', { defaultValue: 'Ticket format is for internal sharing only. It is not a proforma invoice.' })}
+                                                            {t('pages.simulator.ticket.helper', { defaultValue: 'Ticket format is for internal sharing only. It is not an invoice.' })}
                                                         </p>
                                                     </div>
                                                 ) : (
                                                 <div className="mt-4 space-y-3 animate-in slide-in-from-bottom-3 duration-500">
-                                                    {/* Proforma create button - always show when no proforma created yet */}
+                                                    {/* Invoice create button - always show when no invoice has been created yet */}
                                                     <>
                                                         <button
                                                             id="create-proforma-btn"
@@ -1170,7 +1170,7 @@ export default function SimulatorPage() {
                                                             )}
                                                             {isCreatingProforma
                                                                 ? t('pages.simulator.proforma.creating', { defaultValue: 'Preparing preview...' })
-                                                                : t('pages.simulator.proforma.create', { defaultValue: 'Open Proforma Preview' })}
+                                                                : t('pages.simulator.proforma.create', { defaultValue: 'Open Invoice Preview' })}
                                                         </button>
                                                     </>
                                                 </div>

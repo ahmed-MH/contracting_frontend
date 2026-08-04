@@ -127,10 +127,10 @@ export default function EditContractSpoModal({ isOpen, onClose, contract, editIt
         <ModalShell
             isOpen={isOpen}
             onClose={onClose}
-            title={isEditing ? "Modifier l'offre spéciale" : 'Nouvelle offre spéciale (SPO)'}
-            subtitle={t('auto.features.contracts.details.modals.editcontractspomodal.subtitle.59e45280', { defaultValue: "Configuration de base · Coquille" })}
+            title={isEditing ? 'Edit special offer' : 'New special offer (SPO)'}
+            subtitle={t('auto.features.contracts.details.modals.editcontractspomodal.subtitle.59e45280', { defaultValue: 'Base configuration' })}
             onSubmit={handleSubmit(onSubmit)}
-            submitLabel={isEditing ? "Mettre à jour" : "Créer l'offre"}
+            submitLabel={isEditing ? 'Update' : 'Create offer'}
             isSubmitting={createMutation.isPending || updateMutation.isPending}
             maxWidth="max-w-2xl"
         >
@@ -142,14 +142,14 @@ export default function EditContractSpoModal({ isOpen, onClose, contract, editIt
                                 <FileText size={16} />
                             </div>
                             <p className="text-xs leading-relaxed font-medium">
-                                💡 <span className="font-bold text-brand-navy dark:text-brand-light">{t('auto.features.contracts.details.modals.editcontractspomodal.34d8649d', { defaultValue: "Architecture Matrice :" })}</span> {t('auto.features.contracts.details.modals.editcontractspomodal.04fc2705', { defaultValue: "L'activation par période et les surcharges se gèrent directement dans la" })} <span className="text-brand-mint font-bold">{t('auto.features.contracts.details.modals.editcontractspomodal.ec526077', { defaultValue: "Grille SPO" })}</span>. Cette modale définit la "Coquille" globale.
+                                <span className="font-bold text-brand-navy dark:text-brand-light">{t('auto.features.contracts.details.modals.editcontractspomodal.34d8649d', { defaultValue: 'Matrix workflow:' })}</span> {t('auto.features.contracts.details.modals.editcontractspomodal.04fc2705', { defaultValue: 'Activation by period and overrides are managed directly in the' })} <span className="text-brand-mint font-bold">{t('auto.features.contracts.details.modals.editcontractspomodal.ec526077', { defaultValue: 'SPO grid' })}</span>. This modal defines the global configuration.
                             </p>
                         </div>
 
                         {/* Info de base */}
                         <div className="bg-brand-light dark:bg-brand-navy/30 p-4 rounded-xl border border-brand-slate/20">
                             <label className="text-sm font-semibold text-brand-navy dark:text-brand-light mb-1.5 flex items-center gap-2">
-                                <FileText size={16} className="text-brand-slate" /> Nom de l'offre
+                                <FileText size={16} className="text-brand-slate" /> Offer name
                             </label>
                             <input {...register('name')}
                                 className="w-full px-3 py-2 border border-brand-slate/20 rounded-xl text-sm focus:ring-2 focus:ring-brand-mint outline-none text-brand-navy dark:text-brand-light dark:bg-brand-slate/10" />
@@ -159,28 +159,28 @@ export default function EditContractSpoModal({ isOpen, onClose, contract, editIt
                         {/* Moteur de Règles */}
                         <div className="grid grid-cols-1 gap-4 bg-brand-light dark:bg-brand-slate/10 p-4 border border-brand-slate/20 rounded-xl">
                             <h3 className="font-semibold text-brand-navy dark:text-brand-light text-sm uppercase tracking-wider mb-2 flex items-center gap-2">
-                                <Target size={16} className="text-brand-mint" /> Configuration de l'Offre
+                                <Target size={16} className="text-brand-mint" /> Offer configuration
                             </h3>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 {/* Condition SI */}
                                 <div className="bg-brand-slate/10 p-4 rounded-xl border border-brand-slate/30">
                                     <h4 className="font-bold text-brand-slate text-xs mb-3 flex items-center gap-2 uppercase tracking-tight">
-                                        <span className="bg-brand-slate/10 text-brand-slate px-2 py-0.5 rounded-xl">{t('auto.features.contracts.details.modals.editcontractspomodal.8093efb7', { defaultValue: "SI" })}</span> Condition
+                                        <span className="bg-brand-slate/10 text-brand-slate px-2 py-0.5 rounded-xl">{t('auto.features.contracts.details.modals.editcontractspomodal.8093efb7', { defaultValue: 'IF' })}</span> Condition
                                     </h4>
                                     <select {...register('conditionType')}
                                         className="w-full mb-3 px-3 py-2 bg-brand-light border border-brand-slate/30 rounded-xl text-sm focus:ring-2 focus:ring-brand-mint outline-none font-medium text-brand-navy dark:text-brand-navy">
-                                        <option value="NONE">{t('auto.features.contracts.details.modals.editcontractspomodal.e680d57f', { defaultValue: "- Aucune -" })}</option>
-                                        <option value="MIN_NIGHTS">{t('auto.features.contracts.details.modals.editcontractspomodal.88f6c5ea', { defaultValue: "Nuits minimales" })}</option>
-                                        <option value="EARLY_BIRD">{t('auto.features.contracts.details.modals.editcontractspomodal.693c92ed', { defaultValue: "Early Bird (Advance booking)" })}</option>
+                                        <option value="NONE">{t('auto.features.contracts.details.modals.editcontractspomodal.e680d57f', { defaultValue: '- None -' })}</option>
+                                        <option value="MIN_NIGHTS">{t('auto.features.contracts.details.modals.editcontractspomodal.88f6c5ea', { defaultValue: 'Minimum nights' })}</option>
+                                        <option value="EARLY_BIRD">{t('auto.features.contracts.details.modals.editcontractspomodal.693c92ed', { defaultValue: 'Early Booking' })}</option>
                                         <option value="LONG_STAY">{t('auto.features.contracts.details.modals.editcontractspomodal.8f25afab', { defaultValue: "Long Stay" })}</option>
-                                        <option value="AGE">Age minimum (Senior)</option>
+                                        <option value="AGE">Minimum age (senior)</option>
                                         <option value="HONEYMOONER">{t('auto.features.contracts.details.modals.editcontractspomodal.e86d88a5', { defaultValue: "Honeymooner" })}</option>
                                     </select>
                                     {conditionNeedsValue && (
                                         <div className="relative animate-in fade-in">
                                             <input type="number" min="0"
-                                                placeholder={watchConditionType === 'EARLY_BIRD' ? 'Jours d\'avance' : watchConditionType === 'AGE' ? 'Age minimum' : 'Nuits'}
+                                                placeholder={watchConditionType === 'EARLY_BIRD' ? 'Advance days' : watchConditionType === 'AGE' ? 'Minimum age' : 'Nights'}
                                                 {...register('conditionValue', { valueAsNumber: true })}
                                                 className="w-full pl-9 pr-3 py-2 bg-brand-light border border-brand-slate/30 rounded-xl text-sm focus:ring-2 focus:ring-brand-mint outline-none" />
                                             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-brand-slate">
@@ -193,26 +193,26 @@ export default function EditContractSpoModal({ isOpen, onClose, contract, editIt
                                 {/* Avantage */}
                                 <div className="bg-brand-mint/5 p-4 rounded-xl border border-brand-mint/20">
                                     <h4 className="font-bold text-brand-mint text-xs mb-3 flex items-center gap-2 uppercase tracking-tight">
-                                        <span className="bg-brand-mint/10 text-brand-mint px-2 py-0.5 rounded-xl">{t('auto.features.contracts.details.modals.editcontractspomodal.f76b806a', { defaultValue: "ALORS" })}</span> Avantage
+                                        <span className="bg-brand-mint/10 text-brand-mint px-2 py-0.5 rounded-xl">{t('auto.features.contracts.details.modals.editcontractspomodal.f76b806a', { defaultValue: 'THEN' })}</span> Benefit
                                     </h4>
                                     <div className="grid grid-cols-2 gap-4">
                                         <div className="bg-brand-light dark:bg-brand-navy/40 p-3 rounded-xl border border-brand-slate/20 shadow-sm">
-                                            <label className="block text-[10px] font-bold text-brand-slate uppercase tracking-wider mb-1.5 text-center">{t('auto.features.contracts.details.modals.editcontractspomodal.55382339', { defaultValue: "Récompense / Mode" })}</label>
+                                            <label className="block text-[10px] font-bold text-brand-slate uppercase tracking-wider mb-1.5 text-center">{t('auto.features.contracts.details.modals.editcontractspomodal.55382339', { defaultValue: 'Reward / mode' })}</label>
                                             <div className="flex flex-col gap-2">
                                                 <select {...register('benefitType')}
                                                     className="w-full px-3 py-2 bg-brand-light dark:bg-brand-slate/10 border border-brand-slate/20 rounded-xl text-xs font-bold focus:ring-2 focus:ring-brand-mint outline-none text-brand-navy dark:text-brand-light">
-                                                    <option value="PERCENTAGE_DISCOUNT">{t('auto.features.contracts.details.modals.editcontractspomodal.e7e01c2a', { defaultValue: "Réduction (%)" })}</option>
-                                                    <option value="FIXED_DISCOUNT">{t('auto.features.contracts.details.modals.editcontractspomodal.8ad759ef', { defaultValue: "Réduction (Fixe)" })}</option>
-                                                    <option value="FREE_NIGHTS">{t('auto.features.contracts.details.modals.editcontractspomodal.8358d52a', { defaultValue: "Nuits gratuites" })}</option>
-                                                    <option value="FREE_ROOM_UPGRADE">{t('auto.features.contracts.details.modals.editcontractspomodal.f4973079', { defaultValue: "Up-grade Chambre" })}</option>
-                                                    <option value="FREE_BOARD_UPGRADE">{t('auto.features.contracts.details.modals.editcontractspomodal.508198c6', { defaultValue: "Up-grade Pension" })}</option>
+                                                    <option value="PERCENTAGE_DISCOUNT">{t('auto.features.contracts.details.modals.editcontractspomodal.e7e01c2a', { defaultValue: 'Discount (%)' })}</option>
+                                                    <option value="FIXED_DISCOUNT">{t('auto.features.contracts.details.modals.editcontractspomodal.8ad759ef', { defaultValue: 'Fixed discount' })}</option>
+                                                    <option value="FREE_NIGHTS">{t('auto.features.contracts.details.modals.editcontractspomodal.8358d52a', { defaultValue: 'Free nights' })}</option>
+                                                    <option value="FREE_ROOM_UPGRADE">{t('auto.features.contracts.details.modals.editcontractspomodal.f4973079', { defaultValue: 'Room upgrade' })}</option>
+                                                    <option value="FREE_BOARD_UPGRADE">{t('auto.features.contracts.details.modals.editcontractspomodal.508198c6', { defaultValue: 'Board upgrade' })}</option>
                                                     <option value="KIDS_GO_FREE">{t('auto.features.contracts.details.modals.editcontractspomodal.6d893549', { defaultValue: "Kids Go Free" })}</option>
                                                 </select>
                                                 <select {...register('applicationType')}
                                                     className="w-full px-3 py-2 bg-brand-mint text-brand-light rounded-xl text-[10px] font-black uppercase tracking-tighter hover:bg-brand-mint/90 transition-colors cursor-pointer outline-none">
-                                                    <option value="PER_NIGHT_PER_PERSON">{t('auto.features.contracts.details.modals.editcontractspomodal.22d21365', { defaultValue: "Par Nuit & Pers." })}</option>
-                                                    <option value="PER_NIGHT_PER_ROOM">{t('auto.features.contracts.details.modals.editcontractspomodal.fd5a1f68', { defaultValue: "Par Chambre & Nuit" })}</option>
-                                                    <option value="FLAT_RATE_PER_STAY">{t('auto.features.contracts.details.modals.editcontractspomodal.aeb77aa0', { defaultValue: "Forfait / Séjour" })}</option>
+                                                    <option value="PER_NIGHT_PER_PERSON">{t('auto.features.contracts.details.modals.editcontractspomodal.22d21365', { defaultValue: 'Per person / night' })}</option>
+                                                    <option value="PER_NIGHT_PER_ROOM">{t('auto.features.contracts.details.modals.editcontractspomodal.fd5a1f68', { defaultValue: 'Per room / night' })}</option>
+                                                    <option value="FLAT_RATE_PER_STAY">{t('auto.features.contracts.details.modals.editcontractspomodal.aeb77aa0', { defaultValue: 'Flat rate / stay' })}</option>
                                                 </select>
                                             </div>
                                         </div>
@@ -220,7 +220,7 @@ export default function EditContractSpoModal({ isOpen, onClose, contract, editIt
                                         <div className="flex flex-col justify-center">
                                             {['PERCENTAGE_DISCOUNT', 'FIXED_DISCOUNT'].includes(watchBenefitType) && (
                                                 <div className="relative animate-in fade-in slide-in-from-right-2 duration-300">
-                                            <input type="number" min="0" step="0.01" placeholder={t('auto.features.contracts.details.modals.editcontractspomodal.placeholder.40a06a0a', { defaultValue: "Valeur base" })}
+                                            <input type="number" min="0" step="0.01" placeholder={t('auto.features.contracts.details.modals.editcontractspomodal.placeholder.40a06a0a', { defaultValue: 'Base value' })}
                                                     {...register('value', { valueAsNumber: true })}
                                                     className="w-full pl-9 pr-3 py-3 bg-brand-light border border-brand-mint rounded-xl text-sm font-black text-brand-mint focus:ring-4 focus:ring-brand-mint/10 outline-none shadow-md" />
                                                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-brand-mint">
@@ -260,13 +260,13 @@ export default function EditContractSpoModal({ isOpen, onClose, contract, editIt
                         {/* Ciblage (Targeting) */}
                         <div className="border border-brand-slate/20 rounded-xl overflow-hidden p-5 bg-brand-light dark:bg-brand-navy/30 shadow-sm">
                             <h3 className="font-bold text-brand-navy dark:text-brand-light text-xs uppercase tracking-widest mb-4 flex items-center gap-2">
-                                <Target size={14} className="text-brand-slate" /> Ciblage des Chambres & Pensions
+                                <Target size={14} className="text-brand-slate" /> Room and board targeting
                             </h3>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 {/* Rooms */}
                                 <div>
-                                    <label className="block text-[11px] font-bold text-brand-slate mb-2 uppercase">{t('auto.features.contracts.details.modals.editcontractspomodal.a6f26bb7', { defaultValue: "🏨 Chambres concernées" })}</label>
+                                    <label className="block text-[11px] font-bold text-brand-slate mb-2 uppercase">{t('auto.features.contracts.details.modals.editcontractspomodal.a6f26bb7', { defaultValue: 'Target rooms' })}</label>
                                     <div className="space-y-1.5 max-h-48 overflow-y-auto border border-brand-slate/20 rounded-xl p-3 bg-brand-light/50 dark:bg-brand-slate/10">
                                         {contract.contractRooms?.map((r) => (
                                             <label key={r.id} className="flex items-center gap-3 text-sm cursor-pointer hover:bg-brand-light dark:hover:bg-brand-slate/10 p-1.5 rounded-xl border border-transparent hover:border-brand-slate/15 transition-all">
@@ -281,7 +281,7 @@ export default function EditContractSpoModal({ isOpen, onClose, contract, editIt
 
                                 {/* Arrangements */}
                                 <div>
-                                    <label className="block text-[11px] font-bold text-brand-slate mb-2 uppercase">{t('auto.features.contracts.details.modals.editcontractspomodal.2bf57f7f', { defaultValue: "🍴 Pensions validées" })}</label>
+                                    <label className="block text-[11px] font-bold text-brand-slate mb-2 uppercase">{t('auto.features.contracts.details.modals.editcontractspomodal.2bf57f7f', { defaultValue: 'Allowed board arrangements' })}</label>
                                     <div className="space-y-1.5 max-h-48 overflow-y-auto border border-brand-slate/20 rounded-xl p-3 bg-brand-light/50 dark:bg-brand-slate/10">
                                         {arrangements.map((a: Arrangement) => (
                                             <label key={a.id} className="flex items-center gap-3 text-sm cursor-pointer hover:bg-brand-light dark:hover:bg-brand-slate/10 p-1.5 rounded-xl border border-transparent hover:border-brand-slate/15 transition-all">

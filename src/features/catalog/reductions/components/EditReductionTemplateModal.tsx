@@ -101,7 +101,7 @@ export default function EditReductionTemplateModal({
     const footer = (
         <>
             <button type="button" onClick={onClose} className="px-6 py-2.5 text-sm font-bold text-brand-slate hover:text-brand-navy dark:hover:text-brand-light transition-colors cursor-pointer">
-                Annuler
+                {t('pages.catalog.modal.common.cancel')}
             </button>
             <button
                 form="reduction-template-form"
@@ -114,7 +114,7 @@ export default function EditReductionTemplateModal({
                 ) : (
                     <Save size={16} />
                 )}
-                {editItem ? 'Enregistrer' : 'Créer la réduction'}
+                {editItem ? t('pages.catalog.modal.common.save') : t('pages.catalog.modal.reductions.modal.create')}
             </button>
         </>
     );
@@ -123,7 +123,7 @@ export default function EditReductionTemplateModal({
         <ModalShell
             isOpen={isOpen}
             onClose={onClose}
-            title={editItem ? `Modifier – ${editItem.name}` : 'Nouvelle Réduction'}
+            title={editItem ? t('pages.catalog.modal.reductions.modal.editTitle', { name: editItem.name }) : t('pages.catalog.modal.reductions.modal.createTitle')}
             subtitle={t('auto.features.catalog.reductions.components.editreductiontemplatemodal.subtitle.676757db', { defaultValue: "Définition Catalogue" })}
             footer={footer}
         >
@@ -131,7 +131,7 @@ export default function EditReductionTemplateModal({
                 <div className="bg-brand-mint/10 dark:bg-brand-mint/5 border border-brand-mint/20 rounded-xl p-4 flex gap-3 text-brand-mint shadow-sm">
                     <Info className="shrink-0 mt-0.5" size={16} />
                     <p className="text-xs leading-relaxed font-medium text-brand-navy dark:text-brand-light">
-                        Ces règles conditionnent le moteur de calcul. Assurez-vous de bien cibler le bon comportement (Enfant ou Adulte supplémentaire).
+                        {t('pages.catalog.modal.reductions.modal.engineTip')}
                     </p>
                 </div>
 
@@ -162,7 +162,7 @@ export default function EditReductionTemplateModal({
                         {watchSystemCode !== 'CUSTOM' && (
                             <div>
                                 <label className="block text-xs font-bold text-brand-navy dark:text-brand-light uppercase tracking-wider mb-2">
-                                    Position ({watchSystemCode === 'CHILD' ? 'Enfant' : 'Adulte'})
+                                    {t('pages.catalog.modal.reductions.modal.position')} ({watchSystemCode === 'CHILD' ? t('pages.catalog.modal.reductions.modal.positionChild') : t('pages.catalog.modal.reductions.modal.positionAdult')})
                                 </label>
                                 <input
                                     type="number"
@@ -171,7 +171,7 @@ export default function EditReductionTemplateModal({
                                     placeholder={watchSystemCode === 'EXTRA_ADULT' ? 'ex: 3' : 'ex: 1'}
                                 />
                                 <p className="text-[10px] text-brand-slate mt-1">
-                                    {watchSystemCode === 'EXTRA_ADULT' ? 'ex: 3 pour le 3ème adulte' : 'ex: 1 pour le 1er enfant'}
+                                    {watchSystemCode === 'EXTRA_ADULT' ? t('pages.catalog.modal.reductions.modal.positionHintAdult') : t('pages.catalog.modal.reductions.modal.positionHintChild')}
                                 </p>
                             </div>
                         )}
@@ -222,7 +222,7 @@ export default function EditReductionTemplateModal({
                     {watchCalcType !== 'FREE' && (
                         <div className="pt-2">
                             <label className="block text-xs font-bold text-brand-navy dark:text-brand-light uppercase tracking-wider mb-2">
-                                Valeur de la réduction ({watchCalcType === 'PERCENTAGE' ? '%' : '€'})
+                                {t('pages.catalog.modal.reductions.modal.discountValue')} ({watchCalcType === 'PERCENTAGE' ? '%' : '€'})
                             </label>
                             <div className="relative">
                                 <input type="number" step="0.01"

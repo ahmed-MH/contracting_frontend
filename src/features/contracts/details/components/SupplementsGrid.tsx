@@ -166,9 +166,12 @@ const SupplementCell = memo(function SupplementCell({
             <div className={`flex items-center justify-between px-3 h-[68px] group/cell transition-colors
                 hover:bg-brand-light ${isEventCell ? 'bg-brand-mint/10' : 'bg-brand-light'}`}>
                 <div className="flex flex-col gap-1">
-                    <span className="text-[11px] text-brand-slate italic select-none">
-                        {t('pages.contractDetails.grid.cell.notApplied', { defaultValue: 'Not applied' })}
-                    </span>
+                    <div className="flex items-center gap-2">
+                        <span className="h-2.5 w-2.5 shrink-0 rounded-full bg-brand-slate/10" aria-hidden="true" />
+                        <span className="text-[11px] text-brand-slate italic select-none">
+                            {t('pages.contractDetails.grid.cell.notApplied', { defaultValue: 'Not applied' })}
+                        </span>
+                    </div>
                     {isEventCell && (
                         <span className="text-[10px] text-brand-mint font-semibold flex items-center gap-1">
                             <CalendarDays size={10} /> {t('pages.contractDetails.grid.cell.eventPeriod', { defaultValue: 'Event period' })}
@@ -191,6 +194,7 @@ const SupplementCell = memo(function SupplementCell({
     // ── Active state ──────────────────────────────────────────────────
     const canEdit = baseType === 'FIXED' || baseType === 'PERCENTAGE';
     const baseLabel = t('pages.contractDetails.grid.cell.base', { defaultValue: 'Base' });
+    const hasOverride = localValue !== '';
     const placeholderText = baseType === 'FREE'
         ? t('pages.contractDetails.grid.types.free', { defaultValue: 'Free' })
         : baseType === 'PERCENTAGE' ? `${baseLabel}: ${baseValue ?? 0}%`
@@ -201,6 +205,13 @@ const SupplementCell = memo(function SupplementCell({
             {/* Header row: label + toggle to deactivate */}
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-1.5">
+                    <span
+                        className={`h-2.5 w-2.5 shrink-0 rounded-full bg-brand-mint ${hasOverride ? 'ring-4 ring-brand-mint/25' : ''}`}
+                        title={hasOverride
+                            ? t('pages.contractDetails.grid.legend.overridden', { defaultValue: 'Value overridden' })
+                            : t('pages.contractDetails.grid.legend.defaultInherited', { defaultValue: 'Default inherited' })}
+                        aria-hidden="true"
+                    />
                     <span className="text-[10px] font-bold text-brand-mint uppercase tracking-wider select-none">
                         {t('pages.contractDetails.grid.cell.active', { defaultValue: 'Active' })}
                     </span>
@@ -234,14 +245,11 @@ const SupplementCell = memo(function SupplementCell({
                     className={`block w-full px-2 py-1 text-xs rounded-xl border text-right transition-all
                         focus:outline-none focus:ring-1 focus:ring-brand-mint focus:border-brand-mint/30
                         disabled:bg-transparent disabled:border-transparent disabled:text-brand-slate disabled:cursor-default
-                        ${localValue !== ''
+                        ${hasOverride
                             ? 'border-brand-mint/30 text-brand-mint bg-brand-mint/10 font-semibold'
                             : 'border-brand-slate/20 text-brand-slate bg-brand-light'
                         }`}
                 />
-                {localValue !== '' && (
-                    <div className="absolute top-0.5 right-0.5 w-1.5 h-1.5 rounded-full bg-brand-mint pointer-events-none" />
-                )}
             </div>
         </div>
     );
@@ -530,7 +538,7 @@ export default function SupplementsGrid({
                     {t('pages.contractDetails.grid.legend.defaultInherited', { defaultValue: 'Default inherited' })}
                 </span>
                 <span className="flex items-center gap-2">
-                    <span className="w-2.5 h-2.5 rounded-full bg-brand-mint ring-4 ring-brand-mint" />
+                    <span className="w-2.5 h-2.5 rounded-full bg-brand-mint ring-4 ring-brand-mint/25" />
                     {t('pages.contractDetails.grid.legend.overridden', { defaultValue: 'Value overridden' })}
                 </span>
                 <span className="flex items-center gap-2 font-bold">

@@ -485,7 +485,7 @@ function PartnerValueChart({
                                         <div className="min-w-0">
                                             <p className="truncate font-semibold text-brand-navy dark:text-brand-light">{row.name}</p>
                                             <p className="mt-0.5 text-xs text-brand-slate dark:text-brand-light/65">
-                                                {row.invoices} proforma{row.invoices > 1 ? 's' : ''} · {contractLabel}
+                                                {row.invoices} invoice{row.invoices > 1 ? 's' : ''} · {contractLabel}
                                             </p>
                                         </div>
                                     </div>
@@ -1145,7 +1145,7 @@ export default function CommercialOverviewPage() {
                     label={t('pages.commercialOverview.command.issuedValue', { defaultValue: 'Issued Commercial Value' })}
                     value={formatMoney(dashboard.issuedValue, currency, locale)}
                     detail={t('pages.commercialOverview.command.issuedValueDetail', {
-                        defaultValue: '{{count}} issued proformas for stays in the focus season.',
+                        defaultValue: '{{count}} issued invoices for stays in the focus season.',
                         count: dashboard.issuedInvoices.length,
                     })}
                     icon={CircleDollarSign}
@@ -1308,7 +1308,7 @@ export default function CommercialOverviewPage() {
                 <SectionHeader
                     eyebrow={t('pages.commercialOverview.output.eyebrow', { defaultValue: 'Section 5' })}
                         title={t('pages.commercialOverview.output.title', { defaultValue: 'Commercial Output' })}
-                    description={t('pages.commercialOverview.output.description', { defaultValue: 'Issued proforma value for stays belonging to the focus season.' })}
+                    description={t('pages.commercialOverview.output.description', { defaultValue: 'Issued invoice value for stays belonging to the focus season.' })}
                     icon={LineChart}
                 />
                 <div className="mt-5 grid gap-4 xl:grid-cols-[0.85fr,1.15fr]">
@@ -1316,20 +1316,20 @@ export default function CommercialOverviewPage() {
                         <MiniStat
                             label={dashboard.selectedPartner
                                 ? t('pages.commercialOverview.output.filteredIssuedValue', { defaultValue: 'Partner issued value' })
-                                : t('pages.commercialOverview.output.issuedValue', { defaultValue: 'Issued proforma value' })}
+                                : t('pages.commercialOverview.output.issuedValue', { defaultValue: 'Issued invoice value' })}
                             value={formatMoney(dashboard.outputIssuedValue, currency, locale)}
                             icon={CircleDollarSign}
                             detail={dashboard.selectedPartner?.name}
                         />
                         <MiniStat
                             label={dashboard.selectedPartner
-                                ? t('pages.commercialOverview.output.filteredIssuedCount', { defaultValue: 'Partner proformas' })
-                                : t('pages.commercialOverview.output.issuedCount', { defaultValue: 'Issued proformas' })}
+                                ? t('pages.commercialOverview.output.filteredIssuedCount', { defaultValue: 'Partner invoices' })
+                                : t('pages.commercialOverview.output.issuedCount', { defaultValue: 'Issued invoices' })}
                             value={dashboard.outputInvoices.length}
                             icon={FileText}
                         />
                         <MiniStat
-                            label={t('pages.commercialOverview.output.averageValue', { defaultValue: 'Average proforma value' })}
+                            label={t('pages.commercialOverview.output.averageValue', { defaultValue: 'Average invoice value' })}
                             value={formatMoney(dashboard.outputAverageProformaValue, currency, locale)}
                             icon={Activity}
                         />
@@ -1363,7 +1363,7 @@ export default function CommercialOverviewPage() {
                             selectedPartnerId={selectedPartnerId}
                             onPartnerSelect={(partnerId) => setSelectedPartnerId((current) => current === partnerId ? null : partnerId)}
                             onClearSelection={() => setSelectedPartnerId(null)}
-                            emptyLabel={t('pages.commercialOverview.output.partnerValueEmpty', { defaultValue: 'Issue proformas to start ranking commercial partners.' })}
+                            emptyLabel={t('pages.commercialOverview.output.partnerValueEmpty', { defaultValue: 'Issue invoices to start ranking commercial partners.' })}
                         />
                     </div>
                     <div className="rounded-3xl bg-brand-navy p-5 xl:col-span-2">
@@ -1431,8 +1431,8 @@ export default function CommercialOverviewPage() {
                         icon: Package,
                     },
                     {
-                        title: t('pages.commercialOverview.next.simulator.title', { defaultValue: 'Pricing simulator' }),
-                        description: t('pages.commercialOverview.next.simulator.description', { defaultValue: 'Validate selling prices and produce a clean proforma preview.' }),
+                        title: t('pages.commercialOverview.next.simulator.title', { defaultValue: 'Rate Simulation' }),
+                        description: t('pages.commercialOverview.next.simulator.description', { defaultValue: 'Validate selling prices and produce a clean invoice preview.' }),
                         to: '/simulator',
                         icon: Sparkles,
                     },

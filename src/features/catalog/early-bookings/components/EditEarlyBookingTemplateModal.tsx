@@ -92,19 +92,19 @@ export default function EditEarlyBookingTemplateModal({
     const footer = (
         <>
             <button type="button" onClick={onClose} className="px-6 py-2.5 text-sm font-bold text-brand-slate hover:text-brand-navy dark:hover:text-brand-light transition-colors cursor-pointer">
-                Annuler
+                {t('pages.catalog.modal.common.cancel')}
             </button>
             <button form="early-booking-template-form" type="submit" disabled={isPending || !isDirty}
                 className="inline-flex items-center gap-2 px-8 py-2.5 bg-brand-mint text-brand-light text-sm font-bold rounded-xl hover:bg-brand-mint/90 transition-all shadow-md active:scale-95 disabled:opacity-50 disabled:grayscale cursor-pointer">
                 {isPending ? <div className="w-4 h-4 border-2 border-brand-light border-t-transparent rounded-full animate-spin" /> : <Save size={16} />}
-                {editItem ? 'Enregistrer' : 'Créer le Template'}
+                {editItem ? t('pages.catalog.modal.common.save') : t('pages.catalog.modal.earlyBookings.modal.create')}
             </button>
         </>
     );
 
     return (
         <ModalShell isOpen={isOpen} onClose={onClose}
-            title={editItem ? `Modifier – ${editItem.name}` : 'Nouveau Template Early Booking'}
+            title={editItem ? t('pages.catalog.modal.earlyBookings.modal.editTitle', { name: editItem.name }) : t('pages.catalog.modal.earlyBookings.modal.createTitle')}
             subtitle={t('auto.features.catalog.early.bookings.components.editearlybookingtemplatemodal.subtitle.8bffd413', { defaultValue: "Définition Catalogue" })} icon={<Zap size={20} />}
             iconBg="bg-brand-mint/10 dark:bg-brand-mint/5 text-brand-mint"
             footer={footer} maxWidth="max-w-2xl">

@@ -17,12 +17,6 @@ interface EditExchangeRateModalProps {
     isPending: boolean;
 }
 
-const sourceOptions = [
-    { value: 'manual', labelKey: 'pages.exchangeRates.source.manual', fallback: 'Manual' },
-    { value: 'system', labelKey: 'pages.exchangeRates.source.system', fallback: 'System' },
-    { value: 'imported', labelKey: 'pages.exchangeRates.source.imported', fallback: 'Imported' },
-] as const;
-
 export default function EditExchangeRateModal({
     isOpen,
     onClose,
@@ -41,7 +35,6 @@ export default function EditExchangeRateModal({
             toCurrency: currentHotel?.defaultCurrency ?? '',
             rate: 0,
             effectiveDate: new Date().toISOString().split('T')[0],
-            source: 'manual',
         },
     });
 
@@ -54,7 +47,6 @@ export default function EditExchangeRateModal({
                 toCurrency: editing.toCurrency,
                 rate: editing.rate,
                 effectiveDate: editing.effectiveDate ? new Date(editing.effectiveDate).toISOString().split('T')[0] : '',
-                source: editing.source ?? 'manual',
             });
         } else {
             reset({
@@ -62,7 +54,6 @@ export default function EditExchangeRateModal({
                 toCurrency: currentHotel?.defaultCurrency ?? '',
                 rate: 0,
                 effectiveDate: new Date().toISOString().split('T')[0],
-                source: 'manual',
             });
         }
     }, [isOpen, editing, reset, currentHotel?.defaultCurrency]);
@@ -82,7 +73,6 @@ export default function EditExchangeRateModal({
             toCurrency: data.toCurrency,
             rate: data.rate,
             effectiveDate: data.effectiveDate,
-            source: data.source,
         });
     };
 
@@ -138,7 +128,7 @@ export default function EditExchangeRateModal({
                                 </div>
                             </div>
 
-                            <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+                            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                                 <div>
                                     <label className={labelCls}>{t('pages.exchangeRates.fields.rate', { defaultValue: 'Rate' })} *</label>
                                     <div className="relative">
@@ -161,15 +151,6 @@ export default function EditExchangeRateModal({
                                         <input type="date" {...register('effectiveDate')} className={inputCls} />
                                     </div>
                                     {errors.effectiveDate && <p className="mt-1 text-xs text-brand-slate">{errors.effectiveDate.message}</p>}
-                                </div>
-
-                                <div>
-                                    <label className={labelCls}>{t('pages.exchangeRates.fields.source', { defaultValue: 'Source' })}</label>
-                                    <select {...register('source')} className="h-10 w-full cursor-pointer rounded-lg border border-brand-slate/20 bg-brand-light px-3 text-sm font-bold text-brand-navy outline-none transition-all focus:border-brand-mint focus:ring-2 focus:ring-brand-mint/30 dark:bg-brand-slate/10 dark:text-brand-light">
-                                        {sourceOptions.map((source) => (
-                                            <option key={source.value} value={source.value}>{t(source.labelKey, { defaultValue: source.fallback })}</option>
-                                        ))}
-                                    </select>
                                 </div>
                             </div>
 

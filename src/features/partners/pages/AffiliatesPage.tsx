@@ -102,9 +102,9 @@ export default function AffiliatesPage() {
 
     const handleDelete = async (item: Affiliate) => {
         if (await confirm({
-            title: `Archiver le partenaire "${item.companyName}" ?`,
-            description: "Le partenaire sera archivé.",
-            confirmLabel: "Archiver",
+            title: t('pages.affiliates.confirmArchive.title', { name: item.companyName }),
+            description: t('pages.affiliates.confirmArchive.description'),
+            confirmLabel: t('pages.affiliates.confirmArchive.confirmLabel'),
             variant: "danger"
         })) {
             deleteMutation.mutate(item.id);
@@ -113,9 +113,9 @@ export default function AffiliatesPage() {
 
     const handleRestore = async (item: Affiliate) => {
         if (await confirm({
-            title: `Restaurer le partenaire "${item.companyName}" ?`,
-            description: "Le partenaire sera de nouveau actif.",
-            confirmLabel: "Restaurer",
+            title: t('pages.affiliates.confirmRestore.title', { name: item.companyName }),
+            description: t('pages.affiliates.confirmRestore.description'),
+            confirmLabel: t('pages.affiliates.confirmRestore.confirmLabel'),
             variant: "info"
         })) {
             restoreMutation.mutate(item.id);
@@ -144,13 +144,13 @@ export default function AffiliatesPage() {
                 <div className="hidden">
                     <h1 className="flex items-center gap-3 text-3xl font-semibold tracking-tight text-brand-navy dark:text-brand-light">
                         <Users className="text-brand-mint" size={28} />
-                        Affiliés / Tour Opérateurs
+                        {t('pages.affiliates.header.title')}
                     </h1>
                     <p className="mt-3 max-w-3xl text-sm leading-6 text-brand-slate dark:text-brand-light/75">{t('auto.features.partners.pages.affiliatespage.5698c3e2', { defaultValue: "Gérez vos partenaires commerciaux" })}</p>
                 </div>
                 <button onClick={openCreate}
                     className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl bg-brand-mint px-4 text-sm font-semibold text-brand-light shadow-md transition hover:-translate-y-0.5 hover:bg-brand-mint cursor-pointer border-none outline-none">
-                    <Plus size={16} /> Nouveau Partenaire
+                    <Plus size={16} /> {t('pages.affiliates.header.newPartner')}
                 </button>
                 </>
                 )}
@@ -164,7 +164,7 @@ export default function AffiliatesPage() {
 
             {isError && (
                 <div className="premium-surface border-brand-slate/20 p-6 text-sm text-brand-navy dark:text-brand-light">
-                    Impossible de charger les affiliés.
+                    {t('pages.affiliates.state.loadError')}
                 </div>
             )}
 
@@ -268,7 +268,7 @@ export default function AffiliatesPage() {
                         className="inline-flex items-center gap-2 rounded-lg border border-brand-light/70 bg-brand-light/70 px-4 py-2 text-sm font-semibold text-brand-navy transition hover:border-brand-mint hover:text-brand-mint dark:border-brand-light/10 dark:bg-brand-light/5 dark:text-brand-light">
                         {showArchived ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
                         <Archive size={16} />
-                        Partenaires archivés {archivedAffiliates ? `(${archivedAffiliates.length})` : ''}
+                        {t('pages.affiliates.archived.toggle', { count: archivedAffiliates ? `(${archivedAffiliates.length})` : '' })}
                     </button>
 
                     {showArchived && archivedAffiliates && archivedAffiliates.length > 0 && (
@@ -294,7 +294,7 @@ export default function AffiliatesPage() {
                                             <td className="px-5 py-3 text-right">
                                                 <button onClick={() => handleRestore(aff)} disabled={restoreMutation.isPending}
                                                     className="inline-flex h-10 items-center gap-2 rounded-lg bg-brand-mint/10 px-4 text-sm font-semibold text-brand-mint transition hover:bg-brand-mint hover:text-brand-light disabled:cursor-not-allowed disabled:opacity-60">
-                                                    <RotateCcw size={14} /> Restaurer
+                                                    <RotateCcw size={14} /> {t('pages.affiliates.archived.restore')}
                                                 </button>
                                             </td>
                                         </tr>
@@ -313,7 +313,7 @@ export default function AffiliatesPage() {
             )}
 
             {/* ─── Create / Edit Modal ──────────── */}
-            <Modal isOpen={isModalOpen} onClose={closeModal} title={editing ? `Modifier – ${editing.companyName}` : 'Nouveau Partenaire'}>
+            <Modal isOpen={isModalOpen} onClose={closeModal} title={editing ? t('pages.affiliates.modal.editTitle', { name: editing.companyName }) : t('pages.affiliates.modal.createTitle')}>
                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
                     {/* Informations Générales */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -348,7 +348,7 @@ export default function AffiliatesPage() {
                                 onClick={() => append({ label: 'General', address: '' })}
                                 className="inline-flex items-center gap-1 text-xs font-semibold text-brand-mint hover:text-brand-mint transition-colors"
                             >
-                                <Plus size={14} /> Ajouter un email
+                                <Plus size={14} /> {t('pages.affiliates.modal.addEmail')}
                             </button>
                         </div>
                         <div className="space-y-3">
@@ -443,11 +443,11 @@ export default function AffiliatesPage() {
                     <div className="flex justify-end gap-3 pt-4 border-t border-brand-slate/10">
                         <button type="button" onClick={closeModal}
                             className="px-4 py-2 text-sm font-medium text-brand-navy bg-brand-slate/10 rounded-xl hover:bg-brand-slate/15 transition-colors cursor-pointer">
-                            Annuler
+                            {t('actions.cancel')}
                         </button>
                         <button type="submit" disabled={isPending}
                             className="px-4 py-2 text-sm font-medium text-brand-light bg-brand-mint rounded-xl hover:bg-brand-mint/90 transition-colors disabled:opacity-50 cursor-pointer">
-                            {isPending ? 'Patientez...' : (editing ? 'Enregistrer' : 'Créer')}
+                            {isPending ? t('pages.affiliates.modal.saving') : (editing ? t('pages.affiliates.modal.save') : t('pages.affiliates.modal.create'))}
                         </button>
                     </div>
                 </form>

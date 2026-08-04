@@ -87,19 +87,19 @@ export default function EditSpoTemplateModal({ isOpen, onClose, editItem }: Edit
     const footer = (
         <>
             <button type="button" onClick={onClose} className="px-6 py-2.5 text-sm font-bold text-brand-slate hover:text-brand-navy dark:hover:text-brand-light transition-colors cursor-pointer">
-                Annuler
+                {t('pages.catalog.modal.common.cancel')}
             </button>
             <button form="spo-template-form" type="submit" disabled={isPending || !isDirty}
                 className="inline-flex items-center gap-2 px-8 py-2.5 bg-brand-mint text-brand-light text-sm font-bold rounded-xl hover:bg-brand-mint/90 transition-all shadow-md active:scale-95 disabled:opacity-50 disabled:grayscale cursor-pointer">
                 {isPending ? <div className="w-4 h-4 border-2 border-brand-light border-t-transparent rounded-full animate-spin" /> : <Save size={16} />}
-                {isEditing ? 'Mettre à jour' : 'Ajouter au catalogue'}
+                {isEditing ? t('pages.catalog.modal.spo.modal.save') : t('pages.catalog.modal.spo.modal.create')}
             </button>
         </>
     );
 
     return (
         <ModalShell isOpen={isOpen} onClose={onClose}
-            title={isEditing ? `Modifier – ${editItem.name}` : 'Nouveau Template SPO'}
+            title={isEditing ? t('pages.catalog.modal.spo.modal.editTitle', { name: editItem.name }) : t('pages.catalog.modal.spo.modal.createTitle')}
             subtitle={t('auto.features.catalog.spos.components.editspotemplatemodal.subtitle.1fab0c9a', { defaultValue: "Règle Promotionnelle Catalogue" })}
             icon={<Gift size={20} />} iconBg="bg-brand-mint/10 dark:bg-brand-mint/5 text-brand-mint"
             footer={footer} maxWidth="max-w-2xl">
@@ -107,7 +107,7 @@ export default function EditSpoTemplateModal({ isOpen, onClose, editItem }: Edit
                 {/* Section 1 */}
                 <div className="space-y-4">
                     <h4 className="text-[10px] font-bold text-brand-slate uppercase tracking-[0.2em] border-b border-brand-slate/15 dark:border-brand-slate/20 pb-2 flex items-center gap-2">
-                        <FileText size={12} /> 1. Identification du Modèle
+                        <FileText size={12} /> {t('auto.features.catalog.early.bookings.components.editearlybookingtemplatemodal.7cd965e8')}
                     </h4>
                     <div>
                         <label className="block text-xs font-bold text-brand-navy dark:text-brand-light uppercase tracking-wider mb-2">{t('auto.features.catalog.spos.components.editspotemplatemodal.1cd0e2c0', { defaultValue: "Nom de l'offre (Public interne)" })}</label>
@@ -121,7 +121,7 @@ export default function EditSpoTemplateModal({ isOpen, onClose, editItem }: Edit
                 {/* Section 2 */}
                 <div className="space-y-6">
                     <h4 className="text-[10px] font-bold text-brand-slate uppercase tracking-[0.2em] border-b border-brand-slate/15 dark:border-brand-slate/20 pb-2 flex items-center gap-2">
-                        <Zap size={12} /> 2. Logique de la Règle (Trigger & Benefit)
+                        <Zap size={12} /> {t('pages.catalog.modal.spo.modal.logic')}
                     </h4>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 relative">
                         {/* SI (Condition) */}

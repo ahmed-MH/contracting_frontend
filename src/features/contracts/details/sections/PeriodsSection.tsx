@@ -33,9 +33,9 @@ export default function PeriodsSection({ contract }: Props) {
 
     const handleDelete = async (periodId: number, periodName: string) => {
         const ok = await confirm({
-            title: 'Supprimer la période',
-            description: `Êtes-vous sûr de vouloir supprimer la période "${periodName}" ? Cette action est irréversible.`,
-            confirmLabel: 'Supprimer',
+            title: 'Delete pricing period',
+            description: `Delete "${periodName}"? This action is immediate and cannot be undone.`,
+            confirmLabel: 'Delete',
             variant: 'danger',
         });
         if (ok) deleteMutation.mutate(periodId);
@@ -47,12 +47,12 @@ export default function PeriodsSection({ contract }: Props) {
             <div className="flex items-center justify-between mb-6 pb-4 border-b border-brand-slate/20">
                 <div className="flex items-center gap-3">
                     <Calendar size={20} className="text-brand-mint" />
-                    <h2 className="text-base font-semibold text-brand-navy">{t('auto.features.contracts.details.sections.periodssection.42fbd655', { defaultValue: "Saisons &amp; Périodes" })}</h2>
+                    <h2 className="text-base font-semibold text-brand-navy">{t('auto.features.contracts.details.sections.periodssection.42fbd655', { defaultValue: 'Pricing periods' })}</h2>
                     <span className="text-xs text-brand-slate">({periods.length})</span>
                 </div>
                 <button onClick={() => setShowModal(true)}
                     className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-brand-light bg-brand-mint rounded-xl hover:bg-brand-mint transition-colors cursor-pointer">
-                    <Plus size={16} /> Nouvelle Période
+                    <Plus size={16} /> New period
                 </button>
             </div>
 
@@ -60,8 +60,8 @@ export default function PeriodsSection({ contract }: Props) {
             {periods.length === 0 && (
                 <div className="rounded-xl bg-brand-light border border-dashed border-brand-slate/20 p-12 text-center">
                     <Calendar size={40} className="mx-auto text-brand-slate mb-3" />
-                    <p className="text-brand-slate text-sm">{t('auto.features.contracts.details.sections.periodssection.18942c2c', { defaultValue: "Aucune période définie pour le moment" })}</p>
-                    <p className="text-brand-slate text-xs mt-1">{t('auto.features.contracts.details.sections.periodssection.170ff15c', { defaultValue: "Cliquez sur « Nouvelle Période » pour commencer" })}</p>
+                    <p className="text-brand-slate text-sm">{t('auto.features.contracts.details.sections.periodssection.18942c2c', { defaultValue: 'No pricing periods defined yet' })}</p>
+                    <p className="text-brand-slate text-xs mt-1">{t('auto.features.contracts.details.sections.periodssection.170ff15c', { defaultValue: 'Click "New period" to get started' })}</p>
                 </div>
             )}
 
@@ -71,10 +71,10 @@ export default function PeriodsSection({ contract }: Props) {
                     <table className="w-full text-sm text-left">
                         <thead>
                             <tr className="bg-brand-light border-b border-brand-slate/20">
-                                <th className="px-5 py-3 text-left text-xs font-medium text-brand-slate uppercase tracking-wider">{t('auto.features.contracts.details.sections.periodssection.34946c4d', { defaultValue: "Nom" })}</th>
-                                <th className="px-5 py-3 text-left text-xs font-medium text-brand-slate uppercase tracking-wider">{t('auto.features.contracts.details.sections.periodssection.f1789f42', { defaultValue: "Date de début" })}</th>
-                                <th className="px-5 py-3 text-left text-xs font-medium text-brand-slate uppercase tracking-wider">{t('auto.features.contracts.details.sections.periodssection.dad373ba', { defaultValue: "Date de fin" })}</th>
-                                <th className="px-5 py-3 text-right text-xs font-medium text-brand-slate uppercase tracking-wider">{t('auto.features.contracts.details.sections.periodssection.2fdeded1', { defaultValue: "Actions" })}</th>
+                                <th className="px-5 py-3 text-left text-xs font-medium text-brand-slate uppercase tracking-wider">{t('auto.features.contracts.details.sections.periodssection.34946c4d', { defaultValue: 'Name' })}</th>
+                                <th className="px-5 py-3 text-left text-xs font-medium text-brand-slate uppercase tracking-wider">{t('auto.features.contracts.details.sections.periodssection.f1789f42', { defaultValue: 'Start date' })}</th>
+                                <th className="px-5 py-3 text-left text-xs font-medium text-brand-slate uppercase tracking-wider">{t('auto.features.contracts.details.sections.periodssection.dad373ba', { defaultValue: 'End date' })}</th>
+                                <th className="px-5 py-3 text-right text-xs font-medium text-brand-slate uppercase tracking-wider">{t('auto.features.contracts.details.sections.periodssection.2fdeded1', { defaultValue: 'Actions' })}</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-brand-slate/10">
@@ -86,7 +86,7 @@ export default function PeriodsSection({ contract }: Props) {
                                     <td className="px-5 py-3 text-right">
                                         <button onClick={() => handleDelete(p.id, p.name)}
                                             className="p-1.5 rounded-xl text-brand-slate hover:text-brand-slate hover:bg-brand-slate/10 transition-colors cursor-pointer"
-                                            title={t('auto.features.contracts.details.sections.periodssection.title.36aec923', { defaultValue: "Supprimer" })}>
+                                            title={t('auto.features.contracts.details.sections.periodssection.title.36aec923', { defaultValue: 'Delete' })}>
                                             <Trash2 size={15} />
                                         </button>
                                     </td>
@@ -111,7 +111,7 @@ export default function PeriodsSection({ contract }: Props) {
                     contractEndDate={contract.endDate}
                     existingPeriods={periods}
                     defaultValues={{
-                        name: `[Calculé Automatiquement]`,
+                        name: `[Calculated automatically]`,
                         startDate: periods.length > 0
                             ? new Date(new Date(periods[periods.length - 1].endDate).getTime() + 86400000).toISOString()
                             : contract.startDate

@@ -10,6 +10,8 @@ node_modules/
 dist/
 dist-ssr/
 build/
+.vite/
+.cache/
 
 # ==============================
 # 3. SECURITY & CREDENTIALS
@@ -43,18 +45,30 @@ Desktop.ini
 # ==============================
 .vscode/*
 !.vscode/extensions.json
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
 .idea/
+*.code-workspace
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
+*.swp
+*.swo
+*~
 
 # ==============================
 # 7. TESTS & COVERAGE
 # ==============================
 coverage/
 .nyc_output/
+test-results/
+playwright-report/
+cypress/screenshots/
+cypress/videos/
+storybook-static/
 
 # ==============================
 # 8. MISC
@@ -62,3 +76,13 @@ coverage/
 .eslintcache
 *.tsbuildinfo
 .gemini/
+tmp/
+temp/
+generated/
+screenshots/
+*.bak
+*.dump
+*.sql.gz
+*.old
+*.backup
+*.copy

@@ -335,7 +335,7 @@ export default function CancellationGrid({
                     {t('pages.contractDetails.grid.legend.defaultInherited', { defaultValue: 'Default inherited' })}
                 </span>
                 <span className="flex items-center gap-2">
-                    <span className="w-2.5 h-2.5 rounded-full bg-brand-mint ring-4 ring-brand-mint" />
+                    <span className="w-2.5 h-2.5 rounded-full bg-brand-mint ring-4 ring-brand-mint/25" />
                     {t('pages.contractDetails.grid.legend.overridden', { defaultValue: 'Value overridden' })}
                 </span>
                 <span className="flex items-center gap-2 font-bold">

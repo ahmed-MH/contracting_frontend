@@ -23,8 +23,8 @@ const BASE_RATE_LABELS: Record<BaseRateType, string> = {
 };
 
 const CHILD_SURCHARGE_BASE_LABELS: Record<ChildSurchargeBase, string> = {
-    SINGLE: 'Chambre Single',
-    DOUBLE: 'Chambre Double',
+    SINGLE: 'Single room',
+    DOUBLE: 'Double room',
     HALF_SINGLE: 'Demi-Single',
     HALF_DOUBLE: 'Demi-Double',
 };
@@ -143,8 +143,8 @@ export default function EditContractMonoparentalRuleModal({
         <ModalShell
             isOpen={isOpen}
             onClose={onClose}
-            title={t('auto.features.contracts.details.modals.editcontractmonoparentalrulemodal.title.f2b97c4f', { defaultValue: "Modifier la règle monoparentale" })}
-            subtitle={t('auto.features.contracts.details.modals.editcontractmonoparentalrulemodal.subtitle.3ac58f0e', { defaultValue: "Configuration de base · Coquille" })}
+            title={t('auto.features.contracts.details.modals.editcontractmonoparentalrulemodal.title.f2b97c4f', { defaultValue: 'Edit monoparental rule' })}
+            subtitle={t('auto.features.contracts.details.modals.editcontractmonoparentalrulemodal.subtitle.3ac58f0e', { defaultValue: 'Base configuration' })}
             onSubmit={handleSubmit(onSubmit)}
             submitLabel={t('auto.features.contracts.details.modals.editcontractmonoparentalrulemodal.submitLabel.91ed311c', { defaultValue: "Mettre à jour" })}
             isSubmitting={updateMutation.isPending}
@@ -155,7 +155,7 @@ export default function EditContractMonoparentalRuleModal({
                         {/* Info Alert */}
                         <div className="bg-brand-mint/5 border border-brand-mint/20 rounded-xl p-4 flex gap-3 text-brand-slate shadow-sm">
                             <p className="text-xs leading-relaxed font-medium">
-                                💡 <span className="font-bold text-brand-navy dark:text-brand-light">{t('auto.features.contracts.details.modals.editcontractmonoparentalrulemodal.baa44125', { defaultValue: "Architecture Matrice :" })}</span> {t('auto.features.contracts.details.modals.editcontractmonoparentalrulemodal.79df55e7', { defaultValue: "L'activation par période et les surcharges se gèrent directement dans la" })} <span className="text-brand-mint font-bold">{t('auto.features.contracts.details.modals.editcontractmonoparentalrulemodal.6b6a0302', { defaultValue: "Grille Monoparentale" })}</span> principale.
+                                <span className="font-bold text-brand-navy dark:text-brand-light">{t('auto.features.contracts.details.modals.editcontractmonoparentalrulemodal.baa44125', { defaultValue: 'Matrix workflow:' })}</span> {t('auto.features.contracts.details.modals.editcontractmonoparentalrulemodal.79df55e7', { defaultValue: 'Activation by period and overrides are managed directly in the' })} <span className="text-brand-mint font-bold">{t('auto.features.contracts.details.modals.editcontractmonoparentalrulemodal.6b6a0302', { defaultValue: 'Monoparental grid' })}</span>.
                             </p>
                         </div>
 
@@ -219,8 +219,8 @@ export default function EditContractMonoparentalRuleModal({
                                 <label className="block text-xs font-bold text-brand-navy dark:text-brand-light uppercase tracking-wider mb-2">{t('auto.features.contracts.details.modals.editcontractmonoparentalrulemodal.dd872604', { defaultValue: "Base de calcul enfant" })}</label>
                                 <select {...register('childSurchargeBase')}
                                     className="w-full px-4 py-2.5 bg-brand-light dark:bg-brand-navy/50 border border-brand-slate/20 rounded-xl focus:ring-2 focus:ring-brand-mint transition-all text-sm font-bold outline-none cursor-pointer text-brand-navy dark:text-brand-light">
-                                    <option value="SINGLE">{t('auto.features.contracts.details.modals.editcontractmonoparentalrulemodal.34dabcf5', { defaultValue: "Chambre Single" })}</option>
-                                    <option value="DOUBLE">{t('auto.features.contracts.details.modals.editcontractmonoparentalrulemodal.e1b0ffcd', { defaultValue: "Chambre Double" })}</option>
+                                    <option value="SINGLE">{t('auto.features.contracts.details.modals.editcontractmonoparentalrulemodal.34dabcf5', { defaultValue: 'Single room' })}</option>
+                                    <option value="DOUBLE">{t('auto.features.contracts.details.modals.editcontractmonoparentalrulemodal.e1b0ffcd', { defaultValue: 'Double room' })}</option>
                                     <option value="HALF_SINGLE">{t('auto.features.contracts.details.modals.editcontractmonoparentalrulemodal.665f705d', { defaultValue: "Demi-Single" })}</option>
                                     <option value="HALF_DOUBLE">{t('auto.features.contracts.details.modals.editcontractmonoparentalrulemodal.36a7de31', { defaultValue: "Demi-Double" })}</option>
                                 </select>
@@ -242,7 +242,7 @@ export default function EditContractMonoparentalRuleModal({
                         {/* Room Targeting */}
                         {contractRooms.length > 0 && (
                             <div className="pt-4 border-t border-brand-slate/15 dark:border-brand-slate/20">
-                                <label className="block text-xs font-bold text-brand-navy dark:text-brand-light uppercase tracking-wider mb-4 text-center">{t('auto.features.contracts.details.modals.editcontractmonoparentalrulemodal.5bda79ae', { defaultValue: "Chambres concernées" })}</label>
+                                <label className="block text-xs font-bold text-brand-navy dark:text-brand-light uppercase tracking-wider mb-4 text-center">{t('auto.features.contracts.details.modals.editcontractmonoparentalrulemodal.5bda79ae', { defaultValue: 'Target rooms' })}</label>
                                 <div className="grid grid-cols-2 gap-3">
                                     {contractRooms.map((room) => (
                                         <label key={room.id} className="flex items-center gap-3 p-3 bg-brand-light dark:bg-brand-slate/10 rounded-xl border border-brand-slate/20 hover:border-brand-mint transition-all cursor-pointer group has-checked:bg-brand-mint/5 has-checked:border-brand-mint/40">

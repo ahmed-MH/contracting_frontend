@@ -77,9 +77,12 @@ const ReductionCell = memo(function ReductionCell({
     if (!cell.active) {
         return (
             <div className="flex items-center justify-between px-3 h-[68px] group/cell transition-colors hover:bg-brand-light bg-brand-light">
-                <span className="text-[11px] text-brand-slate italic select-none">
-                    {t('pages.contractDetails.grid.cell.notApplied', { defaultValue: 'Not applied' })}
-                </span>
+                <div className="flex items-center gap-2">
+                    <span className="h-2.5 w-2.5 shrink-0 rounded-full bg-brand-slate/10" aria-hidden="true" />
+                    <span className="text-[11px] text-brand-slate italic select-none">
+                        {t('pages.contractDetails.grid.cell.notApplied', { defaultValue: 'Not applied' })}
+                    </span>
+                </div>
                 <button
                     type="button"
                     onClick={handleToggle}
@@ -96,6 +99,7 @@ const ReductionCell = memo(function ReductionCell({
     const canEdit = baseType === 'FIXED' || baseType === 'PERCENTAGE';
     const baseLabel = t('pages.contractDetails.grid.cell.base', { defaultValue: 'Base' });
     const freeLabel = t('pages.contractDetails.grid.types.free', { defaultValue: 'Free' });
+    const hasOverride = localValue !== '';
     const placeholderText = baseType === 'FREE' ? freeLabel
         : baseType === 'PERCENTAGE' ? `${baseLabel}: ${baseValue ?? 0}%`
             : `${baseLabel}: ${baseValue ?? 0}`;
@@ -103,9 +107,18 @@ const ReductionCell = memo(function ReductionCell({
     return (
         <div className="flex flex-col justify-center gap-1.5 px-3 h-[68px] group/cell transition-colors hover:bg-brand-mint/10">
             <div className="flex items-center justify-between">
-                <span className="text-[10px] font-bold text-brand-mint uppercase tracking-wider select-none">
-                    {t('pages.contractDetails.grid.cell.active', { defaultValue: 'Active' })}
-                </span>
+                <div className="flex items-center gap-1.5">
+                    <span
+                        className={`h-2.5 w-2.5 shrink-0 rounded-full bg-brand-mint ${hasOverride ? 'ring-4 ring-brand-mint/25' : ''}`}
+                        title={hasOverride
+                            ? t('pages.contractDetails.grid.legend.overridden', { defaultValue: 'Value overridden' })
+                            : t('pages.contractDetails.grid.legend.defaultInherited', { defaultValue: 'Default inherited' })}
+                        aria-hidden="true"
+                    />
+                    <span className="text-[10px] font-bold text-brand-mint uppercase tracking-wider select-none">
+                        {t('pages.contractDetails.grid.cell.active', { defaultValue: 'Active' })}
+                    </span>
+                </div>
                 <button
                     type="button"
                     onClick={handleToggle}
@@ -125,11 +138,8 @@ const ReductionCell = memo(function ReductionCell({
                     placeholder={placeholderText}
                     disabled={!canEdit}
                     title={t('pages.contractDetails.grid.cell.overrideHint', { defaultValue: 'Leave empty to inherit base value' })}
-                    className={`block w-full px-2 py-1 text-xs rounded-xl border text-right transition-all focus:outline-none focus:ring-1 focus:ring-brand-mint focus:border-brand-mint/30 disabled:bg-transparent disabled:border-transparent disabled:text-brand-slate disabled:cursor-default ${localValue !== '' ? 'border-brand-mint/30 text-brand-mint bg-brand-mint/10 font-semibold' : 'border-brand-slate/20 text-brand-slate bg-brand-light'}`}
+                    className={`block w-full px-2 py-1 text-xs rounded-xl border text-right transition-all focus:outline-none focus:ring-1 focus:ring-brand-mint focus:border-brand-mint/30 disabled:bg-transparent disabled:border-transparent disabled:text-brand-slate disabled:cursor-default ${hasOverride ? 'border-brand-mint/30 text-brand-mint bg-brand-mint/10 font-semibold' : 'border-brand-slate/20 text-brand-slate bg-brand-light'}`}
                 />
-                {localValue !== '' && (
-                    <div className="absolute top-0.5 right-0.5 w-1.5 h-1.5 rounded-full bg-brand-mint pointer-events-none" />
-                )}
             </div>
         </div>
     );
@@ -406,7 +416,7 @@ export default function ReductionsGrid({
                     {t('pages.contractDetails.grid.legend.defaultInherited', { defaultValue: 'Default inherited' })}
                 </span>
                 <span className="flex items-center gap-2">
-                    <span className="w-2.5 h-2.5 rounded-full bg-brand-mint ring-4 ring-brand-mint" />
+                    <span className="w-2.5 h-2.5 rounded-full bg-brand-mint ring-4 ring-brand-mint/25" />
                     {t('pages.contractDetails.grid.legend.overridden', { defaultValue: 'Value overridden' })}
                 </span>
                 <span className="flex items-center gap-2 font-bold">

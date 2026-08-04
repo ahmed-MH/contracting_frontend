@@ -26,12 +26,12 @@ export default function EarlyBookingsTable({
     onPageChange,
     restorePending = false,
 }: EarlyBookingsTableProps) {
-    const { t } = useTranslation('common');
-    void t;
+    const { t, i18n } = useTranslation('common');
+    const locale = i18n.language.toLowerCase().startsWith('en') ? 'en-GB' : 'fr-FR';
     const formatDate = (dateString: string | null) => {
         if (!dateString) return '—';
         try {
-            return new Intl.DateTimeFormat('fr-FR').format(new Date(dateString));
+            return new Intl.DateTimeFormat(locale).format(new Date(dateString));
         } catch {
             return dateString;
         }
@@ -66,7 +66,7 @@ export default function EarlyBookingsTable({
                                 {onRestore && (
                                     <button onClick={() => onRestore(eb)} disabled={restorePending}
                                         className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-brand-mint/10 text-brand-mint text-xs font-medium rounded-xl hover:bg-brand-mint/10 transition-colors cursor-pointer disabled:opacity-50">
-                                        <RotateCcw size={14} /> Restaurer
+                                        <RotateCcw size={14} /> {t('pages.catalog.earlyBookings.archived.restore')}
                                     </button>
                                 )}
                             </td>
@@ -127,7 +127,7 @@ export default function EarlyBookingsTable({
                                         {eb.calculationType === 'PERCENTAGE' ? `-${eb.value}%` : `${eb.value} TND`}
                                     </span>
                                     <span className="text-[10px] text-brand-slate font-medium uppercase tracking-tight">
-                                        {eb.calculationType === 'PERCENTAGE' ? 'Pourcentage' : 'Fixe'}
+                                        {eb.calculationType === 'PERCENTAGE' ? t('pages.catalog.labels.percentage') : t('pages.catalog.labels.fixed')}
                                     </span>
                                 </div>
                             </td>

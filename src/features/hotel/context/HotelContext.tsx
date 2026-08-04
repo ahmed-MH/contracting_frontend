@@ -25,7 +25,7 @@ export function HotelProvider({ children }: { children: ReactNode }) {
     void t;
     const { isAuthenticated, user } = useAuth();
     const isAdmin = user?.role === 'ADMIN';
-    const shouldFetchHotels = isAuthenticated && user?.role !== 'SUPERVISOR';
+    const shouldFetchHotels = isAuthenticated;
 
     const [selectedId, setSelectedId] = useState<number | null>(() => {
         const stored = localStorage.getItem(HOTEL_ID_KEY);

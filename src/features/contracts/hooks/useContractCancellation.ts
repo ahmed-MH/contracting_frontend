@@ -27,7 +27,7 @@ export function useCreateContractCancellation(contractId: number) {
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['contract-cancellation', contractId] });
-            toast.success(i18next.t('auto.features.contracts.hooks.usecontractcancellation.toast.success.07f51d02', { defaultValue: "Règle d'annulation créée" }));
+            toast.success(i18next.t('auto.features.contracts.hooks.usecontractcancellation.toast.success.07f51d02', { defaultValue: 'Cancellation rule created' }));
         },
     });
 }
@@ -54,7 +54,7 @@ export function useDeleteContractCancellation(contractId: number) {
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['contract-cancellation', contractId] });
-            toast.success(i18next.t('auto.features.contracts.hooks.usecontractcancellation.toast.success.bef7b852', { defaultValue: "Règle d'annulation supprimée" }));
+            toast.success(i18next.t('auto.features.contracts.hooks.usecontractcancellation.toast.success.bef7b852', { defaultValue: 'Cancellation rule removed' }));
         },
     });
 }
@@ -68,7 +68,7 @@ export function useImportCancellation(contractId: number) {
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['contract-cancellation', contractId] });
-            toast.success(i18next.t('auto.features.contracts.hooks.usecontractcancellation.toast.success.26634425', { defaultValue: "Règle importée depuis le catalogue" }));
+            toast.success(i18next.t('auto.features.contracts.hooks.usecontractcancellation.toast.success.26634425', { defaultValue: 'Rule imported from the catalog' }));
         },
     });
 }

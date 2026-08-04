@@ -21,7 +21,7 @@ import AdminPageHeader from '../components/AdminPageHeader';
 import AdminSectionCard from '../components/AdminSectionCard';
 import InviteUserModal from '../components/InviteUserModal';
 import EditUserModal from '../components/EditUserModal';
-import { useUsers, useSuspendUser, useReactivateUser, useRemovePendingInvite, useTenantUsage, type UserListItem } from '../hooks/useUsers';
+import { useUsers, useSuspendUser, useReactivateUser, useRemovePendingInvite, type UserListItem } from '../hooks/useUsers';
 import { useHotels } from '../../hotel/hooks/useHotels';
 import { useConfirm } from '../../../context/ConfirmContext';
 import { useAuth } from '../../auth/context/AuthContext';
@@ -428,7 +428,6 @@ export default function UsersPage() {
     const [hotelFilter, setHotelFilter] = useState('ALL');
     const { confirm } = useConfirm();
     const { data: users, isLoading, isError } = useUsers();
-    const { data: tenantUsage } = useTenantUsage();
     const { data: allHotels = [] } = useHotels();
     const suspendMutation = useSuspendUser();
     const reactivateMutation = useReactivateUser();
@@ -441,9 +440,7 @@ export default function UsersPage() {
     const activeAdminCount = admins.filter((user) => getUserAccountStatus(user) === 'ACTIVE').length;
     const activeUsers = allUsers.filter((user) => getUserAccountStatus(user) === 'ACTIVE').length;
     const pendingUsers = allUsers.filter((user) => getUserAccountStatus(user) === 'PENDING_INVITE').length;
-    const seatUsageLabel = tenantUsage
-        ? `${tenantUsage.users.used}/${tenantUsage.users.limit}`
-        : users?.length ?? 0;
+    const seatUsageLabel = users?.length ?? 0;
     const activeCommercials = commercials.filter((user) => getUserAccountStatus(user) === 'ACTIVE');
     const normalizedSearch = searchTerm.trim().toLowerCase();
     const filteredUsers = useMemo(() => allUsers.filter((user) => {
@@ -541,9 +538,9 @@ export default function UsersPage() {
                     <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
                         {[
                             { label: t('pages.users.metrics.totalSeats', { defaultValue: 'Seats used' }), value: seatUsageLabel, icon: Users },
-                            { label: t('pages.users.metrics.activeUsers', { defaultValue: 'Active users' }), value: tenantUsage?.users.active ?? activeUsers, icon: ShieldCheck },
-                            { label: t('pages.users.metrics.pendingInvites', { defaultValue: 'Pending invites' }), value: tenantUsage?.users.pendingInvites ?? pendingUsers, icon: UserCog },
-                            { label: t('pages.users.metrics.hotelUsage', { defaultValue: 'Hotels used' }), value: tenantUsage ? `${tenantUsage.hotels.used}/${tenantUsage.hotels.limit}` : allHotels.length, icon: Building2 },
+                            { label: t('pages.users.metrics.activeUsers', { defaultValue: 'Active users' }), value: activeUsers, icon: ShieldCheck },
+                            { label: t('pages.users.metrics.pendingInvites', { defaultValue: 'Pending invites' }), value: pendingUsers, icon: UserCog },
+                            { label: t('pages.users.metrics.hotelUsage', { defaultValue: 'Hotels managed' }), value: allHotels.length, icon: Building2 },
                         ].map((metric) => {
                             const Icon = metric.icon;
                             return (
@@ -591,7 +588,7 @@ export default function UsersPage() {
                     <AdminSectionCard
                         eyebrow={t('pages.users.admins.eyebrow', { defaultValue: 'Governance Layer' })}
                         title={t('pages.users.admins.title', { defaultValue: 'Organization admins' })}
-                        description={t('pages.users.admins.description', { defaultValue: 'Admins manage billing posture, access rules, and overall workspace governance.' })}
+                        description={t('pages.users.admins.description', { defaultValue: 'Admins manage access rules and overall workspace governance.' })}
                         actions={(
                             <div className="inline-flex items-center gap-2 rounded-full border border-brand-navy/10 bg-brand-navy px-4 py-2 text-sm font-medium text-brand-light dark:border-brand-light/10 dark:bg-brand-light/8">
                                 <Briefcase size={16} />
@@ -678,8 +675,8 @@ export default function UsersPage() {
                             <h3 className="mt-2 text-xl font-semibold tracking-tight text-brand-navy dark:text-brand-light">{t('pages.users.guidance.title', { defaultValue: 'Keep assignments clean as the portfolio grows.' })}</h3>
                             <div className="mt-5 grid gap-3 md:grid-cols-3">
                                 {[
-                                    t('pages.users.guidance.items.reviewPending', { defaultValue: 'Review pending invites before opening a new onboarding batch.' }),
-                                    t('pages.users.guidance.items.auditAdmins', { defaultValue: 'Limit admin seats to users handling billing and governance decisions.' }),
+                                    t('pages.users.guidance.items.reviewPending', { defaultValue: 'Review pending invites before opening a new invitation batch.' }),
+                                    t('pages.users.guidance.items.auditAdmins', { defaultValue: 'Limit admin seats to users handling governance decisions.' }),
                                     t('pages.users.guidance.items.alignHotels', { defaultValue: "Match hotel assignments to each commercial user's current operating scope." }),
                                 ].map((item) => (
                                     <div key={item} className="rounded-lg border border-brand-light/60 bg-brand-light/72 px-4 py-3 text-sm text-brand-navy dark:border-brand-light/10 dark:bg-brand-light/5 dark:text-brand-light">

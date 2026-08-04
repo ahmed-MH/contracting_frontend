@@ -108,8 +108,8 @@ export default function EditContractCancellationModal({
         <ModalShell
             isOpen={isOpen}
             onClose={onClose}
-            title={editItem ? 'Modifier la politique' : 'Nouvelle politique d\'annulation'}
-            subtitle={t('auto.features.contracts.details.modals.editcontractcancellationmodal.subtitle.94b4927c', { defaultValue: "Configuration de base" })}
+            title={editItem ? 'Edit cancellation policy' : 'New cancellation policy'}
+            subtitle={t('auto.features.contracts.details.modals.editcontractcancellationmodal.subtitle.94b4927c', { defaultValue: 'Base configuration' })}
             onSubmit={handleSubmit(onSubmit)}
             submitLabel={editItem ? 'Mettre à jour' : 'Créer la politique'}
             isSubmitting={isPending}
@@ -120,7 +120,7 @@ export default function EditContractCancellationModal({
                         {/* Info Alert */}
                         <div className="bg-brand-mint/5 border border-brand-mint/20 rounded-xl p-4 flex gap-3 text-brand-slate shadow-sm">
                             <p className="text-xs leading-relaxed font-medium">
-                                💡 <span className="font-bold text-brand-navy dark:text-brand-light">{t('auto.features.contracts.details.modals.editcontractcancellationmodal.1e8a2055', { defaultValue: "Architecture Matrice :" })}</span> {t('auto.features.contracts.details.modals.editcontractcancellationmodal.33ef0800', { defaultValue: "L'activation par période et les pénalités surchargées se gèrent directement dans la" })} <span className="text-brand-mint font-bold">{t('auto.features.contracts.details.modals.editcontractcancellationmodal.793e9efa', { defaultValue: "Grille Annulation" })}</span> principale.
+                                <span className="font-bold text-brand-navy dark:text-brand-light">{t('auto.features.contracts.details.modals.editcontractcancellationmodal.1e8a2055', { defaultValue: 'Matrix workflow:' })}</span> {t('auto.features.contracts.details.modals.editcontractcancellationmodal.33ef0800', { defaultValue: 'Activation by period and penalty overrides are managed directly in the' })} <span className="text-brand-mint font-bold">{t('auto.features.contracts.details.modals.editcontractcancellationmodal.793e9efa', { defaultValue: 'Cancellation grid' })}</span>.
                             </p>
                         </div>
 
@@ -211,7 +211,7 @@ export default function EditContractCancellationModal({
                         </div>
 
                         <div className="pt-4 border-t border-brand-slate/15 dark:border-brand-slate/20">
-                            <label className="block text-xs font-bold text-brand-navy dark:text-brand-light uppercase tracking-wider mb-4 text-center">{t('auto.features.contracts.details.modals.editcontractcancellationmodal.7b2da6bb', { defaultValue: "Chambres concernées" })}</label>
+                            <label className="block text-xs font-bold text-brand-navy dark:text-brand-light uppercase tracking-wider mb-4 text-center">{t('auto.features.contracts.details.modals.editcontractcancellationmodal.7b2da6bb', { defaultValue: 'Target rooms' })}</label>
                             <div className="grid grid-cols-2 gap-3">
                                 {contract.contractRooms?.map((room) => (
                                     <label key={room.id} className="flex items-center gap-3 p-3 bg-brand-light dark:bg-brand-slate/10 rounded-xl border border-brand-slate/20 hover:border-brand-mint transition-all cursor-pointer group has-checked:bg-brand-mint/5 has-checked:border-brand-mint/40">
@@ -237,7 +237,7 @@ export default function EditContractCancellationModal({
                         <div className="bg-brand-slate/10 rounded-xl p-4 border border-brand-slate/30 flex items-center gap-3">
                                 <span className="text-lg">💡</span>
                             <p className="text-[11px] font-bold text-brand-slate italic">
-                                💡 L'activation par période et les surcharges se gèrent directement dans la Grille.
+                                Activation by period and overrides are managed directly in the grid.
                             </p>
                         </div>
             </div>

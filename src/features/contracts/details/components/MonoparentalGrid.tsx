@@ -91,9 +91,12 @@ const MonoparentalCell = memo(function MonoparentalCell({
     if (!cell.active) {
         return (
             <div className="flex items-center justify-between px-3 h-[180px] group/cell transition-colors hover:bg-brand-light bg-brand-light">
-                <span className="text-[11px] text-brand-slate italic select-none">
-                    {t('pages.contractDetails.grid.cell.notApplied', { defaultValue: 'Not applied' })}
-                </span>
+                <div className="flex items-center gap-2">
+                    <span className="h-2.5 w-2.5 shrink-0 rounded-full bg-brand-slate/10" aria-hidden="true" />
+                    <span className="text-[11px] text-brand-slate italic select-none">
+                        {t('pages.contractDetails.grid.cell.notApplied', { defaultValue: 'Not applied' })}
+                    </span>
+                </div>
                 <button
                     type="button"
                     onClick={handleToggle}
@@ -108,13 +111,23 @@ const MonoparentalCell = memo(function MonoparentalCell({
     }
 
     const inheritedLabel = t('pages.contractDetails.grid.mono.inherited', { defaultValue: '(Inherited)' });
+    const hasOverride = cell.overrideBaseRateType !== '' || cell.overrideChildSurchargeBase !== '' || localValue !== '';
 
     return (
         <div className="flex flex-col p-3 h-[180px] group/cell transition-colors hover:bg-brand-mint/10 gap-3">
             <div className="flex items-center justify-between">
-                <span className="text-[10px] font-bold text-brand-mint uppercase tracking-wider select-none">
-                    {t('pages.contractDetails.grid.cell.active', { defaultValue: 'Active' })}
-                </span>
+                <div className="flex items-center gap-1.5">
+                    <span
+                        className={`h-2.5 w-2.5 shrink-0 rounded-full bg-brand-mint ${hasOverride ? 'ring-4 ring-brand-mint/25' : ''}`}
+                        title={hasOverride
+                            ? t('pages.contractDetails.grid.legend.overridden', { defaultValue: 'Value overridden' })
+                            : t('pages.contractDetails.grid.legend.defaultInherited', { defaultValue: 'Default inherited' })}
+                        aria-hidden="true"
+                    />
+                    <span className="text-[10px] font-bold text-brand-mint uppercase tracking-wider select-none">
+                        {t('pages.contractDetails.grid.cell.active', { defaultValue: 'Active' })}
+                    </span>
+                </div>
                 <button
                     type="button"
                     onClick={handleToggle}
@@ -446,7 +459,7 @@ export default function MonoparentalGrid({
                     {t('pages.contractDetails.grid.legend.defaultInherited', { defaultValue: 'Default inherited' })}
                 </span>
                 <span className="flex items-center gap-2">
-                    <span className="w-2.5 h-2.5 rounded-full bg-brand-mint ring-4 ring-brand-mint" />
+                    <span className="w-2.5 h-2.5 rounded-full bg-brand-mint ring-4 ring-brand-mint/25" />
                     {t('pages.contractDetails.grid.legend.overridden', { defaultValue: 'Value overridden' })}
                 </span>
                 <span className="flex items-center gap-2 font-bold">

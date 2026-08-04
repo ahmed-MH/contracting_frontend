@@ -31,12 +31,6 @@ import EditCancellationTemplateModal from '../components/EditCancellationTemplat
 import UpdatedByCell from '../../../../components/audit/UpdatedByCell';
 import PaginationControls, { createClientPageMeta, getPageItems } from '../../../../components/ui/PaginationControls';
 
-const PENALTY_LABELS: Record<CancellationPenaltyType, string> = {
-    [CancellationPenaltyType.NIGHTS]: 'Nuits',
-    [CancellationPenaltyType.PERCENTAGE]: 'Pourcentage',
-    [CancellationPenaltyType.FIXED_AMOUNT]: 'Montant fixe',
-};
-
 const PENALTY_COLORS: Record<CancellationPenaltyType, string> = {
     [CancellationPenaltyType.NIGHTS]: 'bg-brand-mint/10 text-brand-mint border-brand-mint/30',
     [CancellationPenaltyType.PERCENTAGE]: 'bg-brand-slate/10 text-brand-slate border-brand-slate/30',
@@ -53,6 +47,11 @@ const getIcon = (type: CancellationPenaltyType) => {
 
 export default function CancellationCatalogPage() {
     const { t } = useTranslation('common');
+    const penaltyLabels: Record<CancellationPenaltyType, string> = {
+        [CancellationPenaltyType.NIGHTS]: t('pages.catalog.labels.penalty.nights'),
+        [CancellationPenaltyType.PERCENTAGE]: t('pages.catalog.labels.penalty.percentage'),
+        [CancellationPenaltyType.FIXED_AMOUNT]: t('pages.catalog.labels.penalty.fixedAmount'),
+    };
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editing, setEditing] = useState<TemplateCancellationRule | null>(null);
     const [showArchived, setShowArchived] = useState(false);
@@ -95,9 +94,9 @@ export default function CancellationCatalogPage() {
 
     const handleDelete = async (r: TemplateCancellationRule) => {
         if (await confirm({
-            title: `Archiver la règle "${r.name}" ?`,
-            description: "La règle sera archivée et ne sera plus visible dans le catalogue.",
-            confirmLabel: "Archiver",
+            title: t('pages.catalog.cancellation.confirmArchive.title', { name: r.name }),
+            description: t('pages.catalog.cancellation.confirmArchive.description'),
+            confirmLabel: t('pages.catalog.cancellation.confirmArchive.confirmLabel'),
             variant: "danger",
         })) {
             deleteMutation.mutate(r.id);
@@ -106,9 +105,9 @@ export default function CancellationCatalogPage() {
 
     const handleRestore = async (r: TemplateCancellationRule) => {
         if (await confirm({
-            title: `Restaurer la règle "${r.name}" ?`,
-            description: "La règle sera de nouveau disponible dans le catalogue.",
-            confirmLabel: "Restaurer",
+            title: t('pages.catalog.cancellation.confirmRestore.title', { name: r.name }),
+            description: t('pages.catalog.cancellation.confirmRestore.description'),
+            confirmLabel: t('pages.catalog.cancellation.confirmRestore.confirmLabel'),
             variant: "info",
         })) {
             restoreMutation.mutate(r.id);
@@ -142,7 +141,7 @@ export default function CancellationCatalogPage() {
                     </div>
                     <button onClick={openCreate}
                         className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl bg-brand-mint px-4 text-sm font-semibold text-brand-light shadow-md transition hover:-translate-y-0.5 hover:bg-brand-mint cursor-pointer border-none outline-none lg:mt-9">
-                        <Plus size={16} /> Nouvelle Règle
+                        <Plus size={16} /> {t('pages.catalog.cancellation.header.new')}
                     </button>
                 </div>
                 <div className="relative mt-5 flex flex-col gap-3 border-t border-brand-slate/10 pt-5 dark:border-brand-light/10 md:flex-row md:items-center md:justify-between">
@@ -212,17 +211,17 @@ export default function CancellationCatalogPage() {
                                     </td>
                                     <td className="px-5 py-4">
                                         <div className="inline-flex items-center gap-1.5 px-2 py-1 bg-brand-slate/10 text-brand-slate border border-brand-slate/30 rounded-xl text-xs font-black">
-                                            ≤ {r.daysBeforeArrival} jours
+                                            ≤ {r.daysBeforeArrival} {t('auto.features.catalog.early.bookings.components.editearlybookingtemplatemodal.f9dc7029')}
                                         </div>
                                     </td>
                                     <td className="px-5 py-4 text-brand-slate font-bold">
-                                        {r.minStayCondition ? `${r.minStayCondition} nuits` : <span className="text-brand-slate text-xs font-normal italic">{t('auto.features.catalog.cancellation.pages.cancellationcatalogpage.443b4f96', { defaultValue: "Sans condition" })}</span>}
+                                        {r.minStayCondition ? `${r.minStayCondition} ${t('auto.features.catalog.cancellation.components.editcancellationtemplatemodal.2932ddb1')}` : <span className="text-brand-slate text-xs font-normal italic">{t('auto.features.catalog.cancellation.pages.cancellationcatalogpage.443b4f96', { defaultValue: "Sans condition" })}</span>}
                                     </td>
                                     <td className="px-5 py-4">
                                         <div className="flex items-center gap-3">
                                             <span className={`inline-flex items-center gap-1.5 px-2 py-1 rounded-xl text-[10px] font-black uppercase tracking-tight border ${PENALTY_COLORS[r.penaltyType]}`}>
                                                 {getIcon(r.penaltyType)}
-                                                {PENALTY_LABELS[r.penaltyType]}
+                                                {penaltyLabels[r.penaltyType]}
                                             </span>
                                             <span className="text-sm font-black text-brand-navy font-mono dark:text-brand-light">
                                                 {r.baseValue}{r.penaltyType === CancellationPenaltyType.NIGHTS ? 'n' : r.penaltyType === CancellationPenaltyType.PERCENTAGE ? '%' : '€'}
@@ -259,7 +258,7 @@ export default function CancellationCatalogPage() {
                         className="inline-flex items-center gap-2 rounded-lg border border-brand-light/70 bg-brand-light/70 px-4 py-2 text-sm font-semibold text-brand-navy transition hover:border-brand-mint hover:text-brand-mint dark:border-brand-light/10 dark:bg-brand-light/5 dark:text-brand-light">
                         {showArchived ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
                         <Archive size={16} />
-                        Règles archivées {archivedRules ? `(${archivedRules.length})` : ''}
+                        {t('pages.catalog.cancellation.archived.toggle', { count: archivedRules ? `(${archivedRules.length})` : '' })}
                     </button>
 
                     {showArchived && archivedRules && archivedRules.length > 0 && (
@@ -283,7 +282,7 @@ export default function CancellationCatalogPage() {
                                             <td className="px-5 py-3 text-right">
                                                 <button onClick={() => handleRestore(r)}
                                                     className="inline-flex h-10 items-center gap-2 rounded-lg bg-brand-mint/10 px-4 text-sm font-semibold text-brand-mint transition hover:bg-brand-mint hover:text-brand-light disabled:cursor-not-allowed disabled:opacity-60">
-                                                    <RotateCcw size={14} /> Restaurer
+                                                    <RotateCcw size={14} /> {t('pages.catalog.cancellation.archived.restore')}
                                                 </button>
                                             </td>
                                         </tr>
@@ -296,7 +295,7 @@ export default function CancellationCatalogPage() {
                     )}
                     {showArchived && archivedRules && archivedRules.length === 0 && (
                         <div className="rounded-lg border border-dashed border-brand-slate/20 px-6 py-10 text-center text-sm text-brand-slate dark:border-brand-light/10 dark:text-brand-light/70">
-                            Aucune règle archivée
+                            {t('pages.catalog.cancellation.archived.empty')}
                         </div>
                     )}
                 </div>

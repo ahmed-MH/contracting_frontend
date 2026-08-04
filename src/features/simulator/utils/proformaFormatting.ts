@@ -8,7 +8,7 @@ const localeByLanguage: Record<ProformaPreviewLanguage, string> = {
 const dateLocale = 'en-GB';
 
 export const PROFORMA_DISCLAIMER =
-    'This document is a commercial proforma invoice and does not constitute a legal or fiscal invoice. Prices are indicative and subject to availability at the time of confirmation.';
+    'This document is a commercial invoice preview and does not constitute a legal or fiscal invoice. Prices are indicative and subject to availability at the time of confirmation.';
 
 export function normalizeProformaLanguage(language?: string): ProformaPreviewLanguage {
     const normalized = language?.toLowerCase() ?? '';

@@ -125,8 +125,8 @@ export default function EditContractReductionModal({
         <ModalShell
             isOpen={isOpen}
             onClose={onClose}
-            title={t('auto.features.contracts.details.modals.editcontractreductionmodal.title.24cf9492', { defaultValue: "Modifier la réduction" })}
-            subtitle={t('auto.features.contracts.details.modals.editcontractreductionmodal.subtitle.bdb3ac3f', { defaultValue: "Configuration de base · Coquille" })}
+            title={t('auto.features.contracts.details.modals.editcontractreductionmodal.title.24cf9492', { defaultValue: 'Edit reduction' })}
+            subtitle={t('auto.features.contracts.details.modals.editcontractreductionmodal.subtitle.bdb3ac3f', { defaultValue: 'Base configuration' })}
             onSubmit={handleSubmit(onSubmit)}
             submitLabel={t('auto.features.contracts.details.modals.editcontractreductionmodal.submitLabel.a3e103eb', { defaultValue: "Mettre à jour" })}
             isSubmitting={updateMutation.isPending}
@@ -150,8 +150,8 @@ export default function EditContractReductionModal({
                                     className="w-full px-4 py-2.5 bg-brand-light dark:bg-brand-slate/10 border border-brand-slate/20 rounded-xl focus:ring-2 focus:ring-brand-mint transition-all text-sm font-bold text-brand-navy dark:text-brand-light outline-none"
                                 >
                                     <option value="CHILD">{t('auto.features.contracts.details.modals.editcontractreductionmodal.4273eebf', { defaultValue: "Enfant" })}</option>
-                                    <option value="EXTRA_ADULT">{t('auto.features.contracts.details.modals.editcontractreductionmodal.dea869ee', { defaultValue: "Adulte Supplémentaire" })}</option>
-                                    <option value="CUSTOM">{t('auto.features.contracts.details.modals.editcontractreductionmodal.b324581a', { defaultValue: "Réduction Standard / Autre" })}</option>
+                                    <option value="EXTRA_ADULT">{t('auto.features.contracts.details.modals.editcontractreductionmodal.dea869ee', { defaultValue: 'Extra adult' })}</option>
+                                    <option value="CUSTOM">{t('auto.features.contracts.details.modals.editcontractreductionmodal.b324581a', { defaultValue: 'Standard / other reduction' })}</option>
                                 </select>
                             </div>
 
@@ -161,7 +161,7 @@ export default function EditContractReductionModal({
                                 <input
                                     {...register('name')}
                                     className="w-full px-4 py-2.5 bg-brand-light dark:bg-brand-slate/10 border border-brand-slate/20 rounded-xl focus:ring-2 focus:ring-brand-mint transition-all text-sm font-medium text-brand-navy dark:text-brand-light outline-none"
-                                    placeholder={t('auto.features.contracts.details.modals.editcontractreductionmodal.placeholder.9502ee2a', { defaultValue: "ex: Réduction Enfant Standard" })}
+                                    placeholder={t('auto.features.contracts.details.modals.editcontractreductionmodal.placeholder.9502ee2a', { defaultValue: 'e.g. Standard child reduction' })}
                                 />
                                 {errors.name && <p className="mt-1.5 text-xs font-bold text-brand-slate">{errors.name.message}</p>}
                             </div>
@@ -238,7 +238,7 @@ export default function EditContractReductionModal({
                                         className="w-full px-4 py-2.5 bg-brand-light dark:bg-brand-slate/10 border border-brand-slate/20 rounded-xl focus:ring-2 focus:ring-brand-mint focus:bg-brand-light transition-all text-sm font-bold cursor-pointer text-brand-navy dark:text-brand-light outline-none"
                                     >
                                         <option value="PER_NIGHT_PER_PERSON">{t('auto.features.contracts.details.modals.editcontractreductionmodal.a225361f', { defaultValue: "Par Nuit et Par Personne" })}</option>
-                                        <option value="PER_NIGHT_PER_ROOM">{t('auto.features.contracts.details.modals.editcontractreductionmodal.6ecfc999', { defaultValue: "Par Chambre et Par Nuit" })}</option>
+                                        <option value="PER_NIGHT_PER_ROOM">{t('auto.features.contracts.details.modals.editcontractreductionmodal.6ecfc999', { defaultValue: 'Per room / night' })}</option>
                                         <option value="FLAT_RATE_PER_STAY">{t('auto.features.contracts.details.modals.editcontractreductionmodal.313147b3', { defaultValue: "Forfait Unique par Séjour" })}</option>
                                     </select>
                                 </div>
@@ -267,7 +267,7 @@ export default function EditContractReductionModal({
                             {/* Room Targeting */}
                             {contractRooms.length > 0 && (
                                 <div className="pt-4 border-t border-brand-slate/15 dark:border-brand-slate/20">
-                                    <label className="block text-xs font-bold text-brand-navy dark:text-brand-light uppercase tracking-wider mb-4 text-center">{t('auto.features.contracts.details.modals.editcontractreductionmodal.da335446', { defaultValue: "Chambres concernées" })}</label>
+                                    <label className="block text-xs font-bold text-brand-navy dark:text-brand-light uppercase tracking-wider mb-4 text-center">{t('auto.features.contracts.details.modals.editcontractreductionmodal.da335446', { defaultValue: 'Target rooms' })}</label>
                                     <div className="grid grid-cols-2 gap-3">
                                         {contractRooms.map((room) => (
                                             <label key={room.id} className="flex items-center gap-3 p-3 bg-brand-light dark:bg-brand-slate/10 rounded-xl border border-brand-slate/20 hover:border-brand-mint transition-all cursor-pointer group has-checked:bg-brand-mint/5 has-checked:border-brand-mint/40">
@@ -287,7 +287,7 @@ export default function EditContractReductionModal({
                             <div className="bg-brand-slate/10 rounded-xl p-4 border border-brand-slate/30 flex items-center gap-3">
                                 <span className="text-lg">💡</span>
                                 <p className="text-[11px] font-bold text-brand-slate italic">
-                                    💡 L'activation par période et les surcharges se gèrent directement dans la Grille.
+                                    Activation by period and overrides are managed directly in the grid.
                                 </p>
                             </div>
                         </div>

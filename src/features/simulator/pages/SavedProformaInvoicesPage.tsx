@@ -9,7 +9,7 @@ import { useConfirm } from '../../../context/ConfirmContext';
 import type { PageMeta } from '../../../types/pagination.types';
 
 function formatDate(iso?: string | null) {
-    if (!iso) return '—';
+    if (!iso) return '-';
     return new Date(iso).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
 }
 
@@ -109,7 +109,7 @@ export default function SavedProformaInvoicesPage() {
 
     const handleArchive = async (invoice: typeof invoices[number]) => {
         if (await confirm({
-            title: `Archive proforma "${invoice.reference}"?`,
+            title: `Archive invoice "${invoice.reference}"?`,
             description: 'This invoice will move out of the active commercial archive until it is restored.',
             confirmLabel: 'Archive',
             variant: 'danger',
@@ -120,7 +120,7 @@ export default function SavedProformaInvoicesPage() {
 
     const handleRestore = async (invoice: typeof invoices[number]) => {
         if (await confirm({
-            title: `Restore proforma "${invoice.reference}"?`,
+            title: `Restore invoice "${invoice.reference}"?`,
             description: 'This invoice will return to the active issued invoice archive.',
             confirmLabel: 'Restore',
             variant: 'info',
@@ -134,8 +134,8 @@ export default function SavedProformaInvoicesPage() {
             <GuidedPageHeader
                 icon={FileText}
                 kicker="Commercial Archive"
-                title="Saved Proforma Invoices"
-                description="Issued proforma invoices are frozen on download and can be viewed or re-downloaded from this workspace."
+                title="Saved Invoices"
+                description="Issued invoices are frozen on download and can be viewed or re-downloaded from this workspace."
             />
 
             <SectionCard
@@ -212,7 +212,7 @@ export default function SavedProformaInvoicesPage() {
                             <FileText size={26} />
                         </div>
                         <h2 className="mt-5 text-lg font-semibold text-brand-navy dark:text-brand-light">
-                            No issued proforma invoices yet
+                            No issued invoices yet
                         </h2>
                         <p className="mt-2 text-sm text-brand-slate dark:text-brand-light/70">
                             Draft previews appear here only after the PDF is downloaded and the invoice is issued.
@@ -251,7 +251,7 @@ export default function SavedProformaInvoicesPage() {
                                                 </p>
                                             </td>
                                             <td className="px-5 py-4 align-top text-brand-slate dark:text-brand-light/70">
-                                                <p>{formatDate(invoice.checkIn)} → {formatDate(invoice.checkOut)}</p>
+                                                <p>{formatDate(invoice.checkIn)} - {formatDate(invoice.checkOut)}</p>
                                                 <p className="mt-1 text-xs">
                                                     Booking: {formatDate(invoice.bookingDate)}
                                                 </p>
@@ -299,7 +299,7 @@ export default function SavedProformaInvoicesPage() {
                                                         disabled={archiveMutation.isPending}
                                                         onClick={() => handleArchive(invoice)}
                                                         className="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-brand-light/70 bg-brand-light/70 text-brand-slate transition hover:border-brand-mint hover:text-brand-mint disabled:cursor-not-allowed disabled:opacity-60 dark:border-brand-light/10 dark:bg-brand-light/5 dark:text-brand-light"
-                                                        aria-label="Archive proforma"
+                                                        aria-label="Archive invoice"
                                                     >
                                                         <Archive size={14} />
                                                     </button>
@@ -322,13 +322,13 @@ export default function SavedProformaInvoicesPage() {
                     >
                         {showArchived ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
                         <Archive size={16} />
-                        Archived proformas {showArchived ? `(${archivedInvoicesPage?.meta.total ?? archivedInvoices.length})` : ''}
+                        Archived invoices {showArchived ? `(${archivedInvoicesPage?.meta.total ?? archivedInvoices.length})` : ''}
                     </button>
                 </div>
 
                 {showArchived && archivedInvoices.length === 0 && (
                     <div className="rounded-lg border border-dashed border-brand-slate/20 px-6 py-10 text-center text-sm text-brand-slate dark:border-brand-light/10 dark:text-brand-light/70">
-                        No archived proforma invoices match these filters.
+                        No archived invoices match these filters.
                     </div>
                 )}
 

@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef, memo } from 'react';
+import { useState, useCallback, useEffect, useRef, memo } from 'react';
 import { Percent, Wallet, Sun } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
@@ -35,6 +35,10 @@ const SpoCell = memo(function SpoCell({
     const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const [localValue, setLocalValue] = useState(cell.overrideValue);
 
+    useEffect(() => {
+        setLocalValue(cell.overrideValue);
+    }, [cell.overrideValue]);
+
     const emitChange = useCallback((patch: Partial<CellData>) => {
         if (debounceRef.current) clearTimeout(debounceRef.current);
         debounceRef.current = setTimeout(() => onChange(spoId, periodId, patch), 400);
@@ -50,7 +54,7 @@ const SpoCell = memo(function SpoCell({
     // ── Pre-disabled state (not contracted) ──────────────────────
     if (!isContractedPeriod) {
         return (
-            <div className="flex items-center justify-center h-[68px] bg-brand-light opacity-50 cursor-not-allowed" title={t('auto.features.contracts.details.components.spocell.title.9b640f42', { defaultValue: "Chambres cible non actives" })}>
+            <div className="flex items-center justify-center h-[68px] bg-brand-light opacity-50 cursor-not-allowed" title={t('auto.features.contracts.details.components.spocell.title.9b640f42', { defaultValue: 'Target rooms are not active' })}>
                 <span className="text-[10px] text-brand-slate italic">{t('auto.features.contracts.details.components.spocell.1ca2c9a7', { defaultValue: "Inactif" })}</span>
             </div>
         );
@@ -60,7 +64,10 @@ const SpoCell = memo(function SpoCell({
     if (!cell.active) {
         return (
             <div className="flex items-center justify-between px-3 h-[68px] group/cell bg-brand-light hover:bg-brand-light transition-colors">
-                <span className="text-[11px] text-brand-slate italic select-none">{t('auto.features.contracts.details.components.spocell.edb8534c', { defaultValue: "Non appliqué" })}</span>
+                <div className="flex items-center gap-2">
+                    <span className="h-2.5 w-2.5 shrink-0 rounded-full bg-brand-slate/10" aria-hidden="true" />
+                    <span className="text-[11px] text-brand-slate italic select-none">{t('auto.features.contracts.details.components.spocell.edb8534c', { defaultValue: "Non appliqué" })}</span>
+                </div>
                 <button
                     type="button"
                     onClick={handleToggle}
@@ -75,6 +82,7 @@ const SpoCell = memo(function SpoCell({
 
     // ── Active state ──────────────────────────────────────────────────
     const canOverride = ['PERCENTAGE_DISCOUNT', 'FIXED_DISCOUNT'].includes(benefitType);
+    const hasOverride = localValue !== '';
     const placeholderText = benefitType === 'FREE_NIGHTS' ? `${stayNights}=${payNights}` 
                           : benefitType === 'PERCENTAGE_DISCOUNT' ? `${baseValue}%` 
                           : `${baseValue} TND`;
@@ -82,9 +90,15 @@ const SpoCell = memo(function SpoCell({
     return (
         <div className="flex flex-col justify-center gap-1.5 px-3 h-[68px] group/cell hover:bg-brand-mint/10 transition-colors">
             <div className="flex items-center justify-between">
-                <div className="flex items-center gap-1">
+                <div className="flex items-center gap-1.5">
+                    <span
+                        className={`h-2.5 w-2.5 shrink-0 rounded-full bg-brand-mint ${hasOverride ? 'ring-4 ring-brand-mint/25' : ''}`}
+                        title={hasOverride
+                            ? t('pages.contractDetails.grid.legend.overridden', { defaultValue: 'Value overridden' })
+                            : t('pages.contractDetails.grid.legend.defaultInherited', { defaultValue: 'Default inherited' })}
+                        aria-hidden="true"
+                    />
                     <span className="text-[10px] font-bold text-brand-mint uppercase tracking-tighter">{t('auto.features.contracts.details.components.spocell.808b2a32', { defaultValue: "Actif" })}</span>
-                    {cell.overrideValue !== '' && <span className="w-1 h-1 rounded-full bg-brand-mint" />}
                 </div>
                 <button
                     type="button"
@@ -107,7 +121,7 @@ const SpoCell = memo(function SpoCell({
                     disabled={!canOverride}
                     className={`block w-full px-2 py-1 text-xs rounded-xl border text-right transition-all outline-none
                         ${canOverride ? 'focus:ring-1 focus:ring-brand-mint focus:border-brand-mint/30' : 'cursor-default border-transparent bg-transparent text-brand-slate'}
-                        ${localValue !== '' ? 'border-brand-mint/30 text-brand-mint bg-brand-mint/10 font-semibold' : 'border-brand-slate/20 text-brand-slate bg-brand-light'}
+                        ${hasOverride ? 'border-brand-mint/30 text-brand-mint bg-brand-mint/10 font-semibold' : 'border-brand-slate/20 text-brand-slate bg-brand-light'}
                     `}
                 />
                 {canOverride && benefitType === 'PERCENTAGE_DISCOUNT' && (

@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import i18next from '../../../lib/i18n';
-import { TENANT_USAGE_QUERY_KEY } from '../../admin/hooks/useUsers';
+import { USERS_QUERY_KEY } from '../../admin/hooks/useUsers';
 import { hotelService, type CreateHotelPayload, type Hotel, type UpdateHotelPayload } from '../services/hotel.service';
 
 export type { CreateHotelPayload, Hotel, UpdateHotelPayload };
@@ -30,7 +30,7 @@ export function useCreateHotel(onSuccess?: () => void) {
         mutationFn: hotelService.createHotel,
         onSuccess: () => {
             qc.invalidateQueries({ queryKey: [...HOTELS_QUERY_KEY] });
-            qc.invalidateQueries({ queryKey: [...TENANT_USAGE_QUERY_KEY] });
+            qc.invalidateQueries({ queryKey: [...USERS_QUERY_KEY] });
             toast.success(i18next.t('auto.features.hotel.hooks.usehotels.toast.success.cba2c083', { defaultValue: 'Hotel created successfully' }));
             onSuccess?.();
         },
@@ -75,7 +75,7 @@ export function useDeleteHotel() {
         onSuccess: () => {
             qc.invalidateQueries({ queryKey: [...HOTELS_QUERY_KEY] });
             qc.invalidateQueries({ queryKey: [...ARCHIVED_KEY] });
-            qc.invalidateQueries({ queryKey: [...TENANT_USAGE_QUERY_KEY] });
+            qc.invalidateQueries({ queryKey: [...USERS_QUERY_KEY] });
             toast.success(i18next.t('auto.features.hotel.hooks.usehotels.toast.success.a982fcc1', { defaultValue: 'Hotel archived successfully' }));
         },
     });
@@ -88,7 +88,7 @@ export function useRestoreHotel() {
         onSuccess: () => {
             qc.invalidateQueries({ queryKey: [...HOTELS_QUERY_KEY] });
             qc.invalidateQueries({ queryKey: [...ARCHIVED_KEY] });
-            qc.invalidateQueries({ queryKey: [...TENANT_USAGE_QUERY_KEY] });
+            qc.invalidateQueries({ queryKey: [...USERS_QUERY_KEY] });
             toast.success(i18next.t('auto.features.hotel.hooks.usehotels.toast.success.df605eb4', { defaultValue: 'Hotel restored successfully' }));
         },
     });

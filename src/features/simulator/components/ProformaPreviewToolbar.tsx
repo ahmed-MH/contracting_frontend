@@ -100,7 +100,7 @@ export function ProformaPreviewToolbar({
             <div className="rounded-lg border border-brand-light/70 bg-brand-light/90 p-4 text-brand-navy shadow-xl shadow-brand-slate/10 dark:border-white/10 dark:bg-brand-navy dark:text-brand-light dark:shadow-black/25">
                 <div className="mb-4">
                     <p className="text-[10px] font-black uppercase tracking-[0.22em] text-brand-mint">Preview tools</p>
-                    <h2 className="mt-1 text-lg font-black">Generate proforma</h2>
+                    <h2 className="mt-1 text-lg font-black">Generate invoice</h2>
                     <p className="mt-1 text-xs font-semibold leading-5 text-brand-slate dark:text-brand-light/50">
                         Review context, output settings, and export readiness.
                     </p>
@@ -184,7 +184,7 @@ export function ProformaPreviewToolbar({
                                 className="h-4 w-4 rounded border-brand-light/30 text-brand-mint focus:ring-brand-mint"
                             />
                             <Receipt size={14} className="text-brand-mint" />
-                            Add tax to this proforma
+                            Add tax to this invoice
                         </label>
 
                         {taxEnabled && (
@@ -249,8 +249,8 @@ export function ProformaPreviewToolbar({
 
                         <p className="mt-3 rounded-lg border border-brand-light/70 bg-brand-light/70 px-3 py-2 text-xs font-semibold leading-5 text-brand-slate dark:border-white/10 dark:bg-white/5 dark:text-brand-light/60">
                             {isIssued
-                                ? 'Saved invoice settings can be adjusted here; download again exports the updated document.'
-                                : 'Preview totals are recalculated for the draft and only become an official invoice on download.'}
+                                ? 'Saved invoice settings can be adjusted here; downloading again exports the updated document.'
+                                : 'Preview totals are recalculated for the draft and the invoice is issued on download.'}
                         </p>
                     </section>
 
@@ -289,7 +289,7 @@ export function ProformaPreviewToolbar({
                                 ) : (
                                     <Download size={16} />
                                 )}
-                                {isDownloading ? 'Generating...' : isIssued ? 'Download again' : 'Issue & Download PDF'}
+                                {isDownloading ? 'Generating...' : isIssued ? 'Download again' : 'Issue and Download PDF'}
                             </button>
 
                             <button
@@ -329,8 +329,8 @@ export function ProformaPreviewToolbar({
 
                         <p className="mt-3 rounded-lg border border-brand-light/70 bg-brand-light/70 px-3 py-2 text-xs font-semibold leading-5 text-brand-slate dark:border-white/10 dark:bg-white/5 dark:text-brand-light/60">
                             {isSameCurrency
-                                ? `This proforma is stored in ${baseCurrency}; no conversion is applied.`
-                                : `This proforma is stored in ${outputCurrency} using backend exchange rates.`}
+                                ? `This invoice is stored in ${baseCurrency}; no conversion is applied.`
+                                : `This invoice is stored in ${outputCurrency} using backend exchange rates.`}
                         </p>
                     </section>
 

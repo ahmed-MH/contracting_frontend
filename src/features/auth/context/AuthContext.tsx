@@ -12,7 +12,6 @@ interface AuthContextType {
     user: AuthUser | null;
     token: string | null;
     isAuthenticated: boolean;
-    isSupervisor: boolean;
     isAdmin: boolean;
     isLoading: boolean;
     login: (email: string, password: string) => Promise<void>;
@@ -97,7 +96,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 user,
                 token,
                 isAuthenticated: !!token && !!user,
-                isSupervisor: user?.role === 'SUPERVISOR',
                 isAdmin: user?.role === 'ADMIN',
                 isLoading,
                 login,

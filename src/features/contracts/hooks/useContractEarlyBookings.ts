@@ -22,7 +22,7 @@ export function useImportEarlyBooking(contractId: number) {
         mutationFn: (templateId: number) => contractEarlyBookingService.importFromTemplate(contractId, templateId),
         onSuccess: () => {
             qc.invalidateQueries({ queryKey: contractEarlyBookingKeys.all(contractId) });
-            toast.success(i18next.t('auto.features.contracts.hooks.usecontractearlybookings.toast.success.af1a198d', { defaultValue: "Early Booking importé avec succès" }));
+            toast.success(i18next.t('auto.features.contracts.hooks.usecontractearlybookings.toast.success.af1a198d', { defaultValue: 'Early Booking imported successfully' }));
         },
     });
 }
@@ -45,7 +45,7 @@ export function useDeleteContractEarlyBooking(contractId: number) {
         mutationFn: (ebId: number) => contractEarlyBookingService.delete(ebId),
         onSuccess: () => {
             qc.invalidateQueries({ queryKey: contractEarlyBookingKeys.all(contractId) });
-            toast.success(i18next.t('auto.features.contracts.hooks.usecontractearlybookings.toast.success.becac6d2', { defaultValue: "Early Booking supprimé du contrat" }));
+            toast.success(i18next.t('auto.features.contracts.hooks.usecontractearlybookings.toast.success.becac6d2', { defaultValue: 'Early Booking removed from the contract' }));
         },
     });
 }

@@ -49,7 +49,7 @@ export default function ImportContractRoomsModal({ isOpen, onClose, contractId, 
     };
 
     return (
-        <Modal isOpen={isOpen} onClose={handleClose} title={t('auto.features.contracts.details.modals.importcontractroomsmodal.title.0b470d08', { defaultValue: "Importer des chambres" })} maxWidth="max-w-lg">
+        <Modal isOpen={isOpen} onClose={handleClose} title={t('auto.features.contracts.details.modals.importcontractroomsmodal.title.0b470d08', { defaultValue: 'Import rooms' })} maxWidth="max-w-lg">
             {isLoading && (
                 <div className="flex items-center justify-center py-8">
                     <div className="animate-spin rounded-full h-6 w-6 border-2 border-brand-mint border-t-transparent" />
@@ -59,14 +59,14 @@ export default function ImportContractRoomsModal({ isOpen, onClose, contractId, 
             {!isLoading && available.length === 0 && (
                 <div className="text-center py-8">
                     <BedDouble size={36} className="mx-auto text-brand-slate/30 mb-3" />
-                    <p className="text-brand-slate text-sm">{t('auto.features.contracts.details.modals.importcontractroomsmodal.080120fe', { defaultValue: "Toutes les chambres du catalogue sont déjà ajoutées à ce contrat." })}</p>
+                    <p className="text-brand-slate text-sm">{t('auto.features.contracts.details.modals.importcontractroomsmodal.080120fe', { defaultValue: 'All catalog rooms have already been added to this contract.' })}</p>
                 </div>
             )}
 
             {!isLoading && available.length > 0 && (
                 <div className="space-y-2">
                     <p className="text-sm text-brand-slate mb-3">
-                        Sélectionnez les chambres à ajouter au contrat :
+                        Select the rooms to add to this contract:
                     </p>
                     <div className="max-h-64 overflow-y-auto space-y-1 border border-brand-slate/20 rounded-xl p-2 bg-brand-light/50 dark:bg-brand-slate/10">
                         {available.map((rt) => (
@@ -81,7 +81,7 @@ export default function ImportContractRoomsModal({ isOpen, onClose, contractId, 
                                 <div className="flex-1">
                                     <p className="text-sm font-medium text-brand-navy dark:text-brand-light">{rt.name}</p>
                                     <p className="text-xs text-brand-slate">
-                                        {rt.code} — Max {rt.maxOccupancy} pers. ({rt.maxAdults} ad. / {rt.maxChildren} enf.)
+                                        {rt.code} - Max. {rt.maxOccupancy} guests ({rt.maxAdults} adults / {rt.maxChildren} children)
                                     </p>
                                 </div>
                             </label>
@@ -93,7 +93,7 @@ export default function ImportContractRoomsModal({ isOpen, onClose, contractId, 
             <div className="mt-6 pt-4 border-t border-brand-slate/15 dark:border-brand-slate/20 flex justify-end gap-3">
                 <button type="button" onClick={handleClose}
                     className="px-4 py-2 text-sm font-medium text-brand-slate hover:text-brand-navy dark:hover:text-brand-light bg-brand-slate/10 hover:bg-brand-slate/20 rounded-xl transition-colors cursor-pointer">
-                    Annuler
+                    Cancel
                 </button>
                 <button
                     onClick={handleImport}
@@ -101,8 +101,8 @@ export default function ImportContractRoomsModal({ isOpen, onClose, contractId, 
                     className="px-4 py-2 text-sm font-medium text-brand-light bg-brand-mint rounded-xl hover:bg-brand-mint/90 transition-colors disabled:opacity-50 cursor-pointer"
                 >
                     {addMutation.isPending
-                        ? 'Import en cours...'
-                        : `Importer ${selected.size > 0 ? `(${selected.size})` : ''}`}
+                        ? 'Importing...'
+                        : `Import ${selected.size > 0 ? `(${selected.size})` : ''}`}
                 </button>
             </div>
         </Modal>

@@ -29,19 +29,6 @@ import EditSupplementTemplateModal from '../components/EditSupplementTemplateMod
 import UpdatedByCell from '../../../../components/audit/UpdatedByCell';
 import PaginationControls, { createClientPageMeta, getPageItems } from '../../../../components/ui/PaginationControls';
 
-const TYPE_LABELS: Record<SupplementCalculationType, string> = {
-    FIXED: 'Fixe',
-    PERCENTAGE: 'Pourcentage',
-    FORMULA: 'Formule',
-    FREE: 'Gratuit',
-};
-
-const APPLICATION_LABELS: Record<PricingModifierApplicationType, string> = {
-    PER_NIGHT_PER_PERSON: 'Par pers./nuit',
-    PER_NIGHT_PER_ROOM: 'Par chambre',
-    FLAT_RATE_PER_STAY: 'Forfait séjour',
-};
-
 const TYPE_COLORS: Record<SupplementCalculationType, string> = {
     FIXED: 'bg-brand-mint/10 text-brand-mint',
     PERCENTAGE: 'bg-brand-slate/10 text-brand-slate',
@@ -56,6 +43,17 @@ function formatShortDate(iso: string): string {
 
 export default function SupplementsCatalogPage() {
     const { t } = useTranslation('common');
+    const typeLabels: Record<SupplementCalculationType, string> = {
+        FIXED: t('pages.catalog.labels.type.fixed'),
+        PERCENTAGE: t('pages.catalog.labels.type.percentage'),
+        FORMULA: t('pages.catalog.labels.type.formula'),
+        FREE: t('pages.catalog.labels.type.free'),
+    };
+    const applicationLabels: Record<PricingModifierApplicationType, string> = {
+        PER_NIGHT_PER_PERSON: t('pages.catalog.labels.application.perNightPerPerson'),
+        PER_NIGHT_PER_ROOM: t('pages.catalog.labels.application.perNightPerRoom'),
+        FLAT_RATE_PER_STAY: t('pages.catalog.labels.application.flatRatePerStay'),
+    };
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editing, setEditing] = useState<TemplateSupplement | null>(null);
     const [showArchived, setShowArchived] = useState(false);
@@ -103,9 +101,9 @@ export default function SupplementsCatalogPage() {
 
     const handleDelete = async (s: TemplateSupplement) => {
         if (await confirm({
-            title: `Archiver le supplément "${s.name}" ?`,
-            description: "Le supplément sera archivé et ne sera plus visible dans le catalogue.",
-            confirmLabel: "Archiver",
+            title: t('pages.catalog.supplements.confirmArchive.title', { name: s.name }),
+            description: t('pages.catalog.supplements.confirmArchive.description'),
+            confirmLabel: t('pages.catalog.supplements.confirmArchive.confirmLabel'),
             variant: "danger",
         })) {
             deleteMutation.mutate(s.id);
@@ -114,9 +112,9 @@ export default function SupplementsCatalogPage() {
 
     const handleRestore = async (s: TemplateSupplement) => {
         if (await confirm({
-            title: `Restaurer le supplément "${s.name}" ?`,
-            description: "Le supplément sera de nouveau disponible dans le catalogue.",
-            confirmLabel: "Restaurer",
+            title: t('pages.catalog.supplements.confirmRestore.title', { name: s.name }),
+            description: t('pages.catalog.supplements.confirmRestore.description'),
+            confirmLabel: t('pages.catalog.supplements.confirmRestore.confirmLabel'),
             variant: "info",
         })) {
             restoreMutation.mutate(s.id);
@@ -154,7 +152,7 @@ export default function SupplementsCatalogPage() {
             case 'FORMULA':
                 return s.formula ?? '—';
             case 'FREE':
-                return 'Gratuit';
+                return t('pages.catalog.labels.type.free');
         }
     };
 
@@ -171,13 +169,13 @@ export default function SupplementsCatalogPage() {
                         <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-brand-mint/10 text-brand-mint">
                             <Package size={24} />
                         </span>
-                        Catalogue Suppléments
+                        {t('pages.catalog.supplements.header.title')}
                     </h1>
                     <p className="mt-3 max-w-3xl text-sm leading-6 text-brand-slate dark:text-brand-light/75">{t('auto.features.catalog.supplements.pages.supplementscatalogpage.ce69312f', { defaultValue: "Définitions des suppléments réutilisables (templates)" })}</p>
                 </div>
                 <button onClick={openCreate}
                     className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl bg-brand-mint px-4 text-sm font-semibold text-brand-light shadow-md transition hover:-translate-y-0.5 hover:bg-brand-mint cursor-pointer border-none outline-none lg:mt-9">
-                    <Plus size={16} /> Nouveau Supplément
+                    <Plus size={16} /> {t('pages.catalog.supplements.header.new')}
                 </button>
                 </div>
 
@@ -208,7 +206,7 @@ export default function SupplementsCatalogPage() {
 
             {isError && (
                 <div className="premium-surface border-brand-slate/20 p-6 text-sm text-brand-slate dark:text-brand-light/75">
-                    Impossible de charger les suppléments.
+                    {t('pages.catalog.supplements.states.loadError')}
                 </div>
             )}
 
@@ -216,7 +214,7 @@ export default function SupplementsCatalogPage() {
                 <div className="premium-surface border-dashed border-brand-slate/25 p-12 text-center">
                     <Package size={40} className="mx-auto text-brand-slate mb-3" />
                     <p className="text-brand-slate text-sm">
-                        {debouncedSearch ? 'Aucun supplément trouvé' : 'Aucun supplément défini'}
+                        {debouncedSearch ? t('pages.catalog.supplements.states.emptySearch') : t('pages.catalog.supplements.states.empty')}
                     </p>
                     {!debouncedSearch && (
                         <p className="text-brand-slate text-xs mt-1">{t('auto.features.catalog.supplements.pages.supplementscatalogpage.d8e159e3', { defaultValue: "Cliquez sur « Nouveau Supplément » pour commencer" })}</p>
@@ -251,7 +249,7 @@ export default function SupplementsCatalogPage() {
                                                 <div className="flex items-center gap-1 mt-1">
                                                     <CalendarDays size={11} className="text-brand-mint shrink-0" />
                                                     <span className="text-[10px] text-brand-mint font-bold italic uppercase">
-                                                        Évènement · {formatShortDate(s.specificDate)}
+                                                        {t('pages.catalog.labels.event')} · {formatShortDate(s.specificDate)}
                                                     </span>
                                                 </div>
                                             )}
@@ -259,15 +257,15 @@ export default function SupplementsCatalogPage() {
                                     </td>
                                     <td className="px-5 py-3">
                                         <span className={`inline-flex items-center px-2.5 py-0.5 rounded-xl text-xs font-bold tracking-wide ${TYPE_COLORS[s.type]}`}>
-                                            {TYPE_LABELS[s.type]}
+                                            {typeLabels[s.type]}
                                         </span>
                                     </td>
                                     <td className="px-5 py-3 text-brand-navy font-mono text-xs dark:text-brand-light">{formatValue(s)}</td>
-                                    <td className="px-5 py-3 text-brand-slate text-xs">{APPLICATION_LABELS[s.applicationType]}</td>
+                                    <td className="px-5 py-3 text-brand-slate text-xs">{applicationLabels[s.applicationType]}</td>
                                     <td className="px-5 py-3 text-center">
                                         {s.isMandatory ? (
                                             <span className="inline-flex items-center px-2 py-0.5 rounded-xl bg-brand-slate/10 text-brand-slate text-xs font-semibold">
-                                                Oui
+                                                {t('pages.catalog.labels.boolean.yes')}
                                             </span>
                                         ) : (
                                             <span className="text-brand-slate text-xs">{t('auto.features.catalog.supplements.pages.supplementscatalogpage.05fe84b1', { defaultValue: "Non" })}</span>
@@ -304,7 +302,7 @@ export default function SupplementsCatalogPage() {
                         className="inline-flex items-center gap-2 rounded-lg border border-brand-light/70 bg-brand-light/70 px-4 py-2 text-sm font-semibold text-brand-navy transition hover:border-brand-mint hover:text-brand-mint dark:border-brand-light/10 dark:bg-brand-light/5 dark:text-brand-light">
                         {showArchived ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
                         <Archive size={16} />
-                        Suppléments archivés {archivedSupplements ? `(${archivedSupplements.length})` : ''}
+                        {t('pages.catalog.supplements.archived.toggle', { count: archivedSupplements ? `(${archivedSupplements.length})` : '' })}
                     </button>
 
                     {showArchived && archivedSupplements && archivedSupplements.length > 0 && (
@@ -325,7 +323,7 @@ export default function SupplementsCatalogPage() {
                                             <td className="px-5 py-3 text-brand-slate font-semibold dark:text-brand-light/75">{s.name}</td>
                                             <td className="px-5 py-3">
                                                 <span className={`inline-flex items-center px-2.5 py-0.5 rounded-xl text-xs font-bold tracking-wide ${TYPE_COLORS[s.type]}`}>
-                                                    {TYPE_LABELS[s.type]}
+                                                    {typeLabels[s.type]}
                                                 </span>
                                             </td>
                                             <td className="px-5 py-3 align-top">
@@ -334,7 +332,7 @@ export default function SupplementsCatalogPage() {
                                             <td className="px-5 py-3 text-right">
                                                 <button onClick={() => handleRestore(s)} disabled={restoreMutation.isPending}
                                                     className="inline-flex h-10 items-center gap-2 rounded-lg bg-brand-mint/10 px-4 text-sm font-semibold text-brand-mint transition hover:bg-brand-mint hover:text-brand-light disabled:cursor-not-allowed disabled:opacity-60">
-                                                    <RotateCcw size={14} /> Restaurer
+                                                    <RotateCcw size={14} /> {t('pages.catalog.supplements.archived.restore')}
                                                 </button>
                                             </td>
                                         </tr>

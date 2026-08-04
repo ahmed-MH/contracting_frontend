@@ -8,7 +8,7 @@ import { authService } from '../../auth/services/auth.service';
 import { hotelService } from '../../hotel/services/hotel.service';
 import Modal from '../../../components/ui/Modal';
 import { createInviteUserSchema, type InviteUserFormInput, type InviteUserFormValues } from '../schemas/user.schema';
-import { TENANT_USAGE_QUERY_KEY } from '../hooks/useUsers';
+import { USERS_QUERY_KEY } from '../hooks/useUsers';
 
 interface InviteUserModalProps {
     isOpen: boolean;
@@ -55,8 +55,7 @@ export default function InviteUserModal({ isOpen, onClose }: InviteUserModalProp
             hotelIds: data.role === 'ADMIN' ? [] : data.hotelIds.map(Number),
         }),
         onSuccess: (result) => {
-            queryClient.invalidateQueries({ queryKey: ['users'] });
-            queryClient.invalidateQueries({ queryKey: [...TENANT_USAGE_QUERY_KEY] });
+            queryClient.invalidateQueries({ queryKey: [...USERS_QUERY_KEY] });
             toast.success(result.message);
             onClose();
             reset();

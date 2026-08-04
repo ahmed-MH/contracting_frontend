@@ -9,7 +9,6 @@ export function createExchangeRateSchema(t: TFunction) {
         toCurrency: z.string().trim().length(3, t('validation.currencyCode', { defaultValue: 'Use a 3-letter currency code' })).transform((value) => value.toUpperCase()),
         rate: z.coerce.number().positive(t('validation.positiveNumber', { defaultValue: 'Must be greater than zero' })),
         effectiveDate: z.string().trim().min(1, required),
-        source: z.enum(['manual', 'system', 'imported']).default('manual'),
     }).refine((data) => data.fromCurrency !== data.toCurrency, {
         path: ['toCurrency'],
         message: t('validation.distinctCurrencies', { defaultValue: 'Choose two different currencies' }),

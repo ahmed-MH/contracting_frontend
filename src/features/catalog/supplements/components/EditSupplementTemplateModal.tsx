@@ -93,7 +93,7 @@ export default function EditSupplementTemplateModal({
     const footer = (
         <>
             <button type="button" onClick={onClose} className="px-6 py-2.5 text-sm font-bold text-brand-slate hover:text-brand-navy dark:hover:text-brand-light transition-colors cursor-pointer">
-                Annuler
+                {t('pages.catalog.modal.common.cancel')}
             </button>
             <button
                 form="supplement-template-form"
@@ -106,7 +106,7 @@ export default function EditSupplementTemplateModal({
                 ) : (
                     <Save size={16} />
                 )}
-                {editItem ? 'Enregistrer' : 'Créer le supplément'}
+                {editItem ? t('pages.catalog.modal.common.save') : t('pages.catalog.modal.supplements.modal.create')}
             </button>
         </>
     );
@@ -115,13 +115,13 @@ export default function EditSupplementTemplateModal({
         <ModalShell
             isOpen={isOpen}
             onClose={onClose}
-            title={editItem ? `Modifier – ${editItem.name}` : 'Nouveau Supplément'}
+            title={editItem ? t('pages.catalog.modal.supplements.modal.editTitle', { name: editItem.name }) : t('pages.catalog.modal.supplements.modal.createTitle')}
             subtitle={t('auto.features.catalog.supplements.components.editsupplementtemplatemodal.subtitle.d65841ee', { defaultValue: "Définition Catalogue" })}
             footer={footer}
         >
             <form id="supplement-template-form" onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-6">
                 <div className="bg-brand-mint/10 dark:bg-brand-mint/5 border border-brand-mint/20 rounded-xl p-4 text-brand-navy dark:text-brand-light text-xs leading-relaxed font-medium">
-                    {t('auto.features.catalog.supplements.components.editsupplementtemplatemodal.tip', { defaultValue: "Astuce : Les suppl?ments du catalogue servent de mod?les. Lors de l'import dans un contrat, vous pourrez ajuster leurs prix par p?riode." })}
+                    {t('pages.catalog.modal.supplements.modal.contractAdjustmentTip')}
                 </div>
 
                 <div className="space-y-4">
@@ -190,7 +190,7 @@ export default function EditSupplementTemplateModal({
                     {(watchType === 'FIXED' || watchType === 'PERCENTAGE') && (
                         <div>
                             <label className="block text-xs font-bold text-brand-navy dark:text-brand-light uppercase tracking-wider mb-2">
-                                Valeur par défaut ({watchType === 'PERCENTAGE' ? '%' : '€'})
+                                {t('pages.catalog.modal.supplements.modal.defaultValue')} ({watchType === 'PERCENTAGE' ? '%' : '€'})
                             </label>
                             <input type="number" step="0.01" {...register('value', { valueAsNumber: true })}
                                 className="w-full px-4 py-2.5 bg-brand-light dark:bg-brand-slate/10 border border-brand-slate/20 rounded-xl focus:ring-2 focus:ring-brand-mint transition-all text-sm font-bold text-brand-navy dark:text-brand-light" />
@@ -210,18 +210,18 @@ export default function EditSupplementTemplateModal({
                         <input type="checkbox" id="isMandatory" {...register('isMandatory')}
                             className="w-4 h-4 text-brand-mint border-brand-slate/30 rounded focus:ring-brand-mint cursor-pointer" />
                         <label htmlFor="isMandatory" className="text-sm font-bold text-brand-navy dark:text-brand-light cursor-pointer select-none">
-                            Supplément obligatoire par défaut
+                            {t('pages.catalog.modal.supplements.modal.mandatoryDefault')}
                         </label>
                     </div>
 
                     <div className="pt-4 border-t border-brand-slate/15 dark:border-brand-slate/20">
                         <label className="flex items-center gap-2 text-xs font-bold text-brand-navy dark:text-brand-light uppercase tracking-wider mb-2">
-                            📅 Date de l'évènement <span className="text-[10px] text-brand-slate font-normal lowercase">{t('auto.features.catalog.supplements.components.editsupplementtemplatemodal.cc4ffce3', { defaultValue: "(optionnel)" })}</span>
+                            {t('pages.catalog.modal.supplements.modal.eventDate')} <span className="text-[10px] text-brand-slate font-normal lowercase">{t('auto.features.catalog.supplements.components.editsupplementtemplatemodal.cc4ffce3', { defaultValue: "(optional)" })}</span>
                         </label>
                         <input type="date" {...register('specificDate')}
                             className="w-full px-4 py-2.5 bg-brand-light dark:bg-brand-slate/10 border border-brand-slate/20 rounded-xl focus:ring-2 focus:ring-brand-mint transition-all text-sm font-medium text-brand-navy dark:text-brand-light" />
                         <p className="mt-1.5 text-[10px] text-brand-slate font-medium leading-relaxed">
-                            Si spécifié, ce supplément ne sera disponible que pour les contrats couvrant cette date précise.
+                            {t('pages.catalog.modal.supplements.modal.eventDateHint')}
                         </p>
                     </div>
                 </div>

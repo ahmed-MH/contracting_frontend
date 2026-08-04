@@ -3,7 +3,6 @@ import {
     Activity,
     BedDouble,
     Briefcase,
-    Building2,
     Calculator,
     CalendarCheck,
     CircleDollarSign,
@@ -11,7 +10,6 @@ import {
     FileText,
     Gift,
     Hotel,
-    LayoutGrid,
     Package,
     Shield,
     ShieldAlert,
@@ -52,47 +50,6 @@ export interface RoleNavigationConfig {
     sections: NavigationSection[];
 }
 
-export const supervisorSections: NavigationSection[] = [
-    {
-        title: 'Command Center',
-        titleKey: 'common:navigation.supervisor.sectionTitle',
-        items: [
-            {
-                label: 'Overview / Revenue',
-                labelKey: 'common:navigation.supervisor.overview.label',
-                to: '/platform',
-                icon: LayoutGrid,
-                description: 'Recurring revenue, one-time payments, churn watch, and platform readiness.',
-                descriptionKey: 'common:navigation.supervisor.overview.description',
-            },
-            {
-                label: 'Tenants / Organizations',
-                labelKey: 'common:navigation.supervisor.tenants.label',
-                to: '/tenants',
-                icon: Building2,
-                description: 'Portfolio roster, billing status, and account controls.',
-                descriptionKey: 'common:navigation.supervisor.tenants.description',
-            },
-            {
-                label: 'SaaS Plans & Pricing',
-                labelKey: 'common:navigation.supervisor.plans.label',
-                to: '/plans',
-                icon: CircleDollarSign,
-                description: 'Plans, limits, privileges, and subscription packaging.',
-                descriptionKey: 'common:navigation.supervisor.plans.description',
-            },
-            {
-                label: 'System Logs',
-                labelKey: 'common:navigation.supervisor.logs.label',
-                to: '/system-logs',
-                icon: Shield,
-                description: 'Audit stream, alerts, and infrastructure events.',
-                descriptionKey: 'common:navigation.supervisor.logs.description',
-            },
-        ],
-    },
-];
-
 export const adminSections: NavigationSection[] = [
     {
         title: 'Overview',
@@ -103,7 +60,7 @@ export const adminSections: NavigationSection[] = [
                 labelKey: 'common:navigation.admin.overview.organization.label',
                 to: '/organization',
                 icon: Briefcase,
-                description: 'Billing posture, team pulse, and hotels.',
+                description: 'Team pulse, access, and hotels.',
                 descriptionKey: 'common:navigation.admin.overview.organization.description',
             },
             {
@@ -169,7 +126,7 @@ export const adminSections: NavigationSection[] = [
                 label: 'Saved Invoices',
                 to: '/proforma/invoices',
                 icon: FileText,
-                description: 'Issued proforma invoice history and re-downloads.',
+                description: 'Issued invoice history and re-downloads.',
                 matchPrefixes: ['/proforma/invoices'],
             },
         ],
@@ -351,7 +308,7 @@ export const commercialWorkspaceSections: NavigationSection[] = [
                 label: 'Saved invoices',
                 to: '/proforma/invoices',
                 icon: FileText,
-                description: 'Issued proforma archive and re-download workspace.',
+                description: 'Issued invoice archive and re-download workspace.',
                 matchPrefixes: ['/proforma/invoices'],
             },
         ],
@@ -389,10 +346,11 @@ export const commercialTopNavItems: NavigationItem[] = [
         matchPrefixes: ['/simulator'],
     },
     {
-        label: 'Saved Invoices',
+        label: 'Invoices',
+        labelKey: 'common:navigation.commercial.primary.invoices.label',
         to: '/proforma/invoices',
         icon: FileText,
-        description: 'Issued proforma archive and re-download workspace.',
+        description: 'Issued invoice archive and re-download workspace.',
         matchPrefixes: ['/proforma/invoices'],
     },
 ];
@@ -409,19 +367,6 @@ export const agentTabs: NavigationItem[] = [
 ];
 
 const roleConfigs: Record<UserRole, RoleNavigationConfig> = {
-    SUPERVISOR: {
-        role: 'SUPERVISOR',
-        label: 'Supervisor',
-        labelKey: 'common:navigation.roles.supervisor.label',
-        eyebrow: 'Platform Engine',
-        eyebrowKey: 'common:navigation.roles.supervisor.eyebrow',
-        title: 'Pricify Platform',
-        titleKey: 'common:navigation.roles.supervisor.title',
-        subtitle: 'Govern subscriptions, tenant health, and platform reliability without touching tenant operational data.',
-        subtitleKey: 'common:navigation.roles.supervisor.subtitle',
-        defaultPath: '/platform',
-        sections: supervisorSections,
-    },
     ADMIN: {
         role: 'ADMIN',
         label: 'Admin',
@@ -430,7 +375,7 @@ const roleConfigs: Record<UserRole, RoleNavigationConfig> = {
         eyebrowKey: 'common:navigation.roles.admin.eyebrow',
         title: 'Organization Cockpit',
         titleKey: 'common:navigation.roles.admin.title',
-        subtitle: 'Keep billing, team access, and the hotel portfolio aligned.',
+        subtitle: 'Keep team access and the hotel portfolio aligned.',
         subtitleKey: 'common:navigation.roles.admin.subtitle',
         defaultPath: '/organization',
         sections: adminSections,
@@ -454,7 +399,7 @@ const roleConfigs: Record<UserRole, RoleNavigationConfig> = {
         labelKey: 'common:navigation.roles.agent.label',
         eyebrow: 'Calculation Tool',
         eyebrowKey: 'common:navigation.roles.agent.eyebrow',
-        title: 'Pricing Simulator',
+        title: 'Rate Simulation',
         titleKey: 'common:navigation.roles.agent.title',
         subtitle: 'A focused calculation environment with instant pricing feedback.',
         subtitleKey: 'common:navigation.roles.agent.subtitle',

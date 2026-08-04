@@ -207,7 +207,7 @@ export default function ProformaPreviewPage() {
             <div className="flex h-96 flex-col items-center justify-center gap-4">
                 <FileText size={48} className="text-brand-slate/40" />
                 <p className="text-lg font-semibold text-brand-navy dark:text-brand-light">
-                    {t('pages.proforma.notFound', { defaultValue: 'Proforma not found' })}
+                    {t('pages.proforma.notFound', { defaultValue: 'Invoice not found' })}
                 </p>
                 <button
                     onClick={() => navigate(returnPath)}

@@ -33,20 +33,18 @@ import EditMonoparentalTemplateModal from '../components/EditMonoparentalTemplat
 import UpdatedByCell from '../../../../components/audit/UpdatedByCell';
 import PaginationControls, { createClientPageMeta, getPageItems } from '../../../../components/ui/PaginationControls';
 
-const BASE_RATE_LABELS: Record<BaseRateType, string> = {
-    SINGLE: 'Single',
-    DOUBLE: 'Double',
-};
-
-const CHILD_SURCHARGE_BASE_LABELS: Record<ChildSurchargeBase, string> = {
-    SINGLE: 'Chambre Single',
-    DOUBLE: 'Chambre Double',
-    HALF_SINGLE: 'Demi-Single',
-    HALF_DOUBLE: 'Demi-Double',
-};
-
 export default function MonoparentalCatalogPage() {
     const { t } = useTranslation('common');
+    const baseRateLabels: Record<BaseRateType, string> = {
+        SINGLE: t('pages.catalog.labels.baseRate.single'),
+        DOUBLE: t('pages.catalog.labels.baseRate.double'),
+    };
+    const childSurchargeBaseLabels: Record<ChildSurchargeBase, string> = {
+        SINGLE: t('pages.catalog.labels.surchargeBase.single'),
+        DOUBLE: t('pages.catalog.labels.surchargeBase.double'),
+        HALF_SINGLE: t('pages.catalog.labels.surchargeBase.halfSingle'),
+        HALF_DOUBLE: t('pages.catalog.labels.surchargeBase.halfDouble'),
+    };
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editing, setEditing] = useState<TemplateMonoparentalRule | null>(null);
     const [showArchived, setShowArchived] = useState(false);
@@ -87,9 +85,9 @@ export default function MonoparentalCatalogPage() {
 
     const handleDelete = async (r: TemplateMonoparentalRule) => {
         if (await confirm({
-            title: `Archiver la règle "${r.name}" ?`,
-            description: "La règle sera archivée et ne sera plus visible dans le catalogue.",
-            confirmLabel: "Archiver",
+            title: t('pages.catalog.monoparental.confirmArchive.title', { name: r.name }),
+            description: t('pages.catalog.monoparental.confirmArchive.description'),
+            confirmLabel: t('pages.catalog.monoparental.confirmArchive.confirmLabel'),
             variant: "danger",
         })) {
             deleteMutation.mutate(r.id);
@@ -98,9 +96,9 @@ export default function MonoparentalCatalogPage() {
 
     const handleRestore = async (r: TemplateMonoparentalRule) => {
         if (await confirm({
-            title: `Restaurer la règle "${r.name}" ?`,
-            description: "La règle sera de nouveau disponible dans le catalogue.",
-            confirmLabel: "Restaurer",
+            title: t('pages.catalog.monoparental.confirmRestore.title', { name: r.name }),
+            description: t('pages.catalog.monoparental.confirmRestore.description'),
+            confirmLabel: t('pages.catalog.monoparental.confirmRestore.confirmLabel'),
             variant: "info",
         })) {
             restoreMutation.mutate(r.id);
@@ -134,7 +132,7 @@ export default function MonoparentalCatalogPage() {
                     </div>
                     <button onClick={openCreate}
                         className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl bg-brand-mint px-4 text-sm font-semibold text-brand-light shadow-md transition hover:-translate-y-0.5 hover:bg-brand-mint cursor-pointer border-none outline-none lg:mt-9">
-                        <Plus size={16} /> Nouvelle Règle
+                        <Plus size={16} /> {t('pages.catalog.monoparental.header.new')}
                     </button>
                 </div>
                 <div className="relative mt-5 flex flex-col gap-3 border-t border-brand-slate/10 pt-5 dark:border-brand-light/10 md:flex-row md:items-center md:justify-between">
@@ -164,7 +162,7 @@ export default function MonoparentalCatalogPage() {
 
             {isError && (
                 <div className="premium-surface border-brand-slate/20 p-6 text-sm font-semibold text-brand-slate dark:text-brand-light/75">
-                    Impossible de charger les règles monoparentales.
+                    {t('pages.catalog.monoparental.states.loadError')}
                 </div>
             )}
 
@@ -199,23 +197,23 @@ export default function MonoparentalCatalogPage() {
                                     <td className="px-5 py-4 whitespace-nowrap">
                                         <div className="flex items-center gap-3">
                                             <div className="flex items-center gap-1 text-xs font-bold text-brand-slate bg-brand-light px-2 py-0.5 rounded border border-brand-slate/20">
-                                                <User size={12} /> {r.adultCount} Ad
+                                                <User size={12} /> {r.adultCount} {t('pages.catalog.labels.adultShort')}
                                             </div>
                                             <div className="flex items-center gap-1 text-xs font-bold text-brand-slate bg-brand-slate/10 px-2 py-0.5 rounded border border-brand-slate/30">
-                                                <Baby size={12} /> {r.childCount} Ch ({r.minAge}-{r.maxAge} ans)
+                                                <Baby size={12} /> {r.childCount} {t('pages.catalog.labels.childShort')} ({r.minAge}-{r.maxAge} {t('pages.catalog.labels.years')})
                                             </div>
                                         </div>
                                     </td>
                                     <td className="px-5 py-4 font-bold">
                                         <div className="flex items-center gap-1.5 flex-wrap">
                                             <span className="text-[10px] font-bold tracking-wide bg-brand-mint/10 text-brand-mint border border-brand-mint/30 px-1.5 py-0.5 rounded uppercase">
-                                                {BASE_RATE_LABELS[r.baseRateType]}
+                                                {baseRateLabels[r.baseRateType]}
                                             </span>
                                             <span className="text-brand-slate font-normal">+</span>
                                             <span className="text-brand-slate">{r.childSurchargePercentage}%</span>
                                             <span className="text-brand-slate font-normal text-[10px]">{t('auto.features.catalog.monoparental.pages.monoparentalcatalogpage.390f7019', { defaultValue: "de" })}</span>
                                             <span className="text-[10px] font-bold tracking-wide bg-brand-mint/10 text-brand-mint border border-brand-mint/30 px-1.5 py-0.5 rounded uppercase">
-                                                {CHILD_SURCHARGE_BASE_LABELS[r.childSurchargeBase as ChildSurchargeBase]}
+                                                {childSurchargeBaseLabels[r.childSurchargeBase as ChildSurchargeBase]}
                                             </span>
                                         </div>
                                     </td>
@@ -249,7 +247,7 @@ export default function MonoparentalCatalogPage() {
                         className="inline-flex items-center gap-2 rounded-lg border border-brand-light/70 bg-brand-light/70 px-4 py-2 text-sm font-semibold text-brand-navy transition hover:border-brand-mint hover:text-brand-mint dark:border-brand-light/10 dark:bg-brand-light/5 dark:text-brand-light">
                         {showArchived ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
                         <Archive size={16} />
-                        Règles archivées {archivedRules ? `(${archivedRules.length})` : ''}
+                        {t('pages.catalog.monoparental.archived.toggle', { count: archivedRules ? `(${archivedRules.length})` : '' })}
                     </button>
 
                     {showArchived && archivedRules && archivedRules.length > 0 && (
@@ -273,7 +271,7 @@ export default function MonoparentalCatalogPage() {
                                             <td className="px-5 py-3 text-right">
                                                 <button onClick={() => handleRestore(r)}
                                                     className="inline-flex h-10 items-center gap-2 rounded-lg bg-brand-mint/10 px-4 text-sm font-semibold text-brand-mint transition hover:bg-brand-mint hover:text-brand-light disabled:cursor-not-allowed disabled:opacity-60">
-                                                    <RotateCcw size={14} /> Restaurer
+                                                    <RotateCcw size={14} /> {t('pages.catalog.monoparental.archived.restore')}
                                                 </button>
                                             </td>
                                         </tr>

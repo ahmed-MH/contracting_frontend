@@ -70,7 +70,7 @@ export function useUpdateProformaPreviewSettings(id: number | undefined) {
 
     return useMutation({
         mutationFn: async (payload: UpdateProformaPreviewSettingsPayload): Promise<ProformaInvoice> => {
-            if (!id) throw new Error('Missing proforma id');
+            if (!id) throw new Error('Missing invoice id');
             const { data } = await apiClient.patch<ProformaInvoice>(`/proforma/${id}/preview-settings`, payload);
             return data;
         },
@@ -79,7 +79,7 @@ export function useUpdateProformaPreviewSettings(id: number | undefined) {
             queryClient.invalidateQueries({ queryKey: ['proforma-invoices'] });
         },
         onError: () => {
-            toast.error('Could not update proforma preview');
+            toast.error('Could not update invoice preview');
         },
     });
 }
@@ -93,10 +93,10 @@ export function useArchiveProforma() {
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['proforma-invoices'] });
-            toast.success('Proforma invoice archived');
+            toast.success('Invoice archived');
         },
         onError: () => {
-            toast.error('Could not archive proforma invoice');
+            toast.error('Could not archive invoice');
         },
     });
 }
@@ -110,10 +110,10 @@ export function useRestoreProforma() {
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['proforma-invoices'] });
-            toast.success('Proforma invoice restored');
+            toast.success('Invoice restored');
         },
         onError: () => {
-            toast.error('Could not restore proforma invoice');
+            toast.error('Could not restore invoice');
         },
     });
 }
@@ -136,7 +136,7 @@ export function useDownloadProformaPdf() {
             const { data, headers } = response;
             const headerValue = headers['content-disposition'] as string | undefined;
             const filenameMatch = headerValue?.match(/filename="([^"]+)"/i);
-            const filename = filenameMatch?.[1] ?? `proforma-${id}.pdf`;
+            const filename = filenameMatch?.[1] ?? `invoice-${id}.pdf`;
             const reference = (headers['x-proforma-reference'] as string | undefined) ?? filename.replace(/\.pdf$/i, '');
             const issuedNow = String(headers['x-proforma-issued-now'] ?? '0') === '1';
 
